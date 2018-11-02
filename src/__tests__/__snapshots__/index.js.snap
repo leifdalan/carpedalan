@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test should do some stuff 1`] = `
+.c0 {
+  font-size: 45px;
+}
+
+<div
+  className="c0"
+  data-test="clicky"
+  onClick={[Function]}
+>
+  addfffwww
+  0
+  <a
+    href="/about"
+    onClick={[Function]}
+  >
+    About
+  </a>
+  <a
+    href="/admin"
+    onClick={[Function]}
+  >
+    Admin
+  </a>
+</div>
+`;
