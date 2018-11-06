@@ -1,8 +1,8 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { func, node, oneOfType, string } from 'prop-types';
 import get from 'lodash/get';
 
-import { FormContext } from '../form';
+import { FormContext } from './Form';
 
 function Field({
   name,
@@ -14,7 +14,18 @@ function Field({
   shouldExist,
   ...ownProps
 }) {
-  const { change, state, validate: validateAction } = useContext(FormContext);
+  const {
+    change,
+    state,
+    validate: validateAction,
+    registerField,
+    unregisterField,
+  } = useContext(FormContext);
+
+  useEffect(() => {
+    registerField(name);
+    return () => unregisterField(name);
+  }, []);
   // eslint-disable-next-line
   const safeNormalize = normalize ? normalize :  (values) => get(values, name)
   const onChange = value => {
@@ -48,7 +59,7 @@ Field.propTypes = {
   format: func,
   parse: func,
   normalize: func,
-  component: oneOfType([string, node]).isRequired,
+  component: oneOfType([string, node, func]).isRequired,
   shouldExist: func,
 };
 

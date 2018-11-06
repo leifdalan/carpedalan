@@ -7,7 +7,11 @@ export default ({ input: { onChange, value }, meta: { error } }) => {
 
   return (
     <>
-      <input onChange={handleChange} value={value} />
+      <input
+        data-test="inputField"
+        onChange={handleChange}
+        value={value || ''}
+      />
       {error || null}
     </>
   );

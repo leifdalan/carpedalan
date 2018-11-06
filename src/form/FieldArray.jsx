@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import get from 'lodash/get';
 import { func, node, oneOfType, string } from 'prop-types';
 
-import { FormContext } from '../form';
+import { FormContext } from './Form';
 
 export default function FieldArray({ component, name }) {
   const { change, state } = useContext(FormContext);
@@ -11,7 +11,8 @@ export default function FieldArray({ component, name }) {
     (_, index) => `${name}[${index}]`,
   );
 
-  const add = value => change({ field: `${name}[${fields.length}]`, value });
+  const add = value => () =>
+    change({ field: `${name}[${fields.length}]`, value });
   return component({
     fields,
     add,

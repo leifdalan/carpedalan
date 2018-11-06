@@ -1,9 +1,12 @@
-import React, { useReducer, createContext } from 'react';
+import React, { createContext, useEffect, useReducer } from 'react';
 import { arrayOf, node, shape, func, oneOfType, string } from 'prop-types';
+import get from 'lodash/get';
+import unset from 'lodash/unset';
+import isUndefined from 'lodash/isUndefined';
 import set from 'lodash/set';
 import isEmpty from 'lodash/isEmpty';
 
-import log from './utils/log';
+import log from '../utils/log';
 
 export const FormContext = createContext({});
 const { Provider: FormProvider } = FormContext;
@@ -84,16 +87,46 @@ const reducer = (
           submitSucceeded: false,
         },
       };
+    case 'REGISTER_FIELD':
+      if (isUndefined(get(state.values, payload)))
+        set(state.values, payload, null);
+      return state;
+    case 'UNREGISTER_FIELD':
+      unset(state.values, payload);
+      return state;
+    case 'INITIALIZE':
+      return {
+        ...initialFormReducerState,
+        values: payload,
+      };
     default:
       return state;
   }
 };
 
-function Form({ initial = {}, children, onSubmit, validate: validation }) {
-  const [state, dispatch] = useReducer(reducer, {
-    ...initialFormReducerState,
-    values: initial,
+function Form({
+  children,
+  initial = {},
+  onSubmit,
+  validate: validation,
+  effect,
+}) {
+  const [state, dispatch] = useReducer(reducer, initialFormReducerState, {
+    type: 'INITIALIZE',
+    payload: initial,
   });
+
+  const registerField = name =>
+    dispatch({
+      type: 'REGISTER_FIELD',
+      payload: name,
+    });
+
+  const unregisterField = name =>
+    dispatch({
+      type: 'UNREGISTER_FIELD',
+      payload: name,
+    });
 
   const change = ({ field, value }) =>
     dispatch({
@@ -136,9 +169,28 @@ function Form({ initial = {}, children, onSubmit, validate: validation }) {
     }
   };
 
+  useEffect(() => dispatch({ type: 'INITIALIZE', payload: initial }), [
+    initial,
+  ]);
+
+  useEffect(
+    () => {
+      effect({ state, dispatch, change });
+    },
+    [state],
+  );
+
   return (
     <FormProvider
-      value={{ change, validate, state, submit, values: state.values }}
+      value={{
+        change,
+        validate,
+        state,
+        submit,
+        values: state.values,
+        registerField,
+        unregisterField,
+      }}
     >
       {children}
     </FormProvider>
@@ -147,16 +199,18 @@ function Form({ initial = {}, children, onSubmit, validate: validation }) {
 
 Form.defaultProps = {
   initial: {},
-  children: [],
   onSubmit: () => {},
   validate: () => {},
+  effect: () => {},
+  children: [],
 };
 
 Form.propTypes = {
   initial: shape({}),
-  children: arrayOf(oneOfType([node, string])),
   onSubmit: func,
   validate: func,
+  effect: func,
+  children: arrayOf(oneOfType([node, func, string])),
 };
 
 export default Form;

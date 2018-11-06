@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { func, node, oneOfType } from 'prop-types';
 
-import { FormContext } from '../form';
+import { FormContext } from './Form';
 
 export default function Submit({ component: Component, ...rest }) {
   const { submit } = useContext(FormContext);

@@ -1,14 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { useState, Fragment } from 'react';
+import get from 'lodash/get';
 
-import Form from './form';
-import InputField from './form/InputField';
+import Form from './form/Form';
+import InputField from './fields/InputField';
 import log from './utils/log';
 import Field from './form/Field';
 import FieldArray from './form/FieldArray';
+import Values from './form/Values';
 import Submit from './form/Submit';
 
-import { Counter } from '.';
-
+// Submit functions take the values as an argument
 const submitToApi = values => {
   log.info(values);
   return new Promise((resolve, reject) => {
@@ -18,23 +19,35 @@ const submitToApi = values => {
   });
 };
 
-const Leaf = () => {
-  const { counter, setCounter, data = [], isLoading } = useContext(Counter);
+// An effect that has the forms state and change, used in
+// the Form's useEffect hook
+let hasGenerated = false;
+const effect = ({ state, change }) => {
+  if (
+    get(state, 'values.test.yo') === 'GENERATE' &&
+    get(state, 'values.test.generated') !== 'GENERATED' &&
+    !hasGenerated
+  ) {
+    hasGenerated = true;
+    change({ field: 'test.generated', value: 'GENERATED' });
+  } else if (get(state, 'values.test.yo') !== 'GENERATE') {
+    hasGenerated = false;
+  }
+};
 
+const Leaf = () => {
   const [initialValue, setInitialValue] = useState('hallo');
   const update = () => {
-    setCounter(counter + 1);
     setInitialValue('fartttsss');
   };
 
-  return isLoading ? (
-    'loading'
-  ) : (
+  return (
     <>
       <Form
+        // initial values are not required, as soon as a Field
+        // is mounted, it is registered with a null value.
         initial={{
-          test: { yo: initialValue },
-          test1: '',
+          test: { yo: initialValue, generated: '' },
           array: [
             {
               sub1: 'hi',
@@ -45,40 +58,55 @@ const Leaf = () => {
           ],
         }}
         onSubmit={submitToApi}
+        effect={effect}
       >
         <Field
           validate={val => (val.length > 5 ? 'too long' : null)}
           name="test.yo"
           component={InputField}
-          format={val => val.toUpperCase()}
+          format={val => val && val.toUpperCase()}
         />
         <Field
+          validate={val => (val.length > 5 ? 'too long' : null)}
+          name="test.generated"
+          component={InputField}
+        />
+        <Field
+          // A test function when truthy will display this component
           shouldExist={({ test }) => test === 'YAHTZEE'}
           validate={val => (val.length > 5 ? 'too long' : null)}
           name="test1"
           component={InputField}
-          format={val => val.toUpperCase()}
         />
+        {/* An array of identical fields, with the ability to add one */}
         <FieldArray
           name="array"
-          component={({ fields, add }) => {
-            const handleAdd = () => add({});
-            return fields.map(field => (
-              <>
+          component={({ fields, add }) =>
+            fields.map(field => (
+              <Fragment key={field}>
                 <Field name={`${field}.sub1`} component={InputField} />
                 <Field component={InputField} name={`${field}.sub2`} />
-                <button type="button" onClick={handleAdd}>
+                <button type="button" onClick={add({})}>
                   Add!
                 </button>
-              </>
-            ));
-          }}
+              </Fragment>
+            ))
+          }
         />
+        {/* Another way to conditionally show a Field based on another field */}
+        <Values>
+          {values =>
+            values.test.yo ? (
+              <Field name="mounty" component={InputField} />
+            ) : null
+          }
+        </Values>
         <Submit
           component={({ submit, text }) => <div onClick={submit}>{text}</div>}
           text="ima div"
         />
       </Form>
+      {/* Two different forms that don't share their "state" */}
       <Form
         initial={{
           test: 'hallo',
@@ -89,12 +117,11 @@ const Leaf = () => {
           validate={val => (val.length > 5 ? 'too long' : null)}
           name="test"
           component={InputField}
-          format={val => val.toUpperCase()}
+          format={val => val && val.toUpperCase()}
         />
       </Form>
       <div data-test="clicky" onClick={update}>
-        asdf
-        {data.map(({ name }) => name)}
+        reset form
       </div>
     </>
   );

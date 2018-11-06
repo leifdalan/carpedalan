@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Field /> should match snapshot 1`] = `
+<div
+  onChange={[Function]}
+  prop="prop"
+  value="value"
+/>
+`;
