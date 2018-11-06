@@ -5,13 +5,13 @@ import Leaf from './leaf';
 
 function Admin({ counter, setCounter }) {
   return (
-    <button type="button" onClick={() => setCounter(counter + 1)}>
-      {counter}
-      <div>
-        leaf:
-        <Leaf />
-      </div>
-    </button>
+    <>
+      <button type="button" onClick={() => setCounter(counter + 1)}>
+        {counter}
+        <div>leaf:</div>
+      </button>
+      <Leaf />
+    </>
   );
 }
 

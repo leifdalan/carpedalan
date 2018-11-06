@@ -1,7 +1,7 @@
-import React, { useState, createContext, useEffect } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import request from 'superagent';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { MemoryRouter as Router, Route, Link } from 'react-router-dom';
 import { hot, setConfig } from 'react-hot-loader';
 
 import About from './about';
@@ -36,7 +36,6 @@ function Root() {
     },
     [counter],
   );
-  // console.error('data', data);
 
   return (
     <Provider value={{ counter, setCounter, data, isLoading }}>

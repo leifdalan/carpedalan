@@ -1,11 +1,9 @@
-const path = require('path');
+import express from 'express';
+import webpack from 'webpack';
+import devMiddleware from 'webpack-dev-middleware';
+import hotMiddleware from 'webpack-hot-middleware';
 
-const express = require('express');
-const webpack = require('webpack'); // eslint-disable-line import/no-extraneous-dependencies
-const devMiddleware = require('webpack-dev-middleware');
-const hotMiddleware = require('webpack-hot-middleware');
-
-const webpackConfig = require('./webpack.config');
+import webpackConfig from './webpack.config';
 
 const compiler = webpack(webpackConfig);
 const app = express();
