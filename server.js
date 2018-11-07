@@ -22,7 +22,5 @@ app.use(hotMiddleware(compiler));
 // static assets
 app.use(express.static('dist'));
 
-// main route
-
 // app start up
 app.listen(3001);
