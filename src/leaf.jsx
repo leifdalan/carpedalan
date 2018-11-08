@@ -3,21 +3,18 @@ import get from 'lodash/get';
 
 import Form from './form/Form';
 import InputField from './fields/InputField';
-import log from './utils/log';
 import Field from './form/Field';
 import FieldArray from './form/FieldArray';
 import Values from './form/Values';
 import Submit from './form/Submit';
 
 // Submit functions take the values as an argument
-const submitToApi = values => {
-  log.info(values);
-  return new Promise((resolve, reject) => {
+const submitToApi = () =>
+  new Promise((resolve, reject) => {
     setTimeout(() => {
       reject({ not: 'good' }); // eslint-disable-line
     }, 1500);
   });
-};
 
 // An effect that has the forms state and change, used in
 // the Form's useEffect hook

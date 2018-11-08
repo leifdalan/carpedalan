@@ -1,3 +1,7 @@
 // eslint-disable-next-line
 require = require('esm')(module);
-module.exports = require('./server.js');
+
+module.exports =
+  process.env.NODE_ENV === 'production'
+    ? require('./server.prod')
+    : require('./server.js');

@@ -6,8 +6,6 @@ import isUndefined from 'lodash/isUndefined';
 import set from 'lodash/set';
 import isEmpty from 'lodash/isEmpty';
 
-import log from '../utils/log';
-
 export const FormContext = createContext({});
 const { Provider: FormProvider } = FormContext;
 
@@ -21,7 +19,6 @@ const reducer = (
   state,
   { type, payload, payload: { field, value, error } = {} },
 ) => {
-  log.info(type, payload);
   switch (type) {
     case 'CHANGE':
       set(state.values, field, value);
@@ -210,7 +207,7 @@ Form.propTypes = {
   onSubmit: func,
   validate: func,
   effect: func,
-  children: arrayOf(oneOfType([node, func, string])),
+  children: node,
 };
 
 export default Form;

@@ -5,19 +5,21 @@ const path = require('path');
 
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+// const AutoDllPlugin = require('autodll-webpack-plugin');
+const HappyPack = require('happypack');
 
 const htmlWebpackPlugin = new HtmlWebPackPlugin({
   template: './src/index.html',
   filename: './index.html',
+  inject: true,
 });
 
 module.exports = {
   mode: 'development',
   devtool: 'eval',
   entry: {
-    index: [
+    client: [
       'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
-      'babel-polyfill',
       './src/mount',
     ],
   },
@@ -34,9 +36,40 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        use: 'babel-loader',
+        use: 'happypack/loader?id=jsx',
       },
     ],
   },
-  plugins: [htmlWebpackPlugin, new webpack.HotModuleReplacementPlugin()],
+  plugins: [
+    htmlWebpackPlugin,
+    new HappyPack({
+      id: 'jsx',
+      threads: 6,
+      loaders: [
+        {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false,
+          },
+        },
+      ],
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    // new AutoDllPlugin({
+    //   inject: true,
+    //   filename: '[name].dll.js',
+    //   entry: {
+    //     vendor: [
+    //       'react',
+    //       'react-dom',
+    //       'lodash',
+    //       'moment',
+    //       'react-router-dom',
+    //       'react-router',
+    //       'superagent',
+    //     ],
+    //   },
+    // }),
+  ],
 };

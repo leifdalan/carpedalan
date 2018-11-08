@@ -2,12 +2,9 @@ import React, { createContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import request from 'superagent';
 import { MemoryRouter as Router, Route, Link } from 'react-router-dom';
-import { hot, setConfig } from 'react-hot-loader';
 
-import About from './about';
-import Admin from './admin';
+import Login from './pages/Login';
 
-setConfig({ pureSFC: true });
 const Div = styled.div`
   font-size: 45px;
 `;
@@ -34,6 +31,7 @@ function Root() {
       setData(responseData);
       setLoading(false);
     },
+
     [counter],
   );
 
@@ -41,30 +39,12 @@ function Root() {
     <Provider value={{ counter, setCounter, data, isLoading }}>
       <Router>
         <>
-          <Div data-test="clicky" onClick={() => setCounter(counter + 1)}>
-            addfffwww
-            {counter}
-            <Link to="/about">About</Link>
-            <Link to="/admin">Admin</Link>
-          </Div>
-          <Route
-            exact
-            path="/about"
-            render={props => (
-              <About {...props} counter={counter} setCounter={setCounter} />
-            )}
-          />
-          <Route
-            exact
-            path="/admin"
-            render={props => (
-              <Admin {...props} counter={counter} setCounter={setCounter} />
-            )}
-          />
+          <Link to="/login">Login</Link>
+          <Route exact path="/login" component={Login} />
         </>
       </Router>
     </Provider>
   );
 }
 
-export default hot(module)(Root);
+export default Root;
