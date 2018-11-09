@@ -1,28 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`test should do some stuff 1`] = `
-.c0 {
-  font-size: 45px;
-}
-
-<div
-  className="c0"
-  data-test="clicky"
-  onClick={[Function]}
->
-  asdfdssddaaff
-  0
-  <a
-    href="/about"
+Array [
+  <div
     onClick={[Function]}
   >
-    About
-  </a>
+     click me
+  </div>,
   <a
-    href="/admin"
+    href="/login"
     onClick={[Function]}
   >
-    Admin
-  </a>
-</div>
+    asdfwefwefwef
+  </a>,
+  <div />,
+  "no match",
+]
 `;

@@ -1,3 +1,5 @@
+import path from 'path';
+
 import express from 'express';
 import webpack from 'webpack';
 import devMiddleware from 'webpack-dev-middleware';
@@ -7,19 +9,33 @@ import expressWinston from 'express-winston';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import expbhs from 'express-handlebars';
 
+import webpackConfig from '../webpack.config';
+
+import config from './config';
 import router from './routes';
-import webpackConfig from './webpack.config';
 
 const compiler = webpack(webpackConfig);
 const app = express();
+
+app.engine(
+  'hbs',
+  expbhs({
+    extname: '.hbs',
+    layoutsDir: path.resolve(__dirname),
+    partialsDir: path.resolve(__dirname),
+  }),
+);
+app.set('view engine', 'hbs');
+app.set('views', path.resolve(__dirname));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   session({
     key: 'user_sid',
-    secret: 'somerandonstuffs',
+    secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -159,6 +175,30 @@ app.use(
     ),
   }),
 );
+
+app.get('/login', (req, res) => {
+  res.render('main', {
+    layout: false,
+    session: false,
+  });
+});
+
+app.get('/admin/*', (req, res) => {
+  if (req.session.user !== 'write') {
+    res.redirect(301, '/');
+  }
+});
+
+app.use('*', (req, res) => {
+  if (!['read', 'write'].includes(req.session.user) || !req.session.user) {
+    res.redirect(301, '/login');
+  } else if (['read', 'write'].includes(req.session.user)) {
+    res.render('main', {
+      layout: false,
+      session: JSON.stringify(req.session.user),
+    });
+  }
+});
 
 // app start up
 app.listen(3001);

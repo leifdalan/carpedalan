@@ -1,50 +1,45 @@
-import React, { createContext, useEffect, useState } from 'react';
-import styled from 'styled-components';
-import request from 'superagent';
-import { MemoryRouter as Router, Route, Link } from 'react-router-dom';
+import React, { createContext, useState } from 'react';
+import { bool, oneOfType, string } from 'prop-types';
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 
+import Admin from './admin';
 import Login from './pages/Login';
 
-const Div = styled.div`
-  font-size: 45px;
-`;
-
-export const Counter = createContext({
+export const User = createContext({
   counter: 0,
   setCounter: () => {},
   data: [],
   isLoading: false,
 });
-const { Provider } = Counter;
 
-function Root() {
+function Root({ user }) {
+  const [userState, setUser] = useState(user);
   const [counter, setCounter] = useState(0);
-  const [data, setData] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  useEffect(
-    async () => {
-      setLoading(true);
-      const response = await request(
-        'https://api.github.com/users/leifdalan/repos?type=all&sort=updated',
-      );
-      const responseData = await response.body;
-      setData(responseData);
-      setLoading(false);
-    },
-
-    [counter],
-  );
 
   return (
-    <Provider value={{ counter, setCounter, data, isLoading }}>
+    <User.Provider value={{ user: userState, setUser }}>
       <Router>
         <>
-          <Link to="/login">Login</Link>
-          <Route exact path="/login" component={Login} />
+          <div onClick={() => setCounter(counter + 1)}> click me</div>
+          <Link to="/login">asdfwefwefwef</Link>
+          {userState === 'write' ? <Link to="/admin">admin</Link> : null}
+          <div>{userState}</div>
+          <Switch>
+            <Route exact path="/login" component={Login} />
+
+            {userState === 'write' ? (
+              <Route exact path="/admin" component={Admin} />
+            ) : null}
+            <Route render={() => 'no match'} />
+          </Switch>
         </>
       </Router>
-    </Provider>
+    </User.Provider>
   );
 }
+
+Root.propTypes = {
+  user: oneOfType([string, bool]).isRequired,
+};
 
 export default Root;

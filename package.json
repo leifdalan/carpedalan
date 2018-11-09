@@ -6,8 +6,9 @@
   "scripts": {
     "test": "jest",
     "build": "BABEL_ENV=production NODE_ENV=production yarn webpack --mode production --config webpack.prod.js",
-    "start": "nodemon .",
-    "start:prod": "yarn build && NODE_ENV=production node ."
+    "start": "nodemon --inspect=0.0.0.0 .",
+    "start:prod": "yarn build && NODE_ENV=production node .",
+    "precommit": "lint-staged && npm run test"
   },
   "author": "",
   "license": "ISC",
@@ -24,11 +25,6 @@
       "^.+\\.jsx?$": "babel7-jest"
     },
     "setupTestFrameworkScriptFile": "./setupTests.js"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.js": [
@@ -73,12 +69,13 @@
     "babel-polyfill": "^6.26.0",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
+    "dotenv-safe": "^6.1.0",
     "eslint-plugin-react-hooks": "^0.0.0",
     "esm": "^3.0.84",
     "express": "^4.16.4",
+    "express-handlebars": "^3.0.0",
     "express-session": "^1.15.6",
     "express-winston": "^3.0.1",
-    "html-webpack-plugin": "^3.2.0",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "nodemon": "^1.18.6",

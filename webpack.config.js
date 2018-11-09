@@ -3,20 +3,13 @@
 */
 const path = require('path');
 
-const HtmlWebPackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-// const AutoDllPlugin = require('autodll-webpack-plugin');
 const HappyPack = require('happypack');
 
-const htmlWebpackPlugin = new HtmlWebPackPlugin({
-  template: './src/index.html',
-  filename: './index.html',
-  inject: true,
-});
-
 module.exports = {
+  context: path.resolve(__dirname),
   mode: 'development',
-  devtool: 'eval',
+  devtool: 'eval-source-map',
   entry: {
     client: [
       'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
@@ -41,7 +34,7 @@ module.exports = {
     ],
   },
   plugins: [
-    htmlWebpackPlugin,
+    // htmlWebpackPlugin,
     new HappyPack({
       id: 'jsx',
       threads: 6,
@@ -56,20 +49,5 @@ module.exports = {
       ],
     }),
     new webpack.HotModuleReplacementPlugin(),
-    // new AutoDllPlugin({
-    //   inject: true,
-    //   filename: '[name].dll.js',
-    //   entry: {
-    //     vendor: [
-    //       'react',
-    //       'react-dom',
-    //       'lodash',
-    //       'moment',
-    //       'react-router-dom',
-    //       'react-router',
-    //       'superagent',
-    //     ],
-    //   },
-    // }),
   ],
 };

@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useReducer } from 'react';
-import { arrayOf, node, shape, func, oneOfType, string } from 'prop-types';
+import { node, shape, func } from 'prop-types';
 import get from 'lodash/get';
 import unset from 'lodash/unset';
 import isUndefined from 'lodash/isUndefined';

@@ -3,5 +3,6 @@ import React from 'react';
 import DOM from 'react-dom';
 
 import App from './hotEntry';
-
-DOM.render(<App />, document.getElementById('root'));
+import { window } from './utils/globals';
+// eslint-disable-next-line no-underscore-dangle
+DOM.render(<App user={window.__SESSION__} />, document.getElementById('root'));
