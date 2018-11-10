@@ -1,15 +1,9 @@
 const path = require('path');
 
 const webpack = require('webpack');
-const HtmlWebPackPlugin = require('html-webpack-plugin');
+const Manifest = require('webpack-manifest-plugin');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const CleanWebpack = require('clean-webpack-plugin');
-
-const htmlWebpackPlugin = new HtmlWebPackPlugin({
-  // inject: true,
-  template: './src/index.html',
-  filename: './index.html',
-});
 
 module.exports = {
   mode: 'production',
@@ -36,13 +30,14 @@ module.exports = {
   },
   plugins: [
     new CleanWebpack(['dist']),
-    htmlWebpackPlugin,
+    // htmlWebpackPlugin,
     new webpack.DefinePlugin({
       PRODUCTION: JSON.stringify(true),
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
       },
     }),
+    new Manifest(),
   ],
   optimization: {
     runtimeChunk: 'single',

@@ -21,7 +21,7 @@ function Root({ user }) {
       <Router>
         <>
           <div onClick={() => setCounter(counter + 1)}> click me</div>
-          <Link to="/login">asdfwefwefwef</Link>
+          <Link to="/login">asdfff</Link>
           {userState === 'write' ? <Link to="/admin">admin</Link> : null}
           <div>{userState}</div>
           <Switch>

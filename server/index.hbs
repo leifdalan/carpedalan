@@ -9,7 +9,13 @@
 <body>
   <section id="root"></section>
   <script>var __SESSION__ = {{{session}}};</script>
+  {{#if clientAssets}}
+    {{#each clientAssets}}
+    <script type="text/javascript" src="{{this}}"></script>
+    {{/each}}
+  {{else}}
   <script type="text/javascript" src="/client.bundle.js"></script>
+  {{/if}}
 </body>
 </html>
 

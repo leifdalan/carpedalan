@@ -14,5 +14,6 @@ COPY webpack.prod.js .
 COPY .env .
 COPY .env.example .
 COPY nodemon.json .
+COPY goodDataWithEtag.json .
 COPY index.js . 
 

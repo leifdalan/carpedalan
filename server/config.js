@@ -1,7 +1,13 @@
 const { env } = process;
 
-export default {
-  publicPassword: env.PUBLIC_PASSWORD,
-  adminPassword: env.ADMIN_PASSWORD,
-  sessionSecret: env.SESSION_SECRET,
-};
+export const publicPassword = env.PUBLIC_PASSWORD;
+export const adminPassword = env.ADMIN_PASSWORD;
+export const sessionSecret = env.SESSION_SECRET;
+export const pgHost = env.PG_HOST;
+export const pgUser = env.PG_USER;
+export const pgPassword = env.PG_PASSWORD;
+export const pgDatabase = env.PG_DATABASE;
+export const port = env.PORT;
+export const nodeEnv = env.NODE_ENV;
+export const isProd = nodeEnv === 'production';
+export const assets = ['runtime.js', 'vendors.js', 'client.js'];

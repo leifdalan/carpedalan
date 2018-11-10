@@ -34,10 +34,9 @@ module.exports = {
     ],
   },
   plugins: [
-    // htmlWebpackPlugin,
     new HappyPack({
       id: 'jsx',
-      threads: 6,
+      threads: 12,
       loaders: [
         {
           loader: 'babel-loader',
