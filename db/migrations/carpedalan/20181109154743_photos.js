@@ -12,7 +12,8 @@ exports.up = knex =>
     table.string('aperture');
     table.string('exposure');
     table.string('focalLength');
-    table.string('storageKey');
+    table.string('etag');
+    table.string('key');
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });

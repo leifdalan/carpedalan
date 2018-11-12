@@ -7,7 +7,7 @@
     "test": "jest",
     "build": "BABEL_ENV=production NODE_ENV=production yarn webpack --mode production --config webpack.prod.js",
     "migrate": "./scripts/migrateAndSeed.sh",
-    "start": "yarn migrate && nodemon --inspect=0.0.0.0 .",
+    "start": "yarn migrate && DEBUG=knex*,-knex:client,-knex:connection,-knex:pool nodemon --inspect=0.0.0.0 .",
     "start:prod": "yarn migrate && yarn build && NODE_ENV=production node .",
     "precommit": "lint-staged && npm run test"
   },

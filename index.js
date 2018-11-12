@@ -10,7 +10,4 @@ const dotenv = require('dotenv-safe');
 
 dotenv.config();
 
-module.exports =
-  process.env.NODE_ENV === 'production'
-    ? require('./server/server.prod')
-    : require('./server/server.js');
+module.exports = require('./server/server');

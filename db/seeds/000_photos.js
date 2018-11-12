@@ -1,6 +1,6 @@
 const { v4: uuid } = require('uuid');
 
-const data = require('../../goodDataWithEtag.json');
+const data = require('../../goodDataWithEtagAndKey.json');
 
 exports.seed = async knex => {
   await knex('photos_tags').del();
@@ -25,7 +25,9 @@ exports.seed = async knex => {
       },
       tags,
       s3,
+      key,
     } = datum;
+
     await knex('photos').insert({
       id,
       timestamp,
@@ -39,7 +41,8 @@ exports.seed = async knex => {
       aperture: Aperture,
       exposure: Exposure,
       focalLength: FocalLength,
-      storageKey: s3,
+      etag: s3,
+      key,
     });
     for (const tag of tags) {
       if (tags.length) {
