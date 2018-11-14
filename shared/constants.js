@@ -2,7 +2,8 @@ const API_PATH = '/api';
 const IMAGES_PATH = '/images';
 const API_IMAGES_PATH = `${API_PATH}${IMAGES_PATH}`;
 
-// Fields for photos
+const PHOTOS = 'photos';
+// columns for photos
 const APERTURE = 'aperture';
 const CAMERA = 'camera';
 const CREATEDAT = 'createdAt';
@@ -22,6 +23,13 @@ const STATUS = 'status';
 const WIDTH = 'width';
 
 const TAGS = 'tags';
+// columns for tags
+const NAME = 'name';
+
+const PHOTOS_TAGS = 'photos_tags';
+// columns for photos_tags
+const PHOTO_ID = 'photoId';
+const TAG_ID = 'tagId';
 
 const ADMIN = 'write';
 const READ_ONLY = 'read';
@@ -58,4 +66,9 @@ module.exports = {
   WIDTH,
   ACTIVE,
   DELETED,
+  PHOTOS,
+  NAME,
+  PHOTOS_TAGS,
+  PHOTO_ID,
+  TAG_ID,
 };

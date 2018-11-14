@@ -1,15 +1,23 @@
+const {
+  ID,
+  TAGS,
+  CREATEDAT,
+  UPDATEDAT,
+  NAME,
+} = require('../../../shared/constants');
+
 exports.up = knex =>
-  knex.schema.createTable('tags', table => {
+  knex.schema.createTable(TAGS, table => {
     table
-      .uuid('id')
+      .uuid(ID)
       .primary()
       .defaultTo(knex.raw('uuid_generate_v1mc()'));
 
-    table.string('name');
-    table.timestamp('createdAt').defaultTo(knex.fn.now());
-    table.timestamp('updatedAt').defaultTo(knex.fn.now());
+    table.string(NAME);
+    table.timestamp(CREATEDAT).defaultTo(knex.fn.now());
+    table.timestamp(UPDATEDAT).defaultTo(knex.fn.now());
   });
 
 exports.down = knex => {
-  knex.schema.dropTable('tags');
+  knex.schema.dropTable(TAGS);
 };

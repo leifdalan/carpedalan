@@ -14,4 +14,4 @@ export const assets = ['runtime.js', 'vendors.js', 'client.js'];
 export const bucket = env.S3_BUCKET;
 
 // Optional
-export const logLevel = env.LOG_LEVEL;
+export const logLevel = env.LOG_LEVEL === 'info';

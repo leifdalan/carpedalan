@@ -14,9 +14,15 @@ import {
   ETAG,
   IMAGES_PATH,
   KEY,
+  PHOTOS,
+  PHOTOS_TAGS,
   STATUS,
   TAGS,
+  NAME,
   TIMESTAMP,
+  ID,
+  PHOTO_ID,
+  TAG_ID,
 } from '../shared/constants';
 import log from '../src/utils/log';
 
@@ -56,7 +62,7 @@ api.delete('/posts/:id', isAdmin, async (req, res) => {
 
 api.patch('/posts/:id', isAdmin, async (req, res) => {
   try {
-    const [response] = await db('photos')
+    const [response] = await db(PHOTOS)
       .update(req.body)
       .where({ id: req.params.id })
       .returning('*');
@@ -118,7 +124,7 @@ api.post(
     // Transact photos and tags, depending
     try {
       await db.transaction(trx =>
-        trx('photos')
+        trx(PHOTOS)
           .insert({
             [TIMESTAMP]: result.tags.DateTimeOriginal,
             [ETAG]: s3Response.ETag,
@@ -136,7 +142,7 @@ api.post(
                 tagId: tag,
               }));
 
-              return trx('photos_tags').insert(tagsInsert);
+              return trx(PHOTOS_TAGS).insert(tagsInsert);
             }
             return Promise.resolve();
           })
@@ -158,29 +164,36 @@ api.post(
 api.get('/posts', isLoggedIn, async (req, res) => {
   // Create sub-select statement
   const order = req.query.order || 'desc';
-  const selectStatement = db('photos')
+  const as = 'photoz';
+  const tagName = 'tagName';
+  const tagId = 'tagId';
+  const selectStatement = db(PHOTOS)
     .select()
     .orderBy(TIMESTAMP, order)
     .limit(20)
     .where({ [STATUS]: ACTIVE })
-    .as('photoz');
+    .as(as);
 
   // Join with many-to-many tables
   const photos = await db
-    .select('photoz.*', 'tags.name as tagName', 'tags.id as tagId')
+    .select(
+      `${as}.*`,
+      `${TAGS}.${NAME} as ${tagName}`,
+      `${TAGS}.${ID} as ${tagId}`,
+    )
     .from(selectStatement)
-    .leftJoin('photos_tags', 'photos_tags.photoId', 'photoz.id')
-    .leftJoin('tags', 'tags.id', 'photos_tags.tagId')
-    .orderBy('photoz.timestamp', order);
+    .leftJoin(PHOTOS_TAGS, `${PHOTOS_TAGS}.${PHOTO_ID}`, `${as}.${ID}`)
+    .leftJoin(TAGS, `${TAGS}.${ID}`, `${PHOTOS_TAGS}.${TAG_ID}`)
+    .orderBy(`${as}.${TIMESTAMP}`, order);
 
   // Combine tag entries with the same photo id
   const dedupped = photos.reduce((acc, photo) => {
-    const existing = acc.find(({ id }) => id === photo.id);
+    const existing = acc.find(({ id }) => id === photo[ID]);
     if (existing) {
-      if (photo.tagId) {
+      if (photo[tagId]) {
         existing.tags.push({
-          id: photo.tagId,
-          name: photo.tagName,
+          id: photo[tagId],
+          name: photo[tagName],
         });
       }
       return acc;
@@ -189,9 +202,9 @@ api.get('/posts', isLoggedIn, async (req, res) => {
       ...acc,
       {
         ...photo,
-        tags: photo.tagId ? [{ id: photo.tagId, name: photo.tagName }] : [],
-        tagName: undefined,
-        tagId: undefined,
+        tags: photo[tagId] ? [{ id: photo[tagId], name: photo[tagName] }] : [],
+        [tagName]: undefined,
+        [tagId]: undefined,
       },
     ];
   }, []);

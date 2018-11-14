@@ -47,6 +47,14 @@ module.exports = {
         },
       ],
     }),
+    new webpack.DefinePlugin({
+      process: {
+        env: {
+          LOG_LEVEL: JSON.stringify('silly'),
+        },
+      },
+    }),
+
     new webpack.HotModuleReplacementPlugin(),
   ],
 };
