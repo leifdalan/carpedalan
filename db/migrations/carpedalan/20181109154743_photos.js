@@ -1,21 +1,47 @@
+const {
+  ID,
+  TIMESTAMP,
+  DATE,
+  ORIGINALURL,
+  WIDTH,
+  HEIGHT,
+  DESCRIPTION,
+  CAMERA,
+  ISO,
+  APERTURE,
+  EXPOSURE,
+  FOCALLENGTH,
+  ETAG,
+  KEY,
+  CREATEDAT,
+  UPDATEDAT,
+  STATUS,
+  ACTIVE,
+  DELETED,
+} = require('../../../shared/constants');
+
 exports.up = knex =>
   knex.schema.createTable('photos', table => {
-    table.uuid('id').primary();
-    table.integer('timestamp');
-    table.date('date');
-    table.string('originalUrl');
-    table.integer('width');
-    table.integer('height');
-    table.string('description');
-    table.string('camera');
-    table.string('ISO');
-    table.string('aperture');
-    table.string('exposure');
-    table.string('focalLength');
-    table.string('etag');
-    table.string('key');
-    table.timestamp('createdAt').defaultTo(knex.fn.now());
-    table.timestamp('updatedAt').defaultTo(knex.fn.now());
+    table
+      .uuid(ID)
+      .primary()
+      .defaultTo(knex.raw('uuid_generate_v1mc()'));
+    table.integer(TIMESTAMP);
+    table.date(DATE);
+    table.string(ORIGINALURL);
+    table.integer(WIDTH);
+    table.integer(HEIGHT);
+    table.string(DESCRIPTION);
+    table.string(CAMERA);
+    table.string(ISO);
+    table.string(APERTURE);
+    table.string(EXPOSURE);
+    table.string(FOCALLENGTH);
+    table.string(ETAG);
+    table.string(KEY);
+    table.enu(STATUS, [ACTIVE, DELETED]).defaultTo(ACTIVE);
+    table.timestamp(CREATEDAT).defaultTo(knex.fn.now());
+    table.timestamp(UPDATEDAT).defaultTo(knex.fn.now());
   });
 
 exports.down = knex => {

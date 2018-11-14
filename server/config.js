@@ -12,3 +12,6 @@ export const nodeEnv = env.NODE_ENV || 'development';
 export const isProd = nodeEnv === 'production';
 export const assets = ['runtime.js', 'vendors.js', 'client.js'];
 export const bucket = env.S3_BUCKET;
+
+// Optional
+export const logLevel = env.LOG_LEVEL;

@@ -1,6 +1,6 @@
 const path = require('path');
 
-const src1 = path.join(__dirname, 'src');
+const src1 = path.join(__dirname);
 
 module.exports = {
   includePaths: [src1],

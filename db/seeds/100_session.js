@@ -1,8 +1,7 @@
-exports.seed = async knex => {
+exports.seed = async knex =>
   knex('session').insert({
-    sid: '0cI2SVbI3vvyO-vxyQGPZ-ojs6o5CP33',
+    sid: 'l13eX2h-tV9pGH5FHbbCG8AZvX3JZ-cu',
     sess:
-      '{"cookie":{"originalMaxAge":2592000,"expires":"2019-11-11T04:36:49.408Z","httpOnly":true,"path":"/"},"user":"read"}',
-    expire: '2019-11-11 05:12:37',
+      '{"cookie":{"originalMaxAge":155520000000,"expires":"2023-10-18T19:37:26.729Z","httpOnly":true,"path":"/"},"user":"write"}',
+    expire: '2023-10-18 19:37:45',
   });
-};

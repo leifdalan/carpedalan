@@ -1,125 +1,86 @@
-import React, { useState, Fragment } from 'react';
-import get from 'lodash/get';
+import React, { useEffect, useState } from 'react';
+import request from 'superagent';
 
-import Form from './form/Form';
+import { API_PATH } from '../shared/constants';
+
 import InputField from './fields/InputField';
+import Form from './form/Form';
 import Field from './form/Field';
-import FieldArray from './form/FieldArray';
-import Values from './form/Values';
 import Submit from './form/Submit';
-
-// Submit functions take the values as an argument
-const submitToApi = () =>
-  new Promise((resolve, reject) => {
-    setTimeout(() => {
-      reject({ not: 'good' }); // eslint-disable-line
-    }, 1500);
-  });
-
-// An effect that has the forms state and change, used in
-// the Form's useEffect hook
-let hasGenerated = false;
-const effect = ({ state, change }) => {
-  if (
-    get(state, 'values.test.yo') === 'GENERATE' &&
-    get(state, 'values.test.generated') !== 'GENERATED' &&
-    !hasGenerated
-  ) {
-    hasGenerated = true;
-    change({ field: 'test.generated', value: 'GENERATED' });
-  } else if (get(state, 'values.test.yo') !== 'GENERATE') {
-    hasGenerated = false;
-  }
-};
+import log from './utils/log';
+import { FormData } from './utils/globals';
 
 const Leaf = () => {
-  const [initialValue, setInitialValue] = useState('hallo');
-  const update = () => {
-    setInitialValue('fartttsss');
+  const submitToApi = async values => {
+    try {
+      const formData = new FormData();
+      Object.keys(values).forEach(key => formData.append(key, values[key]));
+
+      await request
+        .post(`${API_PATH}/posts`)
+        .send(formData)
+        .on('progress', e => {
+          log.info('progress', e.percent);
+        });
+
+      log.error(values);
+    } catch (e) {
+      log.error(e);
+      throw e;
+    }
   };
+
+  const [loading, setLoading] = useState(false);
+  const [tags, setTags] = useState([]);
+  useEffect(async () => {
+    try {
+      setLoading(true);
+      const response = await request.get('/api/tags');
+      setTags(response.body);
+    } catch (e) {
+      log.error('loading failed');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // const addTag =
+  if (loading) return 'loading';
 
   return (
     <>
-      <Form
-        // initial values are not required, as soon as a Field
-        // is mounted, it is registered with a null value.
-        initial={{
-          test: { yo: initialValue, generated: '' },
-          array: [
-            {
-              sub1: 'hi',
-            },
-            {
-              sub2: 'yo',
-            },
-          ],
-        }}
-        onSubmit={submitToApi}
-        effect={effect}
-      >
+      <Form onSubmit={submitToApi} initial={{ tags: [] }}>
         <Field
-          validate={val => (val.length > 5 ? 'too long' : null)}
-          name="test.yo"
-          component={InputField}
-          format={val => val && val.toUpperCase()}
+          name="photo"
+          component={({ input: { onChange, value } }) => {
+            log.info(value);
+            const handleChange = e => {
+              onChange(e.target.files[0]);
+            };
+            return <input type="file" onChange={handleChange} />;
+          }}
         />
-        <Field
-          validate={val => (val.length > 5 ? 'too long' : null)}
-          name="test.generated"
-          component={InputField}
-        />
-        <Field
-          // A test function when truthy will display this component
-          shouldExist={({ test }) => test === 'YAHTZEE'}
-          validate={val => (val.length > 5 ? 'too long' : null)}
-          name="test1"
-          component={InputField}
-        />
-        {/* An array of identical fields, with the ability to add one */}
-        <FieldArray
-          name="array"
-          component={({ fields, add }) =>
-            fields.map(field => (
-              <Fragment key={field}>
-                <Field name={`${field}.sub1`} component={InputField} />
-                <Field component={InputField} name={`${field}.sub2`} />
-                <button type="button" onClick={add({})}>
-                  Add!
-                </button>
-              </Fragment>
-            ))
-          }
-        />
-        {/* Another way to conditionally show a Field based on another field */}
-        <Values>
-          {values =>
-            values.test.yo ? (
-              <Field name="mounty" component={InputField} />
-            ) : null
-          }
-        </Values>
+        <Field name="description" component={InputField} />
+
         <Submit
           component={({ submit, text }) => <div onClick={submit}>{text}</div>}
-          text="ima div"
+          text="submit div"
         />
-      </Form>
-      {/* Two different forms that don't share their "state" */}
-      <Form
-        initial={{
-          test: 'hallo',
-          textArea: '',
-        }}
-      >
         <Field
-          validate={val => (val.length > 5 ? 'too long' : null)}
-          name="test"
-          component={InputField}
-          format={val => val && val.toUpperCase()}
+          name="tags"
+          component={({ input: { onChange, value } }) => {
+            const handleClick = tagId => () => {
+              onChange([...value, tagId]);
+            };
+            return tags.map(tag => (
+              <div key={tag.id} onClick={handleClick(tag.id)}>
+                {tag.name}
+              </div>
+            ));
+          }}
+          q
         />
       </Form>
-      <div data-test="clicky" onClick={update}>
-        reset form
-      </div>
     </>
   );
 };

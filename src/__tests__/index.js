@@ -9,7 +9,7 @@ jest.mock('superagent', () =>
 
 describe('test', () => {
   it('should do some stuff', () => {
-    const instance = create(<Root />);
+    const instance = create(<Root user="write" />);
     expect(instance.toJSON()).toMatchSnapshot();
   });
 });

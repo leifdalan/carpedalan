@@ -13,7 +13,7 @@ export default function Tag(props) {
     setLoading(true);
     try {
       const response = await request(
-        `${API_PATH}/tag/${props.match.params.tag}`,
+        `${API_PATH}/tags/${props.match.params.tag}`,
       );
       setData(response.body);
       log.info(response);

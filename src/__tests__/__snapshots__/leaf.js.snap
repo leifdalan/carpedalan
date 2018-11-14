@@ -3,47 +3,9 @@
 exports[`test should do some stuff 1`] = `
 Array [
   <input
-    data-test="inputField"
     onChange={[Function]}
-    value="HALLO"
+    type="file"
   />,
-  <input
-    data-test="inputField"
-    onChange={[Function]}
-    value=""
-  />,
-  <input
-    data-test="inputField"
-    onChange={[Function]}
-    value="hi"
-  />,
-  <input
-    data-test="inputField"
-    onChange={[Function]}
-    value=""
-  />,
-  <button
-    onClick={[Function]}
-    type="button"
-  >
-    Add!
-  </button>,
-  <input
-    data-test="inputField"
-    onChange={[Function]}
-    value=""
-  />,
-  <input
-    data-test="inputField"
-    onChange={[Function]}
-    value="yo"
-  />,
-  <button
-    onClick={[Function]}
-    type="button"
-  >
-    Add!
-  </button>,
   <input
     data-test="inputField"
     onChange={[Function]}
@@ -52,18 +14,7 @@ Array [
   <div
     onClick={[Function]}
   >
-    ima div
-  </div>,
-  <input
-    data-test="inputField"
-    onChange={[Function]}
-    value="HALLO"
-  />,
-  <div
-    data-test="clicky"
-    onClick={[Function]}
-  >
-    reset form
+    submit div
   </div>,
 ]
 `;

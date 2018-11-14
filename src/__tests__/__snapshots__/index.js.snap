@@ -13,7 +13,25 @@ Array [
   >
     asdfff
   </a>,
-  <div />,
-  "no match",
+  <a
+    href="/"
+    onClick={[Function]}
+  >
+    slash
+  </a>,
+  <a
+    href="/admin"
+    onClick={[Function]}
+  >
+    admin
+  </a>,
+  <div>
+    write
+  </div>,
+  <div
+    onClick={[Function]}
+  >
+    sort desc
+  </div>,
 ]
 `;

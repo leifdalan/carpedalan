@@ -1,5 +1,10 @@
+import { logLevel } from '../../server/config';
+
 import { console } from './globals';
 
+const logState = ['none', 'info', 'error', 'silly'].findIndex(
+  i => i === logLevel,
+);
 export class Logger {
   constructor() {
     this.history = [];
@@ -7,12 +12,16 @@ export class Logger {
 
   info(...args) {
     this.history.push([...args]);
-    console.log(...args);
+    if (logState > 0) {
+      console.log(...args);
+    }
   }
 
   error(...args) {
     this.history.push([...args]);
-    console.error(...args);
+    if (logState > 1) {
+      console.error(...args);
+    }
   }
 
   dump() {

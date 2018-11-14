@@ -45,7 +45,7 @@ const start = async () => {
   // Setup app to parse cookies and POST requests
   app.use(cookieParser());
   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.urlencoded({ extended: true }));
 
   // Set up session store
   const PgSession = connectPgSimple(session);
@@ -59,7 +59,7 @@ const start = async () => {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        expires: 60 * 60 * 24 * 30,
+        maxAge: 10000 * 60 * 60 * 24 * 30 * 6,
       },
     }),
   );

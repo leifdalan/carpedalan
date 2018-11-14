@@ -1,12 +1,19 @@
 exports.up = knex =>
   knex.schema.createTable('photos_tags', table => {
-    table.uuid('id').primary();
     table
-      .uuid('photoId')
+      .uuid('id')
+      .primary()
+      .defaultTo(knex.raw('uuid_generate_v1mc()'));
+
+    table.uuid('photoId');
+    table
+      .foreign('photoId')
       .references('id')
       .inTable('photos');
+    table.uuid('tagId');
+
     table
-      .uuid('tagId')
+      .foreign('tagId')
       .references('id')
       .inTable('tags');
     table.timestamp('createdAt').defaultTo(knex.fn.now());
