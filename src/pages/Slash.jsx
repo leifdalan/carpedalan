@@ -23,6 +23,7 @@ export default function Slash() {
   const [posts, setPosts] = useState([]);
   const [query, setQuery] = useState(null);
   const [isEditing, setEditing] = useState(false);
+
   useEffect(
     async () => {
       try {

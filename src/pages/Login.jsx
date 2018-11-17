@@ -21,10 +21,12 @@ export default function Login() {
   };
 
   return (
-    <Form onSubmit={submitLogin}>
-      <div>soaaaamething</div>
-      <Field name="password" component={InputField} type="password" />
-      <Submit />
-    </Form>
+    <>
+      <Form onSubmit={submitLogin}>
+        <div>soaaaamething</div>
+        <Field name="password" component={InputField} type="password" />
+        <Submit />
+      </Form>
+    </>
   );
 }

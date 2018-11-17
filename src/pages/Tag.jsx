@@ -9,6 +9,7 @@ export default function Tag(props) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+
   useEffect(async () => {
     setLoading(true);
     try {
@@ -23,8 +24,11 @@ export default function Tag(props) {
       setLoading(false);
     }
   }, []);
+
   if (error) return 'error';
+
   if (loading) return 'loading';
+
   return data.map(({ id, description, key }) => (
     <Fragment key={id}>
       <img alt={description} src={`${API_IMAGES_PATH}/${key}`} />
