@@ -69,7 +69,10 @@ export default function Slash() {
       <div onClick={() => setQuery({ order: 'asc' })}>sort desc</div>
       {posts.map(({ id, description, key, tags }) => (
         <Wrapper key={id} {...getProps(description, id)}>
-          <img alt={description} src={`${API_IMAGES_PATH}/${key}`} />
+          <img
+            alt={description}
+            src={`${API_IMAGES_PATH}/250/${key.split('/')[1]}.webp`}
+          />
           {isEditing ? (
             <Field name={DESCRIPTION} component={InputField} />
           ) : (

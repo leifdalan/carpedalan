@@ -5,7 +5,7 @@ import { isLoggedIn } from '../../server/middlewares';
 
 const tags = express.Router();
 
-tags.get('/tags/:tag', isLoggedIn, async (req, res) => {
+tags.get('/:tag', isLoggedIn, async (req, res) => {
   // Get all photos by tag name
   const photos = await db
     .select('photos.*', 'tags.name as tagName', 'tags.id as tagId')
@@ -20,7 +20,7 @@ tags.get('/tags/:tag', isLoggedIn, async (req, res) => {
   res.status(200).send(photos);
 });
 
-tags.get('/tags', isLoggedIn, async (req, res) => {
+tags.get('/', isLoggedIn, async (req, res) => {
   const tagsResponse = await db('tags').select();
   res.status(200).send(tagsResponse);
 });
