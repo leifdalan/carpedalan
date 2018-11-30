@@ -1,0 +1,54 @@
+version: '2.1'
+
+services:
+  e2e: 
+    image: $ECR_ENDPOINT/cypress:3.1.3
+    environment:
+      ## this enables colors in the output
+      TERM: xterm
+      CYPRESS_BASE_URL: http://e2e_app
+
+    depends_on:
+      e2e_app: 
+        condition: service_healthy
+    volumes: 
+      - ./cypress:/app/cypress/
+      - ./.env:/app/.env
+      - ./.env.example:/app/.env.example
+    command: bash -c "ls -al && ls cypress -al && pwd && yarn cypress run --env configFile=ci --reporter junit --reporter-options 'mochaFile=/app/cypress/test-output.xml'"  
+  e2e_app:
+    container_name: e2e-app
+    logging:
+      driver: none
+    depends_on:
+      e2e_pg:
+        condition: service_healthy
+    image: $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1
+    environment:
+      NODE_ENV: production
+
+      PG_HOST: e2e_pg
+      PG_USER: postgres
+      PG_PASSWORD: postgres
+      PG_DB: postgres
+
+    healthcheck:
+      test: "curl -sS localhost/login"
+      interval: 1s
+      timeout: 1s
+      retries: 10
+    command: "yarn e2e:ci"
+    ports:
+      - 3002:3001
+  e2e_pg:
+    image: postgres:10.0-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 20
+

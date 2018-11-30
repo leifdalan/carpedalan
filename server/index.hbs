@@ -11,7 +11,7 @@
   <script>var __SESSION__ = {{{session}}};</script>
   {{#if clientAssets}}
     {{#each clientAssets}}
-    <script type="text/javascript" src="{{this}}" />
+    <script type="text/javascript" src="/dist{{this}}"></script>
     {{/each}}
   {{else}}
   <script type="text/javascript" src="/client.bundle.js"></script>

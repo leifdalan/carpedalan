@@ -1,9 +1,7 @@
-import { logLevel } from '../../server/config';
-
 import { console } from './globals';
 
 const logState = ['none', 'info', 'error', 'silly'].findIndex(
-  i => i === logLevel,
+  i => i === process.env.LOG_LEVEL,
 );
 export class Logger {
   constructor() {

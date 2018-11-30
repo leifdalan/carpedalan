@@ -1,4 +1,20 @@
 // Update with your config settings.
+const path = require('path');
+
+const dotenv = require('dotenv-safe');
+
+const isMigrating = !!process.env.MIGRATING;
+
+if (!process.env.WALLABY) {
+  dotenv.config({
+    path: path.resolve(process.cwd(), isMigrating ? '..' : '.', '.env'),
+    example: path.resolve(
+      process.cwd(),
+      isMigrating ? '..' : '.',
+      '.env.example',
+    ),
+  });
+}
 
 module.exports = {
   development: {
@@ -15,27 +31,53 @@ module.exports = {
     },
     migrations: {
       directory: './migrations/carpedalan',
+      tableName: 'carpe_migrations',
     },
     seeds: {
       directory: './seeds',
     },
     useNullAsDefault: true,
   },
+
   test: {
     client: 'pg',
     connection: {
-      host: 'localhost',
+      host: process.env.PG_HOST || 'localhost',
       database: 'carpedalan',
       user: 'postgres',
       password: 'postgres',
-      port: 5555,
+      port: process.env.PG_PORT || 5555,
     },
     pool: {
       min: 2,
       max: 10,
     },
     migrations: {
-      directory: './db/migrations/carpedalan',
+      directory: `./${isMigrating ? '/' : 'db/'}migrations/carpedalan`,
+      tableName: 'carpe_migrations',
+    },
+    seeds: {
+      directory: './api/setup/seeds',
+    },
+    useNullAsDefault: true,
+  },
+
+  ci: {
+    client: 'pg',
+    connection: {
+      host: process.env.PG_HOST || 'localhost',
+      database: 'carpedalan',
+      user: 'postgres',
+      password: 'postgres',
+      port: 5432,
+    },
+    pool: {
+      min: 2,
+      max: 10,
+    },
+    migrations: {
+      directory: path.resolve(__dirname, 'migrations', 'carpedalan'),
+      tableName: 'carpe_migrations',
     },
     seeds: {
       directory: './api/setup/seeds',
@@ -55,23 +97,27 @@ module.exports = {
       max: 10,
     },
     migrations: {
-      tableName: 'migrations/carpedalan',
+      directory: './migrations/carpedalan',
+      tableName: 'carpe_migrations',
     },
   },
 
   production: {
     client: 'pg',
     connection: {
-      database: 'carpedalan',
-      user: 'postgres',
-      password: 'postgres',
+      database: process.env.PG_DATABASE,
+      user: process.env.PG_USER,
+      password: process.env.PG_PASSWORD,
+      port: process.env.PG_PORT,
+      host: process.env.PG_HOST,
     },
     pool: {
       min: 2,
       max: 10,
     },
     migrations: {
-      tableName: 'migrations/carpedalan',
+      directory: './migrations/carpedalan',
+      tableName: 'carpe_migrations',
     },
   },
 };

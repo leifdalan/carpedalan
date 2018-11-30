@@ -88,7 +88,6 @@ posts.post(
     try {
       const parser = exif.create(req.file.buffer);
       result = parser.parse();
-      log.info(result);
     } catch (e) {
       return res.status(500).json({
         type: 'EXIF parsing error',

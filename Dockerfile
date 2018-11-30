@@ -1,8 +1,7 @@
-FROM node:10-alpine
-EXPOSE 3001
-EXPOSE 9229
+FROM node:10-alpine AS base
 WORKDIR /app
 COPY yarn.lock .
+
 COPY package.json .
 RUN npm install
 COPY src/ ./src
@@ -10,11 +9,24 @@ COPY server/ ./server
 COPY api/ ./api
 COPY shared/ ./shared
 COPY babel.config.js .
-COPY webpack.config.js .
-COPY webpack.prod.js .
-COPY .env .
 COPY .env.example .
-COPY nodemon.json .
-COPY goodDataWithEtagAndKey.json .
 COPY index.js . 
+COPY scripts/ ./scripts
+COPY db/ ./db
+RUN apk --update add curl
 
+FROM base AS prod
+COPY .env .
+RUN export $(cat .env | xargs)
+COPY webpack.prod.js .
+RUN yarn build
+EXPOSE 80
+CMD ["yarn", "start:prod"]
+
+
+FROM base AS dev
+COPY .env .
+COPY nodemon.json .
+COPY webpack.config.js .
+EXPOSE 3001
+EXPOSE 9229

@@ -45,6 +45,8 @@ export const setup = () => {
   app.engine('hbs', expbhs(viewConfig));
   app.set('view engine', 'hbs');
   app.set('views', viewConfig.layoutsDir);
+  // static assets
+  app.use('/dist', express.static('dist'));
 
   // Setup app to parse cookies and POST requests
   app.use(cookieParser());
@@ -52,7 +54,6 @@ export const setup = () => {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   // Set up session store
-
   app.use(
     session({
       store,
@@ -89,9 +90,6 @@ export const setup = () => {
   // Define routes
   router(app);
 
-  // static assets
-  app.use(express.static('dist'));
-
   // Winston error logger
   app.use(
     expressWinston.errorLogger({
@@ -104,6 +102,7 @@ export const setup = () => {
     }),
   );
   return { app, store, pool };
+  // return { app };
 };
 
 export const start = expressApp => expressApp.listen(port);

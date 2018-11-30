@@ -1,0 +1,43 @@
+version: '2.3'
+
+services:
+  app:
+    container_name: app
+    depends_on:
+      pg:
+        condition: service_healthy
+    tty: true
+    image: $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1
+    environment:
+      NODE_ENV: ci
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://app:3001/ || exit 1"]
+      interval: 1s
+      timeout: 1s
+      retries: 20
+
+    # volumes:
+    #   - ./src:/app/src:delegated
+    #   - ./server:/app/server:delegated
+    #   - ./api:/app/api:delegated
+    #   - ./scripts:/app/scripts
+    #   - ./db:/app/db:delegated
+    #   - ./shared:/app/shared:delegated
+    ports:
+      - 3001:3001
+      - 9227:9229
+    command: yarn start:prod
+  pg:
+    image: postgres:10.0-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 20
+
