@@ -42,6 +42,7 @@ posts.delete('/:id', isAdmin, async (req, res) => {
       .where({ id: req.params.id });
     res.status(204).json(response);
   } catch (e) {
+    res.status(404).send();
     log.error(e);
   }
 });
@@ -58,6 +59,19 @@ posts.patch('/:id', isAdmin, async (req, res) => {
   }
 });
 
+posts.get('/:id', isLoggedIn, async (req, res) => {
+  try {
+    const [response] = await db(PHOTOS)
+      .select()
+      .where({ id: req.params.id, status: 'active' });
+    if (!response) return res.status(404).send();
+    return res.status(200).json(response);
+  } catch (e) {
+    log.error(e);
+    return res.status(500).json(e);
+  }
+});
+
 posts.post(
   '',
   isAdmin,
@@ -69,7 +83,6 @@ posts.post(
     let pgResponse;
     const description = req.body[DESCRIPTION];
     const tags = req.body[TAGS] ? req.body[TAGS].split(',') : false;
-
     // Parse exif data for original timestamp and other
     // metadata
     try {
@@ -82,7 +95,6 @@ posts.post(
         error: e,
       });
     }
-
     // Upload to s3
     try {
       s3Response = await s3
@@ -92,17 +104,11 @@ posts.post(
           Body: req.file.buffer,
           ContentType: 'image/jpeg',
         })
-        .on('httpUploadProgress', progress => {
-          log.info('progress', progress);
-        })
-        .on('httpDownloadProgress', progress => {
-          log.info('down progress', progress);
-        })
         .promise();
     } catch (e) {
       log.error(e);
       return res.status(500).json({
-        type: 'AWS error',
+        type: 'AWS Error',
         error: e,
       });
     }

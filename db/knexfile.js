@@ -21,6 +21,27 @@ module.exports = {
     },
     useNullAsDefault: true,
   },
+  test: {
+    client: 'pg',
+    connection: {
+      host: 'localhost',
+      database: 'carpedalan',
+      user: 'postgres',
+      password: 'postgres',
+      port: 5555,
+    },
+    pool: {
+      min: 2,
+      max: 10,
+    },
+    migrations: {
+      directory: './db/migrations/carpedalan',
+    },
+    seeds: {
+      directory: './api/setup/seeds',
+    },
+    useNullAsDefault: true,
+  },
 
   staging: {
     client: 'pg',

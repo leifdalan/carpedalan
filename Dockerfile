@@ -4,7 +4,7 @@ EXPOSE 9229
 WORKDIR /app
 COPY yarn.lock .
 COPY package.json .
-RUN yarn
+RUN npm install
 COPY src/ ./src
 COPY server/ ./server
 COPY api/ ./api

@@ -12,7 +12,7 @@
       "protocol": "inspector",
       "localRoot": "${workspaceFolder}",
       "remoteRoot": "/app",
-      "port": 9229,
+      "port": 9227,
       "sourceMaps": true
     },
     {

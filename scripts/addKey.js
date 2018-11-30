@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const moment = require('moment');
 
-const data = require('./goodDataWithEtag');
+const data = require('../goodDataWithEtag.json');
 
 const values = data.map(val => {
   const date = moment(val.date).format('YYYY-MM-DD-HH-MM-ss');

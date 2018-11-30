@@ -7,10 +7,10 @@ const request = require('request');
 const moment = require('moment');
 const uniq = require('lodash/uniq');
 
-const data = require('./src/data');
+const data = require('../data');
 
 const obj = data.tumblr.data;
-
+/* eslint-disable no-console */
 const s3 = new aws.S3();
 const allTags = [];
 const goodData = reduce(
@@ -83,16 +83,16 @@ async function upload() {
 }
 
 async function log() {
-  const { values, errors } = await upload();
+  const { values: logValues, errors: logErrors } = await upload();
   fs.writeFile(
     'goodDataWithEtag.json',
-    JSON.stringify(values, null, 2),
+    JSON.stringify(logValues, null, 2),
     'utf8',
     () => {},
   );
   fs.writeFile(
     'errors.json',
-    JSON.stringify(errors, null, 2),
+    JSON.stringify(logErrors, null, 2),
     'utf8',
     () => {},
   );

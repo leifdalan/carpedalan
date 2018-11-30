@@ -18,19 +18,23 @@ import {
   pgDatabase,
   sessionSecret,
   port,
+  pgPort,
+  isDev,
   isProd,
 } from './config';
 
-const start = async () => {
-  const app = express();
-
+const app = express();
+export const setup = () => {
   // Connect to DB pool
-  const pool = await new pg.Pool({
+  const pool = new pg.Pool({
     host: pgHost,
     user: pgUser,
     password: pgPassword,
     database: pgDatabase,
+    port: pgPort,
   });
+  const PgSession = connectPgSimple(session);
+  const store = new PgSession({ pool });
 
   // Setup handlebar view engine
   const viewConfig = {
@@ -48,8 +52,6 @@ const start = async () => {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   // Set up session store
-  const PgSession = connectPgSimple(session);
-  const store = new PgSession({ pool });
 
   app.use(
     session({
@@ -65,22 +67,24 @@ const start = async () => {
   );
 
   // Use dev and hot webpack middlewares
-  if (!isProd) {
+  if (isDev) {
     const { applyWebpackMiddleware } = require('./middlewares'); // eslint-disable-line global-require
     applyWebpackMiddleware(app);
   }
 
   // express-winston logger BEFORE the router
-  app.use(
-    expressWinston.logger({
-      expressFormat: true,
-      transports: [new winston.transports.Console()],
-      format: winston.format.combine(
-        winston.format.prettyPrint(),
-        winston.format.colorize(),
-      ),
-    }),
-  );
+  if (isProd) {
+    app.use(
+      expressWinston.logger({
+        expressFormat: true,
+        transports: [new winston.transports.Console()],
+        format: winston.format.combine(
+          winston.format.prettyPrint(),
+          winston.format.colorize(),
+        ),
+      }),
+    );
+  }
 
   // Define routes
   router(app);
@@ -99,9 +103,9 @@ const start = async () => {
       ),
     }),
   );
-
-  // app start up
-  app.listen(port);
+  return { app, store, pool };
 };
 
-start();
+export const start = expressApp => expressApp.listen(port);
+
+export const stop = expressApp => expressApp.close();

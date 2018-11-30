@@ -18,7 +18,7 @@ services:
       - ./shared:/app/shared:delegated
     ports:
       - 3001:3001
-      - 9229:9229
+      - 9227:9229
     command: yarn start
   pg:
     image: postgres:10.0-alpine

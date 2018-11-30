@@ -6,8 +6,17 @@ require = require('esm')(module);
 // get rid of this. It only adds one line of transpilation and
 // as far as I can tell doesn't fuck up breakpoints.
 // - Leif of christmas past
+const path = require('path');
+
 const dotenv = require('dotenv-safe');
 
-dotenv.config();
+dotenv.config({
+  path:
+    process.env.NODE_ENV === 'test'
+      ? path.resolve(process.cwd(), '.env.test')
+      : path.resolve(process.cwd(), '.env'),
+});
+const { setup, start } = require('./server/server');
 
-module.exports = require('./server/server');
+const { app } = setup();
+start(app);

@@ -10,6 +10,7 @@ if (isProd) {
 
 export default app => {
   app.use('/api', api);
+
   app.get('/login', (req, res) => {
     res.render('index', {
       layout: false,

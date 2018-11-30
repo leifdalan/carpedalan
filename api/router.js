@@ -15,7 +15,6 @@ const s3 = new S3();
 const api = express.Router();
 
 // Route the things
-
 api.use('/posts', posts);
 api.use('/tags', tags);
 
@@ -23,19 +22,19 @@ api.use('/tags', tags);
 api.post('/login', (req, res) => {
   if (req.body.password === publicPassword) {
     req.session.user = READ_USER;
+    res.status(200).send({ user: req.session.user });
   } else if (req.body.password === adminPassword) {
     req.session.user = WRITE_USER;
+    res.status(200).send({ user: req.session.user });
   } else {
     res.status(401).send();
   }
-  res.status(200).send({ user: req.session.user });
 });
 
 // Proxy all image requests to private bucket
 api.get(`${IMAGES_PATH}/:size/:id`, isLoggedIn, async (req, res) => {
-  console.error('bucket=======================', bucket);
   const withoutExtension = req.params.id.split('.')[0];
-  console.time('s3');
+
   const stream = await s3
     .getObject({
       Key: `web/${withoutExtension}-${req.params.size}.webp`,
@@ -55,9 +54,6 @@ api.get(`${IMAGES_PATH}/:size/:id`, isLoggedIn, async (req, res) => {
             // No original, send 404.
             log.info('error', e);
             res.status(404).send();
-          })
-          .on('end', () => {
-            console.timeEnd('s3');
           });
         // Equivalent to a "touch" in s3; will trigger any lambda
         // listening for putObject, namely our image resizer
