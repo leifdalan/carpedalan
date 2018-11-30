@@ -1,9 +1,12 @@
 const path = require('path');
 
+const dotenv = require('dotenv-safe');
 const webpack = require('webpack');
 const Manifest = require('webpack-manifest-plugin');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const CleanWebpack = require('clean-webpack-plugin');
+
+dotenv.config();
 
 module.exports = {
   mode: 'production',
@@ -35,6 +38,7 @@ module.exports = {
       PRODUCTION: JSON.stringify(true),
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        LOG_LEVEL: JSON.stringify(process.env.LOG_LEVEL),
       },
     }),
     new Manifest(),

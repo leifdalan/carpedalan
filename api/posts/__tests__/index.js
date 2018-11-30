@@ -1,3 +1,5 @@
+import path from 'path';
+
 import aws from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
 
@@ -9,6 +11,10 @@ const { app, store, pool } = setup();
 const readUserAgent = request.agent(app);
 const writeUserAgent = request.agent(app);
 request = request(app);
+
+const photo = process.env.WALLABY
+  ? `${process.env.LOCAL_PATH}/api/posts/__tests__/neildegrasse.jpg`
+  : path.resolve(__dirname, 'neildegrasse.jpg');
 
 jest.mock('aws-sdk', () => {
   const AWS = {};
@@ -47,17 +53,13 @@ describe('/posts', () => {
       const { status } = await readUserAgent
         .post('/api/posts')
         .send({ some: 'body' });
-
       expect(status).toBe(401);
     });
 
     it('should be able to make a post to posts with the right user', async () => {
       const { status } = await writeUserAgent
         .post('/api/posts')
-        .attach(
-          'photo',
-          '/Users/leif/carpedalan/api/posts/__tests__/neildegrasse.jpg',
-        );
+        .attach('photo', photo);
       expect(status).toBe(200);
     });
 
@@ -65,10 +67,7 @@ describe('/posts', () => {
       aws.s3Promise.mockImplementation(() => Promise.reject());
       const { status, body } = await writeUserAgent
         .post('/api/posts')
-        .attach(
-          'photo',
-          '/Users/leif/carpedalan/api/posts/__tests__/neildegrasse.jpg',
-        );
+        .attach('photo', photo);
       expect(status).toBe(500);
       expect(body).toMatchObject({
         type: 'AWS Error',
@@ -77,12 +76,7 @@ describe('/posts', () => {
 
     it('should call s3 with the correct key', async () => {
       aws.s3Promise.mockImplementation(() => Promise.resolve({}));
-      await writeUserAgent
-        .post('/api/posts')
-        .attach(
-          'photo',
-          '/Users/leif/carpedalan/api/posts/__tests__/neildegrasse.jpg',
-        );
+      await writeUserAgent.post('/api/posts').attach('photo', photo);
       expect(aws.uploadMock.mock.calls[0][0]).toMatchObject({
         Key: 'original/neildegrasse.jpg',
       });
@@ -102,10 +96,7 @@ describe('/posts', () => {
       aws.s3Promise.mockImplementation(() => Promise.resolve({}));
       const { status, body } = await writeUserAgent
         .post('/api/posts')
-        .attach(
-          'photo',
-          '/Users/leif/carpedalan/api/posts/__tests__/neildegrasse.jpg',
-        );
+        .attach('photo', photo);
       expect(status).toBe(200);
       expect(body.description).toBeNull();
       const description = 'description';
@@ -132,10 +123,7 @@ describe('/posts', () => {
       aws.s3Promise.mockImplementation(() => Promise.resolve({}));
       const { status, body } = await writeUserAgent
         .post('/api/posts')
-        .attach(
-          'photo',
-          '/Users/leif/carpedalan/api/posts/__tests__/neildegrasse.jpg',
-        );
+        .attach('photo', photo);
       expect(status).toBe(200);
       const { status: deleteStatus } = await writeUserAgent.delete(
         `/api/posts/${body.id}`,
@@ -162,10 +150,7 @@ describe('/posts', () => {
       aws.s3Promise.mockImplementation(() => Promise.resolve({}));
       const { status, body } = await writeUserAgent
         .post('/api/posts')
-        .attach(
-          'photo',
-          '/Users/leif/carpedalan/api/posts/__tests__/neildegrasse.jpg',
-        );
+        .attach('photo', photo);
       expect(status).toBe(200);
 
       const { status: getStatus } = await writeUserAgent.get(
@@ -188,9 +173,8 @@ describe('/posts', () => {
   });
   describe('GET', () => {
     it('should get many records', async () => {
-      const { status, body } = await readUserAgent.get('/api/posts');
+      const { status } = await readUserAgent.get('/api/posts');
       expect(status).toBe(200);
-      expect(body.length).toBe(20);
     });
     it('should associate tags with the records', async () => {
       const { body } = await readUserAgent.get('/api/posts');

@@ -7,7 +7,7 @@ const request = require('request');
 const moment = require('moment');
 const uniq = require('lodash/uniq');
 
-const data = require('../data');
+const data = require('../data'); // eslint-disable-line import/no-unresolved
 
 const obj = data.tumblr.data;
 /* eslint-disable no-console */

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/src/__tests__/index.test.js">
+<testcase time="0" name="/Users/leif/carpedalan/src/__tests__/index.test.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/src/__tests__/leaf.test.js">
+<testcase time="0" name="/Users/leif/carpedalan/src/__tests__/leaf.test.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/src/fields/__tests__/InputField.js">
+<testcase time="0" name="/Users/leif/carpedalan/src/fields/__tests__/InputField.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/src/form/__tests__/Field.js">
+<testcase time="0" name="/Users/leif/carpedalan/src/form/__tests__/Field.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/src/hotEntry.js">
+<testcase time="0" name="/Users/leif/carpedalan/src/hotEntry.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/src/utils/globals.js">
+<testcase time="0" name="/Users/leif/carpedalan/src/utils/globals.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/src/utils/log.js">
+<testcase time="0" name="/Users/leif/carpedalan/src/utils/log.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/api/__tests__/router.js">
+<testcase time="0" name="/Users/leif/carpedalan/api/__tests__/router.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/api/posts/__tests__/index.js">
+<testcase time="0" name="/Users/leif/carpedalan/api/posts/__tests__/index.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/api/posts/index.js">
+<testcase time="0" name="/Users/leif/carpedalan/api/posts/index.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/api/router.js">
+<testcase time="0" name="/Users/leif/carpedalan/api/router.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/api/tags/__tests__/index.js">
+<testcase time="0" name="/Users/leif/carpedalan/api/tags/__tests__/index.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/api/tags/index.js">
+<testcase time="0" name="/Users/leif/carpedalan/api/tags/index.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/db/knexfile.js">
+<testcase time="0" name="/Users/leif/carpedalan/db/knexfile.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/db/migrations/carpedalan/20181109100714_session.js">
+<testcase time="0" name="/Users/leif/carpedalan/db/migrations/carpedalan/20181109100714_session.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/db/migrations/carpedalan/20181109154743_photos.js">
+<testcase time="0" name="/Users/leif/carpedalan/db/migrations/carpedalan/20181109154743_photos.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/db/migrations/carpedalan/20181109163403_tags.js">
+<testcase time="0" name="/Users/leif/carpedalan/db/migrations/carpedalan/20181109163403_tags.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/db/migrations/carpedalan/20181109165111_photos_tags.js">
+<testcase time="0" name="/Users/leif/carpedalan/db/migrations/carpedalan/20181109165111_photos_tags.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/db/migrations/setup/20181108211614_setup.js">
+<testcase time="0" name="/Users/leif/carpedalan/db/migrations/setup/20181108211614_setup.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/db/setup.js">
+<testcase time="0" name="/Users/leif/carpedalan/db/setup.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/imageResizer/index.js">
+<testcase time="0" name="/Users/leif/carpedalan/imageResizer/index.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/scripts/addKey.js">
+<testcase time="0" name="/Users/leif/carpedalan/scripts/addKey.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/scripts/makeRevisionJson.js">
+<testcase time="0" name="/Users/leif/carpedalan/scripts/makeRevisionJson.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/scripts/migrate.js">
+<testcase time="0" name="/Users/leif/carpedalan/scripts/migrate.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/scripts/parsePhotos.js">
+<testcase time="0" name="/Users/leif/carpedalan/scripts/parsePhotos.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="1" name="/Users/leif/carpedalan/server/__tests__/routes.js">
+<testcase time="0" name="org.eslint.no-console"><failure message="Unexpected console statement."><![CDATA[line 35, col 5, Warning - Unexpected console statement. (no-console)]]></failure></testcase>
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/server/config.js">
+<testcase time="0" name="/Users/leif/carpedalan/server/config.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/server/constants.js">
+<testcase time="0" name="/Users/leif/carpedalan/server/constants.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/server/db.js">
+<testcase time="0" name="/Users/leif/carpedalan/server/db.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/server/devMiddleware.config.js">
+<testcase time="0" name="/Users/leif/carpedalan/server/devMiddleware.config.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="2" errors="2" name="/Users/leif/carpedalan/server/middlewares.js">
+<testcase time="0" name="org.eslint.import/no-extraneous-dependencies"><failure message="&apos;webpack-dev-middleware&apos; should be listed in the project&apos;s dependencies, not devDependencies."><![CDATA[line 6, col 25, Error - &apos;webpack-dev-middleware&apos; should be listed in the project&apos;s dependencies, not devDependencies. (import/no-extraneous-dependencies)]]></failure></testcase>
+<testcase time="0" name="org.eslint.import/no-extraneous-dependencies"><failure message="&apos;webpack-hot-middleware&apos; should be listed in the project&apos;s dependencies, not devDependencies."><![CDATA[line 7, col 25, Error - &apos;webpack-hot-middleware&apos; should be listed in the project&apos;s dependencies, not devDependencies. (import/no-extraneous-dependencies)]]></failure></testcase>
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/server/routes.js">
+<testcase time="0" name="/Users/leif/carpedalan/server/routes.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/server/server.js">
+<testcase time="0" name="/Users/leif/carpedalan/server/server.js" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="/Users/leif/carpedalan/shared/constants.js">
+<testcase time="0" name="/Users/leif/carpedalan/shared/constants.js" />
+</testsuite>
+</testsuites>

@@ -9,12 +9,13 @@ import log from '../src/utils/log';
 
 import posts from './posts';
 import tags from './tags';
+
 // Create S3 interface object
 const s3 = new S3();
 
 const api = express.Router();
 
-// Route the things
+// // Route the things
 api.use('/posts', posts);
 api.use('/tags', tags);
 

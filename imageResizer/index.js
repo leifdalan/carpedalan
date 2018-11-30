@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies,prefer-destructuring,no-console */
+/* eslint-disable import/no-extraneous-dependencies,prefer-destructuring,no-console,import/no-unresolved */
 
 const sharp = require('sharp');
 const aws = require('aws-sdk');

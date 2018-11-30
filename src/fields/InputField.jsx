@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default ({ input: { onChange, value }, meta: { error } }) => {
+export default ({ input: { onChange, value }, meta: { error }, ...etc }) => {
   const handleChange = e => {
     onChange(e.target.value);
   };
@@ -11,6 +11,7 @@ export default ({ input: { onChange, value }, meta: { error } }) => {
         data-test="inputField"
         onChange={handleChange}
         value={value || ''}
+        {...etc}
       />
       {error || null}
     </>

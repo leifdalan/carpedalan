@@ -24,7 +24,12 @@ export default function Login() {
     <>
       <Form onSubmit={submitLogin}>
         <div>soaaaamething</div>
-        <Field name="password" component={InputField} type="password" />
+        <Field
+          name="password"
+          component={InputField}
+          asdf="asdf"
+          type="password"
+        />
         <Submit />
       </Form>
     </>
