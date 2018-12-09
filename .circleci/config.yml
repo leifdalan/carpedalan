@@ -30,6 +30,11 @@ jobs:
               -f docker-compose.e2e.yml \
               up --abort-on-container-exit
 
+      - run:
+          name: Deploy to staging
+          command: |
+              ./scripts/releaseDocker.sh
+
       - store_test_results:
           path: cypress
       - store_artifacts:
@@ -59,16 +64,6 @@ jobs:
             pip install \
               docker-compose==1.22.0 \
               awscli==1.15.82
-      - restore_cache:
-          keys:
-            - v1-{{ .Branch }}
-          paths:
-            - /caches/app.tar
-      - run:
-          name: Load Docker image layer cache
-          command: |
-            set +o pipefail
-            docker load -i /caches/app.tar | true
       - run: 
           name: Get config
           command: |
@@ -80,31 +75,6 @@ jobs:
             --target=prod \
             -t app \
             -t "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}" .
-      - run:
-          name: Save Docker image layer cache
-          command: |
-            mkdir -p /caches
-            docker save -o /caches/app.tar app
-      - save_cache:
-          key: v1-{{ .Branch }}
-          paths:
-            - /caches/app.tar
-      - run: 
-          name: Push to heroku registry
-          command: |
-            docker login --username=_ --password=${HEROKU_PASSWORD} registry.heroku.com
-            docker tag app registry.heroku.com/carpedalan/web
-            docker push registry.heroku.com/carpedalan/web
-            WEB_DOCKER_IMAGE_ID=`\
-              docker inspect \
-              registry.heroku.com/carpedalan/web \
-              --format={{.Id}} | sed -n 1p`
-            echo $WEB_DOCKER_IMAGE_ID
-            curl -n -X PATCH https://api.heroku.com/apps/carpedalan/formation -d '{
-              "updates": [{ "type": "web", "docker_image": "sha256:225ab403f7473349ff5bf8ca24f0330208979a668e056c3610d73e2a7c24cd7f" }]}' \
-              -H "Content-Type: application/json" \
-              -H "Accept: application/vnd.heroku+json; version=3.docker-releases" \
-              -H "Authorization: Bearer $HEROKU_PASSWORD"
               
       - deploy:
           name: Push application Docker image
@@ -217,6 +187,7 @@ jobs:
           path: reports/junit
       - store_artifacts:
           path: reports/junit
+
 workflows:
   version: 2
   build_and_test:

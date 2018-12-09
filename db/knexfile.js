@@ -25,6 +25,7 @@ module.exports = {
       user: 'postgres',
       password: 'postgres',
     },
+
     pool: {
       min: 2,
       max: 10,
@@ -110,6 +111,7 @@ module.exports = {
       password: process.env.PG_PASSWORD,
       port: process.env.PG_PORT,
       host: process.env.PG_HOST,
+      ssl: true,
     },
     pool: {
       min: 2,

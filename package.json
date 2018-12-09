@@ -16,7 +16,8 @@
     "e2e": "CYPRESS_BASE_URL=http://localhost:3001 cypress open --env configFile=local",
     "e2e:ci": "MIGRATING=true yarn migrate && yarn start:prod",
     "test-junit": "cypress run --reporter junit --reporter-options 'mochaFile=junit-results/my-test-output.xml'",
-    "test-multiple": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=config.json"
+    "test-multiple": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=config.json",
+    "updateConfig": "aws s3 cp .env-prod s3://configurations-pipeline/.env --profile carpedev"
   },
   "author": "",
   "license": "ISC",

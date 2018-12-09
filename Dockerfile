@@ -17,7 +17,6 @@ RUN apk --update add curl
 
 FROM base AS prod
 COPY .env .
-RUN export $(cat .env | xargs)
 COPY webpack.prod.js .
 RUN yarn build
 EXPOSE 80
