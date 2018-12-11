@@ -2,11 +2,6 @@
 
 exports[`test should do some stuff 1`] = `
 Array [
-  <div
-    onClick={[Function]}
-  >
-     click me
-  </div>,
   <a
     href="/login"
     onClick={[Function]}

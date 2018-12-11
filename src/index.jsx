@@ -14,15 +14,14 @@ export const User = createContext({
   isLoading: false,
 });
 
+
 function Root({ user }) {
   const [userState, setUser] = useState(user);
-  const [counter, setCounter] = useState(0);
 
   return (
     <User.Provider value={{ user: userState, setUser }}>
       <Router>
         <>
-          <div onClick={() => setCounter(counter + 1)}> click me</div>
           <Link to="/login">asdfff</Link>
           <Link to="/">slash</Link>
           {userState === 'write' ? <Link to="/admin">admin</Link> : null}
@@ -31,7 +30,6 @@ function Root({ user }) {
             <Route exact path="/" component={Slash} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/tag/:tag" component={Tag} />
-
             {userState === 'write' ? (
               <Route exact path="/admin" component={Admin} />
             ) : null}
