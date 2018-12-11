@@ -31,9 +31,42 @@ jobs:
               up --abort-on-container-exit
 
       - run:
-          name: Deploy to staging
+          name: Deploy to heroku
           command: |
+              docker tag $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1 registry.heroku.com/carpedalan/web
               ./scripts/releaseDocker.sh
+      - run:
+          name: Deploy to ECS staging
+          command: |
+              ./scripts/makeRevisionJson.js 
+              TASK_ID=`aws ecs list-tasks \
+                --cluster carpedalan \
+                --desired-status RUNNING \
+                --family carpedalan \
+                --region us-east-1 | \
+                egrep "task" | tr "/" " " | tr "[" " " |  awk '{print $2}' | sed 's/"$//'`
+
+              aws ecs stop-task \
+                --cluster carpedalan \
+                --task ${TASK_ID} \
+                --region us-east-1
+
+              aws ecs register-task-definition \
+                --cli-input-json file://container-definition.json \
+                --family carpedalan \
+                --region us-east-1
+
+              TASK_REVISION=`aws ecs describe-task-definition \
+                --task-definition carpedalan \
+                --region us-east-1 | \
+                egrep "revision" | tr "/" " " | awk '{print $2}' | sed 's/"$//'`
+
+              aws ecs update-service \
+                --cluster carpedalan \
+                --service carpedalan \
+                --region us-east-1 \
+                --task-definition carpedalan:${TASK_REVISION} \
+                --desired-count 1
 
       - store_test_results:
           path: cypress
@@ -83,35 +116,6 @@ jobs:
               eval $(aws ecr get-login --region us-east-1 --no-include-email) 
               docker tag app "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
               docker push "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
-              ./scripts/makeRevisionJson.js 
-              TASK_ID=`aws ecs list-tasks \
-                --cluster carpedalan \
-                --desired-status RUNNING \
-                --family carpedalan \
-                --region us-east-1 | \
-                egrep "task" | tr "/" " " | tr "[" " " |  awk '{print $2}' | sed 's/"$//'`
-
-              # aws ecs stop-task \
-              #   --cluster carpedalan \
-              #   --task ${TASK_ID} \
-              #   --region us-east-1
-
-              aws ecs register-task-definition \
-                --cli-input-json file://container-definition.json \
-                --family carpedalan \
-                --region us-east-1
-
-              TASK_REVISION=`aws ecs describe-task-definition \
-                --task-definition carpedalan \
-                --region us-east-1 | \
-                egrep "revision" | tr "/" " " | awk '{print $2}' | sed 's/"$//'`
-
-              aws ecs update-service \
-                --cluster carpedalan \
-                --service carpedalan \
-                --region us-east-1 \
-                --task-definition carpedalan:${TASK_REVISION} \
-                --desired-count 1
             # fi  
   dependencies:
     docker:

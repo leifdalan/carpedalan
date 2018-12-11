@@ -26,11 +26,12 @@ services:
     image: $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1
     environment:
       NODE_ENV: production
-
       PG_HOST: e2e_pg
       PG_USER: postgres
       PG_PASSWORD: postgres
-      PG_DB: postgres
+      PG_DB: carpedalan
+      PGSSLMODE: disable
+      PG_URI: postgres://postgres:postgres@e2e_pg:5432/postgres
 
     healthcheck:
       test: "curl -sS localhost/login"

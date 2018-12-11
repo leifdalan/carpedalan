@@ -1,6 +1,5 @@
 set -e
 docker login --username=_ --password=${HEROKU_PASSWORD} registry.heroku.com
-docker tag app registry.heroku.com/carpedalan/web
 docker push registry.heroku.com/carpedalan/web
 WEB_DOCKER_IMAGE_ID=`\
   docker inspect \

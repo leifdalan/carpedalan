@@ -21,6 +21,7 @@ import {
   pgPort,
   isDev,
   isProd,
+  ssl,
 } from './config';
 
 const app = express();
@@ -32,7 +33,9 @@ export const setup = () => {
     password: pgPassword,
     database: pgDatabase,
     port: pgPort,
+    ...(ssl ? { ssl: true } : {}),
   });
+  console.log(pool); // eslint-disable-line
   const PgSession = connectPgSimple(session);
   const store = new PgSession({ pool });
 
