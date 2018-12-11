@@ -6,7 +6,7 @@ Array [
     href="/login"
     onClick={[Function]}
   >
-    asdfff
+    login
   </a>,
   <a
     href="/"

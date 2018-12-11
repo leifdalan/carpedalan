@@ -4,7 +4,6 @@ const fs = require('fs');
 
 const { ECR_ENDPOINT, CIRCLE_SHA1 } = process.env;
 const json = {
-  executionRoleArn: 'arn:aws:iam::771396871964:role/ecsTaskExecutionRole',
   containerDefinitions: [
     {
       logConfiguration: {
@@ -28,14 +27,10 @@ const json = {
       ],
     },
   ],
-  placementConstraints: [],
-  memory: '512',
   taskRoleArn: 'arn:aws:iam::771396871964:role/ecsTaskExecutionRole',
   family: 'carpedalan',
   networkMode: 'awsvpc',
-  cpu: '256',
   volumes: [],
-  requiresCompatibilities: ['FARGATE'],
 };
 
 fs.writeFileSync('container-definition.json', JSON.stringify(json), 'utf8');

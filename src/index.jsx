@@ -14,7 +14,6 @@ export const User = createContext({
   isLoading: false,
 });
 
-
 function Root({ user }) {
   const [userState, setUser] = useState(user);
 
@@ -22,7 +21,7 @@ function Root({ user }) {
     <User.Provider value={{ user: userState, setUser }}>
       <Router>
         <>
-          <Link to="/login">asdfff</Link>
+          <Link to="/login">login</Link>
           <Link to="/">slash</Link>
           {userState === 'write' ? <Link to="/admin">admin</Link> : null}
           <div>{userState}</div>
