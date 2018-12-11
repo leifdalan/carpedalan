@@ -16,6 +16,12 @@ jobs:
     parallelism: 1
     steps:
       - checkout
+      - run: 
+          name: Install AWS CLI
+          command: |
+              pip install \
+              awscli==1.15.82
+
       - run:
           name: Run app
           command: | 
@@ -29,44 +35,35 @@ jobs:
             docker-compose \
               -f docker-compose.e2e.yml \
               up --abort-on-container-exit
-
-      # - run:
-      #     name: Deploy to heroku
-      #     command: |
-      #         docker tag $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1 registry.heroku.com/carpedalan/web
-      #         ./scripts/releaseDocker.sh
       - run:
-          name: Deploy to ECS staging
+          name: Register task definition
           command: |
               ./scripts/makeRevisionJson.js 
-              TASK_ID=`aws ecs list-tasks \
-                --cluster carpedalan \
-                --desired-status RUNNING \
-                --family carpedalan \
-                --region us-east-1 | \
-                egrep "task" | tr "/" " " | tr "[" " " |  awk '{print $2}' | sed 's/"$//'`
-
-              aws ecs stop-task \
-                --cluster carpedalan \
-                --task ${TASK_ID} \
-                --region us-east-1
+              cat ./container-definition.json
 
               aws ecs register-task-definition \
                 --cli-input-json file://container-definition.json \
                 --family carpedalan \
                 --region us-east-1
-
+      - run: 
+          nmae: Update ECS service
+          command: |
               TASK_REVISION=`aws ecs describe-task-definition \
                 --task-definition carpedalan \
                 --region us-east-1 | \
                 egrep "revision" | tr "/" " " | awk '{print $2}' | sed 's/"$//'`
-
+              echo $TASK_REVISION;
               aws ecs update-service \
                 --cluster carpedalan \
                 --service carpedalan \
                 --region us-east-1 \
                 --task-definition carpedalan:${TASK_REVISION} \
                 --desired-count 1
+      - run:
+          name: Deploy to heroku
+          command: |
+              ls -al
+              ./scripts/releaseDocker.sh
 
       - store_test_results:
           path: cypress
@@ -109,13 +106,27 @@ jobs:
             -t app \
             -t "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}" .
               
-      - deploy:
-          name: Push application Docker image
+      - run:
+          name: Push image to ECR repository
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
               eval $(aws ecr get-login --region us-east-1 --no-include-email) 
               docker tag app "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
               docker push "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
+      - run: 
+          name: Push image to Heroku registry
+          command: |
+              docker login --username=_ --password=${HEROKU_PASSWORD} registry.heroku.com
+              docker tag app registry.heroku.com/carpedalan/web
+              docker push registry.heroku.com/carpedalan/web
+              WEB_DOCKER_IMAGE_ID=`\
+                docker inspect \
+                registry.heroku.com/carpedalan/web \
+                --format={{.Id}} | sed -n 1p`
+              touch image_id
+              echo "export IMAGE_ID=$WEB_DOCKER_IMAGE_ID" >> image_id
+              ls -al
+
             # fi  
   dependencies:
     docker:
@@ -191,6 +202,7 @@ jobs:
           path: reports/junit
       - store_artifacts:
           path: reports/junit
+
 
 workflows:
   version: 2
