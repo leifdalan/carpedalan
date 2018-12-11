@@ -6,7 +6,7 @@ Array [
     href="/login"
     onClick={[Function]}
   >
-    loginzz
+    login carpedalan
   </a>,
   <a
     href="/"
@@ -26,7 +26,7 @@ Array [
   <div
     onClick={[Function]}
   >
-    sort desc
+    sort wootdesc
   </div>,
 ]
 `;

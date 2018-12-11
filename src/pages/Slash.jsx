@@ -66,7 +66,7 @@ export default function Slash() {
 
   return (
     <>
-      <div onClick={() => setQuery({ order: 'asc' })}>sort desc</div>
+      <div onClick={() => setQuery({ order: 'asc' })}>sort wootdesc</div>
       {posts.map(({ id, description, key, tags }) => (
         <Wrapper key={id} {...getProps(description, id)}>
           <img

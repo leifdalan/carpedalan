@@ -46,7 +46,7 @@ jobs:
                 --family carpedalan \
                 --region us-east-1
       - run: 
-          nmae: Update ECS service
+          name: Update ECS service
           command: |
               TASK_REVISION=`aws ecs describe-task-definition \
                 --task-definition carpedalan \
@@ -59,11 +59,11 @@ jobs:
                 --region us-east-1 \
                 --task-definition carpedalan:${TASK_REVISION} \
                 --desired-count 1
-      - run:
-          name: Deploy to heroku
-          command: |
-              ls -al
-              ./scripts/releaseDocker.sh
+      # - run:
+      #     name: Deploy to heroku
+      #     command: |
+      #         ls -al
+      #         ./scripts/releaseDocker.sh
 
       - store_test_results:
           path: cypress
@@ -116,16 +116,10 @@ jobs:
       - run: 
           name: Push image to Heroku registry
           command: |
-              docker login --username=_ --password=${HEROKU_PASSWORD} registry.heroku.com
-              docker tag app registry.heroku.com/carpedalan/web
-              docker push registry.heroku.com/carpedalan/web
-              WEB_DOCKER_IMAGE_ID=`\
-                docker inspect \
-                registry.heroku.com/carpedalan/web \
-                --format={{.Id}} | sed -n 1p`
-              touch image_id
-              echo "export IMAGE_ID=$WEB_DOCKER_IMAGE_ID" >> image_id
-              ls -al
+              ./scripts/releaseDocker.sh
+              # touch image_id
+              # echo "export IMAGE_ID=$WEB_DOCKER_IMAGE_ID" >> image_id
+              # ls -al
 
             # fi  
   dependencies:
