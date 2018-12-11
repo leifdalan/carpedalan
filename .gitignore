@@ -62,6 +62,7 @@ typings/
 
 # next.js build output
 .next
+container-definition.js
 cypress/videos
 cypress/test-output.xml
 cypress/screenshots
