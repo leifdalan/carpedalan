@@ -30,11 +30,11 @@ jobs:
               -f docker-compose.e2e.yml \
               up --abort-on-container-exit
 
-      - run:
-          name: Deploy to heroku
-          command: |
-              docker tag $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1 registry.heroku.com/carpedalan/web
-              ./scripts/releaseDocker.sh
+      # - run:
+      #     name: Deploy to heroku
+      #     command: |
+      #         docker tag $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1 registry.heroku.com/carpedalan/web
+      #         ./scripts/releaseDocker.sh
       - run:
           name: Deploy to ECS staging
           command: |
