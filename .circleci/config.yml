@@ -72,16 +72,12 @@ jobs:
       - store_artifacts:
           path: cypress/screenshots  
   build:
-    working_directory: /app
-    docker:
-      - image: docker:17.05.0-ce-git
+    machine: true
     environment:
       NODE_ENV: production
       FARTS: stinky
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
       - run:
           name: Install dependencies
           command: |
@@ -105,8 +101,9 @@ jobs:
             --target=prod \
             -t app \
             -t "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}" .
-              
+
       - run:
+
           name: Push image to ECR repository
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
@@ -133,8 +130,15 @@ jobs:
     steps:
       - checkout
       # Download and cache dependencies
-      - run: yarn --ignore-optional
 
+      - run: yarn --ignore-optional
+      - run: 
+          name: Upload S3 assets
+          command: |
+              yarn build
+              ls -al
+              pwd
+              ./scripts/uploadAssets.js
       - save_cache:
           paths:
             - node_modules
