@@ -26,6 +26,16 @@ import {
 
 const app = express();
 export const setup = () => {
+  if (isProd) {
+    app.use('*', (req, res, next) => {
+      const { protocol } = req;
+      if (protocol === 'http') {
+        res.redirect(`https://${req.headers.host}${req.originalUrl}`);
+      } else {
+        next();
+      }
+    });
+  }
   // Connect to DB pool
   const pool = new pg.Pool({
     host: pgHost,
@@ -35,7 +45,6 @@ export const setup = () => {
     port: pgPort,
     ...(ssl ? { ssl: true } : {}),
   });
-  console.log(pool); // eslint-disable-line
   const PgSession = connectPgSimple(session);
   const store = new PgSession({ pool });
 
