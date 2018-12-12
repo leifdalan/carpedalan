@@ -1,11 +1,12 @@
 import React, { createContext, useState } from 'react';
 import { bool, oneOfType, string } from 'prop-types';
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 
 import Admin from './admin';
 import Login from './pages/Login';
 import Slash from './pages/Slash';
 import Tag from './pages/Tag';
+import LogoutButton from './components/LogoutButton';
 
 export const User = createContext({
   counter: 0,
@@ -16,12 +17,12 @@ export const User = createContext({
 
 function Root({ user }) {
   const [userState, setUser] = useState(user);
-
   return (
     <User.Provider value={{ user: userState, setUser }}>
       <Router>
         <>
-          <Link to="/login">login test for http</Link>
+          {userState ? <LogoutButton setUser={setUser} /> : null}
+          <Link to="/login">login gzip</Link>
           <Link to="/">slash</Link>
           {userState === 'write' ? <Link to="/admin">admin</Link> : null}
           <div>{userState}</div>

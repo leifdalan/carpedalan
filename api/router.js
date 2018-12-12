@@ -32,6 +32,11 @@ api.post('/login', (req, res) => {
   }
 });
 
+api.post('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/login');
+});
+
 // Proxy all image requests to private bucket
 api.get(`${IMAGES_PATH}/:size/:id`, isLoggedIn, async (req, res) => {
   const withoutExtension = req.params.id.split('.')[0];

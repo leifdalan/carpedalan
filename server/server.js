@@ -31,8 +31,10 @@ export const setup = () => {
   if (isProd && !ci) {
     app.use('*', (req, res, next) => {
       const { protocol } = req;
+      console.log('============================ protocol', protocol);
       if (protocol === 'http') {
-        res.redirect(`https://${req.headers.host}${req.originalUrl}`);
+        next();
+        // res.redirect(`https://${req.headers.host}${req.originalUrl}`);
       } else {
         next();
       }
@@ -75,6 +77,7 @@ export const setup = () => {
       secret: sessionSecret,
       resave: false,
       saveUninitialized: false,
+      rolling: true,
       cookie: {
         maxAge: 10000 * 60 * 60 * 24 * 30 * 6,
       },

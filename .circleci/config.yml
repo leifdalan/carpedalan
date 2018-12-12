@@ -41,6 +41,7 @@ jobs:
               ./scripts/makeRevisionJson.js 
               cat ./container-definition.json
 
+              
               aws ecs register-task-definition \
                 --cli-input-json file://container-definition.json \
                 --family carpedalan \
@@ -48,17 +49,41 @@ jobs:
       - run: 
           name: Update ECS service
           command: |
+              OLD_TASK_ID=`aws ecs list-tasks \
+                --cluster carpedalan \
+                --desired-status RUNNING \
+                --region us-east-1 \
+                --family carpedalan | \
+                  egrep "task" | tr "/" " " | tr "[" " " |  awk '{print $2}' | sed 's/"$//'`
+
               TASK_REVISION=`aws ecs describe-task-definition \
                 --task-definition carpedalan \
                 --region us-east-1 | \
                 egrep "revision" | tr "/" " " | awk '{print $2}' | sed 's/"$//'`
-              echo $TASK_REVISION;
+
+              echo "Updating with task revision ${TASK_REVISION}";
+
               aws ecs update-service \
                 --cluster carpedalan \
                 --service carpedalan \
                 --region us-east-1 \
                 --task-definition carpedalan:${TASK_REVISION} \
                 --desired-count 1
+
+              sleep 30
+              echo "Stopping ${OLD_TASK_ID}"
+              aws ecs stop-task \
+                --task 92244d16-8569-4ebe-a1a2-069f7bf5c0c0 \
+                --cluster carpedalan \
+                --region us-east-1
+
+              echo "Updating to desired count=2"
+              aws ecs update-service \
+                --cluster carpedalan \
+                --service carpedalan \
+                --task-definition carpedalan:${TASK_REVISION} \
+                --desired-count 2 \
+                --region us-east-1
       # - run:
       #     name: Deploy to heroku
       #     command: |
@@ -139,6 +164,7 @@ jobs:
               ls -al
               pwd
               ./scripts/uploadAssets.js
+              cat dist/manifest.json
       - save_cache:
           paths:
             - node_modules

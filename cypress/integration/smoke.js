@@ -28,4 +28,19 @@ describe('Smoke test', () => {
       .click();
     cy.url().should('include', 'admin');
   });
+
+  it('can logout', () => {
+    cy.server();
+    cy.route('POST', '/api/logout').as('logout');
+    cy.visit('/login');
+    cy.get('[data-test="inputField"]').type(Cypress.env('ADMIN_PASSWORD'), {
+      log: false,
+    });
+    cy.get('button[type="submit"]').click();
+    cy.get('[data-test="logout"]').click();
+    cy.wait('@logout')
+      .its('status')
+      .should('be', 302);
+    cy.url().should('include', 'login');
+  });
 });

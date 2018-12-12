@@ -18,6 +18,7 @@ services:
       - ./db:/app/db:delegated
       - ./shared:/app/shared:delegated
       - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
+      - ./.env:/app/.env
     ports:
       - 3001:3001
       - 9227:9229

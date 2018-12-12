@@ -36,6 +36,7 @@ const Leaf = () => {
     try {
       setLoading(true);
       const response = await request.get('/api/tags');
+
       setTags(response.body);
     } catch (e) {
       log.error('loading failed');

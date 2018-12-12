@@ -2,11 +2,18 @@
 
 exports[`test should do some stuff 1`] = `
 Array [
+  <button
+    data-test="logout"
+    onClick={[Function]}
+    type="button"
+  >
+    log outzzzz
+  </button>,
   <a
     href="/login"
     onClick={[Function]}
   >
-    login test for http
+    login gzip
   </a>,
   <a
     href="/"

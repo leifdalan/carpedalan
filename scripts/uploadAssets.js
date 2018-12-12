@@ -51,7 +51,8 @@ fs.readdir(distFolderPath, (err, files) => {
           Bucket: config.s3BucketName,
           Key: fileName,
           Body: fileContent,
-          ACL: 'public-read'
+          ACL: 'public-read',
+          // ContentEncoding: 'gzip'
         },
         res => {
           console.log(`Successfully uploaded '${fileName}'!`);
