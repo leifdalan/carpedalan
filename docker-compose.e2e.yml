@@ -26,6 +26,7 @@ services:
     image: $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1
     environment:
       NODE_ENV: production
+      CI: "true"
       PG_HOST: e2e_pg
       PG_USER: postgres
       PG_PASSWORD: postgres

@@ -22,11 +22,13 @@ import {
   isDev,
   isProd,
   ssl,
+  ci,
 } from './config';
 
 const app = express();
+
 export const setup = () => {
-  if (isProd) {
+  if (isProd && !ci) {
     app.use('*', (req, res, next) => {
       const { protocol } = req;
       if (protocol === 'http') {
