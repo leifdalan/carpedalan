@@ -17,6 +17,7 @@ export const User = createContext({
 
 function Root({ user }) {
   const [userState, setUser] = useState(user);
+
   return (
     <User.Provider value={{ user: userState, setUser }}>
       <Router>

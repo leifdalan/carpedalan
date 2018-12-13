@@ -10,6 +10,7 @@ module.exports = function(wallaby) {
       '!coverage/**/*',
       '!scripts/**/*',
       '!**/__mocks__/**/*',
+      '!**/cypress/**/*',
     ],
     filesWithNoCoverageCalculated: [
       'db/**/*',

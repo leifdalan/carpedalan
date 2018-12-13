@@ -14,7 +14,7 @@
     "start": "MIGRATING=true yarn migrateAndSeed && DEBUG=knex*,-knex:client,-knex:connection,-knex:pool nodemon --inspect=0.0.0.0 .",
     "start:prod": "NODE_ENV=production node .",
     "e2e": "CYPRESS_BASE_URL=http://localhost cypress open --env configFile=local",
-    "e2e:ci": "MIGRATING=true yarn migrate && yarn start:prod",
+    "e2e:ci": "MIGRATING=true NODE_ENV=ci yarn migrate && yarn start:prod",
     "test-junit": "cypress run --reporter junit --reporter-options 'mochaFile=junit-results/my-test-output.xml'",
     "test-multiple": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=config.json",
     "updateConfig": "aws s3 cp .env-prod s3://configurations-pipeline/.env --profile carpedev"

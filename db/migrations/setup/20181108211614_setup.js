@@ -3,6 +3,7 @@ const knexfile = require('../../knexfile');
 const env = process.env.NODE_ENV || 'development';
 
 const { database } = knexfile[env].connection;
+
 exports.up = async knex => {
   await knex.raw('CREATE EXTENSION "dblink"');
   await knex.raw(`

@@ -9,7 +9,8 @@
   },  
   "globals": {
     "cy": false,
-    "Cypress": false
+    "Cypress": false,
+    "before": false
   },
   "rules": {
     "func-names": ["error", "never"],

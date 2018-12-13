@@ -23,16 +23,20 @@ services:
     depends_on:
       e2e_pg:
         condition: service_healthy
-    image: $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1
+    image: 771396871964.dkr.ecr.us-east-1.amazonaws.com/carpedev:a2071c0a78ad45c7a860de174a85dfb2dfd241a6
+
+    volumes: 
+      - ./db:/app/db
+      - ./package.json:/app/package.json
+
     environment:
-      NODE_ENV: production
+      NODE_ENV: ci
       CI: "true"
       PG_HOST: e2e_pg
       PG_USER: postgres
       PG_PASSWORD: postgres
-      PG_DB: carpedalan
+      PG_DATABASE: carpedalan
       PGSSLMODE: disable
-      PG_URI: postgres://postgres:postgres@e2e_pg:5432/postgres
 
     healthcheck:
       test: "curl -sS localhost/login"
@@ -44,10 +48,14 @@ services:
       - 3002:3001
   e2e_pg:
     image: postgres:10.0-alpine
+    tty: true
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+
+    ports: 
+      - 5555:5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 1s
