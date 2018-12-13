@@ -21,6 +21,7 @@ export default function Login() {
       throw e;
     }
   };
+  console.error('hasLoggedIn', hasLoggedIn);
 
   return (
     <>

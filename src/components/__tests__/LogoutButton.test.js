@@ -1,23 +1,26 @@
 import React from 'react';
 import { create } from 'react-test-renderer';
-import { BrowserRouter as Router, Redirect } from 'react-router-dom';
 import request from 'superagent';
 
 import { API_PATH } from '../../../shared/constants';
 import LogoutButton from '../LogoutButton';
 
+jest.mock('react-router-dom', () => ({
+  withRouter: f => f,
+}));
+
 jest.mock('superagent', () => ({
   post: jest.fn(),
 }));
+
+const push = jest.fn();
 
 describe('LogoutButton', () => {
   beforeEach(jest.resetAllMocks);
   it('calls the input.onChange prop when the input changes', async () => {
     const setUser = jest.fn();
     const { root } = create(
-      <Router>
-        <LogoutButton setUser={setUser} />
-      </Router>,
+      <LogoutButton setUser={setUser} history={{ push }} />,
     );
     await root
       .findByProps({
@@ -31,9 +34,7 @@ describe('LogoutButton', () => {
   it('should call api logout when clicked', async () => {
     const setUser = jest.fn();
     const { root } = create(
-      <Router>
-        <LogoutButton setUser={setUser} />
-      </Router>,
+      <LogoutButton setUser={setUser} history={{ push }} />,
     );
     await root
       .findByProps({
@@ -47,17 +48,16 @@ describe('LogoutButton', () => {
   it('should render a redirect', async () => {
     const setUser = jest.fn();
     const instance = create(
-      <Router>
-        <LogoutButton setUser={setUser} />
-      </Router>,
+      <LogoutButton setUser={setUser} history={{ push }} />,
     );
     await instance.root
       .findByProps({
         type: 'button',
       })
       .props.onClick();
-    expect(instance.root.findByType(Redirect)).toBeTruthy();
+
     instance.update();
     expect(instance.toJSON()).toBe(null);
+    expect(push).toHaveBeenCalledTimes(1);
   });
 });
