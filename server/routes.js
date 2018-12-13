@@ -14,7 +14,7 @@ export default app => {
   app.get('/login', (req, res) => {
     res.render('index', {
       layout: false,
-      session: false,
+      session: req.session.user ? `'${req.session.user}'` : false,
       clientAssets,
     });
   });

@@ -16,6 +16,8 @@ export const User = createContext({
 });
 
 function Root({ user }) {
+  console.error('user', user);
+
   const [userState, setUser] = useState(user);
   return (
     <User.Provider value={{ user: userState, setUser }}>
