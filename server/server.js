@@ -63,6 +63,7 @@ export const setup = () => {
   app.set('views', viewConfig.layoutsDir);
   // static assets
   app.use('/dist', express.static('dist'));
+  app.use('/public', express.static('public'));
 
   // Setup app to parse cookies and POST requests
   app.use(cookieParser());

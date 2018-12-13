@@ -19,9 +19,13 @@ services:
       - ./shared:/app/shared:delegated
       - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
       - ./.env:/app/.env
+      - ./public:/app/public
     ports:
       - 3001:3001
       - 9227:9229
+      - 80:80
+    environment:
+      PORT: 80
     command: yarn start
   pg:
     image: postgres:10.0-alpine

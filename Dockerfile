@@ -7,6 +7,7 @@ RUN yarn --production --ignore-optional
 COPY src/ ./src
 COPY server/ ./server
 COPY api/ ./api
+COPY public/ ./public
 COPY shared/ ./shared
 COPY babel.config.js .
 COPY .env.example .
