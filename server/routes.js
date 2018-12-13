@@ -22,6 +22,12 @@ export default app => {
   app.get('/admin/*', (req, res) => {
     if (req.session.user !== 'write') {
       res.redirect(301, '/');
+    } else {
+      res.render('index', {
+        layout: false,
+        session: req.session.user ? `'${req.session.user}'` : false,
+        clientAssets,
+      });
     }
   });
 
@@ -31,7 +37,7 @@ export default app => {
     } else if (['read', 'write'].includes(req.session.user)) {
       res.render('index', {
         layout: false,
-        session: JSON.stringify(req.session.user),
+        session: req.session.user ? `'${req.session.user}'` : false,
         clientAssets,
       });
     }

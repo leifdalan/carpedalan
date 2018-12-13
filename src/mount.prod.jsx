@@ -4,4 +4,5 @@ import DOM from 'react-dom';
 
 import App from '.';
 
-DOM.render(<App />, document.getElementById('root'));
+// eslint-disable-next-line no-underscore-dangle
+DOM.render(<App user={window.__SESSION__} />, document.getElementById('root'));

@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/posts GET should associate tags with the records 1`] = `Array []`;
