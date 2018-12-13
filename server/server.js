@@ -22,24 +22,11 @@ import {
   isDev,
   isProd,
   ssl,
-  ci,
 } from './config';
 
 const app = express();
 
 export const setup = () => {
-  if (isProd && !ci) {
-    app.use('*', (req, res, next) => {
-      const { protocol } = req;
-      console.log('============================ protocol', protocol);
-      if (protocol === 'http') {
-        next();
-        // res.redirect(`https://${req.headers.host}${req.originalUrl}`);
-      } else {
-        next();
-      }
-    });
-  }
   // Connect to DB pool
   const pool = new pg.Pool({
     host: pgHost,

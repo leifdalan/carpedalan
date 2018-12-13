@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import request from 'superagent';
 
 import InputField from '../fields/InputField';
@@ -10,11 +11,12 @@ import { User } from '..';
 
 export default function Login() {
   const { setUser } = useContext(User);
-
+  const [hasLoggedIn, setHasLoggedIn] = useState(false);
   const submitLogin = async ({ password }) => {
     try {
       const response = await request.post('/api/login', { password });
       setUser(response.body.user);
+      setHasLoggedIn(true);
     } catch (e) {
       throw e;
     }
@@ -32,6 +34,7 @@ export default function Login() {
         />
         <Submit />
       </Form>
+      {hasLoggedIn ? <Redirect to="/" /> : null}
     </>
   );
 }

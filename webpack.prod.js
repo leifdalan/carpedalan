@@ -4,7 +4,7 @@ const dotenv = require('dotenv-safe');
 const webpack = require('webpack');
 const Manifest = require('webpack-manifest-plugin');
 // eslint-disable-next-line import/no-extraneous-dependencies
-const CleanWebpack = require('clean-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 
 dotenv.config();
 
@@ -32,7 +32,6 @@ module.exports = {
     ],
   },
   plugins: [
-    new CleanWebpack(['dist']),
     // htmlWebpackPlugin,
     new webpack.DefinePlugin({
       PRODUCTION: JSON.stringify(true),
@@ -42,6 +41,10 @@ module.exports = {
       },
     }),
     new Manifest(),
+    new CompressionPlugin({
+      exclude: 'manifest.json',
+      filename: '[path]',
+    }),
   ],
   optimization: {
     runtimeChunk: 'single',

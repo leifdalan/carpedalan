@@ -52,7 +52,7 @@ fs.readdir(distFolderPath, (err, files) => {
           Key: fileName,
           Body: fileContent,
           ACL: 'public-read',
-          // ContentEncoding: 'gzip'
+          ContentEncoding: 'gzip'
         },
         res => {
           console.log(`Successfully uploaded '${fileName}'!`);
