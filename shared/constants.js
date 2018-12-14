@@ -39,6 +39,28 @@ const DELETED = 'deleted';
 
 const isAdmin = user => user === ADMIN;
 
+const SIZES = [
+  {
+    width: 250,
+  },
+  {
+    width: 768,
+  },
+  {
+    width: 1536,
+  },
+];
+
+const SMALL = 'small';
+const MEDIUM = 'medium';
+const HIRES = 'hires';
+
+const SIZE_MAP = {
+  [SMALL]: SIZES[0],
+  [MEDIUM]: SIZES[1],
+  [HIRES]: SIZES[2],
+};
+
 module.exports = {
   isAdmin,
   ADMIN,
@@ -71,4 +93,9 @@ module.exports = {
   PHOTOS_TAGS,
   PHOTO_ID,
   TAG_ID,
+  SIZES,
+  SIZE_MAP,
+  SMALL,
+  MEDIUM,
+  HIRES,
 };

@@ -10,6 +10,8 @@ import {
   API_PATH,
   isAdmin,
   DESCRIPTION,
+  SIZE_MAP,
+  MEDIUM,
 } from '../../shared/constants';
 import InputField from '../fields/InputField';
 import Field from '../form/Field';
@@ -24,20 +26,26 @@ export default function Slash() {
   const [query, setQuery] = useState(null);
   const [isEditing, setEditing] = useState(false);
 
+  const effect = async () => {
+    try {
+      setLoading(true);
+      const apiCall = request.get(
+        `${API_PATH}/posts${query ? `?${stringify(query)}` : ''}`,
+      );
+      const response = await apiCall;
+      setPosts(response.body);
+    } catch (e) {
+      log.error('loading failed');
+    } finally {
+      setLoading(false);
+    }
+    return null;
+  };
+
   useEffect(
-    async () => {
-      try {
-        setLoading(true);
-        const apiCall = request.get(
-          `${API_PATH}/posts${query ? `?${stringify(query)}` : ''}`,
-        );
-        const response = await apiCall;
-        setPosts(response.body);
-      } catch (e) {
-        log.error('loading failed');
-      } finally {
-        setLoading(false);
-      }
+    () => {
+      effect();
+      return null;
     },
     [query],
   );
@@ -71,12 +79,14 @@ export default function Slash() {
         <Wrapper key={id} {...getProps(description, id)}>
           <img
             alt={description}
-            src={`${API_IMAGES_PATH}/250/${key.split('/')[1]}.webp`}
+            src={`${API_IMAGES_PATH}/${SIZE_MAP[MEDIUM].width}/${
+              key.split('/')[1]
+            }.webp`}
           />
           {isEditing ? (
             <Field name={DESCRIPTION} component={InputField} />
           ) : (
-            <div>{description}</div>
+            <div>{description || null}</div>
           )}
 
           {tags.map(({ name, id: tagId }) => (
@@ -89,7 +99,11 @@ export default function Slash() {
           {isAdmin(user) && isEditing ? (
             <div onClick={() => setEditing(false)}>unedit</div>
           ) : null}
-          {isAdmin(user) && isEditing ? <div onClick={del(id)}>del</div> : null}
+          {isAdmin(user) && isEditing ? (
+            <button type="button" onClick={del(id)}>
+              del
+            </button>
+          ) : null}
         </Wrapper>
       ))}
     </>

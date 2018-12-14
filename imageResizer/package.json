@@ -7,7 +7,7 @@
     "build": "docker run -v \"$PWD\":/var/task lambci/lambda:build-nodejs8.10 npm install",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "zip -r -X ../imageResizer.zip * && cd .. && aws lambda update-function-code --function-name carpedalan --zip-file fileb://imageResizer.zip --profile carpedalan",
-    "stage": "zip -r -X ../imageResizer.zip * && cd .. && aws lambda update-function-code --function-name carpedev --zip-file fileb://imageResizer.zip --profile carpedev"
+    "stage": "cp ../shared/constants.js . && zip -r -X ../imageResizer.zip * && cd .. && aws lambda update-function-code --function-name carpedev --zip-file fileb://imageResizer.zip --profile carpedev"
   },
   "author": "",
   "license": "ISC",

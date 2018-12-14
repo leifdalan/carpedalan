@@ -15,13 +15,12 @@ export default function Login() {
   const submitLogin = async ({ password }) => {
     try {
       const response = await request.post('/api/login', { password });
-      setUser(response.body.user);
       setHasLoggedIn(true);
+      setUser(response.body.user);
     } catch (e) {
       throw e;
     }
   };
-  console.error('hasLoggedIn', hasLoggedIn);
 
   return (
     <>

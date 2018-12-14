@@ -22,17 +22,15 @@ const Leaf = () => {
         .on('progress', e => {
           log.info('progress', e.percent);
         });
-
-      log.error(values);
     } catch (e) {
-      log.error(e);
       throw e;
     }
   };
 
   const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState([]);
-  useEffect(async () => {
+
+  const effect = async () => {
     try {
       setLoading(true);
       const response = await request.get('/api/tags');
@@ -43,6 +41,10 @@ const Leaf = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    effect();
   }, []);
 
   // const addTag =
@@ -53,8 +55,7 @@ const Leaf = () => {
       <Form onSubmit={submitToApi} initial={{ tags: [] }}>
         <Field
           name="photo"
-          component={({ input: { onChange, value } }) => {
-            log.info(value);
+          component={({ input: { onChange } }) => {
             const handleChange = e => {
               onChange(e.target.files[0]);
             };

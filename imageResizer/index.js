@@ -3,19 +3,9 @@
 const sharp = require('sharp');
 const aws = require('aws-sdk');
 
-const s3 = new aws.S3();
+const { SIZES } = require('./constants');
 
-const SIZES = [
-  {
-    width: 250,
-  },
-  {
-    width: 768,
-  },
-  {
-    width: 1536,
-  },
-];
+const s3 = new aws.S3();
 
 exports.handler = async (event, context, ...otherThingz) => {
   console.time('fire');
