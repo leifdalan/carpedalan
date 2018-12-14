@@ -15,7 +15,7 @@ const LogoutButton = ({ setUser, history }) => {
   return (
     <>
       <button type="button" data-test="logout" onClick={logout}>
-        log outzzzz
+        log out
       </button>
     </>
   );

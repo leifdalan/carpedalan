@@ -20,6 +20,7 @@ services:
       - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
       - ./.env-local:/app/.env
       - ./public:/app/public
+      - ./webpack.config.js:/app/webpack.config.js
     ports:
       - 3001:3001
       - 9227:9229

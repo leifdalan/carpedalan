@@ -11,10 +11,11 @@ Array [
     onChange={[Function]}
     value=""
   />,
-  <div
+  <button
     onClick={[Function]}
+    type="button"
   >
-    submit div
-  </div>,
+    submit
+  </button>,
 ]
 `;

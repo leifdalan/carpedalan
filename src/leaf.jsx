@@ -65,8 +65,12 @@ const Leaf = () => {
         <Field name="description" component={InputField} />
 
         <Submit
-          component={({ submit, text }) => <div onClick={submit}>{text}</div>}
-          text="submit div"
+          component={({ submit, text }) => (
+            <button type="button" onClick={submit}>
+              {text}
+            </button>
+          )}
+          text="submit"
         />
         <Field
           name="tags"

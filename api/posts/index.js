@@ -200,7 +200,7 @@ posts.get('', isLoggedIn, async (req, res) => {
     ];
   }, []);
 
-  res.json(dedupped).send();
+  res.json(dedupped);
 });
 
 export default posts;

@@ -57,6 +57,16 @@ module.exports = {
 
     new webpack.HotModuleReplacementPlugin(),
   ],
+  devServer: {
+    stats: {
+      // copied from `'minimal'`
+      all: false,
+      modules: false,
+      maxModules: 0,
+      errors: true,
+      warnings: true,
+    },
+  },
   stats: {
     // copied from `'minimal'`
     all: false,
@@ -65,7 +75,5 @@ module.exports = {
     errors: true,
     warnings: true,
     // our additional options
-    moduleTrace: true,
-    errorDetails: true,
   },
 };

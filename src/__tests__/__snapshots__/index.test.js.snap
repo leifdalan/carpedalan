@@ -3,11 +3,17 @@
 exports[`test should do some stuff 1`] = `
 Array [
   <button
+    onClick={[Function]}
+    type="button"
+  >
+    toggle theme
+  </button>,
+  <button
     data-test="logout"
     onClick={[Function]}
     type="button"
   >
-    log outzzzz
+    log out
   </button>,
   <a
     href="/login"

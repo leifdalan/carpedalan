@@ -75,10 +75,12 @@ export default function Slash() {
   return (
     <>
       <div onClick={() => setQuery({ order: 'asc' })}>sort wootdesc</div>
-      {posts.map(({ id, description, key, tags }) => (
+      {posts.map(({ id, description, key, tags, width }) => (
         <Wrapper key={id} {...getProps(description, id)}>
+          {width}
           <img
             alt={description}
+            width="100%"
             src={`${API_IMAGES_PATH}/${SIZE_MAP[MEDIUM].width}/${
               key.split('/')[1]
             }.webp`}

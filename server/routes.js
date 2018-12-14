@@ -14,7 +14,7 @@ export default app => {
   app.get('/login', (req, res) => {
     res.render('index', {
       layout: false,
-      session: req.session.user ? `'${req.session.user}'` : false,
+      session: JSON.stringify(req.session),
       clientAssets,
     });
   });
@@ -25,7 +25,7 @@ export default app => {
     } else {
       res.render('index', {
         layout: false,
-        session: req.session.user ? `'${req.session.user}'` : false,
+        session: JSON.stringify(req.session),
         clientAssets,
       });
     }
@@ -37,7 +37,7 @@ export default app => {
     } else if (['read', 'write'].includes(req.session.user)) {
       res.render('index', {
         layout: false,
-        session: req.session.user ? `'${req.session.user}'` : false,
+        session: JSON.stringify(req.session),
         clientAssets,
       });
     }

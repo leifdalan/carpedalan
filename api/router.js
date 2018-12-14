@@ -32,6 +32,13 @@ api.post('/login', (req, res) => {
   }
 });
 
+api.post('/user', (req, res) => {
+  Object.keys(req.body || {}).forEach(key => {
+    req.session[key] = req.body[key];
+  });
+  res.status(200).end();
+});
+
 api.post('/logout', (req, res) => {
   req.session.destroy();
   res.redirect('/login');
