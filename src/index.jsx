@@ -37,14 +37,20 @@ function Root({ user, defaultTheme }) {
         <>
           <Router>
             <>
-              <button type="button" onClick={handleChangeTheme}>
-                toggle themeaa
-              </button>
-              {userState ? <LogoutButton setUser={setUser} /> : null}
-              <Link to="/login">login gzip</Link>
-              <Link to="/">slash</Link>
-              {userState === 'write' ? <Link to="/admin">admin</Link> : null}
-              <div>{userState}</div>
+              {userState ? (
+                <>
+                  <button type="button" onClick={handleChangeTheme}>
+                    toggle themeaa
+                  </button>
+                  <LogoutButton setUser={setUser} />
+                  <Link to="/login">login gzip</Link>
+                  <Link to="/">slash</Link>
+                  {userState === 'write' ? (
+                    <Link to="/admin">admin</Link>
+                  ) : null}
+                  <div>{userState}</div>
+                </>
+              ) : null}
               <Switch>
                 <Route exact path="/" component={Slash} />
                 <Route exact path="/login" component={Login} />

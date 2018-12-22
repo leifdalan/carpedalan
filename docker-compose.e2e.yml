@@ -23,7 +23,7 @@ services:
     depends_on:
       e2e_pg:
         condition: service_healthy
-    image: $ECR_ENDPOINT/carpedev:$CIRCLE_SHA
+    image: $ECR_ENDPOINT/carpedev:$CIRCLE_SHA1
 
     volumes: 
       - ./db:/app/db

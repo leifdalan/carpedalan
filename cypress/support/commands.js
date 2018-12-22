@@ -14,6 +14,7 @@ Cypress.Commands.add('loginAsAdmin', () => {
   cy.server();
   cy.route('POST', '/api/login').as('login');
   cy.visit('/login');
+  cy.get('[data-test="comingSoon"]').click();
   cy.get('[data-test="inputField"]').type(Cypress.env('ADMIN_PASSWORD'), {
     log: false,
   });

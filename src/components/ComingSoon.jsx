@@ -1,3 +1,3 @@
 import React from 'react';
 
-export default () => 'coming soon';
+export default () => <div data-test="comingSoon">coming Soon</div>;
