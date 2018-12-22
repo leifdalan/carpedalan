@@ -6,7 +6,7 @@ Array [
     onClick={[Function]}
     type="button"
   >
-    toggle theme
+    toggle themeaa
   </button>,
   <button
     data-test="logout"

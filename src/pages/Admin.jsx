@@ -1,34 +1,52 @@
 import React, { useEffect, useState } from 'react';
+import { func, shape } from 'prop-types';
 import request from 'superagent';
 
-import { API_PATH } from '../shared/constants';
+import { API_PATH } from '../../shared/constants';
+import InputField from '../fields/InputField';
+import Form from '../form/Form';
+import Field from '../form/Field';
+import Submit from '../form/Submit';
+import log from '../utils/log';
+import { FormData, FileReader } from '../utils/globals';
 
-import InputField from './fields/InputField';
-import Form from './form/Form';
-import Field from './form/Field';
-import Submit from './form/Submit';
-import log from './utils/log';
-import { FormData } from './utils/globals';
+const FileInput = ({ input: { onChange }, localOnChange }) => {
+  const handleChange = e => {
+    onChange(e.target.files[0]);
+    localOnChange(e.target.files[0]);
+  };
+  return <input type="file" onChange={handleChange} />;
+};
 
-const Leaf = () => {
+FileInput.propTypes = {
+  input: shape({
+    onChange: func.isRequired,
+  }).isRequired,
+  localOnChange: func.isRequired,
+};
+
+const Admin = () => {
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [preview, setPreview] = useState(null);
+  const [tags, setTags] = useState([]);
+
   const submitToApi = async values => {
     try {
       const formData = new FormData();
       Object.keys(values).forEach(key => formData.append(key, values[key]));
-
+      setSaving(true);
       await request
         .post(`${API_PATH}/posts`)
         .send(formData)
         .on('progress', e => {
           log.info('progress', e.percent);
         });
+      setSaving(false);
     } catch (e) {
       throw e;
     }
   };
-
-  const [loading, setLoading] = useState(false);
-  const [tags, setTags] = useState([]);
 
   const effect = async () => {
     try {
@@ -47,23 +65,24 @@ const Leaf = () => {
     effect();
   }, []);
 
-  // const addTag =
   if (loading) return 'loading';
+
+  const handleChange = file => {
+    const reader = new FileReader();
+    reader.onload = e => setPreview(e.target.result);
+    reader.readAsDataURL(file);
+  };
 
   return (
     <>
       <Form onSubmit={submitToApi} initial={{ tags: [] }}>
         <Field
           name="photo"
-          component={({ input: { onChange } }) => {
-            const handleChange = e => {
-              onChange(e.target.files[0]);
-            };
-            return <input type="file" onChange={handleChange} />;
-          }}
+          component={FileInput}
+          localOnChange={handleChange}
         />
         <Field name="description" component={InputField} />
-
+        {preview && <img width="199%" src={preview} />}
         <Submit
           component={({ submit, text }) => (
             <button type="button" onClick={submit}>
@@ -91,4 +110,4 @@ const Leaf = () => {
   );
 };
 
-export default Leaf;
+export default Admin;

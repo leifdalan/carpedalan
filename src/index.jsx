@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import request from 'superagent';
 
-import Admin from './admin';
+import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Slash from './pages/Slash';
 import Tag from './pages/Tag';
@@ -38,7 +38,7 @@ function Root({ user, defaultTheme }) {
           <Router>
             <>
               <button type="button" onClick={handleChangeTheme}>
-                toggle theme
+                toggle themeaa
               </button>
               {userState ? <LogoutButton setUser={setUser} /> : null}
               <Link to="/login">login gzip</Link>

@@ -1,3 +1,3 @@
 export const window = global;
 
-export const { fetch, console, FormData } = global;
+export const { fetch, console, FormData, FileReader } = global;
