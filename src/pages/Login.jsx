@@ -14,6 +14,7 @@ import ComingSoon from '../components/ComingSoon';
 export default function Login() {
   const { setUser } = useContext(User);
   const [hasLoggedIn, setHasLoggedIn] = useState(false);
+  const [showLogin, setShowLogin] = useState(true);
   const submitLogin = async ({ password }) => {
     try {
       const response = await request.post('/api/login', { password });
@@ -24,20 +25,32 @@ export default function Login() {
     }
   };
 
+  const handleKey = e => {
+    console.log(e);
+    setShowLogin(true);
+  };
+
   return (
     <>
-      <ComingSoon />
-      <Form onSubmit={submitLogin}>
-        <div>soaaaamething</div>
-        <Field
-          name="password"
-          component={InputField}
-          asdf="asdf"
-          type="password"
-        />
-        <Submit />
-      </Form>
-      {hasLoggedIn ? <Redirect to="/" /> : null}
+      <div onClick={handleKey}>
+        <ComingSoon />
+      </div>
+      {showLogin ? (
+        <>
+          <Form onSubmit={submitLogin}>
+            <div>soaaaamething</div>
+            <Field
+              name="password"
+              component={InputField}
+              asdf="asdf"
+              type="password"
+            />
+            <Submit />
+          </Form>
+
+          {hasLoggedIn ? <Redirect to="/" /> : null}
+        </>
+      ) : null}
     </>
   );
 }

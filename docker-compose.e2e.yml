@@ -23,7 +23,7 @@ services:
     depends_on:
       e2e_pg:
         condition: service_healthy
-    image: 771396871964.dkr.ecr.us-east-1.amazonaws.com/carpedev:a2071c0a78ad45c7a860de174a85dfb2dfd241a6
+    image: $ECR_ENDPOINT/carpedev:$CIRCLE_SHA
 
     volumes: 
       - ./db:/app/db
