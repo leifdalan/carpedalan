@@ -9,6 +9,8 @@ import Submit from '../form/Submit';
 
 import { User } from '..';
 
+import ComingSoon from '../components/ComingSoon';
+
 export default function Login() {
   const { setUser } = useContext(User);
   const [hasLoggedIn, setHasLoggedIn] = useState(false);
@@ -24,6 +26,7 @@ export default function Login() {
 
   return (
     <>
+      <ComingSoon />
       <Form onSubmit={submitLogin}>
         <div>soaaaamething</div>
         <Field
