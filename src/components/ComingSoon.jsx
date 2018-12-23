@@ -10,7 +10,7 @@ const Comin = styled.div`
   align-items: center;
   font-size: 10vw;
   color: white;
-  font-family: 'Snell Roundhand';
+  font-family: 'parisienne';
   font-weight: bold;
   &:before {
     z-index: -1;
