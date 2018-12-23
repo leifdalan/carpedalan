@@ -43,7 +43,7 @@ function Root({ user, defaultTheme }) {
                     toggle themeaa
                   </button>
                   <LogoutButton setUser={setUser} />
-                  <Link to="/login">login gzip</Link>
+                  <Link to="/login">login</Link>
                   <Link to="/">slash</Link>
                   {userState === 'write' ? (
                     <Link to="/admin">admin</Link>

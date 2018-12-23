@@ -12,9 +12,9 @@ import { User } from '..';
 import ComingSoon from '../components/ComingSoon';
 
 export default function Login() {
-  const { setUser } = useContext(User);
+  const { setUser, user } = useContext(User);
   const [hasLoggedIn, setHasLoggedIn] = useState(false);
-  const [showLogin, setShowLogin] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
   const submitLogin = async ({ password }) => {
     try {
       const response = await request.post('/api/login', { password });
@@ -25,17 +25,9 @@ export default function Login() {
     }
   };
 
-  const handleKey = e => {
-    console.log(e);
-    setShowLogin(true);
-  };
-
   return (
     <>
-      <div onClick={handleKey}>
-        <ComingSoon />
-      </div>
-      {showLogin ? (
+      {showLogin || user ? (
         <>
           <Form onSubmit={submitLogin}>
             <div>soaaaamething</div>
@@ -50,7 +42,9 @@ export default function Login() {
 
           {hasLoggedIn ? <Redirect to="/" /> : null}
         </>
-      ) : null}
+      ) : (
+        <ComingSoon setShowLogin={setShowLogin} />
+      )}
     </>
   );
 }

@@ -27,7 +27,7 @@ FileInput.propTypes = {
 
 const Admin = () => {
   const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
+  // const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState(null);
   const [tags, setTags] = useState([]);
 
@@ -35,14 +35,14 @@ const Admin = () => {
     try {
       const formData = new FormData();
       Object.keys(values).forEach(key => formData.append(key, values[key]));
-      setSaving(true);
+      // setSaving(true);
       await request
         .post(`${API_PATH}/posts`)
         .send(formData)
         .on('progress', e => {
           log.info('progress', e.percent);
         });
-      setSaving(false);
+      // setSaving(false);
     } catch (e) {
       throw e;
     }
@@ -82,7 +82,7 @@ const Admin = () => {
           localOnChange={handleChange}
         />
         <Field name="description" component={InputField} />
-        {preview && <img width="199%" src={preview} />}
+        {preview && <img alt="hallo" width="199%" src={preview} />}
         <Submit
           component={({ submit, text }) => (
             <button type="button" onClick={submit}>
