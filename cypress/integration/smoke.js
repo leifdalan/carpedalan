@@ -56,4 +56,10 @@ describe('Smoke test', () => {
       .its('status')
       .should('equal', 401);
   });
+
+  it('should have coming in 2019 text', () => {
+    cy.logout();
+    cy.visit('/');
+    cy.get('[data-test="comingSoon"]').should('have.text', 'Coming in 2019');
+  });
 });
