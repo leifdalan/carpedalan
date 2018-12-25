@@ -1,39 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import request from 'superagent';
 
-import { API_PATH } from '../../shared/constants';
-import InputField from '../fields/InputField';
-import Form from '../form/Form';
-import Field from '../form/Field';
-import Submit from '../form/Submit';
 import log from '../utils/log';
-import { FormData } from '../utils/globals';
+import CreatePost from '../components/CreatePost';
 
 const Admin = () => {
-  const submitToApi = async values => {
-    try {
-      const formData = new FormData();
-      Object.keys(values).forEach(key => formData.append(key, values[key]));
-
-      await request
-        .post(`${API_PATH}/posts`)
-        .send(formData)
-        .on('progress', e => {
-          log.info('progress', e.percent);
-        });
-    } catch (e) {
-      throw e;
-    }
-  };
-
   const [loading, setLoading] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [tags, setTags] = useState([]);
+  const [submit, setSubmitAll] = useState(false);
+  const fileInputRef = useRef();
 
   const effect = async () => {
     try {
       setLoading(true);
       const response = await request.get('/api/tags');
-
       setTags(response.body);
     } catch (e) {
       log.error('loading failed');
@@ -45,47 +27,39 @@ const Admin = () => {
   useEffect(() => {
     effect();
   }, []);
-
-  // const addTag =
   if (loading) return 'loading';
+
+  const handleChange = e => {
+    setFiles(Array.from(e.target.files));
+
+    const newPreviews = Array.from(e.target.files).map(file =>
+      URL.createObjectURL(file),
+    );
+    setPreviews(newPreviews);
+  };
 
   return (
     <>
-      <Form onSubmit={submitToApi} initial={{ tags: [] }}>
-        <Field
-          name="photo"
-          component={({ input: { onChange } }) => {
-            const handleChange = e => {
-              onChange(e.target.files[0]);
-            };
-            return <input type="file" onChange={handleChange} />;
-          }}
+      <input type="file" ref={fileInputRef} multiple onChange={handleChange} />
+      {files.map((file, index) => (
+        <CreatePost
+          index={index}
+          key={file.name}
+          fileInputRef={fileInputRef}
+          preview={previews[index]}
+          tags={tags}
+          shouldSubmit={submit}
         />
-        <Field name="description" component={InputField} />
-
-        <Submit
-          component={({ submit, text }) => (
-            <button type="button" onClick={submit}>
-              {text}
-            </button>
-          )}
-          text="submit"
-        />
-        <Field
-          name="tags"
-          component={({ input: { onChange, value } }) => {
-            const handleClick = tagId => () => {
-              onChange([...value, tagId]);
-            };
-            return tags.map(tag => (
-              <div key={tag.id} onClick={handleClick(tag.id)}>
-                {tag.name}
-              </div>
-            ));
-          }}
-          q
-        />
-      </Form>
+      ))}
+      <button
+        type="button"
+        onClick={e => {
+          e.preventDefault();
+          setSubmitAll(true);
+        }}
+      >
+        Submit All
+      </button>
     </>
   );
 };

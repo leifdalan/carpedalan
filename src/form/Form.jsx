@@ -184,6 +184,7 @@ function Form({
         validate,
         state,
         submit,
+        meta: state.meta,
         values: state.values,
         registerField,
         unregisterField,
