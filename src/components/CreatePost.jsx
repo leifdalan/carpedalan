@@ -8,7 +8,7 @@ import { FormData } from '../utils/globals';
 
 import CreatePostForm from './CreatPostForm';
 
-const CreatePost = ({ preview, fileInputRef, tags, index, shouldSubmit }) => {
+const CreatePost = ({ preview, fileInputRef, index, shouldSubmit }) => {
   const [submitting, setSubmitting] = useState(false);
   const [submitSucceeded, setSubmitSucceeded] = useState(false);
   const [submitFailed, setSubmitFailed] = useState(false);
@@ -50,7 +50,6 @@ const CreatePost = ({ preview, fileInputRef, tags, index, shouldSubmit }) => {
     <>
       <Form onSubmit={submitToApi} initial={{ tags: [] }}>
         <CreatePostForm
-          tags={tags}
           preview={preview}
           submitting={submitting}
           submitFailed={submitFailed}

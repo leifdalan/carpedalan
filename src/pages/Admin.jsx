@@ -1,33 +1,23 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import request from 'superagent';
 
 import log from '../utils/log';
 import CreatePost from '../components/CreatePost';
+import { Tag } from '../providers/TagProvider';
 
 const Admin = () => {
+  const { tags, loadingTags, loadTags } = useContext(Tag);
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
-  const [tags, setTags] = useState([]);
+
   const [submit, setSubmitAll] = useState(false);
   const fileInputRef = useRef();
 
-  const effect = async () => {
-    try {
-      setLoading(true);
-      const response = await request.get('/api/tags');
-      setTags(response.body);
-    } catch (e) {
-      log.error('loading failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    effect();
+    loadTags();
   }, []);
-  if (loading) return 'loading';
+  if (loadingTags) return 'loading';
 
   const handleChange = e => {
     setFiles(Array.from(e.target.files));
@@ -40,14 +30,19 @@ const Admin = () => {
 
   return (
     <>
-      <input type="file" ref={fileInputRef} multiple onChange={handleChange} />
+      <input
+        data-test="multiUploader"
+        type="file"
+        ref={fileInputRef}
+        multiple
+        onChange={handleChange}
+      />
       {files.map((file, index) => (
         <CreatePost
           index={index}
           key={file.name}
           fileInputRef={fileInputRef}
           preview={previews[index]}
-          tags={tags}
           shouldSubmit={submit}
         />
       ))}

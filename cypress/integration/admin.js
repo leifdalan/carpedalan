@@ -3,7 +3,7 @@ describe('admin', () => {
   beforeEach(() => {
     Cypress.Cookies.preserveOnce('sid');
   });
-  it('type a description', () => {
-    cy.get('[data-test=inputField]').type('this is a description');
+  it('should have a multi file uploader', () => {
+    cy.get('[data-test=multiUploader]');
   });
 });
