@@ -71,43 +71,44 @@ export default function Slash() {
     isEditing
       ? { initial: { [DESCRIPTION]: description }, onSubmit: handleSubmit(id) }
       : {};
-
   return (
     <>
       <div onClick={() => setQuery({ order: 'asc' })}>sort wootdesc</div>
-      {posts.map(({ id, description, key, tags, width }) => (
-        <Wrapper key={id} {...getProps(description, id)}>
-          {width}
-          <img
-            alt={description}
-            width="100%"
-            src={`${API_IMAGES_PATH}/${SIZE_MAP[MEDIUM].width}/${
-              key.split('/')[1]
-            }.webp`}
-          />
-          {isEditing ? (
-            <Field name={DESCRIPTION} component={InputField} />
-          ) : (
-            <div>{description || null}</div>
-          )}
+      {posts.map(({ id, description, key, tags, width }) =>
+        key ? (
+          <Wrapper key={id} {...getProps(description, id)}>
+            {width}
+            <img
+              alt={description}
+              width="100%"
+              src={`${API_IMAGES_PATH}/${SIZE_MAP[MEDIUM].width}/${
+                key.split('/')[1]
+              }.webp`}
+            />
+            {isEditing ? (
+              <Field name={DESCRIPTION} component={InputField} />
+            ) : (
+              <div>{description || null}</div>
+            )}
 
-          {tags.map(({ name, id: tagId }) => (
-            <Link key={tagId} to={`/tag/${name}`}>{`#${name}`}</Link>
-          ))}
-          {isAdmin(user) && !isEditing ? (
-            <div onClick={() => setEditing(true)}>edit</div>
-          ) : null}
-          {isAdmin(user) && isEditing ? <Submit /> : null}
-          {isAdmin(user) && isEditing ? (
-            <div onClick={() => setEditing(false)}>unedit</div>
-          ) : null}
-          {isAdmin(user) && isEditing ? (
-            <button type="button" onClick={del(id)}>
-              del
-            </button>
-          ) : null}
-        </Wrapper>
-      ))}
+            {tags.map(({ name, id: tagId }) => (
+              <Link key={tagId} to={`/tag/${name}`}>{`#${name}`}</Link>
+            ))}
+            {isAdmin(user) && !isEditing ? (
+              <div onClick={() => setEditing(true)}>edit</div>
+            ) : null}
+            {isAdmin(user) && isEditing ? <Submit /> : null}
+            {isAdmin(user) && isEditing ? (
+              <div onClick={() => setEditing(false)}>unedit</div>
+            ) : null}
+            {isAdmin(user) && isEditing ? (
+              <button type="button" onClick={del(id)}>
+                del
+              </button>
+            ) : null}
+          </Wrapper>
+        ) : null,
+      )}
     </>
   );
 }
