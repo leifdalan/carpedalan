@@ -14,6 +14,7 @@ describe('Smoke test', () => {
   });
 
   it('can login as admin', () => {
+    cy.logout();
     cy.server();
     cy.route('POST', '/api/login').as('login');
     cy.visit('/login');
