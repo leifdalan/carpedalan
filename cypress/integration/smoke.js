@@ -11,6 +11,7 @@ describe('Smoke test', () => {
     cy.wait('@login')
       .its('status')
       .should('be', 200);
+    cy.logout();
   });
 
   it('can login as admin', () => {
