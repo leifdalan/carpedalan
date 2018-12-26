@@ -7,10 +7,9 @@ export const getThemeValue = value => ({ theme }) => theme[value];
 export const GlobalStyleComponent = createGlobalStyle`
   
   @font-face {
-    font-family: 'parisienne';
-    src: url('https://cdn.carpedalan.com/parisienne-regular-webfont.woff2') format('woff2'),
-         url('https://cdn.carpedalan.com/parisienne-regular-webfont.woff') format('woff'),
-         url('https://cdn.carpedalan.com/parisienne-regular-webfont.ttf') format('truetype');
+    font-family: 'england';
+    src: url('https://cdn.carpedalan.com/england-webfont.woff2') format('woff2'),
+         url('https://cdn.carpedalan.com/england-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
   }

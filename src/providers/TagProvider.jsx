@@ -1,14 +1,15 @@
 import React, { createContext, useState } from 'react';
+import { node } from 'prop-types';
 import request from 'superagent';
 
 import log from '../utils/log';
 
 export const Tag = createContext({ tags: [], postNewTag: () => {} });
 
-export default ({ children }) => {
+const Tags = ({ children }) => {
   const [tags, setTags] = useState([]);
   const [loadingTags, setLoadingTags] = useState(false);
-  const postNewTag = async tag => {
+  const postNewTag = async () => {
     setLoadingTags(true);
   };
 
@@ -31,3 +32,9 @@ export default ({ children }) => {
     </Tag.Provider>
   );
 };
+
+Tags.propTypes = {
+  children: node.isRequired,
+};
+
+export default Tags;

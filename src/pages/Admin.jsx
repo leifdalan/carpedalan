@@ -1,13 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import request from 'superagent';
 
-import log from '../utils/log';
 import CreatePost from '../components/CreatePost';
 import { Tag } from '../providers/TagProvider';
 
 const Admin = () => {
-  const { tags, loadingTags, loadTags } = useContext(Tag);
-  const [loading, setLoading] = useState(false);
+  const { loadingTags, loadTags } = useContext(Tag);
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
 

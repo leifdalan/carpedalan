@@ -10,8 +10,8 @@ const Comin = styled.div`
   align-items: center;
   font-size: 13vw;
   color: white;
-  font-family: 'parisienne';
-  font-weight: bold;
+  font-family: 'england';
+  font-weight: normal;
   &:before {
     z-index: -1;
     content: '';
