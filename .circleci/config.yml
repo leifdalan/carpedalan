@@ -139,14 +139,8 @@ jobs:
           name: Push image to Heroku registry
           command: |
               ./scripts/releaseDocker.sh
-              # touch image_id
-              # echo "export IMAGE_ID=$WEB_DOCKER_IMAGE_ID" >> image_id
-              # ls -al
-
-            # fi  
   dependencies:
     docker:
-      # specify the version you desire here
       - image: circleci/node:10
       
     working_directory: ~/repo
@@ -154,9 +148,9 @@ jobs:
 
     steps:
       - checkout
-      # Download and cache dependencies
-
-      - run: yarn --ignore-optional
+      - run: 
+          name: Install node dependencies
+          command: yarn --ignore-optional
       - run: 
           name: Upload S3 assets
           command: |

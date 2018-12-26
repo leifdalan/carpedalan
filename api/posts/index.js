@@ -95,6 +95,7 @@ posts.post(
       });
     }
     // Upload to s3
+    console.time('s3');
     try {
       s3Response = await s3
         .upload({
@@ -111,6 +112,7 @@ posts.post(
         error: e,
       });
     }
+    console.timeEnd('s3');
 
     // Transact photos and tags, depending
     try {
@@ -119,7 +121,7 @@ posts.post(
           .insert({
             [TIMESTAMP]: result.tags.DateTimeOriginal,
             [ETAG]: s3Response.ETag,
-            [KEY]: s3Response.key,
+            [KEY]: s3Response.Key,
             [DESCRIPTION]: description,
           })
           .returning('*')
