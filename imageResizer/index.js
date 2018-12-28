@@ -18,6 +18,7 @@ exports.handler = async (event, context, ...otherThingz) => {
   const key = event.Records[0].s3.object.key;
   const bucket = event.Records[0].s3.bucket.name;
   console.error('bucket', bucket);
+  console.error('sizes', SIZES);
 
   let buffer;
 
