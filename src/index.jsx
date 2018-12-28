@@ -1,11 +1,16 @@
 import React, { createContext, useState } from 'react';
-import { bool, oneOfType, string } from 'prop-types';
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import { bool, oneOfType, string, oneOf } from 'prop-types';
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import request from 'superagent';
 
-import Admin from './admin';
+import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Slash from './pages/Slash';
 import Tag from './pages/Tag';
+import LogoutButton from './components/LogoutButton';
+import { themes, GlobalStyleComponent } from './styles';
+import TagProvider from './providers/TagProvider';
 
 export const User = createContext({
   counter: 0,
@@ -14,37 +19,67 @@ export const User = createContext({
   isLoading: false,
 });
 
-function Root({ user }) {
+function Root({ user, defaultTheme }) {
   const [userState, setUser] = useState(user);
-  const [counter, setCounter] = useState(0);
+  const [theme, setTheme] = useState(defaultTheme);
+
+  const handleChangeTheme = async () => {
+    const newTheme = theme === 'dark' ? 'lite' : 'dark';
+    if (theme === 'dark') setTheme('lite');
+    else setTheme('dark');
+    await request.post('/api/user', {
+      defaultTheme: newTheme,
+    });
+  };
 
   return (
     <User.Provider value={{ user: userState, setUser }}>
-      <Router>
-        <>
-          <div onClick={() => setCounter(counter + 1)}> click me</div>
-          <Link to="/login">asdfff</Link>
-          <Link to="/">slash</Link>
-          {userState === 'write' ? <Link to="/admin">admin</Link> : null}
-          <div>{userState}</div>
-          <Switch>
-            <Route exact path="/" component={Slash} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/tag/:tag" component={Tag} />
+      <TagProvider>
+        <ThemeProvider theme={themes[theme]}>
+          <>
+            <Router>
+              <>
+                {userState ? (
+                  <>
+                    <button type="button" onClick={handleChangeTheme}>
+                      toggle themeaa
+                    </button>
+                    <LogoutButton setUser={setUser} />
+                    <Link to="/login">login</Link>
+                    <Link to="/">slash</Link>
+                    {userState === 'write' ? (
+                      <Link to="/admin">admin</Link>
+                    ) : null}
+                    <div>{userState}</div>
+                  </>
+                ) : null}
+                <Switch>
+                  <Route exact path="/" component={Slash} />
+                  <Route exact path="/login" component={Login} />
+                  <Route exact path="/tag/:tag" component={Tag} />
+                  {userState === 'write' ? (
+                    <Route exact path="/admin" component={Admin} />
+                  ) : null}
+                  <Route render={() => 'no match'} />
+                </Switch>
+              </>
+            </Router>
 
-            {userState === 'write' ? (
-              <Route exact path="/admin" component={Admin} />
-            ) : null}
-            <Route render={() => 'no match'} />
-          </Switch>
-        </>
-      </Router>
+            <GlobalStyleComponent />
+          </>
+        </ThemeProvider>
+      </TagProvider>
     </User.Provider>
   );
 }
 
+Root.defaultProps = {
+  defaultTheme: 'lite',
+};
+
 Root.propTypes = {
   user: oneOfType([string, bool]).isRequired,
+  defaultTheme: oneOf(Object.keys(themes)),
 };
 
 export default Root;

@@ -1,14 +1,15 @@
-version: '2.1'
+version: '2.3'
 
 services:
   app:
+    container_name: app
     depends_on:
       pg:
         condition: service_healthy
     tty: true
     build:
       context: .
-      dockerfile: Dockerfile
+      target: dev
     volumes:
       - ./src:/app/src:delegated
       - ./server:/app/server:delegated
@@ -16,12 +17,20 @@ services:
       - ./scripts:/app/scripts:delegated
       - ./db:/app/db:delegated
       - ./shared:/app/shared:delegated
+      - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
+      - ./.env-local:/app/.env
+      - ./public:/app/public
+      - ./webpack.config.js:/app/webpack.config.js
     ports:
       - 3001:3001
       - 9227:9229
+      - 80:80
+    environment:
+      PORT: 80
     command: yarn start
   pg:
     image: postgres:10.0-alpine
+    container_name: pg
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -33,4 +42,36 @@ services:
       interval: 1s
       timeout: 1s
       retries: 20
+  pg_test:
+    image: postgres:10.0-alpine
+    container_name: test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5555:5432"
+    # command: '-p 5555'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 20
 
+  pg_migrate:
+    container_name: migrate
+    environment: 
+      NODE_ENV: test
+      MIGRATING: 'true'
+      PG_HOST: pg_test
+      PG_PORT: 5432
+    depends_on:
+      pg_test:
+        condition: service_healthy
+    tty: true
+    volumes:
+      - ./db:/app/db:delegated
+    build:
+      context: .
+      target: dev
+    command: yarn migrate

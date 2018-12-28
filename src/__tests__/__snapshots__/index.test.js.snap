@@ -2,16 +2,24 @@
 
 exports[`test should do some stuff 1`] = `
 Array [
-  <div
+  <button
     onClick={[Function]}
+    type="button"
   >
-     click me
-  </div>,
+    toggle themeaa
+  </button>,
+  <button
+    data-test="logout"
+    onClick={[Function]}
+    type="button"
+  >
+    log out
+  </button>,
   <a
     href="/login"
     onClick={[Function]}
   >
-    asdfff
+    login
   </a>,
   <a
     href="/"
@@ -31,7 +39,7 @@ Array [
   <div
     onClick={[Function]}
   >
-    sort desc
+    sort wootdesc
   </div>,
 ]
 `;

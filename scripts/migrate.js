@@ -7,7 +7,7 @@ const request = require('request');
 const moment = require('moment');
 const uniq = require('lodash/uniq');
 
-const data = require('../data');
+const data = require('../data'); // eslint-disable-line import/no-unresolved
 
 const obj = data.tumblr.data;
 /* eslint-disable no-console */
@@ -59,14 +59,14 @@ async function upload() {
       console.log('fucking failure!!!!');
     }
 
-    console.error('val.date', val.date);
+    console.error('summary', val.summary);
 
     const date = moment(val.date).format('YYYY-MM-DD-HH-MM-ss');
     console.error('date', date);
 
     const params = {
       Body: passThrough,
-      Bucket: 'carpephotos',
+      Bucket: 'carpedev',
       Key: `original/${date}-${val.width}-${val.height}.jpg`,
       ContentType: 'image/jpeg',
     };
@@ -76,6 +76,7 @@ async function upload() {
       console.log('res', response);
       values.push({ ...val, s3: response.ETag });
     } catch (e) {
+      console.log(e);
       errors.push(val);
     }
   }

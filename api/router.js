@@ -9,12 +9,13 @@ import log from '../src/utils/log';
 
 import posts from './posts';
 import tags from './tags';
+
 // Create S3 interface object
 const s3 = new S3();
 
 const api = express.Router();
 
-// Route the things
+// // Route the things
 api.use('/posts', posts);
 api.use('/tags', tags);
 
@@ -29,6 +30,18 @@ api.post('/login', (req, res) => {
   } else {
     res.status(401).send();
   }
+});
+
+api.post('/user', (req, res) => {
+  Object.keys(req.body || {}).forEach(key => {
+    req.session[key] = req.body[key];
+  });
+  res.status(200).end();
+});
+
+api.post('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/login');
 });
 
 // Proxy all image requests to private bucket

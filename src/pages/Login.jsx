@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import request from 'superagent';
 
 import InputField from '../fields/InputField';
@@ -8,12 +9,16 @@ import Submit from '../form/Submit';
 
 import { User } from '..';
 
-export default function Login() {
-  const { setUser } = useContext(User);
+import ComingSoon from '../components/ComingSoon';
 
+export default function Login() {
+  const { setUser, user } = useContext(User);
+  const [hasLoggedIn, setHasLoggedIn] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const submitLogin = async ({ password }) => {
     try {
       const response = await request.post('/api/login', { password });
+      setHasLoggedIn(true);
       setUser(response.body.user);
     } catch (e) {
       throw e;
@@ -22,11 +27,24 @@ export default function Login() {
 
   return (
     <>
-      <Form onSubmit={submitLogin}>
-        <div>soaaaamething</div>
-        <Field name="password" component={InputField} type="password" />
-        <Submit />
-      </Form>
+      {showLogin || user ? (
+        <>
+          <Form onSubmit={submitLogin}>
+            <div>soaaaamething</div>
+            <Field
+              name="password"
+              component={InputField}
+              asdf="asdf"
+              type="password"
+            />
+            <Submit />
+          </Form>
+
+          {hasLoggedIn ? <Redirect to="/" /> : null}
+        </>
+      ) : (
+        <ComingSoon setShowLogin={setShowLogin} />
+      )}
     </>
   );
 }

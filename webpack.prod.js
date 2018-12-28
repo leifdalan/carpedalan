@@ -1,9 +1,12 @@
 const path = require('path');
 
+const dotenv = require('dotenv-safe');
 const webpack = require('webpack');
 const Manifest = require('webpack-manifest-plugin');
 // eslint-disable-next-line import/no-extraneous-dependencies
-const CleanWebpack = require('clean-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
+
+dotenv.config();
 
 module.exports = {
   mode: 'production',
@@ -13,7 +16,7 @@ module.exports = {
   },
   output: {
     path: path.resolve('dist'),
-    filename: '[name].[hash].js',
+    filename: '[name].[contenthash].js',
     publicPath: '/',
   },
   resolve: {
@@ -29,15 +32,19 @@ module.exports = {
     ],
   },
   plugins: [
-    new CleanWebpack(['dist']),
     // htmlWebpackPlugin,
     new webpack.DefinePlugin({
       PRODUCTION: JSON.stringify(true),
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        LOG_LEVEL: JSON.stringify(process.env.LOG_LEVEL),
       },
     }),
     new Manifest(),
+    new CompressionPlugin({
+      exclude: 'manifest.json',
+      filename: '[path]',
+    }),
   ],
   optimization: {
     runtimeChunk: 'single',

@@ -1,4 +1,5 @@
-import React, { createContext } from 'react';
+import React from 'react';
+import { func, any } from 'prop-types';
 import { create } from 'react-test-renderer';
 
 import Field from '../Field';
@@ -36,6 +37,13 @@ const prop = 'prop';
 const Component = ({ input: { onChange, value } }) => (
   <div prop={prop} onChange={onChange} value={value} />
 );
+
+Component.propTypes = {
+  input: {
+    onChange: func.isRequired,
+    value: any.isRequired,
+  }.isRequired,
+};
 
 describe('<Field />', () => {
   let instance;

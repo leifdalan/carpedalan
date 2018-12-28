@@ -7,6 +7,11 @@
     "node": true,
     "jest/globals": true
   },  
+  "globals": {
+    "cy": false,
+    "Cypress": false,
+    "before": false
+  },
   "rules": {
     "func-names": ["error", "never"],
     "prettier/prettier": ["error"],

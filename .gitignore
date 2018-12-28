@@ -56,15 +56,24 @@ typings/
 
 # dotenv environment variables file
 .env
+.env-prod
+.env-stage
+.env-local
 
 # next.js build output
 .next
-
+container-definition.js
+cypress/videos
+cypress/test-output.xml
+cypress/screenshots
 goodData.json
 goodDataWithEtag.json
-data.js
+container-definition.json
+/data.js
 goodData*
 dist
 retinal/node_modules
 imageResizer.zip
 photos
+junit.xml
+imageResizer/constants.js

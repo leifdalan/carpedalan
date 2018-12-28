@@ -21,9 +21,11 @@ import {
   pgPort,
   isDev,
   isProd,
+  ssl,
 } from './config';
 
 const app = express();
+
 export const setup = () => {
   // Connect to DB pool
   const pool = new pg.Pool({
@@ -32,6 +34,7 @@ export const setup = () => {
     password: pgPassword,
     database: pgDatabase,
     port: pgPort,
+    ...(ssl ? { ssl: true } : {}),
   });
   const PgSession = connectPgSimple(session);
   const store = new PgSession({ pool });
@@ -45,6 +48,9 @@ export const setup = () => {
   app.engine('hbs', expbhs(viewConfig));
   app.set('view engine', 'hbs');
   app.set('views', viewConfig.layoutsDir);
+  // static assets
+  app.use('/dist', express.static('dist'));
+  app.use('/public', express.static('public'));
 
   // Setup app to parse cookies and POST requests
   app.use(cookieParser());
@@ -52,7 +58,6 @@ export const setup = () => {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   // Set up session store
-
   app.use(
     session({
       store,
@@ -60,6 +65,7 @@ export const setup = () => {
       secret: sessionSecret,
       resave: false,
       saveUninitialized: false,
+      rolling: true,
       cookie: {
         maxAge: 10000 * 60 * 60 * 24 * 30 * 6,
       },
@@ -89,9 +95,6 @@ export const setup = () => {
   // Define routes
   router(app);
 
-  // static assets
-  app.use(express.static('dist'));
-
   // Winston error logger
   app.use(
     expressWinston.errorLogger({
@@ -104,6 +107,7 @@ export const setup = () => {
     }),
   );
   return { app, store, pool };
+  // return { app };
 };
 
 export const start = expressApp => expressApp.listen(port);

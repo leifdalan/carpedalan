@@ -1,13 +1,12 @@
 import webpack from 'webpack';
-import devMiddleware from 'webpack-dev-middleware';
-import hotMiddleware from 'webpack-hot-middleware';
 
-import webpackConfig from '../webpack.config';
-
-import devMiddlewareConfig from './devMiddleware.config';
-
-// eslint-disable-next-line
 export const applyWebpackMiddleware = app => {
+  /* eslint-disable import/no-extraneous-dependencies,global-require */
+  const webpackConfig = require('../webpack.config');
+  const devMiddleware = require('webpack-dev-middleware');
+  const hotMiddleware = require('webpack-hot-middleware');
+  const devMiddlewareConfig = require('./devMiddleware.config');
+  /* eslint-enable import/no-extraneous-dependencies,global-require */
   const compiler = webpack(webpackConfig);
   app.use(devMiddleware(compiler, devMiddlewareConfig));
   app.use(hotMiddleware(compiler));

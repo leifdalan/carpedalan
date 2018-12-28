@@ -1,11 +1,14 @@
 import webpackConfig from '../webpack.config';
 
 export default {
-  noInfo: true,
+  noInfo: false,
   publicPath: webpackConfig.output.publicPath,
   stats: {
+    // fallback value for stats options when an option is not defined (has precedence over local webpack defaults)
+    all: undefined,
+
     // Add asset Information
-    assets: true,
+    assets: false,
 
     // Sort assets by a field
     // You can reverse the sort with `!field`.
@@ -14,7 +17,7 @@ export default {
     assetsSort: 'field',
 
     // Add build date and time information
-    builtAt: true,
+    builtAt: false,
 
     // Add information about cached (not built) modules
     cached: false,
@@ -35,15 +38,19 @@ export default {
     chunkModules: false,
 
     // Add the origins of chunks and chunk merging info
-    chunkOrigins: true,
+    chunkOrigins: false,
 
     // Sort the chunks by a field
     // You can reverse the sort with `!field`. Default is `id`.
     // Some other possible values: 'name', 'size', 'chunks', 'failed', 'issuer'
     // For a complete list of fields see the bottom of the page
+    chunksSort: 'field',
+
+    // Context directory for request shortening
+    context: '../src/',
 
     // `webpack --colors` equivalent
-    colors: true,
+    colors: false,
 
     // Display the distance from the entry point for each module
     depth: false,
@@ -55,7 +62,27 @@ export default {
     env: false,
 
     // Add errors
-    errors: true,
+    errors: false,
+
+    // Add details to errors (like resolving log)
+    errorDetails: false,
+
+    // // Exclude assets from being displayed in stats
+    // // This can be done with a String, a RegExp, a Function getting the assets name
+    // // and returning a boolean or an Array of the above.
+    // excludeAssets: "filter" | /filter/ | (assetName) => false | false |
+    //   ["filter"] | [/filter/] | [(assetName) => false|false],
+
+    // // Exclude modules from being displayed in stats
+    // // This can be done with a String, a RegExp, a Function getting the modules source
+    // // and returning a boolean or an Array of the above.
+    // excludeModules: "filter" | /filter/ | (moduleSource) => false | false |
+    //   ["filter"] | [/filter/] | [(moduleSource) => false|false],
+
+    // // See excludeModules
+    // exclude: "filter" | /filter/ | (moduleSource) => false | false |
+    //   ["filter"] | [/filter/] | [(moduleSource) => false|false],
+
     // Add the hash of the compilation
     hash: false,
 
@@ -72,10 +99,10 @@ export default {
     modulesSort: 'field',
 
     // Show dependencies and origin of warnings/errors (since webpack 2.5.0)
-    moduleTrace: true,
+    moduleTrace: false,
 
     // Show performance hint when file size exceeds `performance.maxAssetSize`
-    performance: true,
+    performance: false,
 
     // Show the exports of the modules
     providedExports: false,
@@ -84,21 +111,26 @@ export default {
     publicPath: false,
 
     // Add information about the reasons why modules are included
-    reasons: true,
+    reasons: false,
 
     // Add the source code of modules
     source: false,
 
     // Add timing information
-    timings: true,
+    timings: false,
 
     // Show which exports of a module are used
     usedExports: false,
 
     // Add webpack version information
-    version: true,
+    version: false,
 
     // Add warnings
-    warnings: true,
+    warnings: false,
+
+    // Filter warnings to be shown (since webpack 2.4.0),
+    // can be a String, Regexp, a function getting the warning and returning a boolean
+    // or an Array of a combination of the above. First match wins.
+    // warningsFilter: "filter" | /filter/ | ["filter", /filter/] | (warning) => false|false  },
   },
 };

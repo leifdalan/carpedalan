@@ -3,26 +3,27 @@ import { shape } from 'prop-types';
 import request from 'superagent';
 
 import { API_PATH, API_IMAGES_PATH } from '../../shared/constants';
-import log from '../utils/log';
 
 export default function Tag(props) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-
-  useEffect(async () => {
+  const effect = async () => {
     setLoading(true);
     try {
       const response = await request(
         `${API_PATH}/tags/${props.match.params.tag}`,
       );
       setData(response.body);
-      log.info(response);
     } catch (e) {
       setError(e);
     } finally {
       setLoading(false);
     }
+  };
+  useEffect(() => {
+    effect();
+    return null;
   }, []);
 
   if (error) return 'error';

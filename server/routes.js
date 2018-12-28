@@ -4,7 +4,7 @@ import { assets, isProd } from './config';
 
 let clientAssets = false;
 if (isProd) {
-  const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require
+  const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
   clientAssets = assets.map(asset => manifest[asset]);
 }
 
@@ -14,7 +14,7 @@ export default app => {
   app.get('/login', (req, res) => {
     res.render('index', {
       layout: false,
-      session: false,
+      session: JSON.stringify(req.session),
       clientAssets,
     });
   });
@@ -22,6 +22,12 @@ export default app => {
   app.get('/admin/*', (req, res) => {
     if (req.session.user !== 'write') {
       res.redirect(301, '/');
+    } else {
+      res.render('index', {
+        layout: false,
+        session: JSON.stringify(req.session),
+        clientAssets,
+      });
     }
   });
 
@@ -31,7 +37,7 @@ export default app => {
     } else if (['read', 'write'].includes(req.session.user)) {
       res.render('index', {
         layout: false,
-        session: JSON.stringify(req.session.user),
+        session: JSON.stringify(req.session),
         clientAssets,
       });
     }

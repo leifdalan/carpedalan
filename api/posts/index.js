@@ -25,7 +25,7 @@ import {
 import log from '../../src/utils/log';
 
 // Create S3 interface object
-const s3 = new S3();
+const s3 = new S3({ region: 'us-west-2' });
 // Use memory storage for multer "store" - note: will hold file buffers
 // in-memory! Considering writing custom store that streams to S3 if this
 // becomes a problem
@@ -75,8 +75,16 @@ posts.get('/:id', isLoggedIn, async (req, res) => {
 posts.post(
   '',
   isAdmin,
-  // use multer middleware for multipart upload data parsing
+  (req, res, next) => {
+    console.time('middleWare');
+    next();
+  },
   uploadMiddleware.single('photo'),
+  (req, res, next) => {
+    console.timeEnd('middleWare');
+    next();
+  },
+
   async (req, res) => {
     let s3Response;
     let result;
@@ -85,23 +93,26 @@ posts.post(
     const tags = req.body[TAGS] ? req.body[TAGS].split(',') : false;
     // Parse exif data for original timestamp and other
     // metadata
+    console.time('exif');
     try {
       const parser = exif.create(req.file.buffer);
       result = parser.parse();
-      log.info(result);
     } catch (e) {
       return res.status(500).json({
         type: 'EXIF parsing error',
         error: e,
       });
     }
+    console.timeEnd('exif');
     // Upload to s3
+    console.time('s3');
     try {
       s3Response = await s3
         .upload({
           Key: `original/${req.file.originalname}`,
           Bucket: bucket,
           Body: req.file.buffer,
+          Region: 'us-west-2',
           ContentType: 'image/jpeg',
         })
         .promise();
@@ -112,6 +123,7 @@ posts.post(
         error: e,
       });
     }
+    console.timeEnd('s3');
 
     // Transact photos and tags, depending
     try {
@@ -120,7 +132,7 @@ posts.post(
           .insert({
             [TIMESTAMP]: result.tags.DateTimeOriginal,
             [ETAG]: s3Response.ETag,
-            [KEY]: s3Response.key,
+            [KEY]: s3Response.Key,
             [DESCRIPTION]: description,
           })
           .returning('*')
@@ -201,7 +213,7 @@ posts.get('', isLoggedIn, async (req, res) => {
     ];
   }, []);
 
-  res.json(dedupped).send();
+  res.json(dedupped);
 });
 
 export default posts;

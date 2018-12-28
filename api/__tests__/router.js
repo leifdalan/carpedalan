@@ -51,4 +51,21 @@ describe('Basic routes webapp routes', () => {
       .send({ some: 'body' });
     expect(status).toBe(401);
   });
+
+  it('should redirect when logging out', async () => {
+    const { status, header } = await readUserAgent.post('/api/logout');
+    expect(header.connection).toBe('close');
+    expect(status).toBe(302);
+  });
+
+  it('should be unauthenticated after logout', async () => {
+    await readUserAgent.post('/api/logout');
+    const { status } = await readUserAgent.get('/api/posts');
+    expect(status).toBe(401);
+  });
+
+  it('should redirect to login when logging out', async () => {
+    const { header } = await readUserAgent.post('/api/logout').redirects(0);
+    expect(header.location).toBe('/login');
+  });
 });

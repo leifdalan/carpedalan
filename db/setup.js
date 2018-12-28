@@ -1,4 +1,17 @@
 // Update with your config settings.
+const path = require('path');
+
+const dotenv = require('dotenv-safe');
+
+const isMigrating = !!process.env.MIGRATING;
+dotenv.config({
+  path: path.resolve(process.cwd(), isMigrating ? '..' : '.', '.env'),
+  example: path.resolve(
+    process.cwd(),
+    isMigrating ? '..' : '.',
+    '.env.example',
+  ),
+});
 
 module.exports = {
   development: {
@@ -22,18 +35,40 @@ module.exports = {
   test: {
     client: 'pg',
     connection: {
-      host: 'localhost',
+      host: process.env.PG_HOST || 'localhost',
       database: 'postgres',
       user: 'postgres',
       password: 'postgres',
-      port: 5555,
+      port: process.env.PG_PORT || 5555,
     },
     pool: {
       min: 2,
       max: 10,
     },
     migrations: {
-      directory: './db/migrations/setup',
+      directory: `./${isMigrating ? '/' : 'db/'}migrations/setup`,
+    },
+    seeds: {
+      directory: './db/seeds',
+    },
+    useNullAsDefault: true,
+  },
+
+  ci: {
+    client: 'pg',
+    connection: {
+      host: process.env.PG_HOST || 'localhost',
+      database: 'postgres',
+      user: 'postgres',
+      password: 'postgres',
+      port: 5432,
+    },
+    pool: {
+      min: 2,
+      max: 10,
+    },
+    migrations: {
+      directory: path.resolve(__dirname, 'migrations', 'setup'),
     },
     seeds: {
       directory: './db/seeds',
@@ -59,11 +94,7 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: {
-      database: 'postgres',
-      user: 'postgres',
-      password: 'postgres',
-    },
+    connection: process.env.PG_URI,
     pool: {
       min: 2,
       max: 10,
