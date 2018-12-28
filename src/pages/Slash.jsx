@@ -81,6 +81,7 @@ export default function Slash() {
             <img
               alt={description}
               width="100%"
+              data-test={key.split('/')[1]}
               src={`${API_IMAGES_PATH}/${SIZE_MAP[MEDIUM].width}/${
                 key.split('/')[1]
               }.webp`}

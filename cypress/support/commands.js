@@ -10,6 +10,7 @@
 //
 //
 // -- This is a parent command --
+
 Cypress.Commands.add('loginAsAdmin', () => {
   cy.server();
   cy.route('POST', '/api/login').as('login');

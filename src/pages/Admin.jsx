@@ -45,6 +45,7 @@ const Admin = () => {
       ))}
       <button
         type="button"
+        data-test="submitAll"
         onClick={e => {
           e.preventDefault();
           setSubmitAll(true);
