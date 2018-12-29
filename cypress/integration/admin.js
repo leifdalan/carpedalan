@@ -2,7 +2,7 @@ describe('admin', () => {
   before(cy.loginAsAdmin);
   beforeEach(() => {
     Cypress.Cookies.preserveOnce('sid');
-    // cy.cleanDb();
+    cy.cleanDb();
   });
   it('should be able to upload multiple files', function() {
     cy.server();
@@ -25,7 +25,7 @@ describe('admin', () => {
             .should('be', 200);
           cy.get('[href="/"]').click();
           cy.get('[data-test="neildegrasse.jpg"]');
-          // cy.task('removeUpload');
+          cy.task('removeUpload');
         },
       ),
     );

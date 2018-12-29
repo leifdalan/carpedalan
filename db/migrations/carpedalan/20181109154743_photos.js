@@ -43,7 +43,6 @@ exports.up = knex =>
     table.timestamp(CREATEDAT).defaultTo(knex.fn.now());
     table.timestamp(UPDATEDAT).defaultTo(knex.fn.now());
     Object.values(EXIFPROPS).forEach(value => {
-      console.log(value);
       table.string(value);
     });
   });

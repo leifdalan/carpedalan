@@ -13,7 +13,7 @@
     "migrate": "MIGRATING=true ./scripts/migrate.sh",
     "start": "MIGRATING=true yarn migrateAndSeed && DEBUG=knex*,-knex:client,-knex:connection,-knex:pool nodemon --inspect=0.0.0.0 .",
     "start:prod": "NODE_ENV=production node .",
-    "e2e": "PG_PORT=5433 PG_HOST=localhost CYPRESS_BASE_URL=http://localhost cypress open --env configFile=local",
+    "e2e": "PG_PORT=5555 PG_HOST=localhost CYPRESS_BASE_URL=http://localhost cypress open --env configFile=local",
     "e2e:ci": "MIGRATING=true NODE_ENV=ci yarn migrate NODE_ENV=ci yarn knex seed:run --knexfile db/knexfile.js && yarn start:prod",
     "test-junit": "cypress run --reporter junit --reporter-options 'mochaFile=junit-results/my-test-output.xml'",
     "test-multiple": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=config.json",
