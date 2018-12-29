@@ -2,6 +2,7 @@ describe('admin', () => {
   before(cy.loginAsAdmin);
   beforeEach(() => {
     Cypress.Cookies.preserveOnce('sid');
+    cy.cleanDb();
   });
   it('should be able to upload multiple files', function() {
     cy.server();

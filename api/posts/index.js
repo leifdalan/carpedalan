@@ -2,6 +2,7 @@ import express from 'express';
 import { S3 } from 'aws-sdk';
 import multer from 'multer';
 import exif from 'exif-parser';
+import sharp from 'sharp';
 
 import { bucket } from '../../server/config';
 import db from '../../server/db';
@@ -104,6 +105,20 @@ posts.post(
       });
     }
     console.timeEnd('exif');
+
+    console.time('sharp');
+    let buffer;
+    try {
+      buffer = await sharp(req.file.buffer)
+        .rotate()
+        .toBuffer();
+    } catch (e) {
+      return res.status(500).json({
+        type: 'Sharp error',
+        error: e,
+      });
+    }
+    console.timeEnd('sharp');
     // Upload to s3
     console.time('s3');
     try {
@@ -111,7 +126,7 @@ posts.post(
         .upload({
           Key: `original/${req.file.originalname}`,
           Bucket: bucket,
-          Body: req.file.buffer,
+          Body: buffer,
           Region: 'us-west-2',
           ContentType: 'image/jpeg',
         })

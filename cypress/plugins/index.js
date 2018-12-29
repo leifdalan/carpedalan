@@ -12,12 +12,23 @@
 // the project's config changing)
 
 const dotenv = require('dotenv-safe');
+// const knex = require('knex');
+
+// const knexFile = require('../../db/knexfile');
 
 const env = dotenv.config();
+// const config = knexFile.ci;
+// const db = knex(config);
 
-module.exports = (on, config) =>
-  Object.assign(config, {
+module.exports = (on, pluginConfig) => {
+  on('task', {
+    cleanDb() {
+      return null;
+    },
+  });
+  return Object.assign(pluginConfig, {
     env: env.parsed,
   });
+};
 // `on` is used to hook into various events Cypress emits
 // `config` is the resolved Cypress config

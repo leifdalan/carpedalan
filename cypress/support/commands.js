@@ -32,6 +32,10 @@ Cypress.Commands.add('loginAsAdmin', () => {
 Cypress.Commands.add('logout', () => {
   cy.request('POST', '/api/logout');
 });
+
+Cypress.Commands.add('cleanDb', () => {
+  cy.task('cleanDb');
+});
 //
 //
 // -- This is a child command --
