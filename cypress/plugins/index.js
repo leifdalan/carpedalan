@@ -27,7 +27,12 @@ const S3 = new aws.S3({ region: 'us-west-2' });
 module.exports = (on, pluginConfig) => {
   on('task', {
     async cleanDb() {
-      await db.seed.run();
+      try {
+        await db.seed.run();
+      } catch (e) {
+        console.log(e);
+        throw e;
+      }
       return null;
     },
     async removeUpload() {
@@ -35,6 +40,10 @@ module.exports = (on, pluginConfig) => {
         await S3.deleteObject({
           Bucket: 'carpedev-west',
           Key: 'original/neildegrasse.jpg',
+        }).promise();
+        await S3.deleteObject({
+          Bucket: 'carpedev-west',
+          Key: 'original/kitty.jpg',
         }).promise();
       } catch (e) {
         throw e;
