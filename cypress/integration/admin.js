@@ -25,6 +25,7 @@ describe('admin', () => {
             .should('be', 200);
           cy.get('[href="/"]').click();
           cy.get('[data-test="neildegrasse.jpg"]');
+          // cy.task('removeUpload');
         },
       ),
     );
