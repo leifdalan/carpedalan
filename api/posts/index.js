@@ -187,7 +187,7 @@ posts.get('', isLoggedIn, async (req, res) => {
   const tagName = 'tagName';
   const tagId = 'tagId';
   const page = req.query.page || 1;
-  const limit = 20;
+  const limit = 100;
   const offset = (page - 1) * limit;
   const selectStatement = db(PHOTOS)
     .select()
@@ -232,9 +232,18 @@ posts.get('', isLoggedIn, async (req, res) => {
     ];
   }, []);
 
+  const { count } = await db(PHOTOS)
+    .where({ [STATUS]: ACTIVE })
+    .count()
+    .first();
+
   res.json({
     data: dedupped,
-    meta: { page },
+    meta: {
+      page,
+      count: Number(count),
+      pages: Math.floor(Number(count) / limit),
+    },
   });
 });
 

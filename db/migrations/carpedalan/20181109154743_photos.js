@@ -10,7 +10,7 @@ const {
   ISO,
   APERTURE,
   EXPOSURE,
-  FOCALLENGTH,
+  // FOCALLENGTH,
   ETAG,
   KEY,
   CREATEDAT,
@@ -18,6 +18,7 @@ const {
   STATUS,
   ACTIVE,
   DELETED,
+  EXIFPROPS,
 } = require('../../../shared/constants');
 
 exports.up = knex =>
@@ -36,12 +37,15 @@ exports.up = knex =>
     table.string(ISO);
     table.string(APERTURE);
     table.string(EXPOSURE);
-    table.string(FOCALLENGTH);
     table.string(ETAG);
     table.string(KEY);
     table.enu(STATUS, [ACTIVE, DELETED]).defaultTo(ACTIVE);
     table.timestamp(CREATEDAT).defaultTo(knex.fn.now());
     table.timestamp(UPDATEDAT).defaultTo(knex.fn.now());
+    Object.values(EXIFPROPS).forEach(value => {
+      console.log(value);
+      table.string(value);
+    });
   });
 
 exports.down = knex => {
