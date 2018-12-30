@@ -14,6 +14,7 @@ services:
     volumes: 
       - ./cypress:/app/cypress/
       - ./db:/app/db/
+      - ./aou:/app/api/
       - ./.env:/app/.env
       - ./.env.example:/app/.env.example
     command: bash -c "ls -al && ls cypress -al && pwd && yarn cypress run --env configFile=ci --reporter junit --reporter-options 'mochaFile=/app/cypress/test-output.xml'"  
