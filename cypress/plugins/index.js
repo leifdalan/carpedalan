@@ -20,10 +20,7 @@ const aws = require('aws-sdk');
 const knexFile = require('../../db/knexfile');
 
 const config = knexFile.ci;
-console.log('config', config);
 const db = knex(config);
-
-console.log('db', db);
 
 const S3 = new aws.S3({ region: 'us-west-2' });
 
