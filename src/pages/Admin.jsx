@@ -26,11 +26,15 @@ const Admin = () => {
           const reader = new FileReader();
           const url = URL.createObjectURL(file);
           reader.onload = function() {
-            const arrayBuffer = this.result;
-            const data = exifReader.load(arrayBuffer);
-            const orientation =
-              data.Orientation.value === 6 ? 'portrait' : 'landscape';
-            resolve({ url, orientation });
+            try {
+              const arrayBuffer = this.result;
+              const data = exifReader.load(arrayBuffer);
+              const orientation =
+                data.Orientation.value === 6 ? 'portrait' : 'landscape';
+              resolve({ url, orientation });
+            } catch (er) {
+              resolve({ url, orientation: 'landscape' });
+            }
           };
           reader.readAsArrayBuffer(file);
         }),

@@ -33,7 +33,7 @@ export default function Slash() {
         `${API_PATH}/posts${query ? `?${stringify(query)}` : ''}`,
       );
       const response = await apiCall;
-      setPosts(response.body);
+      setPosts(response.body.data);
     } catch (e) {
       log.error('loading failed');
     } finally {

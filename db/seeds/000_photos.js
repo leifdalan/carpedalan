@@ -1,7 +1,7 @@
 const { v4: uuid } = require('uuid');
 
 const data = require('../../goodDataWithEtagAndKey.json');
-const { ACTIVE } = require('../../shared/constants');
+const { ACTIVE, EXIFPROPS } = require('../../shared/constants');
 
 exports.seed = async knex => {
   await Promise.all([
@@ -22,19 +22,26 @@ exports.seed = async knex => {
       width,
       height,
       summary,
-      exif: { Camera, ISO, Aperture, Exposure, FocalLength } = {
-        Camera: null,
-        ISO: null,
-        Aperture: null,
-        Exposure: null,
-        FocalLength: null,
-      },
+      // exif: { Camera, ISO, Aperture, Exposure, FocalLength } = {
+      //   Camera: null,
+      //   ISO: null,
+      //   Aperture: null,
+      //   Exposure: null,
+      //   FocalLength: null,
+      // },
       tags,
       s3,
       key,
     } = datum;
     const id = uuid();
+    const exifData = Object.keys(EXIFPROPS).reduce((acc, key) => {
+      return {
 
+        ...acc,
+        [key]: datum.exif ? datum.exif[key]: null
+      }
+    }, {});
+    
     photoInserts.push({
       id,
       timestamp,
@@ -43,14 +50,16 @@ exports.seed = async knex => {
       width,
       height,
       description: summary,
-      camera: Camera,
-      ISO,
-      aperture: Aperture,
-      exposure: Exposure,
-      focalLength: FocalLength,
+      // camera: Camera,
+      // ISO,
+      // aperture: Aperture,
+      // exposure: Exposure,
+      // focalLength: FocalLength,
+
       etag: s3,
       key,
       status: ACTIVE,
+      // ...exifData,
     });
     for (const tag of tags) {
       if (tags.length) {

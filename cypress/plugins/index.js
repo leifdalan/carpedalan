@@ -11,18 +11,46 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-const dotenv = require('dotenv-safe');
-// const knex = require('knex');
-
-// const knexFile = require('../../db/knexfile');
+const dotenv = require('dotenv-safe'); // eslint-disable-line
 
 const env = dotenv.config();
-// const config = knexFile.ci;
-// const db = knex(config);
+const knex = require('knex');
+const aws = require('aws-sdk');
+
+const knexFile = require('../../db/knexfile');
+
+const config = knexFile.ci;
+console.log('config', config);
+const db = knex(config);
+
+console.log('db', db);
+
+const S3 = new aws.S3({ region: 'us-west-2' });
 
 module.exports = (on, pluginConfig) => {
   on('task', {
-    cleanDb() {
+    async cleanDb() {
+      try {
+        await db.seed.run();
+      } catch (e) {
+        console.log(e);
+        throw e;
+      }
+      return null;
+    },
+    async removeUpload() {
+      try {
+        await S3.deleteObject({
+          Bucket: 'carpedev-west',
+          Key: 'original/neildegrasse.jpg',
+        }).promise();
+        await S3.deleteObject({
+          Bucket: 'carpedev-west',
+          Key: 'original/kitty.jpg',
+        }).promise();
+      } catch (e) {
+        throw e;
+      }
       return null;
     },
   });

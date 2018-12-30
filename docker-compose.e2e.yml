@@ -6,6 +6,8 @@ services:
     environment:
       ## this enables colors in the output
       TERM: xterm
+      NODE_ENV: ci
+      PG_HOST: e2e_pg
       CYPRESS_BASE_URL: http://e2e_app
 
     depends_on:
@@ -13,6 +15,9 @@ services:
         condition: service_healthy
     volumes: 
       - ./cypress:/app/cypress/
+      - ./db:/app/db/
+      - ./api:/app/api/
+      - ./shared:/app/shared/
       - ./.env:/app/.env
       - ./.env.example:/app/.env.example
     command: bash -c "ls -al && ls cypress -al && pwd && yarn cypress run --env configFile=ci --reporter junit --reporter-options 'mochaFile=/app/cypress/test-output.xml'"  
