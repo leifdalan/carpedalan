@@ -81,7 +81,7 @@ module.exports = {
       tableName: 'carpe_migrations',
     },
     seeds: {
-      directory: './db/seeds-ci',
+      directory: './api/setup/seeds',
     },
     useNullAsDefault: true,
   },

@@ -6,6 +6,7 @@ services:
     environment:
       ## this enables colors in the output
       TERM: xterm
+      NODE_ENV: ci
       CYPRESS_BASE_URL: http://e2e_app
 
     depends_on:
