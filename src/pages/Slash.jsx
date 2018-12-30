@@ -33,7 +33,7 @@ export default function Slash() {
         `${API_PATH}/posts${query ? `?${stringify(query)}` : ''}`,
       );
       const response = await apiCall;
-      setPosts(response.body);
+      setPosts(response.body.data);
     } catch (e) {
       log.error('loading failed');
     } finally {
@@ -81,6 +81,7 @@ export default function Slash() {
             <img
               alt={description}
               width="100%"
+              data-test={key.split('/')[1]}
               src={`${API_IMAGES_PATH}/${SIZE_MAP[MEDIUM].width}/${
                 key.split('/')[1]
               }.webp`}

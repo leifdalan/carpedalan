@@ -11,13 +11,52 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-const dotenv = require('dotenv-safe');
+const dotenv = require('dotenv-safe'); // eslint-disable-line
 
 const env = dotenv.config();
+const knex = require('knex');
+const aws = require('aws-sdk');
 
-module.exports = (on, config) =>
-  Object.assign(config, {
+const knexFile = require('../../db/knexfile');
+
+const config = knexFile.ci;
+console.log('config', config);
+const db = knex(config);
+
+console.log('db', db);
+
+const S3 = new aws.S3({ region: 'us-west-2' });
+
+module.exports = (on, pluginConfig) => {
+  on('task', {
+    async cleanDb() {
+      try {
+        await db.seed.run();
+      } catch (e) {
+        console.log(e);
+        throw e;
+      }
+      return null;
+    },
+    async removeUpload() {
+      try {
+        await S3.deleteObject({
+          Bucket: 'carpedev-west',
+          Key: 'original/neildegrasse.jpg',
+        }).promise();
+        await S3.deleteObject({
+          Bucket: 'carpedev-west',
+          Key: 'original/kitty.jpg',
+        }).promise();
+      } catch (e) {
+        throw e;
+      }
+      return null;
+    },
+  });
+  return Object.assign(pluginConfig, {
     env: env.parsed,
   });
+};
 // `on` is used to hook into various events Cypress emits
 // `config` is the resolved Cypress config

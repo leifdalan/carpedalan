@@ -70,7 +70,7 @@ module.exports = {
       database: 'carpedalan',
       user: 'postgres',
       password: 'postgres',
-      port: 5432,
+      port: process.env.PG_PORT || 5432,
     },
     pool: {
       min: 2,

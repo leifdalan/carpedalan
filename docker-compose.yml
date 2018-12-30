@@ -71,6 +71,7 @@ services:
     tty: true
     volumes:
       - ./db:/app/db:delegated
+      - ./shared:/app/shared:delegated
     build:
       context: .
       target: dev

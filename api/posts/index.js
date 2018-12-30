@@ -2,6 +2,7 @@ import express from 'express';
 import { S3 } from 'aws-sdk';
 import multer from 'multer';
 import exif from 'exif-parser';
+import sharp from 'sharp';
 
 import { bucket } from '../../server/config';
 import db from '../../server/db';
@@ -76,12 +77,12 @@ posts.post(
   '',
   isAdmin,
   (req, res, next) => {
-    console.time('middleWare');
+    // console.time('middleWare');
     next();
   },
   uploadMiddleware.single('photo'),
   (req, res, next) => {
-    console.timeEnd('middleWare');
+    // console.timeEnd('middleWare');
     next();
   },
 
@@ -93,7 +94,7 @@ posts.post(
     const tags = req.body[TAGS] ? req.body[TAGS].split(',') : false;
     // Parse exif data for original timestamp and other
     // metadata
-    console.time('exif');
+    // console.time('exif');
     try {
       const parser = exif.create(req.file.buffer);
       result = parser.parse();
@@ -103,15 +104,29 @@ posts.post(
         error: e,
       });
     }
-    console.timeEnd('exif');
+    // console.timeEnd('exif');
+
+    // console.time('sharp');
+    let buffer;
+    try {
+      buffer = await sharp(req.file.buffer)
+        .rotate()
+        .toBuffer();
+    } catch (e) {
+      return res.status(500).json({
+        type: 'Sharp error',
+        error: e,
+      });
+    }
+    // console.timeEnd('sharp');
     // Upload to s3
-    console.time('s3');
+    // console.time('s3');
     try {
       s3Response = await s3
         .upload({
           Key: `original/${req.file.originalname}`,
           Bucket: bucket,
-          Body: req.file.buffer,
+          Body: buffer,
           Region: 'us-west-2',
           ContentType: 'image/jpeg',
         })
@@ -123,7 +138,7 @@ posts.post(
         error: e,
       });
     }
-    console.timeEnd('s3');
+    // console.timeEnd('s3');
 
     // Transact photos and tags, depending
     try {
@@ -171,10 +186,14 @@ posts.get('', isLoggedIn, async (req, res) => {
   const as = 'photoz';
   const tagName = 'tagName';
   const tagId = 'tagId';
+  const page = req.query.page || 1;
+  const limit = 100;
+  const offset = (page - 1) * limit;
   const selectStatement = db(PHOTOS)
     .select()
     .orderBy(TIMESTAMP, order)
-    .limit(20)
+    .limit(limit)
+    .offset(offset)
     .where({ [STATUS]: ACTIVE })
     .as(as);
 
@@ -213,7 +232,19 @@ posts.get('', isLoggedIn, async (req, res) => {
     ];
   }, []);
 
-  res.json(dedupped);
+  const { count } = await db(PHOTOS)
+    .where({ [STATUS]: ACTIVE })
+    .count()
+    .first();
+
+  res.json({
+    data: dedupped,
+    meta: {
+      page,
+      count: Number(count),
+      pages: Math.floor(Number(count) / limit),
+    },
+  });
 });
 
 export default posts;

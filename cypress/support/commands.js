@@ -10,6 +10,7 @@
 //
 //
 // -- This is a parent command --
+
 Cypress.Commands.add('loginAsAdmin', () => {
   cy.server();
   cy.route('POST', '/api/login').as('login');
@@ -30,6 +31,10 @@ Cypress.Commands.add('loginAsAdmin', () => {
 
 Cypress.Commands.add('logout', () => {
   cy.request('POST', '/api/logout');
+});
+
+Cypress.Commands.add('cleanDb', () => {
+  cy.task('cleanDb');
 });
 //
 //
