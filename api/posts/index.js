@@ -22,6 +22,7 @@ import {
   TAG_ID,
   TAGS,
   TIMESTAMP,
+  EXIFPROPS,
 } from '../../shared/constants';
 import log from '../../src/utils/log';
 
@@ -88,7 +89,7 @@ posts.post(
 
   async (req, res) => {
     let s3Response;
-    let result;
+    let exifData;
     let pgResponse;
     const description = req.body[DESCRIPTION];
     const tags = req.body[TAGS] ? req.body[TAGS].split(',') : false;
@@ -97,7 +98,7 @@ posts.post(
     // console.time('exif');
     try {
       const parser = exif.create(req.file.buffer);
-      result = parser.parse();
+      exifData = parser.parse();
     } catch (e) {
       return res.status(500).json({
         type: 'EXIF parsing error',
@@ -142,13 +143,23 @@ posts.post(
 
     // Transact photos and tags, depending
     try {
+      const validExifData = Object.keys(EXIFPROPS).reduce(
+        (acc, key) => ({
+          ...acc,
+          ...(exifData.tags[key]
+            ? { [EXIFPROPS[key]]: exifData.tags[key] }
+            : {}),
+        }),
+        {},
+      );
       await db.transaction(trx =>
         trx(PHOTOS)
           .insert({
-            [TIMESTAMP]: result.tags.DateTimeOriginal,
+            [TIMESTAMP]: exifData.tags.DateTimeOriginal,
             [ETAG]: s3Response.ETag,
             [KEY]: s3Response.Key,
             [DESCRIPTION]: description,
+            ...validExifData,
           })
           .returning('*')
           .then(photo => {

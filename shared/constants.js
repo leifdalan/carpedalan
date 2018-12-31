@@ -53,7 +53,7 @@ const EXIFPROPS = {
   ImageHeight: 'imageHeight',
   ImageWidth: 'imageWidth',
   InteropIndex: 'interopIndex',
-  ISO: 'iSO',
+  ISO: 'ISO',
   Make: 'make',
   MaxApertureValue: 'maxApertureValue',
   MeteringMode: 'meteringMode',

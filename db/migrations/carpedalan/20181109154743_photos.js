@@ -3,14 +3,7 @@ const {
   TIMESTAMP,
   DATE,
   ORIGINALURL,
-  WIDTH,
-  HEIGHT,
   DESCRIPTION,
-  CAMERA,
-  ISO,
-  APERTURE,
-  EXPOSURE,
-  // FOCALLENGTH,
   ETAG,
   KEY,
   CREATEDAT,
@@ -30,13 +23,7 @@ exports.up = knex =>
     table.integer(TIMESTAMP);
     table.date(DATE);
     table.string(ORIGINALURL);
-    table.integer(WIDTH);
-    table.integer(HEIGHT);
     table.string(DESCRIPTION);
-    table.string(CAMERA);
-    table.string(ISO);
-    table.string(APERTURE);
-    table.string(EXPOSURE);
     table.string(ETAG);
     table.string(KEY);
     table.enu(STATUS, [ACTIVE, DELETED]).defaultTo(ACTIVE);

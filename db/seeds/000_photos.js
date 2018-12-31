@@ -13,7 +13,7 @@ exports.seed = async knex => {
   const photoTagInserts = [];
   const tagInserts = [];
 
-  /* eslint-disable no-restricted-syntax, no-await-in-loop */
+  /* eslint-disable no-restricted-syntax,no-await-in-loop */
   for (const datum of data) {
     const {
       timestamp,
@@ -22,44 +22,37 @@ exports.seed = async knex => {
       width,
       height,
       summary,
-      // exif: { Camera, ISO, Aperture, Exposure, FocalLength } = {
-      //   Camera: null,
-      //   ISO: null,
-      //   Aperture: null,
-      //   Exposure: null,
-      //   FocalLength: null,
-      // },
+      exif: { Camera, ISO, Aperture, Exposure, FocalLength } = {
+        Camera: null,
+        ISO: null,
+        Aperture: null,
+        Exposure: null,
+        FocalLength: null,
+      },
       tags,
       s3,
       key,
     } = datum;
     const id = uuid();
-    const exifData = Object.keys(EXIFPROPS).reduce((acc, key) => {
-      return {
-
-        ...acc,
-        [key]: datum.exif ? datum.exif[key]: null
-      }
-    }, {});
     
     photoInserts.push({
       id,
       timestamp,
       date,
       originalUrl: url,
-      width,
-      height,
       description: summary,
-      // camera: Camera,
-      // ISO,
-      // aperture: Aperture,
-      // exposure: Exposure,
-      // focalLength: FocalLength,
-
       etag: s3,
       key,
       status: ACTIVE,
-      // ...exifData,
+      make: Camera,
+      model: Camera,
+      apertureValue: Aperture,
+      exposureTime: Exposure,
+      focalLength: FocalLength,
+      imageHeight: height,
+      imageWidth: width,
+      ISO,
+
     });
     for (const tag of tags) {
       if (tags.length) {
