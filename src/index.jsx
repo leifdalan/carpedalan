@@ -11,6 +11,7 @@ import Tag from './pages/Tag';
 import LogoutButton from './components/LogoutButton';
 import { themes, GlobalStyleComponent } from './styles';
 import TagProvider from './providers/TagProvider';
+import PostProvider from './providers/PostsProvider';
 
 export const User = createContext({
   counter: 0,
@@ -35,39 +36,41 @@ function Root({ user, defaultTheme }) {
   return (
     <User.Provider value={{ user: userState, setUser }}>
       <TagProvider>
-        <ThemeProvider theme={themes[theme]}>
-          <>
-            <Router>
-              <>
-                {userState ? (
-                  <>
-                    <button type="button" onClick={handleChangeTheme}>
-                      toggle themeaa
-                    </button>
-                    <LogoutButton setUser={setUser} />
-                    <Link to="/login">login</Link>
-                    <Link to="/">slash</Link>
-                    {userState === 'write' ? (
-                      <Link to="/admin">admin</Link>
-                    ) : null}
-                    <div>{userState}</div>
-                  </>
-                ) : null}
-                <Switch>
-                  <Route exact path="/" component={Slash} />
-                  <Route exact path="/login" component={Login} />
-                  <Route exact path="/tag/:tag" component={Tag} />
-                  {userState === 'write' ? (
-                    <Route exact path="/admin" component={Admin} />
+        <PostProvider>
+          <ThemeProvider theme={themes[theme]}>
+            <>
+              <Router>
+                <>
+                  {userState ? (
+                    <>
+                      <button type="button" onClick={handleChangeTheme}>
+                        toggle themeaa
+                      </button>
+                      <LogoutButton setUser={setUser} />
+                      <Link to="/login">login</Link>
+                      <Link to="/">slash</Link>
+                      {userState === 'write' ? (
+                        <Link to="/admin">admin</Link>
+                      ) : null}
+                      <div>{userState}</div>
+                    </>
                   ) : null}
-                  <Route render={() => 'no match'} />
-                </Switch>
-              </>
-            </Router>
+                  <Switch>
+                    <Route exact path="/" component={Slash} />
+                    <Route exact path="/login" component={Login} />
+                    <Route exact path="/tag/:tag" component={Tag} />
+                    {userState === 'write' ? (
+                      <Route exact path="/admin" component={Admin} />
+                    ) : null}
+                    <Route render={() => 'no match'} />
+                  </Switch>
+                </>
+              </Router>
 
-            <GlobalStyleComponent />
-          </>
-        </ThemeProvider>
+              <GlobalStyleComponent />
+            </>
+          </ThemeProvider>
+        </PostProvider>
       </TagProvider>
     </User.Provider>
   );

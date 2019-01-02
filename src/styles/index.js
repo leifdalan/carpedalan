@@ -20,6 +20,7 @@ export const GlobalStyleComponent = createGlobalStyle`
     padding: 0;
     margin: 0;
   }
+  
 `;
 
 const dark = {
