@@ -28,6 +28,12 @@ Array [
     slash
   </a>,
   <a
+    href="/archive"
+    onClick={[Function]}
+  >
+    archive
+  </a>,
+  <a
     href="/admin"
     onClick={[Function]}
   >
@@ -37,15 +43,6 @@ Array [
     write
   </div>,
   <div>
-    <div
-      style={
-        Object {
-          "fontSize": "82px",
-        }
-      }
-    >
-      asdfoijaf oijw efoiaj weofija woeifj aoweijf aowiejf
-    </div>
     <div
       style={
         Object {

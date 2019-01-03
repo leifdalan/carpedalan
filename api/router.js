@@ -1,5 +1,6 @@
 import express from 'express';
 import { S3 } from 'aws-sdk';
+import cacheControl from 'express-cache-controller';
 
 import { publicPassword, adminPassword, bucket } from '../server/config';
 import { READ_USER, WRITE_USER } from '../server/constants';
@@ -45,51 +46,58 @@ api.post('/logout', (req, res) => {
 });
 
 // Proxy all image requests to private bucket
-api.get(`${IMAGES_PATH}/:size/:id`, isLoggedIn, async (req, res) => {
-  const withoutExtension = req.params.id.split('.')[0];
+api.get(
+  `${IMAGES_PATH}/:size/:id`,
+  isLoggedIn,
+  cacheControl({ maxAge: 31536000, public: true }),
+  async (req, res) => {
+    const withoutExtension = req.params.id.split('.')[0];
+    const [width, height] = req.params.size.split('-');
+    const stream = await s3
+      .getObject({
+        Key: `web/${withoutExtension}-${width}${
+          height ? `-${height}` : ''
+        }.webp`,
+        Bucket: bucket,
+      })
+      .createReadStream()
+      .on('error', async error => {
+        log.error(error, 'error');
+        try {
+          const originalStream = s3 // try and get original
+            .getObject({
+              Key: `original/${withoutExtension}.jpg`,
+              Bucket: bucket,
+            })
+            .createReadStream()
+            .on('error', e => {
+              // No original, send 404.
+              log.info('error', e);
+              res.status(404).send();
+            });
+          // Equivalent to a "touch" in s3; will trigger any lambda
+          // listening for putObject, namely our image resizer
+          await s3
+            .copyObject({
+              Key: `original/${withoutExtension}.jpg`,
+              CopySource: `${bucket}/original/${withoutExtension}.jpg`,
+              Bucket: bucket,
+              MetadataDirective: 'REPLACE',
+            })
+            .promise();
 
-  const stream = await s3
-    .getObject({
-      Key: `web/${withoutExtension}-${req.params.size}.webp`,
-      Bucket: bucket,
-    })
-    .createReadStream()
-    .on('error', async error => {
-      log.error(error, 'error');
-      try {
-        const originalStream = s3 // try and get original
-          .getObject({
-            Key: `original/${withoutExtension}.jpg`,
-            Bucket: bucket,
-          })
-          .createReadStream()
-          .on('error', e => {
-            // No original, send 404.
-            log.info('error', e);
-            res.status(404).send();
-          });
-        // Equivalent to a "touch" in s3; will trigger any lambda
-        // listening for putObject, namely our image resizer
-        await s3
-          .copyObject({
-            Key: `original/${withoutExtension}.jpg`,
-            CopySource: `${bucket}/original/${withoutExtension}.jpg`,
-            Bucket: bucket,
-            MetadataDirective: 'REPLACE',
-          })
-          .promise();
+          // Give the original for now
+          originalStream.pipe(res);
+        } catch (e) {
+          // This catch is for the s3 touch
+          res.status(500).send(e);
+        }
+        // throw err;
+      });
 
-        // Give the original for now
-        originalStream.pipe(res);
-      } catch (e) {
-        // This catch is for the s3 touch
-        res.status(500).send(e);
-      }
-      // throw err;
-    });
-
-  // Stream the reized version since there are no errors
-  stream.pipe(res);
-});
+    // Stream the reized version since there are no errors
+    stream.pipe(res);
+  },
+);
 
 export default api;

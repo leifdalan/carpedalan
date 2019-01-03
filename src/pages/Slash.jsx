@@ -7,8 +7,7 @@ import {
 } from 'react-virtualized';
 import throttle from 'lodash/throttle';
 
-// import { User } from '..';
-
+import { MEDIUM } from '../../shared/constants';
 import { Posts } from '../providers/PostsProvider';
 import PostRenderer from '../components/PostRenderer';
 
@@ -26,19 +25,16 @@ export default function Slash() {
   // const [isEditing, setEditing] = useState(false);
   const [shouldShowImages, setShouldShowImages] = useState(true);
   const listRef = useRef(null);
+  const throttledResize = throttle(() => {
+    if (listRef.current) {
+      cache.clearAll();
+    }
+  }, 250);
 
+  window.addEventListener('resize', throttledResize);
   useEffect(() => {
     getPosts();
-    // return null;
-    const throttledResize = throttle(() => {
-      cache.clear(0);
-      listRef.current.recomputeRowHeights(0);
-      listRef.current.forceUpdate();
-    }, 250);
-
-    window.addEventListener('resize', () => {
-      throttledResize(listRef, cache);
-    });
+    return () => window.removeEventListener('resize', throttledResize);
   }, []);
 
   // const Wrapper = isEditing ? Form : Fragment;
@@ -71,9 +67,6 @@ export default function Slash() {
 
   return (
     <div>
-      <div style={{ fontSize: '82px' }}>
-        asdfoijaf oijw efoiaj weofija woeifj aoweijf aowiejf
-      </div>
       <WindowScroller>
         {({ height, isScrolling, registerChild, onChildScroll, scrollTop }) => (
           <AutoSizer disableHeight>
@@ -104,6 +97,8 @@ export default function Slash() {
                       posts={posts}
                       cache={cache}
                       shouldShowImages={shouldShowImages}
+                      size={MEDIUM}
+                      showDescription
                     />
                   </div>
                 )}

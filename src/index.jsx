@@ -8,6 +8,7 @@ import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Slash from './pages/Slash';
 import Tag from './pages/Tag';
+import Archive from './pages/Archive';
 import LogoutButton from './components/LogoutButton';
 import { themes, GlobalStyleComponent } from './styles';
 import TagProvider from './providers/TagProvider';
@@ -49,6 +50,7 @@ function Root({ user, defaultTheme }) {
                       <LogoutButton setUser={setUser} />
                       <Link to="/login">login</Link>
                       <Link to="/">slash</Link>
+                      <Link to="/archive">archive</Link>
                       {userState === 'write' ? (
                         <Link to="/admin">admin</Link>
                       ) : null}
@@ -58,6 +60,7 @@ function Root({ user, defaultTheme }) {
                   <Switch>
                     <Route exact path="/" component={Slash} />
                     <Route exact path="/login" component={Login} />
+                    <Route exact path="/archive" component={Archive} />
                     <Route exact path="/tag/:tag" component={Tag} />
                     {userState === 'write' ? (
                       <Route exact path="/admin" component={Admin} />

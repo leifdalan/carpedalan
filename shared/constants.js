@@ -105,16 +105,22 @@ const SIZES = [
   {
     width: 1536,
   },
+  {
+    width: 250,
+    height: 250,
+  },
 ];
 
 const SMALL = 'small';
 const MEDIUM = 'medium';
 const HIRES = 'hires';
+const THUMB = 'thumb';
 
 const SIZE_MAP = {
   [SMALL]: SIZES[0],
   [MEDIUM]: SIZES[1],
   [HIRES]: SIZES[2],
+  [THUMB]: SIZES[3],
 };
 
 module.exports = {
@@ -154,5 +160,6 @@ module.exports = {
   SMALL,
   MEDIUM,
   HIRES,
+  THUMB,
   EXIFPROPS,
 };
