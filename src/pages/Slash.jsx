@@ -67,6 +67,7 @@ export default function Slash() {
 
   return (
     <div>
+      <h1>Carpe Dalan</h1>
       <WindowScroller>
         {({ height, isScrolling, registerChild, onChildScroll, scrollTop }) => (
           <AutoSizer disableHeight>
@@ -91,7 +92,7 @@ export default function Slash() {
                       rowHeight={cache.rowHeight}
                       rowRenderer={PostRenderer}
                       rowCount={meta.count}
-                      overscanRowCount={5}
+                      overscanRowCount={10}
                       isScrolling={isScrolling}
                       scrollTop={scrollTop}
                       posts={posts}

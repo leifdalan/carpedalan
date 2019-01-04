@@ -1,41 +1,13 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { shape } from 'prop-types';
-import request from 'superagent';
 
-import { API_PATH, API_IMAGES_PATH } from '../../shared/constants';
+import { TagPosts } from '../providers/TagPostsProvider';
+import GridView from '../components/GridView';
 
-export default function Tag(props) {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
-  const effect = async () => {
-    setLoading(true);
-    try {
-      const response = await request(
-        `${API_PATH}/tags/${props.match.params.tag}`,
-      );
-      setData(response.body);
-    } catch (e) {
-      setError(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    effect();
-    return null;
-  }, []);
-
-  if (error) return 'error';
-
-  if (loading) return 'loading';
-
-  return data.map(({ id, description, key }) => (
-    <Fragment key={id}>
-      <img alt={description} src={`${API_IMAGES_PATH}/${key}`} />
-      <div>{description}</div>
-    </Fragment>
-  ));
+export default function Tag({ match }) {
+  const { getTagPosts, tagPosts, meta } = useContext(TagPosts);
+  const fetchData = () => getTagPosts(match.params.tag);
+  return <GridView fetchData={fetchData} data={tagPosts} meta={meta} />;
 }
 
 Tag.propTypes = {

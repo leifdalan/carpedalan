@@ -1,20 +1,13 @@
 import React from 'react';
 import { bool, number, string } from 'prop-types';
 
-function getBg() {
-  const x = Math.floor(Math.random() * 256);
-  const y = Math.floor(Math.random() * 256);
-  const z = Math.floor(Math.random() * 256);
-  return `rgba(${x},${y},${z}, 0.4)`;
-}
-
-const Picture = ({ shouldShowImage, width, ratio, src }) => (
+const Picture = ({ shouldShowImage, width, ratio, src, placeholderColor }) => (
   <div
     style={{
       width,
       display: 'inline-block',
       marginBottom: '-4px',
-      backgroundColor: getBg(),
+      backgroundColor: placeholderColor,
     }}
   >
     <div
@@ -50,6 +43,7 @@ Picture.propTypes = {
   shouldShowImage: bool,
   ratio: number.isRequired,
   width: string.isRequired,
+  placeholderColor: string.isRequired,
 };
 
 export default Picture;

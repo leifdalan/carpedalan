@@ -13,12 +13,24 @@ export const GlobalStyleComponent = createGlobalStyle`
     font-weight: normal;
     font-style: normal;
   }
+  @font-face {
+    font-family: 'montserratregular';
+    src: url('https://cdn.carpedalan.com/montserrat-regular-webfont.woff2') format('woff2'),
+         url('https://cdn.carpedalan.com/montserrat-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
   body {
     background: ${getThemeValue(MAIN)}; 
     color: ${getThemeValue(TEXT)};
     width: 100%;
     padding: 0;
     margin: 0;
+  }
+  
+  h1 {
+    font-family: 'montserratregular';
   }
   
 `;

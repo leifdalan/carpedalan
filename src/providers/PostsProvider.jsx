@@ -13,6 +13,15 @@ export const Posts = createContext({
   meta: {},
 });
 
+function getBg() {
+  const x = Math.floor(Math.random() * 256);
+  const y = Math.floor(Math.random() * 256);
+  const z = Math.floor(Math.random() * 256);
+  return `rgba(${x},${y},${z}, 0.4)`;
+}
+
+const addPlaceholderColor = post => ({ ...post, placeholderColor: getBg() });
+
 const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
@@ -31,7 +40,7 @@ const PostProvider = ({ children }) => {
       if (posts[page * 100]) return null;
       const apiCall = request.get(`${API_PATH}/posts?${stringify(pageQuery)}`);
       const response = await apiCall;
-      setPosts([...posts, ...response.body.data]);
+      setPosts([...posts, ...response.body.data].map(addPlaceholderColor));
       setMeta(response.body.meta);
       setCurrentPage(currentPage + 1);
     } catch (e) {

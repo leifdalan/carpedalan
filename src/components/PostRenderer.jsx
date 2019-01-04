@@ -32,7 +32,9 @@ const RenderRow = props => {
           ratio={ratio}
           src={src}
           shouldShowImage={shouldShowImages}
+          placeholderColor={posts[index].placeholderColor}
         />
+        {posts[index].tags.map(({ name }) => name)}
         {showDescription ? posts[index].description : null}
       </div>
     </CellMeasurer>
