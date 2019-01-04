@@ -14,6 +14,7 @@ const Tags = ({ children }) => {
   };
 
   const loadTags = async () => {
+    // Super basic caching - don't get tags if we already have them.
     if (tags.length) return;
     try {
       setLoadingTags(true);

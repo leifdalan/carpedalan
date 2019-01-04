@@ -2,12 +2,15 @@
 
 const sharp = require('sharp');
 const aws = require('aws-sdk');
+// const sqip = require('sqip');
+// const knex = require('knex');
 
 const { SIZES } = require('./constants');
 
 const s3 = new aws.S3();
 
 exports.handler = async (event, context, ...otherThingz) => {
+  context.callbackWaitsForEmptyEventLoop = false; // eslint-disable-line
   console.time('fire');
   console.log('EVENT=============');
   console.log(JSON.stringify(event));
@@ -41,13 +44,20 @@ exports.handler = async (event, context, ...otherThingz) => {
     console.time('sharp');
     const jpegPromises = SIZES.map(size =>
       sharp(buffer.Body)
-        .resize({ width: size.width })
+        .resize({
+          width: size.width,
+          ...(size.height ? { height: size.height } : {}),
+        })
         .jpeg({ quality: 80 })
         .toBuffer(),
     );
     const webpPromises = SIZES.map(size =>
       sharp(buffer.Body)
-        .resize({ width: size.width })
+        .resize({
+          width: size.width,
+          ...(size.height ? { height: size.height } : {}),
+        })
+
         .webp({ quality: 80 })
         .toBuffer(),
     );
@@ -66,9 +76,12 @@ exports.handler = async (event, context, ...otherThingz) => {
       const isJpeg = index < SIZES.length;
       const extension = isJpeg ? 'jpg' : 'webp';
       const contentType = isJpeg ? 'image/jpeg' : 'image/webp';
+      const size = SIZES[index % 4];
       return s3
         .upload({
-          Key: `web/${withoutExtension}-${SIZES[index % 3].width}.${extension}`,
+          Key: `web/${withoutExtension}-${size.width}${
+            size.height ? `-${size.height}` : ''
+          }.${extension}`,
           Bucket: bucket,
           Body: resize,
           ContentType: contentType,
@@ -83,6 +96,7 @@ exports.handler = async (event, context, ...otherThingz) => {
   } finally {
     console.timeEnd('put');
   }
+
   console.timeEnd('fire');
   return response;
 };

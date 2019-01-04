@@ -1,16 +1,11 @@
 const fs = require('fs');
 
-const moment = require('moment');
-
 const data = require('../goodDataWithEtag.json'); // eslint-disable-line import/no-unresolved
 
-const values = data.map(val => {
-  const date = moment(val.date).format('YYYY-MM-DD-HH-MM-ss');
-  return {
-    ...val,
-    key: `original/${date}-${val.width}-${val.height}.jpg`,
-  };
-});
+const values = data.map(val => ({
+  ...val,
+  key: `original/${val.id}-${val.width}-${val.height}.jpg`,
+}));
 
 async function log() {
   // const { values, errors } = await upload();

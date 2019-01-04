@@ -1,9 +1,8 @@
 const fs = require('fs');
-const stream = require('stream');
 
 const reduce = require('lodash/reduce');
 const aws = require('aws-sdk');
-const request = require('request');
+const request = require('superagent');
 const moment = require('moment');
 const uniq = require('lodash/uniq');
 
@@ -11,7 +10,9 @@ const data = require('../data'); // eslint-disable-line import/no-unresolved
 
 const obj = data.tumblr.data;
 /* eslint-disable no-console */
-const s3 = new aws.S3();
+const s3 = new aws.S3({
+  region: 'us-west-2',
+});
 const allTags = [];
 const goodData = reduce(
   obj,
@@ -26,6 +27,7 @@ const goodData = reduce(
     return [
       ...acc,
       {
+        id: val.id,
         timestamp: val.timestamp,
         date: val.date,
         url: val.photos[0].original_size.url,
@@ -49,33 +51,40 @@ fs.writeFile(
 );
 const values = [];
 const errors = [];
+let count = 0;
 async function upload() {
   /* eslint-disable no-restricted-syntax, no-await-in-loop */
   for (const val of goodData) {
-    const passThrough = new stream.PassThrough();
+    count += 1;
+    console.log('complete: ', count / goodData.length);
+    let buffer;
     try {
-      request.get(val.url).pipe(passThrough);
+      buffer = await request
+        .get(val.url)
+        .buffer(true)
+        .parse(request.parse.image)
+        .then(res => res.body);
     } catch (e) {
-      console.log('fucking failure!!!!');
+      console.log('fucking failure!!!!', e);
     }
-
     console.error('summary', val.summary);
+    console.error('timestamp', val.timestamp);
 
-    const date = moment(val.date).format('YYYY-MM-DD-HH-MM-ss');
+    const date = moment.unix(val.timestamp).format('YYYY-MM-DD-HH-MM-ss');
     console.error('date', date);
 
     const params = {
-      Body: passThrough,
-      Bucket: 'carpedev',
-      Key: `original/${date}-${val.width}-${val.height}.jpg`,
+      Body: buffer,
+      Bucket: 'carpedev-west',
+      Key: `original/${val.id}-${val.width}-${val.height}.jpg`,
       ContentType: 'image/jpeg',
     };
-    const options = { partSize: 10 * 1024 * 1024, queueSize: 1 };
     try {
-      const response = await s3.upload(params, options).promise();
+      const response = await s3.upload(params).promise();
       console.log('res', response);
       values.push({ ...val, s3: response.ETag });
     } catch (e) {
+      console.log('upload failure');
       console.log(e);
       errors.push(val);
     }
@@ -97,6 +106,7 @@ async function log() {
     'utf8',
     () => {},
   );
+  console.log('count', count);
 }
 
 log();
