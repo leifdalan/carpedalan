@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { Fragment as F } from 'react';
 import { CellMeasurer } from 'react-virtualized';
 
 import { API_IMAGES_PATH, SIZE_MAP } from '../../shared/constants';
+
+import Picture from './Picture';
 
 const RenderRow = props => {
   /* eslint-disable react/prop-types */
@@ -18,10 +20,10 @@ const RenderRow = props => {
         showDescription,
         size,
         postsPerRow,
-        width: containerWidth,
       },
     },
   } = props;
+
   const { width, height } = SIZE_MAP[size];
 
   const adjustedPostIndex = index * postsPerRow;
@@ -29,41 +31,25 @@ const RenderRow = props => {
   return posts[adjustedPostIndex] ? (
     <CellMeasurer key={key} cache={cache} parent={parent} index={index}>
       <div style={{ ...style }}>
-        {[...Array(postsPerRow).keys()].map(subIndex =>
-          posts[adjustedPostIndex + subIndex] ? (
-            <React.Fragment key={adjustedPostIndex + subIndex}>
-              <div
-                className="image"
-                style={{
-                  width: `${100 / postsPerRow}%`,
-                  paddingTop: `${containerWidth / postsPerRow}px`,
-                  position: 'relative',
-                  display: 'inline-block',
-                  marginBottom: '-4px',
-                }}
-              >
-                {shouldShowImages ? (
-                  <img
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                    }}
-                    src={`${API_IMAGES_PATH}/${width}${
-                      height ? `-${height}` : ''
-                    }/${
-                      posts[adjustedPostIndex + subIndex].key.split('/')[1]
-                    }.webp`}
-                    alt="balls"
-                  />
-                ) : null}
-              </div>
+        {[...Array(postsPerRow).keys()].map(subIndex => {
+          if (!posts[adjustedPostIndex + subIndex]) return null;
+
+          const src = `${API_IMAGES_PATH}/${width}${
+            height ? `-${height}` : ''
+          }/${posts[adjustedPostIndex + subIndex].key.split('/')[1]}.webp`;
+
+          return posts[adjustedPostIndex + subIndex] ? (
+            <F key={adjustedPostIndex + subIndex}>
+              <Picture
+                width={`${100 / postsPerRow}%`}
+                ratio={1}
+                src={src}
+                shouldShowImage={shouldShowImages}
+              />
               {showDescription ? posts[index].description : null}
-            </React.Fragment>
-          ) : null,
-        )}
+            </F>
+          ) : null;
+        })}
       </div>
     </CellMeasurer>
   ) : null;
