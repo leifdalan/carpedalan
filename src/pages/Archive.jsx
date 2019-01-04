@@ -26,7 +26,7 @@ export default function Archive() {
   // const [isEditing, setEditing] = useState(false);
   const listRef = useRef(null);
   useEffect(() => {
-    getPosts();
+    getPosts(1);
   }, []);
 
   // const Wrapper = isEditing ? Form : Fragment;
@@ -68,9 +68,7 @@ export default function Archive() {
                   loadMoreRows={loadMoreRows}
                   rowCount={meta.count / postsPerRow}
                 >
-                  {({
-                    onRowsRendered /* , registerChild: registerInfiniteChild */,
-                  }) => (
+                  {({ onRowsRendered }) => (
                     <div ref={registerChild}>
                       <List
                         width={width}

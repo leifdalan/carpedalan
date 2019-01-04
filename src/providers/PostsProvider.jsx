@@ -27,6 +27,8 @@ const PostProvider = ({ children }) => {
       const pageQuery = {
         page,
       };
+      // Some super basic caching - don't refetch if we have already.
+      if (posts[page * 100]) return null;
       const apiCall = request.get(`${API_PATH}/posts?${stringify(pageQuery)}`);
       const response = await apiCall;
       setPosts([...posts, ...response.body.data]);

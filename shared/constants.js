@@ -21,6 +21,7 @@ const TIMESTAMP = 'timestamp';
 const UPDATEDAT = 'updatedAt';
 const STATUS = 'status';
 const WIDTH = 'width';
+const SQIP = 'sqip';
 const EXIFPROPS = {
   ApertureValue: 'apertureValue',
   BrightnessValue: 'brightnessValue',
@@ -162,4 +163,5 @@ module.exports = {
   HIRES,
   THUMB,
   EXIFPROPS,
+  SQIP,
 };

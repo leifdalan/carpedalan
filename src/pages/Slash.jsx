@@ -15,7 +15,7 @@ let lastValue = 0;
 const throttled = throttle((e, setShouldShowImages) => {
   const delta = Math.abs(e.scrollTop - lastValue);
   lastValue = e.scrollTop;
-  setShouldShowImages(delta < 1500);
+  setShouldShowImages(e.scrollTop < 100 || delta < 2500);
 }, 250);
 
 export default function Slash() {
@@ -33,7 +33,7 @@ export default function Slash() {
 
   window.addEventListener('resize', throttledResize);
   useEffect(() => {
-    getPosts();
+    getPosts(1);
     return () => window.removeEventListener('resize', throttledResize);
   }, []);
 

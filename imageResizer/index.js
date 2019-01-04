@@ -2,12 +2,15 @@
 
 const sharp = require('sharp');
 const aws = require('aws-sdk');
+// const sqip = require('sqip');
+// const knex = require('knex');
 
 const { SIZES } = require('./constants');
 
 const s3 = new aws.S3();
 
 exports.handler = async (event, context, ...otherThingz) => {
+  context.callbackWaitsForEmptyEventLoop = false; // eslint-disable-line
   console.time('fire');
   console.log('EVENT=============');
   console.log(JSON.stringify(event));
@@ -93,6 +96,7 @@ exports.handler = async (event, context, ...otherThingz) => {
   } finally {
     console.timeEnd('put');
   }
+
   console.timeEnd('fire');
   return response;
 };
