@@ -21,13 +21,16 @@ const cache = new CellMeasurerCache({
   fixedWidth: true,
 });
 
-export default function Grid({ fetchData, data, meta }) {
+export default function Grid({ type, fetchData, data, meta }) {
   const [loading, setLoading] = useState(false);
   const listRef = useRef(null);
 
-  useEffect(() => {
-    fetchData(1);
-  }, []);
+  useEffect(
+    () => {
+      fetchData(1);
+    },
+    [type],
+  );
 
   const isRowLoaded = width => ({ index }) =>
     !!data[index * Math.floor(width / POST_WIDTH)];
@@ -86,10 +89,15 @@ export default function Grid({ fetchData, data, meta }) {
   );
 }
 
+Grid.defaultProps = {
+  type: null,
+};
+
 Grid.propTypes = {
   fetchData: func.isRequired,
   data: arrayOf(shape({ id: string.isRequired })).isRequired,
   meta: shape({
     count: number.isRequired,
   }).isRequired,
+  type: string,
 };

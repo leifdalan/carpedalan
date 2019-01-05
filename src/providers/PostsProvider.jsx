@@ -7,22 +7,16 @@ import request from 'superagent';
 import { API_PATH } from '../../shared/constants';
 import log from '../utils/log';
 
+import addPlaceholderColor from './postUtils';
+
 export const Posts = createContext({
   posts: [],
   getPosts: () => {},
   meta: {},
 });
 
-function getBg() {
-  const x = Math.floor(Math.random() * 256);
-  const y = Math.floor(Math.random() * 256);
-  const z = Math.floor(Math.random() * 256);
-  return `rgba(${x},${y},${z}, 0.4)`;
-}
-
-const addPlaceholderColor = post => ({ ...post, placeholderColor: getBg() });
-
 const PostProvider = ({ children }) => {
+  const [cacheValid, setCacheValid] = useState(true);
   const [posts, setPosts] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,12 +31,13 @@ const PostProvider = ({ children }) => {
         page,
       };
       // Some super basic caching - don't refetch if we have already.
-      if (posts[page * 100]) return null;
+      if (posts[page * 100] || !cacheValid) return null;
       const apiCall = request.get(`${API_PATH}/posts?${stringify(pageQuery)}`);
       const response = await apiCall;
       setPosts([...posts, ...response.body.data].map(addPlaceholderColor));
       setMeta(response.body.meta);
       setCurrentPage(currentPage + 1);
+      setCacheValid(true);
     } catch (e) {
       log.error('loading failed');
     }
@@ -50,7 +45,7 @@ const PostProvider = ({ children }) => {
   };
 
   return (
-    <Posts.Provider value={{ cache, getPosts, posts, meta }}>
+    <Posts.Provider value={{ cache, getPosts, posts, meta, setCacheValid }}>
       {children}
     </Posts.Provider>
   );

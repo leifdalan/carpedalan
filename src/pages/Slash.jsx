@@ -10,6 +10,7 @@ import throttle from 'lodash/throttle';
 import { MEDIUM } from '../../shared/constants';
 import { Posts } from '../providers/PostsProvider';
 import PostRenderer from '../components/PostRenderer';
+import Title from '../styles/Title';
 
 let lastValue = 0;
 const throttled = throttle((e, setShouldShowImages) => {
@@ -67,7 +68,9 @@ export default function Slash() {
 
   return (
     <div>
-      <h1>Carpe Dalan</h1>
+      <Title center size="large">
+        Carpe Dalan
+      </Title>
       <WindowScroller>
         {({ height, isScrolling, registerChild, onChildScroll, scrollTop }) => (
           <AutoSizer disableHeight>

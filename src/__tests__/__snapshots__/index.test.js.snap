@@ -2,48 +2,163 @@
 
 exports[`test should do some stuff 1`] = `
 Array [
-  <button
+  .c0 {
+  font-family: montserratregular;
+  font-size: 18px;
+  text-transform: uppercase;
+  -webkit-letter-spacing: 5px;
+  -moz-letter-spacing: 5px;
+  -ms-letter-spacing: 5px;
+  letter-spacing: 5px;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: inherit;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 25px;
+  background: white;
+  padding: 5px;
+  box-shadow: rgba(255,255,255) 0px 0px 10px 10px;
+  border-radius: 40%;
+}
+
+<h1
+    className="c0"
     onClick={[Function]}
+    size="small"
     type="button"
   >
-    toggle themeaa
-  </button>,
-  <button
-    data-test="logout"
-    onClick={[Function]}
-    type="button"
+    Menu
+  </h1>,
+  .c0 {
+  position: fixed;
+  width: 200px;
+  top: 0;
+  left: -20em;
+  z-index: 1;
+  background: rgba(0,255,231,0.8);
+  height: 100%;
+  overflow: scroll;
+  -webkit-transition: left 200ms ease-in;
+  transition: left 200ms ease-in;
+  font-family: montserratregular;
+  padding: 0em;
+}
+
+.c2 {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.c3 {
+  list-style: none;
+  margin-left: 0;
+  margin-bottom: 1em;
+}
+
+.c4 {
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  color: black;
+}
+
+.c1 {
+  font-family: montserratregular;
+  font-size: 24px;
+  text-transform: uppercase;
+  -webkit-letter-spacing: 5px;
+  -moz-letter-spacing: 5px;
+  -ms-letter-spacing: 5px;
+  letter-spacing: 5px;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: inherit;
+}
+
+<div
+    className="c0"
   >
-    log out
-  </button>,
-  <a
-    href="/login"
-    onClick={[Function]}
-  >
-    login
-  </a>,
-  <a
-    href="/"
-    onClick={[Function]}
-  >
-    slash
-  </a>,
-  <a
-    href="/archive"
-    onClick={[Function]}
-  >
-    archive
-  </a>,
-  <a
-    href="/admin"
-    onClick={[Function]}
-  >
-    admin
-  </a>,
-  <div>
-    write
+    <button
+      className="c1"
+      onClick={[Function]}
+      type="button"
+    >
+      Close ✖
+    </button>
+    <ul
+      className="c2"
+    >
+      <li
+        className="c3"
+      >
+        <a
+          className="c4"
+          href="/admin"
+          onClick={[Function]}
+        >
+          ADMIN
+        </a>
+      </li>
+      <li
+        className="c3"
+      >
+        <a
+          className="c4"
+          href="/"
+          onClick={[Function]}
+        >
+          Main Feed
+        </a>
+      </li>
+      <li
+        className="c3"
+      >
+        <a
+          className="c4"
+          href="/archive"
+          onClick={[Function]}
+        >
+          Archive
+        </a>
+      </li>
+    </ul>
+    <button
+      onClick={[Function]}
+      type="button"
+    >
+      toggle themeaa
+    </button>
+    <button
+      data-test="logout"
+      onClick={[Function]}
+      type="button"
+    >
+      log out
+    </button>
   </div>,
-  <div>
-    <h1>
+  .c0 {
+  font-family: montserratregular;
+  font-size: 42px;
+  text-transform: uppercase;
+  -webkit-letter-spacing: 5px;
+  -moz-letter-spacing: 5px;
+  -ms-letter-spacing: 5px;
+  letter-spacing: 5px;
+  text-align: center;
+}
+
+<div>
+    <h1
+      className="c0"
+      size="large"
+    >
       Carpe Dalan
     </h1>
     <div

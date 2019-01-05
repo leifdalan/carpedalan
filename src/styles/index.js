@@ -2,6 +2,7 @@ import { createGlobalStyle } from 'styled-components';
 
 export const MAIN = 'main';
 export const TEXT = 'text';
+export const SIDEBAR_COLOR = 'sidebarColor';
 export const getThemeValue = value => ({ theme }) => theme[value];
 
 export const GlobalStyleComponent = createGlobalStyle`
@@ -21,28 +22,28 @@ export const GlobalStyleComponent = createGlobalStyle`
     font-style: normal;
 }
 
-  body {
+  body, html {
     background: ${getThemeValue(MAIN)}; 
     color: ${getThemeValue(TEXT)};
     width: 100%;
     padding: 0;
     margin: 0;
   }
-  
-  h1 {
-    font-family: 'montserratregular';
-  }
-  
+  #root {
+    margin-top: 0;
+  }  
 `;
 
 const dark = {
   [MAIN]: 'black',
   [TEXT]: 'white',
+  [SIDEBAR_COLOR]: 'rgba(0, 255, 231, 0.8)',
 };
 
 const lite = {
   [MAIN]: 'white',
   [TEXT]: 'black',
+  [SIDEBAR_COLOR]: 'rgba(0, 255, 231, 0.8)',
 };
 
 export const themes = {

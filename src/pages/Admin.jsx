@@ -3,9 +3,11 @@ import exifReader from 'exifreader';
 
 import CreatePost from '../components/CreatePost';
 import { Tag } from '../providers/TagProvider';
+import { Posts } from '../providers/PostsProvider';
 
 const Admin = () => {
   const { loadingTags, loadTags } = useContext(Tag);
+  const { setCacheValid } = useContext(Posts);
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
 
@@ -67,6 +69,7 @@ const Admin = () => {
         onClick={e => {
           e.preventDefault();
           setSubmitAll(true);
+          setCacheValid(false);
         }}
       >
         Submit All

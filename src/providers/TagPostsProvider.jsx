@@ -6,6 +6,8 @@ import request from 'superagent';
 import { API_PATH } from '../../shared/constants';
 import log from '../utils/log';
 
+import addPlaceholderColor from './postUtils';
+
 export const TagPosts = createContext({
   posts: [],
   getPosts: () => {},
@@ -19,12 +21,15 @@ const TagPostsProvider = ({ children }) => {
     fixedWidth: true,
     defaultHeight: 500,
   });
-
+  const clearTags = () => {
+    setTagPosts([]);
+    setMeta({ count: 0 });
+  };
   const getTagPosts = async tag => {
     try {
       const apiCall = request.get(`${API_PATH}/tags/${tag}`);
       const response = await apiCall;
-      setTagPosts(response.body.data);
+      setTagPosts(response.body.data.map(addPlaceholderColor));
       setMeta(response.body.meta);
     } catch (e) {
       log.error(e);
@@ -34,7 +39,9 @@ const TagPostsProvider = ({ children }) => {
   };
 
   return (
-    <TagPosts.Provider value={{ cache, getTagPosts, tagPosts, meta }}>
+    <TagPosts.Provider
+      value={{ cache, getTagPosts, tagPosts, meta, clearTags }}
+    >
       {children}
     </TagPosts.Provider>
   );
