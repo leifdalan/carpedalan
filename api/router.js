@@ -96,6 +96,7 @@ api.get(
       });
 
     // Stream the reized version since there are no errors
+    res.set('Content-Type', 'image/webp');
     stream.pipe(res);
   },
 );

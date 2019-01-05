@@ -84,10 +84,11 @@ function Root({ user, defaultTheme }) {
 
 Root.defaultProps = {
   defaultTheme: 'lite',
+  user: undefined,
 };
 
 Root.propTypes = {
-  user: oneOfType([string, bool]).isRequired,
+  user: string,
   defaultTheme: oneOf(Object.keys(themes)),
 };
 

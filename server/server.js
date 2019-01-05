@@ -26,6 +26,12 @@ import {
 
 const app = express();
 
+// V important
+const customHeader = (req, res, next) => {
+  res.setHeader('x-powered-by', 'Carpe Dalan');
+  next();
+};
+
 export const setup = () => {
   // Connect to DB pool
   const pool = new pg.Pool({
@@ -56,6 +62,10 @@ export const setup = () => {
   app.use(cookieParser());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+
+  // V important
+  app.use(customHeader);
+  // OR set your own header here
 
   // Set up session store
   app.use(

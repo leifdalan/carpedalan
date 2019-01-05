@@ -77,3 +77,5 @@ imageResizer.zip
 photos
 junit.xml
 imageResizer/constants.js
+nginx/*.crt
+nginx/*.key

@@ -3,7 +3,6 @@ const fs = require('fs');
 const reduce = require('lodash/reduce');
 const aws = require('aws-sdk');
 const request = require('superagent');
-const moment = require('moment');
 const uniq = require('lodash/uniq');
 
 const data = require('../data'); // eslint-disable-line import/no-unresolved
@@ -69,9 +68,6 @@ async function upload() {
     }
     console.error('summary', val.summary);
     console.error('timestamp', val.timestamp);
-
-    const date = moment.unix(val.timestamp).format('YYYY-MM-DD-HH-MM-ss');
-    console.error('date', date);
 
     const params = {
       Body: buffer,

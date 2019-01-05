@@ -18,8 +18,8 @@ export default function Login() {
   const submitLogin = async ({ password }) => {
     try {
       const response = await request.post('/api/login', { password });
-      setHasLoggedIn(true);
       setUser(response.body.user);
+      setHasLoggedIn(true);
     } catch (e) {
       throw e;
     }
@@ -30,7 +30,7 @@ export default function Login() {
       {showLogin || user ? (
         <>
           <Form onSubmit={submitLogin}>
-            <div>soaaaamething</div>
+            <div>log</div>
             <Field
               name="password"
               component={InputField}
