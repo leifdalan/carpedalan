@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { bool, oneOfType, string, oneOf } from 'prop-types';
+import { oneOf, string } from 'prop-types';
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import request from 'superagent';
