@@ -28,6 +28,7 @@ Array [
 
 <h1
     className="c0"
+    data-test="menu"
     onClick={[Function]}
     size="small"
     type="button"
@@ -114,7 +115,7 @@ Array [
           href="/"
           onClick={[Function]}
         >
-          Main Feed
+          HOME
         </a>
       </li>
       <li
@@ -125,7 +126,7 @@ Array [
           href="/archive"
           onClick={[Function]}
         >
-          Archive
+          ARCHIVE
         </a>
       </li>
     </ul>
@@ -143,7 +144,7 @@ Array [
       log out
     </button>
   </div>,
-  .c0 {
+  .c1 {
   font-family: montserratregular;
   font-size: 42px;
   text-transform: uppercase;
@@ -154,9 +155,16 @@ Array [
   text-align: center;
 }
 
-<div>
+.c0 {
+  max-width: 67em;
+  margin: 0 auto;
+}
+
+<section
+    className="c0"
+  >
     <h1
-      className="c0"
+      className="c1"
       size="large"
     >
       Carpe Dalan
@@ -193,6 +201,6 @@ Array [
         />
       </div>
     </div>
-  </div>,
+  </section>,
 ]
 `;

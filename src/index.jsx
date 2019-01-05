@@ -64,8 +64,13 @@ function Root({ user, defaultTheme }) {
               <>
                 <Router>
                   <>
-                    {!shouldShowSidebar ? (
-                      <Menu size="small" onClick={toggleMenu} type="button">
+                    {!shouldShowSidebar && userState ? (
+                      <Menu
+                        data-test="menu"
+                        size="small"
+                        onClick={toggleMenu}
+                        type="button"
+                      >
                         Menu
                       </Menu>
                     ) : null}

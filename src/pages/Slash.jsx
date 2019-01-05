@@ -6,6 +6,7 @@ import {
   WindowScroller,
 } from 'react-virtualized';
 import throttle from 'lodash/throttle';
+import styled from 'styled-components';
 
 import { MEDIUM } from '../../shared/constants';
 import { Posts } from '../providers/PostsProvider';
@@ -18,6 +19,11 @@ const throttled = throttle((e, setShouldShowImages) => {
   lastValue = e.scrollTop;
   setShouldShowImages(e.scrollTop < 100 || delta < 2500);
 }, 250);
+
+const Wrapper = styled.section`
+  max-width: 67em;
+  margin: 0 auto;
+`;
 
 export default function Slash() {
   const { getPosts, posts, meta, cache } = useContext(Posts);
@@ -67,7 +73,7 @@ export default function Slash() {
   };
 
   return (
-    <div>
+    <Wrapper>
       <Title center size="large">
         Carpe Dalan
       </Title>
@@ -111,7 +117,7 @@ export default function Slash() {
           </AutoSizer>
         )}
       </WindowScroller>
-    </div>
+    </Wrapper>
   );
 }
 

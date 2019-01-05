@@ -74,15 +74,15 @@ export default function Sidebar({
         ) : null}
 
         <ListItem>
-          <StyledLink to="/">Main Feed</StyledLink>
+          <StyledLink to="/">HOME</StyledLink>
         </ListItem>
         <ListItem>
-          <StyledLink to="/archive">Archive</StyledLink>
+          <StyledLink to="/archive">ARCHIVE</StyledLink>
         </ListItem>
 
         {tags.map(({ name, id }) => (
           <ListItem key={id}>
-            <StyledLink to={`/tag/${name}`}>{name}</StyledLink>
+            <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
           </ListItem>
         ))}
       </List>
