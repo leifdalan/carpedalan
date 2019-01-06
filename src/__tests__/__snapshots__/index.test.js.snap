@@ -85,6 +85,7 @@ Array [
 
 <div
     className="c0"
+    onClick={[Function]}
   >
     <button
       className="c1"

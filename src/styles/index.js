@@ -22,10 +22,11 @@ export const GlobalStyleComponent = createGlobalStyle`
     font-style: normal;
 }
 
-  body, html {
+  body, html, #root {
     background: ${getThemeValue(MAIN)}; 
     color: ${getThemeValue(TEXT)};
     width: 100%;
+    height: 100%;
     padding: 0;
     margin: 0;
   }

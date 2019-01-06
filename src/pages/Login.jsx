@@ -23,10 +23,12 @@ const InputWrapper = styled.div`
 const InputForm = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   flex-direction: column;
-  width: 25em;
-  height: 25em;
+  max-width: 25em;
+  max-height: 25em;
+  width: 40vw;
+  height: 40vh;
 `;
 
 export default function Login() {

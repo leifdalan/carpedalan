@@ -3,6 +3,8 @@ import { bool, func, string } from 'prop-types';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { User } from '..';
+
 import { getThemeValue, SIDEBAR_COLOR, TEXT } from '../styles';
 import { Tag } from '../providers/TagProvider';
 import Title from '../styles/Title';
@@ -55,14 +57,18 @@ export default function Sidebar({
   handleChangeTheme,
   isOpen,
 }) {
+  const { user } = useContext(User);
   const { tags, loadTags } = useContext(Tag);
 
-  useEffect(() => {
-    loadTags();
-    return null;
-  }, []);
+  useEffect(
+    () => {
+      if (user) loadTags();
+      return null;
+    },
+    [user],
+  );
   return userState ? (
-    <StyledSidebar isOpen={isOpen}>
+    <StyledSidebar isOpen={isOpen} onClick={toggleMenu}>
       <Close type="button" as="button" onClick={toggleMenu}>
         Close ✖
       </Close>
@@ -94,8 +100,12 @@ export default function Sidebar({
   ) : null;
 }
 
+Sidebar.defaultProps = {
+  userState: null,
+};
+
 Sidebar.propTypes = {
-  userState: string.isRequired,
+  userState: string,
   setUser: func.isRequired,
   handleChangeTheme: func.isRequired,
   toggleMenu: func.isRequired,
