@@ -27,8 +27,9 @@ describe('Smoke test', () => {
     cy.wait('@login')
       .its('status')
       .should('be', 200);
+    cy.get('[data-test="menu"]').click();
     cy.get('a')
-      .contains('admin')
+      .contains('ADMIN')
       .click();
     cy.url().should('include', 'admin');
   });

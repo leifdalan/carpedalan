@@ -17,7 +17,10 @@ tags.get('/:tag', isLoggedIn, async (req, res) => {
       'tags.name': req.params.tag,
     });
 
-  res.status(200).send(photos);
+  res.status(200).send({
+    data: photos,
+    meta: { count: photos.length },
+  });
 });
 
 tags.get('/', isLoggedIn, async (req, res) => {

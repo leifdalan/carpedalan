@@ -1,6 +1,21 @@
 version: '2.3'
 
 services:
+  alb:
+    container_name: alb
+    depends_on:
+      - app
+    image: nginx:1.15.8-alpine
+    restart: always
+    volumes: 
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+      - ./nginx/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
+    ports:
+      - 80:80
+      - 443:443
+
+    
   app:
     container_name: app
     depends_on:
@@ -24,7 +39,6 @@ services:
     ports:
       - 3001:3001
       - 9227:9229
-      - 80:80
     environment:
       PORT: 80
     command: yarn start

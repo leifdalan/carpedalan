@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useReducer } from 'react';
+import React, { createContext, useEffect, useReducer, useRef } from 'react';
 import { node, shape, func } from 'prop-types';
 import get from 'lodash/get';
 import unset from 'lodash/unset';
@@ -108,6 +108,7 @@ function Form({
   validate: validation,
   effect,
 }) {
+  const ref = useRef();
   const [state, dispatch] = useReducer(reducer, initialFormReducerState, {
     type: 'INITIALIZE',
     payload: initial,
@@ -150,18 +151,23 @@ function Form({
     } else {
       try {
         await onSubmit(state.values);
-        dispatch({
-          type: 'SUBMIT_SUCCEEDED',
-        });
+
+        if (ref.current) {
+          dispatch({
+            type: 'SUBMIT_SUCCEEDED',
+          });
+        }
       } catch (e) {
         dispatch({
           type: 'SUBMIT_FAILED',
           payload: e,
         });
       } finally {
-        dispatch({
-          type: 'SUBMIT_STOP',
-        });
+        if (ref.current) {
+          dispatch({
+            type: 'SUBMIT_STOP',
+          });
+        }
       }
     }
   };

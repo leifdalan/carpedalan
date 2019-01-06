@@ -9,7 +9,7 @@ export default function Submit({ component: Component, ...rest }) {
   // Default component
   return (
     <button type="submit" onClick={submit}>
-      Submit meeeee
+      Submit
     </button>
   );
 }

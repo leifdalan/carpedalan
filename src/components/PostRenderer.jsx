@@ -17,9 +17,11 @@ const RenderRow = props => {
     },
   } = props;
   const { width, height } = SIZE_MAP[size];
-  const ratio = height
+  let ratio = height
     ? height / width
     : posts[index].imageHeight / posts[index].imageWidth;
+
+  if (Number(posts[index].orientation) === 6) ratio = 1 / ratio;
 
   const src = `${API_IMAGES_PATH}/${width}${height ? `-${height}` : ''}/${
     posts[index].key.split('/')[1]
@@ -32,7 +34,9 @@ const RenderRow = props => {
           ratio={ratio}
           src={src}
           shouldShowImage={shouldShowImages}
+          placeholderColor={posts[index].placeholderColor}
         />
+        {posts[index].tags.map(({ name }) => name)}
         {showDescription ? posts[index].description : null}
       </div>
     </CellMeasurer>

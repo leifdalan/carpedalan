@@ -1,6 +1,7 @@
 import React from 'react';
+// import styled from 'styled-components';
 
-export default ({ input: { onChange, value }, meta: { error }, ...etc }) => {
+export default ({ input: { onChange, value }, ...etc }) => {
   const handleChange = e => {
     onChange(e.target.value);
   };
@@ -13,7 +14,6 @@ export default ({ input: { onChange, value }, meta: { error }, ...etc }) => {
         value={value || ''}
         {...etc}
       />
-      {error || null}
     </>
   );
 };
