@@ -107,6 +107,7 @@ function Form({
   onSubmit,
   validate: validation,
   effect,
+  normalize,
 }) {
   const ref = useRef();
   const [state, dispatch] = useReducer(reducer, initialFormReducerState, {
@@ -150,7 +151,8 @@ function Form({
       });
     } else {
       try {
-        await onSubmit(state.values);
+        const normalized = normalize(state.values);
+        await onSubmit(normalized);
 
         if (ref.current) {
           dispatch({
@@ -207,6 +209,7 @@ Form.defaultProps = {
   validate: () => {},
   effect: () => {},
   children: [],
+  normalize: f => f,
 };
 
 Form.propTypes = {
@@ -214,6 +217,7 @@ Form.propTypes = {
   onSubmit: func,
   validate: func,
   effect: func,
+  normalize: func,
   children: node,
 };
 

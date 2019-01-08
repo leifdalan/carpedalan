@@ -50,13 +50,51 @@ posts.delete('/:id', isAdmin, async (req, res) => {
 });
 
 posts.patch('/:id', isAdmin, async (req, res) => {
+  let photoResponse;
+  let tags;
   try {
-    const [response] = await db(PHOTOS)
-      .update(req.body)
-      .where({ id: req.params.id })
-      .returning('*');
-    res.status(200).json(response);
+    await db.transaction(trx =>
+      trx(PHOTOS)
+        .update({
+          [DESCRIPTION]: req.body.description,
+        })
+        .where({ id: req.params.id })
+        .returning('*')
+        .then(async ([photo]) => {
+          photoResponse = photo;
+          if (req.body.tags && req.body.tags.length) {
+            log.info('doing it');
+            const tagsInsert = req.body.tags.map(tag => ({
+              photoId: photo.id,
+              tagId: tag,
+            }));
+            await trx(PHOTOS_TAGS)
+              .del()
+              .where({
+                photoId: photo.id,
+              });
+            await trx(PHOTOS_TAGS).insert(tagsInsert);
+          }
+
+          tags = await trx(PHOTOS_TAGS)
+            .select(`${TAGS}.${NAME} as tagName`, `${TAGS}.${ID} as tagId`)
+            .where({
+              photoId: req.params.id,
+            })
+            .leftJoin(TAGS, `${TAGS}.${ID}`, `${PHOTOS_TAGS}.${TAG_ID}`);
+          return Promise.resolve();
+        })
+        .catch(err => {
+          trx.rollback(err);
+        }),
+    );
+
+    res.status(200).json({
+      ...photoResponse,
+      tags: tags.map(({ tagName, tagId }) => ({ id: tagId, name: tagName })),
+    });
   } catch (e) {
+    res.status(500);
     log.error(e);
   }
 });

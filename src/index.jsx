@@ -31,6 +31,7 @@ const Menu = styled(Title)`
   padding: 5px;
   box-shadow: rgba(255, 255, 255) 0px 0px 10px 10px;
   border-radius: 40%;
+  margin-top: 1em;
 `;
 
 export const User = createContext({

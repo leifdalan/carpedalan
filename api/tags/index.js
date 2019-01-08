@@ -1,7 +1,7 @@
 import express from 'express';
 
 import db from '../../server/db';
-import { isLoggedIn } from '../../server/middlewares';
+import { isAdmin, isLoggedIn } from '../../server/middlewares';
 
 const tags = express.Router();
 
@@ -26,6 +26,17 @@ tags.get('/:tag', isLoggedIn, async (req, res) => {
 tags.get('/', isLoggedIn, async (req, res) => {
   const tagsResponse = await db('tags').select();
   res.status(200).send(tagsResponse);
+});
+
+tags.post('/', isAdmin, async (req, res) => {
+  try {
+    const [tagsResponse] = await db('tags')
+      .insert({ name: req.body.tag })
+      .returning('*');
+    res.status(200).send(tagsResponse);
+  } catch (e) {
+    res.status(500).send(e);
+  }
 });
 
 export default tags;

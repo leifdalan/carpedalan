@@ -29,6 +29,9 @@ const InputForm = styled.div`
   max-height: 25em;
   width: 40vw;
   height: 40vh;
+  input {
+    text-align: center;
+  }
 `;
 
 export default function Login() {

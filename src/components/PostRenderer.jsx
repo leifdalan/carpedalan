@@ -1,7 +1,13 @@
 import React from 'react';
 import { CellMeasurer } from 'react-virtualized';
 
+import Dropdown from '../fields/Dropdown';
+import InputField from '../fields/InputField';
+import Field from '../form/Field';
+import Form from '../form/Form';
 import { API_IMAGES_PATH, SIZE_MAP } from '../../shared/constants';
+import Submit from '../form/Submit';
+import Button from '../styles/Button';
 
 import Picture from './Picture';
 
@@ -9,13 +15,25 @@ const RenderRow = props => {
   /* eslint-disable react/prop-types */
   const {
     index,
-    key,
     style,
     parent,
     parent: {
-      props: { posts, cache, shouldShowImages, showDescription, size },
+      props: {
+        posts,
+        cache,
+        shouldShowImages,
+        showDescription,
+        size,
+        isEditing,
+        patchPost,
+        delPost,
+        setEditing,
+        isAdmin,
+        tags,
+      },
     },
   } = props;
+
   const { width, height } = SIZE_MAP[size];
   let ratio = height
     ? height / width
@@ -26,8 +44,14 @@ const RenderRow = props => {
   const src = `${API_IMAGES_PATH}/${width}${height ? `-${height}` : ''}/${
     posts[index].key.split('/')[1]
   }.webp`;
+
   return posts[index] ? (
-    <CellMeasurer key={key} cache={cache} parent={parent} index={index}>
+    <CellMeasurer
+      key={posts[index].id}
+      cache={cache}
+      parent={parent}
+      index={index}
+    >
       <div style={style}>
         <Picture
           width="100%"
@@ -36,8 +60,46 @@ const RenderRow = props => {
           shouldShowImage={shouldShowImages}
           placeholderColor={posts[index].placeholderColor}
         />
-        {posts[index].tags.map(({ name }) => name)}
-        {showDescription ? posts[index].description : null}
+        {isAdmin ? (
+          <Button onClick={() => setEditing(true)}>Edit</Button>
+        ) : null}
+        {isEditing ? (
+          <>
+            <Form
+              onSubmit={patchPost(posts[index].id)}
+              initial={{
+                description: posts[index].description,
+                tags: posts[index].tags.map(tag => ({
+                  value: tag.id,
+                  label: tag.name,
+                })),
+              }}
+              normalize={values => ({
+                ...values,
+                tags: values.tags.map(({ value }) => value),
+              })}
+            >
+              <Field name="description" component={InputField} />
+              <Field
+                name="tags"
+                component={Dropdown}
+                options={tags.map(tag => ({
+                  value: tag.id,
+                  label: tag.name,
+                }))}
+                isMulti
+              />
+
+              <Submit />
+            </Form>
+            <Button onClick={delPost(posts[index].id)}>Deklete</Button>
+          </>
+        ) : (
+          <>
+            {posts[index].tags.map(({ name }) => name)}
+            {showDescription ? posts[index].description : null}
+          </>
+        )}
       </div>
     </CellMeasurer>
   ) : null;

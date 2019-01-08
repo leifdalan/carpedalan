@@ -20,10 +20,29 @@ const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
   const [currentPage, setCurrentPage] = useState(1);
+
   const cache = new CellMeasurerCache({
     fixedWidth: true,
     defaultHeight: 500,
   });
+
+  const patchPost = id => async values => {
+    try {
+      const { body } = await request.patch(`${API_PATH}/posts/${id}`, values);
+
+      // setCacheValid(false);
+      // cache.clearAll();
+      setPosts(posts.map(post => (post.id === body.id ? body : post)));
+    } catch (e) {
+      log.error(e);
+    }
+  };
+
+  const delPost = id => async () => {
+    await request.delete(`${API_PATH}/posts/${id}`);
+    setPosts(posts.filter(post => post.id !== id));
+    cache.clearAll();
+  };
 
   const getPosts = async (page = currentPage) => {
     try {
@@ -44,8 +63,25 @@ const PostProvider = ({ children }) => {
     return null;
   };
 
+  const invalidateAll = () => {
+    cache.clearAll();
+    setPosts([]);
+    setMeta({ count: 0 });
+  };
+
   return (
-    <Posts.Provider value={{ cache, getPosts, posts, meta, setCacheValid }}>
+    <Posts.Provider
+      value={{
+        cache,
+        getPosts,
+        posts,
+        meta,
+        setCacheValid,
+        patchPost,
+        delPost,
+        invalidateAll,
+      }}
+    >
       {children}
     </Posts.Provider>
   );

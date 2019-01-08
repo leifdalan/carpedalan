@@ -3,6 +3,7 @@ import { createGlobalStyle } from 'styled-components';
 export const MAIN = 'main';
 export const TEXT = 'text';
 export const SIDEBAR_COLOR = 'sidebarColor';
+export const BRAND_COLOR = 'brandColor';
 export const getThemeValue = value => ({ theme }) => theme[value];
 
 export const GlobalStyleComponent = createGlobalStyle`
@@ -39,12 +40,14 @@ const dark = {
   [MAIN]: 'black',
   [TEXT]: 'white',
   [SIDEBAR_COLOR]: 'rgba(0, 255, 231, 0.8)',
+  [BRAND_COLOR]: '#ff8c0e',
 };
 
 const lite = {
   [MAIN]: 'white',
   [TEXT]: 'black',
   [SIDEBAR_COLOR]: 'rgba(0, 255, 231, 0.8)',
+  [BRAND_COLOR]: 'rgb(0, 109, 245)',
 };
 
 export const themes = {

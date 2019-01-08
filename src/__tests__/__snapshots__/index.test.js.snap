@@ -4,6 +4,7 @@ exports[`test should do some stuff 1`] = `
 Array [
   .c0 {
   font-family: montserratregular;
+  margin: 2em 0;
   font-size: 18px;
   text-transform: uppercase;
   -webkit-letter-spacing: 5px;
@@ -24,6 +25,7 @@ Array [
   padding: 5px;
   box-shadow: rgba(255,255,255) 0px 0px 10px 10px;
   border-radius: 40%;
+  margin-top: 1em;
 }
 
 <h1
@@ -35,7 +37,16 @@ Array [
   >
     Menu
   </h1>,
-  .c0 {
+  .c5 {
+  background: rgb(0,109,245);
+  color: inherit;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: inherit;
+}
+
+.c0 {
   position: fixed;
   width: 200px;
   top: 0;
@@ -69,6 +80,7 @@ Array [
 
 .c1 {
   font-family: montserratregular;
+  margin: 2em 0;
   font-size: 24px;
   text-transform: uppercase;
   -webkit-letter-spacing: 5px;
@@ -138,6 +150,7 @@ Array [
       toggle themeaa
     </button>
     <button
+      className="c5"
       data-test="logout"
       onClick={[Function]}
       type="button"
@@ -145,8 +158,14 @@ Array [
       log out
     </button>
   </div>,
-  .c1 {
+  .c0 {
+  max-width: 67em;
+  margin: 0 auto;
+}
+
+.c1 {
   font-family: montserratregular;
+  margin: 2em 0;
   font-size: 42px;
   text-transform: uppercase;
   -webkit-letter-spacing: 5px;
@@ -154,11 +173,6 @@ Array [
   -ms-letter-spacing: 5px;
   letter-spacing: 5px;
   text-align: center;
-}
-
-.c0 {
-  max-width: 67em;
-  margin: 0 auto;
 }
 
 <section

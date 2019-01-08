@@ -5,12 +5,12 @@ services:
     container_name: alb
     depends_on:
       - app
-    image: nginx:1.15.8-alpine
+    image: ekino/nginx-brotli:latest-1.12.2-bfd2885
     restart: always
     volumes: 
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
-      - ./nginx/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
+      - ./nginx/carpe+5.pem:/etc/ssl/certs/carpe+5.pem
+      - ./nginx/carpe+5-key.pem:/etc/ssl/private/carpe+5-key.pem
     ports:
       - 80:80
       - 443:443

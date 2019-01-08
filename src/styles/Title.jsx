@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components';
 
 export default styled.h1`
   font-family: montserratregular;
+  margin: 2em 0;
   font-size: ${({ size }) => {
     switch (size) {
       case 'large':

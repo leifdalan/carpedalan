@@ -6,12 +6,14 @@ import {
   WindowScroller,
 } from 'react-virtualized';
 import throttle from 'lodash/throttle';
-import styled from 'styled-components';
 
+import Wrapper from '../styles/Wrapper';
 import { MEDIUM } from '../../shared/constants';
 import { Posts } from '../providers/PostsProvider';
+import { Tag } from '../providers/TagProvider';
 import PostRenderer from '../components/PostRenderer';
 import Title from '../styles/Title';
+import log from '../utils/log';
 
 let lastValue = 0;
 const throttled = throttle((e, setShouldShowImages) => {
@@ -20,16 +22,14 @@ const throttled = throttle((e, setShouldShowImages) => {
   setShouldShowImages(e.scrollTop < 100 || delta < 2500);
 }, 250);
 
-const Wrapper = styled.section`
-  max-width: 67em;
-  margin: 0 auto;
-`;
-
 export default function Slash() {
-  const { getPosts, posts, meta, cache } = useContext(Posts);
+  const { getPosts, posts, meta, cache, patchPost, delPost } = useContext(
+    Posts,
+  );
+  const { tags } = useContext(Tag);
   // const { user } = useContext(User);
   // const [query, setQuery] = useState(null);
-  // const [isEditing, setEditing] = useState(false);
+  const [isEditing, setEditing] = useState(false);
   const [shouldShowImages, setShouldShowImages] = useState(true);
   const listRef = useRef(null);
   const throttledResize = throttle(() => {
@@ -44,14 +44,31 @@ export default function Slash() {
     return () => window.removeEventListener('resize', throttledResize);
   }, []);
 
-  // const Wrapper = isEditing ? Form : Fragment;
+  useEffect(
+    () => {
+      cache.clearAll();
+      listRef.current.recomputeRowHeights(0);
+    },
+    [isEditing],
+  );
 
-  // const handleSubmit = id => async values => {
-  //   await request.patch(`${API_PATH}/posts/${id}`, values);
-  // };
+  const handlePatchPost = id => async values => {
+    await patchPost(id)(values);
+    try {
+      listRef.current.forceUpdate();
+      setEditing(false);
+    } catch (e) {
+      log.error(e);
+    }
+  };
 
-  // const del = id => async () => {
+  // const delPost = id => async () => {
   //   await request.delete(`${API_PATH}/posts/${id}`);
+  //   setCacheValid(false);
+  //   await getPosts(1);
+
+  //   cache.clearAll();
+  //   listRef.forceUpdateGrid();
   // };
 
   // const getProps = (description, id) =>
@@ -71,7 +88,6 @@ export default function Slash() {
     onChildScroll(e);
     throttled(e, setShouldShowImages);
   };
-
   return (
     <Wrapper>
       <Title center size="large">
@@ -109,6 +125,12 @@ export default function Slash() {
                       shouldShowImages={shouldShowImages}
                       size={MEDIUM}
                       showDescription
+                      isAdmin
+                      setEditing={setEditing}
+                      isEditing={isEditing}
+                      delPost={delPost}
+                      patchPost={handlePatchPost}
+                      tags={tags}
                     />
                   </div>
                 )}
@@ -120,41 +142,3 @@ export default function Slash() {
     </Wrapper>
   );
 }
-
-/* <div onClick={() => setQuery({ order: 'asc' })}>sort wootdesc</div>
-{posts.map(({ id, description, key, tags, width }) =>
-  key ? (
-    <Wrapper key={id} {...getProps(description, id)}>
-      {width}
-      <img
-        alt={description}
-        width="100%"
-        data-test={key.split('/')[1]}
-        src={`${API_IMAGES_PATH}/${SIZE_MAP[MEDIUM].width}/${
-          key.split('/')[1]
-        }.webp`}
-      />
-      {isEditing ? (
-        <Field name={DESCRIPTION} component={InputField} />
-      ) : (
-        <div>{description || null}</div>
-      )}
-
-      {tags.map(({ name, id: tagId }) => (
-        <Link key={tagId} to={`/tag/${name}`}>{`#${name}`}</Link>
-      ))}
-      {isAdmin(user) && !isEditing ? (
-        <div onClick={() => setEditing(true)}>edit</div>
-      ) : null}
-      {isAdmin(user) && isEditing ? <Submit /> : null}
-      {isAdmin(user) && isEditing ? (
-        <div onClick={() => setEditing(false)}>unedit</div>
-      ) : null}
-      {isAdmin(user) && isEditing ? (
-        <button type="button" onClick={del(id)}>
-          del
-        </button>
-      ) : null}
-    </Wrapper>
-  ) : null,
-)} */

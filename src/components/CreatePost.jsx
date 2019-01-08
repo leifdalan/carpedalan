@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { bool, number, shape, string } from 'prop-types';
 import request from 'superagent';
 
 import { API_PATH } from '../../shared/constants';
 import Form from '../form/Form';
+import { Posts } from '../providers/PostsProvider';
 import log from '../utils/log';
 import { FormData } from '../utils/globals';
 
 import CreatePostForm from './CreatPostForm';
 
 const CreatePost = ({ preview, fileInputRef, index, shouldSubmit }) => {
+  const { invalidateAll } = useContext(Posts);
   const [submitting, setSubmitting] = useState(false);
   const [submitSucceeded, setSubmitSucceeded] = useState(false);
   const [submitFailed, setSubmitFailed] = useState(false);
@@ -26,6 +29,7 @@ const CreatePost = ({ preview, fileInputRef, index, shouldSubmit }) => {
         .on('progress', e => {
           log.info('progress', e.percent);
         });
+      invalidateAll();
       setSubmitSucceeded(true);
     } catch (e) {
       setSubmitFailed(true);
@@ -48,7 +52,14 @@ const CreatePost = ({ preview, fileInputRef, index, shouldSubmit }) => {
 
   return (
     <>
-      <Form onSubmit={submitToApi} initial={{ tags: [] }}>
+      <Form
+        onSubmit={submitToApi}
+        initial={{ tags: [] }}
+        normalize={values => ({
+          ...values,
+          tags: values.tags.map(({ value }) => value),
+        })}
+      >
         <CreatePostForm
           preview={preview}
           submitting={submitting}
@@ -58,6 +69,21 @@ const CreatePost = ({ preview, fileInputRef, index, shouldSubmit }) => {
       </Form>
     </>
   );
+};
+
+CreatePost.defaultProps = {
+  preview: null,
+};
+
+CreatePost.propTypes = {
+  preview: shape({
+    url: string.isRequired,
+    width: number.isRequired,
+    height: number.isRequired,
+  }),
+  fileInputRef: shape({}).isRequired,
+  index: number.isRequired,
+  shouldSubmit: bool.isRequired,
 };
 
 export default CreatePost;

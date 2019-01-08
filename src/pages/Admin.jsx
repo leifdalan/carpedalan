@@ -4,6 +4,7 @@ import exifReader from 'exifreader';
 import CreatePost from '../components/CreatePost';
 import { Tag } from '../providers/TagProvider';
 import { Posts } from '../providers/PostsProvider';
+import Wrapper from '../styles/Wrapper';
 
 const Admin = () => {
   const { loadingTags, loadTags } = useContext(Tag);
@@ -33,7 +34,12 @@ const Admin = () => {
               const data = exifReader.load(arrayBuffer);
               const orientation =
                 data.Orientation.value === 6 ? 'portrait' : 'landscape';
-              resolve({ url, orientation });
+              resolve({
+                url,
+                orientation,
+                height: data.ImageLength.value,
+                width: data.ImageWidth.value,
+              });
             } catch (er) {
               resolve({ url, orientation: 'landscape' });
             }
@@ -46,7 +52,7 @@ const Admin = () => {
   };
 
   return (
-    <>
+    <Wrapper>
       <input
         data-test="multiUploader"
         type="file"
@@ -74,7 +80,7 @@ const Admin = () => {
       >
         Submit All
       </button>
-    </>
+    </Wrapper>
   );
 };
 
