@@ -1,6 +1,8 @@
 import React, { useContext, useRef, useState } from 'react';
 import exifReader from 'exifreader';
 import styled from 'styled-components';
+import camelCase from 'lodash/camelCase';
+import omit from 'lodash/omit';
 
 import CreatPostForm from '../components/CreatPostForm';
 import Form from '../form/Form';
@@ -54,11 +56,21 @@ const Admin = () => {
               const data = exifReader.load(arrayBuffer);
               const orientation =
                 data.Orientation.value === 6 ? 'portrait' : 'landscape';
+
+              const exifData = Object.keys(data).reduce(
+                (acc, key) => ({
+                  ...acc,
+                  [camelCase(key)]: data[key].value,
+                }),
+                {},
+              );
+
               resolve({
                 url,
                 orientation,
                 height: data.ImageLength.value,
                 width: data.ImageWidth.value,
+                exifData: omit(exifData, 'makerNote'),
               });
             } catch (er) {
               resolve({ url, orientation: 'landscape' });
@@ -109,6 +121,7 @@ const Admin = () => {
                 initial={{ tags: [] }}
                 normalize={values => ({
                   ...values,
+                  ...previews[index].exifData,
                   tags: values.tags.map(({ value }) => value),
                 })}
               >

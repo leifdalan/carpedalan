@@ -40,10 +40,14 @@ exports.handler = async (event, context, ...otherThingz) => {
     console.timeEnd('s3');
   }
   let resized;
+  let rotated;
   try {
     console.time('sharp');
+    rotated = await sharp(buffer.Body)
+      .rotate()
+      .toBuffer();
     const jpegPromises = SIZES.map(size =>
-      sharp(buffer.Body)
+      sharp(rotated)
         .resize({
           width: size.width,
           ...(size.height ? { height: size.height } : {}),
@@ -52,7 +56,7 @@ exports.handler = async (event, context, ...otherThingz) => {
         .toBuffer(),
     );
     const webpPromises = SIZES.map(size =>
-      sharp(buffer.Body)
+      sharp(rotated)
         .resize({
           width: size.width,
           ...(size.height ? { height: size.height } : {}),
@@ -88,7 +92,14 @@ exports.handler = async (event, context, ...otherThingz) => {
         })
         .promise();
     });
-    await Promise.all(putPromises);
+
+    const rotatedOriginalPromise = s3.upload({
+      Key: event.Records[0].s3.object.key,
+      Bucket: bucket,
+      Body: rotated,
+      ContentType: 'image/jpeg',
+    });
+    await Promise.all([...putPromises, rotatedOriginalPromise]);
   } catch (e) {
     console.log(e);
     console.log('upload error', JSON.stringify(e));
