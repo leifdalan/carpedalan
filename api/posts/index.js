@@ -198,6 +198,12 @@ posts.post(
         moment(req.body.dateTimeOriginal, 'YYYY:MM:DD HH:MM:SS').valueOf() /
           1000,
       );
+      if (typeof momented !== 'number')
+        throw Error(
+          `dateTimeOriginal ${
+            req.body.dateTimeOriginal
+          } could not be converted to timestamp`,
+        );
       // console.error('req.body.dateTimeOriginal', req.body.dateTimeOriginal);
       // const timeStamp = Math.floor(
       //   parseDate(
