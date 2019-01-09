@@ -66,8 +66,6 @@ const reducer = (
         },
       };
     case 'SUBMIT_SUCCEEDED':
-      console.error('submit');
-
       return {
         ...state,
         meta: {

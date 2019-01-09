@@ -2,11 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { CellMeasurer } from 'react-virtualized';
 import styled from 'styled-components';
+import isNumber from 'lodash/isNumber';
 
 import Dropdown from '../fields/Dropdown';
 import InputField from '../fields/InputField';
 import Field from '../form/Field';
-import Form from '../form/Form';
 import { API_IMAGES_PATH, SIZE_MAP } from '../../shared/constants';
 import Submit from '../form/Submit';
 import { BRAND_COLOR, getThemeValue, TITLE_FONT } from '../styles';
@@ -66,7 +66,6 @@ const RenderRow = props => {
         showDescription,
         size,
         isEditing,
-        patchPost,
         delPost,
         setEditing,
         isAdmin,
@@ -86,6 +85,9 @@ const RenderRow = props => {
     posts[index].key.split('/')[1]
   }.webp`;
 
+  const showEditButton =
+    isAdmin && (isEditing === index || !isNumber(isEditing));
+
   return posts[index] ? (
     <CellMeasurer
       key={posts[index].id}
@@ -94,9 +96,11 @@ const RenderRow = props => {
       index={index}
     >
       <div style={style}>
-        {isAdmin ? (
-          <EditButton onClick={() => setEditing(index, !isEditing[index])}>
-            {isEditing[index] ? 'Close' : 'Edit'}
+        {showEditButton ? (
+          <EditButton
+            onClick={() => setEditing(isNumber(isEditing) ? null : index)}
+          >
+            {isEditing === index ? 'Close' : 'Edit'}
           </EditButton>
         ) : null}
 
@@ -108,37 +112,22 @@ const RenderRow = props => {
           placeholderColor={posts[index].placeholderColor}
           alt={posts[index].description}
         />
-        {isEditing[index] ? (
+        {isEditing === index ? (
           <Description>
-            <Form
-              onSubmit={patchPost(posts[index].id)}
-              initial={{
-                description: posts[index].description,
-                tags: posts[index].tags.map(tag => ({
-                  value: tag.id,
-                  label: tag.name,
-                })),
-              }}
-              normalize={values => ({
-                ...values,
-                tags: values.tags.map(({ value }) => value),
-              })}
-            >
-              <Field name="description" component={InputField} />
-              <Field
-                name="tags"
-                component={Dropdown}
-                options={tags.map(tag => ({
-                  value: tag.id,
-                  label: tag.name,
-                }))}
-                isMulti
-              />
-              <Flex justifyContent="space-between">
-                <Submit />
-                <Button onClick={delPost(posts[index].id)}>Delete</Button>
-              </Flex>
-            </Form>
+            <Field name="description" component={InputField} />
+            <Field
+              name="tags"
+              component={Dropdown}
+              options={tags.map(tag => ({
+                value: tag.id,
+                label: tag.name,
+              }))}
+              isMulti
+            />
+            <Flex justifyContent="space-between">
+              <Submit />
+              <Button onClick={delPost(posts[index].id)}>Delete</Button>
+            </Flex>
           </Description>
         ) : showDescription ? (
           <Description>
@@ -147,8 +136,8 @@ const RenderRow = props => {
               <Download>Download</Download>
             </StyledFlex>
             <ul>
-              {posts[index].tags.map(({ name }) => (
-                <li>
+              {posts[index].tags.map(({ name, id }) => (
+                <li key={id}>
                   <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
                 </li>
               ))}
