@@ -34,6 +34,10 @@ const InputForm = styled.div`
   }
 `;
 
+const StyledTitle = styled(Title)`
+  margin: 0;
+`;
+
 export default function Login() {
   const { setUser, user } = useContext(User);
   const [hasLoggedIn, setHasLoggedIn] = useState(false);
@@ -53,7 +57,7 @@ export default function Login() {
       {showLogin || user ? (
         <InputWrapper>
           <InputForm>
-            <Title center>Login</Title>
+            <StyledTitle center>Login</StyledTitle>
             <Form onSubmit={submitLogin}>
               <Field
                 name="password"
@@ -61,7 +65,7 @@ export default function Login() {
                 placeholder="Password, please"
                 type="password"
               />
-              <Submit />
+              <Submit text="Login" />
             </Form>
           </InputForm>
 

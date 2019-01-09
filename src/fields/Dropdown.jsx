@@ -1,8 +1,13 @@
 import React, { useContext } from 'react';
 import { any, func, shape } from 'prop-types';
 import Select from 'react-select/lib/Creatable';
+import styled from 'styled-components';
 
 import { Tag } from '../providers/TagProvider';
+
+const Wrapper = styled.div`
+  margin: 1em 0;
+`;
 
 export default function Dropdown({ input: { onChange, value }, ...etc }) {
   const { postNewTag, creatingTag } = useContext(Tag);
@@ -12,13 +17,15 @@ export default function Dropdown({ input: { onChange, value }, ...etc }) {
     onChange([...value, { label: thing, value: response.id }]);
   };
   return (
-    <Select
-      onCreateOption={handleCreate}
-      onChange={onChange}
-      value={value}
-      isLoading={creatingTag}
-      {...etc}
-    />
+    <Wrapper>
+      <Select
+        onCreateOption={handleCreate}
+        onChange={onChange}
+        value={value}
+        isLoading={creatingTag}
+        {...etc}
+      />
+    </Wrapper>
   );
 }
 

@@ -51,7 +51,7 @@ posts.delete('/:id', isAdmin, async (req, res) => {
 
 posts.patch('/:id', isAdmin, async (req, res) => {
   let photoResponse;
-  let tags;
+  let tags = [];
   try {
     await db.transaction(trx =>
       trx(PHOTOS)
@@ -62,17 +62,18 @@ posts.patch('/:id', isAdmin, async (req, res) => {
         .returning('*')
         .then(async ([photo]) => {
           photoResponse = photo;
+          await trx(PHOTOS_TAGS)
+            .del()
+            .where({
+              photoId: photo.id,
+            });
+
           if (req.body.tags && req.body.tags.length) {
             log.info('doing it');
             const tagsInsert = req.body.tags.map(tag => ({
               photoId: photo.id,
               tagId: tag,
             }));
-            await trx(PHOTOS_TAGS)
-              .del()
-              .where({
-                photoId: photo.id,
-              });
             await trx(PHOTOS_TAGS).insert(tagsInsert);
           }
 

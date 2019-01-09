@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { CellMeasurer } from 'react-virtualized';
+import styled from 'styled-components';
 
 import Dropdown from '../fields/Dropdown';
 import InputField from '../fields/InputField';
@@ -7,12 +9,51 @@ import Field from '../form/Field';
 import Form from '../form/Form';
 import { API_IMAGES_PATH, SIZE_MAP } from '../../shared/constants';
 import Submit from '../form/Submit';
+import { BRAND_COLOR, getThemeValue, TITLE_FONT } from '../styles';
 import Button from '../styles/Button';
+import Flex from '../styles/FlexContainer';
 
 import Picture from './Picture';
 
+const Download = styled.a`
+  color: ${getThemeValue(BRAND_COLOR)};
+  font-family: ${getThemeValue(TITLE_FONT)};
+  text-transform: uppercase;
+`;
+
+const Description = styled.div`
+  padding: 1em;
+  li {
+    list-style: none;
+    padding: 0;
+    display: inline-block;
+    margin-right: 0.25em;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+`;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: ${getThemeValue(BRAND_COLOR)};
+`;
+
+const StyledFlex = styled(Flex)`
+  margin-bottom: 0.5em;
+`;
+
+const EditButton = styled(Button)`
+  position: absolute;
+  right: 1em;
+  top: 1em;
+  z-index: 1;
+  opacity: 0.6;
+`;
+
 const RenderRow = props => {
-  /* eslint-disable react/prop-types */
+  /* eslint-disable react/prop-types,no-nested-ternary */
   const {
     index,
     style,
@@ -53,18 +94,22 @@ const RenderRow = props => {
       index={index}
     >
       <div style={style}>
+        {isAdmin ? (
+          <EditButton onClick={() => setEditing(index, !isEditing[index])}>
+            {isEditing[index] ? 'Close' : 'Edit'}
+          </EditButton>
+        ) : null}
+
         <Picture
           width="100%"
           ratio={ratio}
           src={src}
           shouldShowImage={shouldShowImages}
           placeholderColor={posts[index].placeholderColor}
+          alt={posts[index].description}
         />
-        {isAdmin ? (
-          <Button onClick={() => setEditing(true)}>Edit</Button>
-        ) : null}
-        {isEditing ? (
-          <>
+        {isEditing[index] ? (
+          <Description>
             <Form
               onSubmit={patchPost(posts[index].id)}
               initial={{
@@ -89,17 +134,27 @@ const RenderRow = props => {
                 }))}
                 isMulti
               />
-
-              <Submit />
+              <Flex justifyContent="space-between">
+                <Submit />
+                <Button onClick={delPost(posts[index].id)}>Delete</Button>
+              </Flex>
             </Form>
-            <Button onClick={delPost(posts[index].id)}>Deklete</Button>
-          </>
-        ) : (
-          <>
-            {posts[index].tags.map(({ name }) => name)}
-            {showDescription ? posts[index].description : null}
-          </>
-        )}
+          </Description>
+        ) : showDescription ? (
+          <Description>
+            <StyledFlex justifyContent="space-between">
+              <figcaption>{posts[index].description}</figcaption>
+              <Download>Download</Download>
+            </StyledFlex>
+            <ul>
+              {posts[index].tags.map(({ name }) => (
+                <li>
+                  <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
+                </li>
+              ))}
+            </ul>
+          </Description>
+        ) : null}
       </div>
     </CellMeasurer>
   ) : null;

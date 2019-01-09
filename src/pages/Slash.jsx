@@ -7,6 +7,9 @@ import {
 } from 'react-virtualized';
 import throttle from 'lodash/throttle';
 
+import { User } from '..';
+
+import { WRITE_USER } from '../../server/constants';
 import Wrapper from '../styles/Wrapper';
 import { MEDIUM } from '../../shared/constants';
 import { Posts } from '../providers/PostsProvider';
@@ -27,9 +30,9 @@ export default function Slash() {
     Posts,
   );
   const { tags } = useContext(Tag);
-  // const { user } = useContext(User);
-  // const [query, setQuery] = useState(null);
-  const [isEditing, setEditing] = useState(false);
+  const { user } = useContext(User);
+
+  const [isEditing, setEditing] = useState({});
   const [shouldShowImages, setShouldShowImages] = useState(true);
   const listRef = useRef(null);
   const throttledResize = throttle(() => {
@@ -38,28 +41,32 @@ export default function Slash() {
     }
   }, 250);
 
+  const isAdmin = user === WRITE_USER;
+
   window.addEventListener('resize', throttledResize);
   useEffect(() => {
     getPosts(1);
     return () => window.removeEventListener('resize', throttledResize);
   }, []);
 
-  useEffect(
-    () => {
-      cache.clearAll();
-      listRef.current.recomputeRowHeights(0);
-    },
-    [isEditing],
-  );
-
   const handlePatchPost = id => async values => {
     await patchPost(id)(values);
     try {
+      cache.clearAll();
       listRef.current.forceUpdate();
       setEditing(false);
     } catch (e) {
       log.error(e);
     }
+  };
+
+  const setEditingForIndex = (index, value) => {
+    setEditing({
+      ...isEditing,
+      [index]: value,
+    });
+    cache.clear(index);
+    listRef.current.recomputeRowHeights(index);
   };
 
   // const delPost = id => async () => {
@@ -125,8 +132,8 @@ export default function Slash() {
                       shouldShowImages={shouldShowImages}
                       size={MEDIUM}
                       showDescription
-                      isAdmin
-                      setEditing={setEditing}
+                      isAdmin={isAdmin}
+                      setEditing={setEditingForIndex}
                       isEditing={isEditing}
                       delPost={delPost}
                       patchPost={handlePatchPost}

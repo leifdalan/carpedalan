@@ -53,7 +53,7 @@ export default function Grid({ type, fetchData, data, meta }) {
               <InfiniteLoader
                 isRowLoaded={isRowLoaded(width)}
                 loadMoreRows={loadMoreRows}
-                rowCount={meta.count / postsPerRow}
+                rowCount={Math.floor(meta.count / postsPerRow) + 1}
               >
                 {({ onRowsRendered }) => (
                   <div ref={registerChild}>
@@ -67,7 +67,7 @@ export default function Grid({ type, fetchData, data, meta }) {
                       onScroll={onChildScroll}
                       rowHeight={cache.rowHeight}
                       rowRenderer={PostGridRowRenderer}
-                      rowCount={meta.count / postsPerRow}
+                      rowCount={Math.floor(meta.count / postsPerRow) + 1}
                       overscanRowCount={20}
                       isScrolling={isScrolling}
                       scrollTop={scrollTop}

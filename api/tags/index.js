@@ -25,7 +25,24 @@ tags.get('/:tag', isLoggedIn, async (req, res) => {
 
 tags.get('/', isLoggedIn, async (req, res) => {
   const tagsResponse = await db('tags').select();
-  res.status(200).send(tagsResponse);
+  const counts = await db('photos_tags')
+    .select('tagId')
+    .count('*')
+    .groupBy('tagId');
+
+  const countsById = counts.reduce(
+    (acc, count) => ({
+      ...acc,
+      [count.tagId]: count.count,
+    }),
+    {},
+  );
+
+  const withCount = tagsResponse.map(tag => ({
+    ...tag,
+    count: countsById[tag.id],
+  }));
+  res.status(200).send(withCount);
 });
 
 tags.post('/', isAdmin, async (req, res) => {

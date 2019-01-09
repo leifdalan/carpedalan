@@ -1,12 +1,23 @@
 import React from 'react';
 import { bool, number, string } from 'prop-types';
+import styled from 'styled-components';
 
-const Picture = ({ shouldShowImage, width, ratio, src, placeholderColor }) => (
-  <div
+const Wrapper = styled.div`
+  display: inline-block;
+  margin-bottom: -4px;
+`;
+
+const Picture = ({
+  shouldShowImage,
+  width,
+  ratio,
+  src,
+  placeholderColor,
+  alt,
+}) => (
+  <Wrapper
     style={{
       width,
-      display: 'inline-block',
-      marginBottom: '-4px',
       backgroundColor: placeholderColor,
     }}
   >
@@ -27,15 +38,16 @@ const Picture = ({ shouldShowImage, width, ratio, src, placeholderColor }) => (
             height: '100%',
           }}
           src={src}
-          alt="balls"
+          alt={alt || src}
         />
       ) : null}
     </div>
-  </div>
+  </Wrapper>
 );
 
 Picture.defaultProps = {
   shouldShowImage: true,
+  alt: undefined,
 };
 
 Picture.propTypes = {
@@ -44,6 +56,7 @@ Picture.propTypes = {
   ratio: number.isRequired,
   width: string.isRequired,
   placeholderColor: string.isRequired,
+  alt: string,
 };
 
 export default Picture;

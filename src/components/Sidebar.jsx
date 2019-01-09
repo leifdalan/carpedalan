@@ -22,7 +22,11 @@ const StyledSidebar = styled.div`
   overflow: scroll;
   transition: left 200ms ease-in;
   font-family: montserratregular;
-  padding: ${({ isOpen }) => (isOpen ? 1 : 0)}em;
+  padding: ${({ isOpen }) => (isOpen ? `1em` : '1em 0')};
+  ${Title} {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 `;
 
 const List = styled.ul`
@@ -86,9 +90,11 @@ export default function Sidebar({
           <StyledLink to="/archive">ARCHIVE</StyledLink>
         </ListItem>
 
-        {tags.map(({ name, id }) => (
+        {tags.map(({ name, id, count }) => (
           <ListItem key={id}>
-            <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
+            <StyledLink to={`/tag/${name}`}>
+              {`#${name} (${count || 0})`}
+            </StyledLink>
           </ListItem>
         ))}
       </List>

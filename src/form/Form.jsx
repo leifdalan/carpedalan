@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useReducer, useRef } from 'react';
-import { node, shape, func } from 'prop-types';
+import { bool, func, node, shape } from 'prop-types';
 import get from 'lodash/get';
 import unset from 'lodash/unset';
 import isUndefined from 'lodash/isUndefined';
@@ -66,6 +66,8 @@ const reducer = (
         },
       };
     case 'SUBMIT_SUCCEEDED':
+      console.error('submit');
+
       return {
         ...state,
         meta: {
@@ -108,6 +110,7 @@ function Form({
   validate: validation,
   effect,
   normalize,
+  shouldSubmit,
 }) {
   const ref = useRef();
   const [state, dispatch] = useReducer(reducer, initialFormReducerState, {
@@ -153,23 +156,18 @@ function Form({
       try {
         const normalized = normalize(state.values);
         await onSubmit(normalized);
-
-        if (ref.current) {
-          dispatch({
-            type: 'SUBMIT_SUCCEEDED',
-          });
-        }
+        dispatch({
+          type: 'SUBMIT_SUCCEEDED',
+        });
       } catch (e) {
         dispatch({
           type: 'SUBMIT_FAILED',
           payload: e,
         });
       } finally {
-        if (ref.current) {
-          dispatch({
-            type: 'SUBMIT_STOP',
-          });
-        }
+        dispatch({
+          type: 'SUBMIT_STOP',
+        });
       }
     }
   };
@@ -185,8 +183,18 @@ function Form({
     [state],
   );
 
+  useEffect(
+    () => {
+      if (shouldSubmit) {
+        submit(state.values);
+      }
+    },
+    [shouldSubmit],
+  );
+
   return (
     <FormProvider
+      ref={ref}
       value={{
         change,
         validate,
@@ -210,6 +218,7 @@ Form.defaultProps = {
   effect: () => {},
   children: [],
   normalize: f => f,
+  shouldSubmit: false,
 };
 
 Form.propTypes = {
@@ -219,6 +228,7 @@ Form.propTypes = {
   effect: func,
   normalize: func,
   children: node,
+  shouldSubmit: bool,
 };
 
 export default Form;

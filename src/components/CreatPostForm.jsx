@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
-import { bool, number, shape, string } from 'prop-types';
+import { number, shape, string } from 'prop-types';
 import styled, { css } from 'styled-components';
 
 import InputField from '../fields/InputField';
 import Drowpdown from '../fields/Dropdown';
 import Field from '../form/Field';
+import { FormContext } from '../form/Form';
 import Submit from '../form/Submit';
 import { Tag } from '../providers/TagProvider';
 
@@ -27,8 +28,13 @@ const Img = styled.div`
       : null}
 `;
 
-const CreatePost = ({ preview, submitting, submitSucceeded, submitFailed }) => {
+const CreatePost = ({ preview }) => {
   const { tags } = useContext(Tag);
+  const {
+    meta,
+    meta: { submitting, submitSucceeded, submitFailed },
+  } = useContext(FormContext);
+  console.error('submitting, submitSucceeded', meta);
 
   return (
     <>
@@ -85,8 +91,5 @@ CreatePost.propTypes = {
     width: number.isRequired,
     height: number.isRequired,
   }),
-  submitting: bool.isRequired,
-  submitSucceeded: bool.isRequired,
-  submitFailed: bool.isRequired,
 };
 export default CreatePost;

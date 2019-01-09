@@ -1,7 +1,9 @@
 import styled, { css } from 'styled-components';
 
+import { getThemeValue, TITLE_FONT } from '.';
+
 export default styled.h1`
-  font-family: montserratregular;
+  font-family: ${getThemeValue(TITLE_FONT)};
   margin: 2em 0;
   font-size: ${({ size }) => {
     switch (size) {

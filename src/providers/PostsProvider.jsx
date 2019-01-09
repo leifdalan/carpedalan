@@ -16,7 +16,6 @@ export const Posts = createContext({
 });
 
 const PostProvider = ({ children }) => {
-  const [cacheValid, setCacheValid] = useState(true);
   const [posts, setPosts] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,9 +28,6 @@ const PostProvider = ({ children }) => {
   const patchPost = id => async values => {
     try {
       const { body } = await request.patch(`${API_PATH}/posts/${id}`, values);
-
-      // setCacheValid(false);
-      // cache.clearAll();
       setPosts(posts.map(post => (post.id === body.id ? body : post)));
     } catch (e) {
       log.error(e);
@@ -49,14 +45,14 @@ const PostProvider = ({ children }) => {
       const pageQuery = {
         page,
       };
+
       // Some super basic caching - don't refetch if we have already.
-      if (posts[page * 100] || !cacheValid) return null;
+      if (posts[page * 100]) return null;
       const apiCall = request.get(`${API_PATH}/posts?${stringify(pageQuery)}`);
       const response = await apiCall;
       setPosts([...posts, ...response.body.data].map(addPlaceholderColor));
       setMeta(response.body.meta);
       setCurrentPage(currentPage + 1);
-      setCacheValid(true);
     } catch (e) {
       log.error('loading failed');
     }
@@ -69,6 +65,22 @@ const PostProvider = ({ children }) => {
     setMeta({ count: 0 });
   };
 
+  const createPost = async formData => {
+    try {
+      const { body } = await request
+        .post(`${API_PATH}/posts`)
+        .send(formData)
+        .on('progress', e => {
+          log.info('progress', e.percent);
+        });
+      invalidateAll();
+      return body;
+    } catch (e) {
+      log.error(e);
+      return Promise.reject(e);
+    }
+  };
+
   return (
     <Posts.Provider
       value={{
@@ -76,10 +88,10 @@ const PostProvider = ({ children }) => {
         getPosts,
         posts,
         meta,
-        setCacheValid,
         patchPost,
         delPost,
         invalidateAll,
+        createPost,
       }}
     >
       {children}
