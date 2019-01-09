@@ -26,7 +26,7 @@ const throttled = throttle((e, setShouldShowImages) => {
   setShouldShowImages(e.scrollTop < 100 || delta < 2500);
 }, 250);
 
-export default function Slash({ isEditing, setEditing }) {
+export default function Feed({ isEditing, setEditing }) {
   const { getPosts, posts, meta, cache, delPost } = useContext(Posts);
   const { tags } = useContext(Tag);
   const { user } = useContext(User);
@@ -122,11 +122,11 @@ export default function Slash({ isEditing, setEditing }) {
   );
 }
 
-Slash.defaultProps = {
+Feed.defaultProps = {
   isEditing: null,
 };
 
-Slash.propTypes = {
+Feed.propTypes = {
   isEditing: number,
   setEditing: func.isRequired,
 };

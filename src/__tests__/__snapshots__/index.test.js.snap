@@ -185,12 +185,7 @@ Array [
       log out
     </button>
   </div>,
-  .c0 {
-  max-width: 56em;
-  margin: 0 auto;
-}
-
-.c2 {
+  .c2 {
   font-family: montserratregular,Helvetica,sans-serif;
   margin: 2em 0;
   font-size: 42px;
@@ -200,6 +195,11 @@ Array [
   -ms-letter-spacing: 5px;
   letter-spacing: 5px;
   text-align: center;
+}
+
+.c0 {
+  max-width: 56em;
+  margin: 0 auto;
 }
 
 .c3 .c1 {

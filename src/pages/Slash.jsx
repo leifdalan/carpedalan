@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { User } from '..';
 
@@ -16,18 +16,14 @@ export default function Slash() {
 
   const [isEditing, setEditing] = useState(null);
 
-  const listRef = useRef(null);
-
   const isAdmin = user === WRITE_USER;
 
   const handlePatchPost = id => async values => {
     await patchPost(id)(values);
     try {
       const editing = isEditing;
-      setEditing(false);
+      setEditing(null);
       cache.clear(editing);
-      listRef.current.recomputeRowHeights(editing);
-      listRef.current.scrollToRow(editing);
     } catch (e) {
       log.error(e);
     }

@@ -6,8 +6,8 @@ import InputField from '../fields/InputField';
 import Drowpdown from '../fields/Dropdown';
 import Field from '../form/Field';
 import { FormContext } from '../form/Form';
-import Submit from '../form/Submit';
 import { Tag } from '../providers/TagProvider';
+import log from '../utils/log';
 
 import Picture from './Picture';
 
@@ -34,7 +34,7 @@ const CreatePost = ({ preview }) => {
     meta,
     meta: { submitting, submitSucceeded, submitFailed },
   } = useContext(FormContext);
-  console.error('submitting, submitSucceeded', meta);
+  log.error('submitting, submitSucceeded', meta);
 
   return (
     <>
@@ -44,7 +44,6 @@ const CreatePost = ({ preview }) => {
         'Submit Succeeded'
       ) : (
         <>
-          <Field name="description" component={InputField} />
           {preview ? (
             <Img orientation={preview.orientation}>
               <Picture
@@ -57,7 +56,11 @@ const CreatePost = ({ preview }) => {
               />
             </Img>
           ) : null}
-
+          <Field
+            name="description"
+            component={InputField}
+            placeholder="Description"
+          />
           <Field
             name="tags"
             component={Drowpdown}
@@ -66,14 +69,7 @@ const CreatePost = ({ preview }) => {
               label: tag.name,
             }))}
             isMulti
-          />
-          <Submit
-            component={({ submit, text }) => (
-              <button type="button" onClick={submit}>
-                {text}
-              </button>
-            )}
-            text="Save"
+            placeholder="Type or click for tags"
           />
         </>
       )}

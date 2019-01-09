@@ -1,11 +1,36 @@
 import React, { useContext, useRef, useState } from 'react';
 import exifReader from 'exifreader';
+import styled from 'styled-components';
 
 import CreatPostForm from '../components/CreatPostForm';
 import Form from '../form/Form';
 import { Posts } from '../providers/PostsProvider';
+import { BRAND_COLOR, getThemeValue } from '../styles';
+import Button from '../styles/Button';
+import FlexContainer from '../styles/FlexContainer';
+import Title from '../styles/Title';
 import Wrapper from '../styles/Wrapper';
 import log from '../utils/log';
+
+const Input = styled.input`
+  display: none;
+`;
+
+const Flex = styled(FlexContainer)`
+  width: 100%;
+  height: 100%;
+  background: ${getThemeValue(BRAND_COLOR)};
+`;
+
+const StyledButton = styled(Button)`
+  position: fixed;
+  bottom: 2em;
+  right: 2em;
+`;
+
+const HR = styled.hr`
+  margin: 3em 0;
+`;
 
 const Admin = () => {
   const { createPost } = useContext(Posts);
@@ -59,43 +84,56 @@ const Admin = () => {
   };
 
   return (
-    <Wrapper>
-      <input
+    <>
+      <Input
+        id="multiUploader"
         data-test="multiUploader"
         type="file"
         ref={fileInputRef}
         multiple
         onChange={handleChange}
       />
-      {Array.from(files).map((file, index) => (
-        <Form
-          key={file.name}
-          shouldSubmit={submit}
-          onSubmit={submitToApi(index)}
-          initial={{ tags: [] }}
-          normalize={values => ({
-            ...values,
-            tags: values.tags.map(({ value }) => value),
-          })}
-        >
-          <CreatPostForm
-            index={index}
-            fileInputRef={fileInputRef}
-            preview={previews[index]}
-          />
-        </Form>
-      ))}
-      <button
-        type="button"
-        data-test="submitAll"
-        onClick={e => {
-          e.preventDefault();
-          setSubmitAll(true);
-        }}
-      >
-        Submit All
-      </button>
-    </Wrapper>
+
+      {!files.length ? (
+        <Flex as="label" htmlFor="multiUploader">
+          <Title>Click to Upload</Title>
+        </Flex>
+      ) : (
+        <Wrapper>
+          {Array.from(files).map((file, index) => (
+            <>
+              <Form
+                key={file.name}
+                shouldSubmit={submit}
+                onSubmit={submitToApi(index)}
+                initial={{ tags: [] }}
+                normalize={values => ({
+                  ...values,
+                  tags: values.tags.map(({ value }) => value),
+                })}
+              >
+                <CreatPostForm
+                  index={index}
+                  fileInputRef={fileInputRef}
+                  preview={previews[index]}
+                />
+              </Form>
+              <HR />
+            </>
+          ))}
+          <StyledButton
+            type="button"
+            data-test="submitAll"
+            onClick={e => {
+              e.preventDefault();
+              setSubmitAll(true);
+            }}
+          >
+            Submit All
+          </StyledButton>
+        </Wrapper>
+      )}
+    </>
   );
 };
 
