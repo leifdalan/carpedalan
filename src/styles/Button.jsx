@@ -1,9 +1,16 @@
 import styled from 'styled-components';
 
-import { getThemeValue, BRAND_COLOR, TITLE_FONT } from '.';
+import { getThemeValue, BRAND_COLOR, TITLE_FONT, DANGER_COLOR } from '.';
 
 export default styled.button`
-  background: ${getThemeValue(BRAND_COLOR)};
+  background: ${({ theme, type }) => {
+    switch (type) {
+      case 'danger':
+        return theme[DANGER_COLOR];
+      default:
+        return theme[BRAND_COLOR];
+    }
+  }};
   font-family: ${getThemeValue(TITLE_FONT)};
   text-transform: uppercase;
   letter-spacing: 3px;

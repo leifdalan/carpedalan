@@ -7,10 +7,14 @@ export const BRAND_COLOR = 'brandColor';
 export const SECONDARY_COLOR = 'secondaryColor';
 export const BODY_FONT = 'bodyFont';
 export const TITLE_FONT = 'titleFont';
+export const DANGER_COLOR = 'dangerColor';
 export const getThemeValue = value => ({ theme }) => theme[value];
 export const prop = value => props => props[value];
 export const propTrueFalse = (value, truthy, falsey) => props =>
   props[value] ? truthy : falsey;
+
+export const propTrueFalseWithTheme = (value, truthy, falsey) => props =>
+  props[value] ? props.theme[truthy] : props.theme[falsey];
 
 export const GlobalStyleComponent = createGlobalStyle`
   
@@ -66,6 +70,7 @@ const lite = {
   [SIDEBAR_COLOR]: 'rgba(0, 255, 231, 0.8)',
   [BRAND_COLOR]: 'rgb(0, 161, 255)',
   [SECONDARY_COLOR]: '#ff8c0e',
+  [DANGER_COLOR]: 'rgb(222, 50, 82)',
   [TITLE_FONT]: 'montserratregular, Helvetica, sans-serif',
 };
 

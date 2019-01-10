@@ -128,7 +128,9 @@ const RenderRow = props => {
             />
             <Flex justifyContent="space-between">
               <Submit />
-              <Button onClick={delPost(posts[index].id)}>Delete</Button>
+              <Button type="danger" onClick={delPost(posts[index].id)}>
+                Delete
+              </Button>
             </Flex>
           </Description>
         ) : showDescription ? (

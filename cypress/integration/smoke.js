@@ -34,9 +34,9 @@ describe('Smoke test', () => {
     cy.url().should('include', 'admin');
   });
 
-  it('can logout', () => {
-    cy.logout();
-  });
+  // it('can logout', () => {
+  //   cy.logout();
+  // });
 
   it("shouldn't be allowed to go to /", () => {
     cy.logout();
