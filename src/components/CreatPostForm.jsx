@@ -76,7 +76,10 @@ const CreatePost = ({ preview, index, savingState, onChange }) => {
 
   useEffect(
     () => {
-      onChange({ tag: tagInput.map(({ value }) => value), description }, index);
+      onChange(
+        { tags: tagInput.map(({ value }) => value), description },
+        index,
+      );
     },
     [tagInput, description, ref],
   );
@@ -85,7 +88,7 @@ const CreatePost = ({ preview, index, savingState, onChange }) => {
     savingState.state,
   )
     ? 100
-    : (progressMap[index] / 100) * 120;
+    : (progressMap[index] / 120) * 100;
   return (
     <>
       <>

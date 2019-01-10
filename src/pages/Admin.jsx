@@ -39,6 +39,7 @@ const StyledButton = styled(Button)`
   ${propTrueFalse(
     'submitting',
     css`
+      position: 
       background-color: green;
       :after {
       transition: width ${prop(

@@ -2,6 +2,7 @@ import express from 'express';
 
 import db from '../../server/db';
 import { isAdmin, isLoggedIn } from '../../server/middlewares';
+import { ACTIVE } from '../../shared/constants';
 
 const tags = express.Router();
 
@@ -15,6 +16,7 @@ tags.get('/:tag', isLoggedIn, async (req, res) => {
     .orderBy('timestamp', 'desc')
     .where({
       'tags.name': req.params.tag,
+      'photos.status': ACTIVE,
     });
 
   res.status(200).send({

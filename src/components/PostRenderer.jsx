@@ -1,4 +1,6 @@
 import React from 'react';
+import format from 'date-fns/format';
+import fromUnixTime from 'date-fns/fromUnixTime';
 import { Link } from 'react-router-dom';
 import { CellMeasurer } from 'react-virtualized';
 import styled from 'styled-components';
@@ -132,9 +134,16 @@ const RenderRow = props => {
         ) : showDescription ? (
           <Description>
             <StyledFlex justifyContent="space-between">
-              <figcaption>{posts[index].description}</figcaption>
-              <Download>Download</Download>
+              <Download>
+                {format(fromUnixTime(posts[index].timestamp), 'MMM d YYYY', {
+                  awareOfUnicodeTokens: true,
+                })}
+              </Download>
+              {/* <Download>Download</Download> */}
             </StyledFlex>
+            {posts[index].description ? (
+              <figcaption>{posts[index].description}</figcaption>
+            ) : null}
             <ul>
               {posts[index].tags.map(({ name, id }) => (
                 <li key={id}>
