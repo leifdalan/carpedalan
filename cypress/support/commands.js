@@ -31,11 +31,7 @@ Cypress.Commands.add('loginAsAdmin', () => {
 });
 
 Cypress.Commands.add('logout', () => {
-  cy.server();
-  cy.request('POST', '/api/logout').as('logout');
-  cy.wait('@logout')
-    .its('status')
-    .should('be', 200);
+  cy.request('POST', '/api/logout');
 });
 
 Cypress.Commands.add('cleanDb', () => {
