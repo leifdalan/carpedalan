@@ -1,18 +1,22 @@
-import React, { Fragment, useContext, useRef, useState } from 'react';
+import React, {
+  Fragment,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import exifReader from 'exifreader';
 import styled from 'styled-components';
 import camelCase from 'lodash/camelCase';
 import omit from 'lodash/omit';
 
 import CreatPostForm from '../components/CreatPostForm';
-import Form from '../form/Form';
 import { Posts } from '../providers/PostsProvider';
 import { BRAND_COLOR, getThemeValue } from '../styles';
 import Button from '../styles/Button';
 import FlexContainer from '../styles/FlexContainer';
 import Title from '../styles/Title';
 import Wrapper from '../styles/Wrapper';
-import log from '../utils/log';
 
 const Input = styled.input`
   display: none;
@@ -34,29 +38,84 @@ const HR = styled.hr`
   margin: 3em 0;
 `;
 
-let outerForms = [];
-const outerPromises = [];
-
 const Admin = () => {
   const { createPost } = useContext(Posts);
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
-
+  const [savingState, setSavingState] = useState({});
   const [submit, setSubmitAll] = useState(false);
+  const [formMap, setFormMap] = useState(false);
   const fileInputRef = useRef();
-
-  const submitAll = async forms => {
-    await Array.from(forms).reduce(async (promiseChain, formData, index) => {
+  const submitAll = async () => {
+    let innerSavingState = {};
+    await Object.keys(formMap).reduce(async (promiseChain, index) => {
+      let chainedResponses = [];
       try {
-        await promiseChain;
-        const response = await createPost(formData);
-        outerPromises[index]();
-        return response;
+        chainedResponses = await promiseChain;
+        innerSavingState = {
+          ...innerSavingState,
+          [index]: {
+            state: 'pending',
+          },
+        };
+        const fileValue = fileInputRef.current.files[index];
+        const formData = new FormData();
+        Object.keys(formMap[index]).forEach(key =>
+          formData.append(key, formMap[index][key]),
+        );
+        if (formMap[index].description === 'fail') throw Error('failure');
+        formData.append('photo', fileValue);
+        setSavingState(innerSavingState);
+        const response = await createPost(formData, index);
+        innerSavingState = {
+          ...innerSavingState,
+          [index]: {
+            state: 'fulfilled',
+            value: response,
+          },
+        };
+        return [...chainedResponses, response];
       } catch (e) {
-        return e;
+        innerSavingState = {
+          ...innerSavingState,
+          [index]: {
+            state: 'rejected',
+            value: e,
+          },
+        };
+        return [...chainedResponses, e];
+      } finally {
+        setSavingState(innerSavingState);
       }
-    }, Promise.resolve());
+    }, Promise.resolve([]));
+    setSubmitAll(false);
   };
+
+  useEffect(
+    () => {
+      if (submit) submitAll();
+      return null;
+    },
+    [submit],
+  );
+
+  useEffect(
+    () => {
+      const newForms = Array.from(files).reduce(
+        (acc, _, index) => ({
+          ...acc,
+          [index]: {
+            tag: [],
+            description: '',
+          },
+        }),
+        {},
+      );
+      setFormMap(newForms);
+    },
+
+    [files],
+  );
   const handleChange = async e => {
     setFiles(e.target.files);
 
@@ -98,22 +157,8 @@ const Admin = () => {
     setPreviews(newPreviews);
   };
 
-  const submitToApi = async (index, values = {}) => {
-    try {
-      const fileValue = fileInputRef.current.files[index];
-      const formData = new FormData();
-      Object.keys(values).forEach(key => formData.append(key, values[key]));
-      formData.append('photo', fileValue);
-      // setForms(forms.add(formData));
-      outerForms = [...outerForms, formData];
-      // createPost(formData);
-      if (outerForms.length === Array.from(files).length) {
-        submitAll(outerForms);
-      }
-      await new Promise(resolve => outerPromises.push(resolve));
-    } catch (e) {
-      log.error(e);
-    }
+  const handleFormChange = (values, index) => {
+    setFormMap({ ...formMap, [index]: values });
   };
 
   return (
@@ -135,22 +180,14 @@ const Admin = () => {
         <Wrapper>
           {Array.from(files).map((file, index) => (
             <Fragment key={file.name}>
-              <Form
-                shouldSubmit={submit}
-                onSubmit={values => submitToApi(index, values)}
-                initial={{ tags: [] }}
-                normalize={values => ({
-                  ...values,
-                  ...previews[index].exifData,
-                  tags: values.tags.map(({ value }) => value),
-                })}
-              >
-                <CreatPostForm
-                  index={index}
-                  fileInputRef={fileInputRef}
-                  preview={previews[index]}
-                />
-              </Form>
+              <CreatPostForm
+                key={file.name}
+                index={index}
+                fileInputRef={fileInputRef}
+                preview={previews[index]}
+                savingState={savingState[index]}
+                onChange={handleFormChange}
+              />
               <HR />
             </Fragment>
           ))}

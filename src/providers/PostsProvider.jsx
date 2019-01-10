@@ -19,6 +19,7 @@ const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
   const [currentPage, setCurrentPage] = useState(1);
+  const [progressMap, setProgressMap] = useState({});
 
   const cache = new CellMeasurerCache({
     fixedWidth: true,
@@ -65,14 +66,18 @@ const PostProvider = ({ children }) => {
     setMeta({ count: 0 });
   };
 
-  const createPost = async formData => {
+  const createPost = async (formData, index = 0) => {
     try {
       const response = await request
         .post(`${API_PATH}/posts`)
+        .send(formData)
         .on('progress', e => {
-          console.error('progress', e.percent); // eslint-disable-line
-        })
-        .send(formData);
+          if (e.percent) {
+            setProgressMap({ ...progressMap, [index]: e.percent });
+            console.error('progress', e.percent); // eslint-disable-line
+          }
+        });
+
       invalidateAll();
 
       return response.body;
@@ -93,6 +98,7 @@ const PostProvider = ({ children }) => {
         delPost,
         invalidateAll,
         createPost,
+        progressMap,
       }}
     >
       {children}

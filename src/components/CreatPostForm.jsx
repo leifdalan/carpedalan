@@ -1,13 +1,11 @@
-import React, { useContext } from 'react';
-import { number, shape, string } from 'prop-types';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { func, number, shape, string } from 'prop-types';
 import styled, { css } from 'styled-components';
 
 import InputField from '../fields/InputField';
 import Drowpdown from '../fields/Dropdown';
-import Field from '../form/Field';
-import { FormContext } from '../form/Form';
+import { Posts } from '../providers/PostsProvider';
 import { Tag } from '../providers/TagProvider';
-import log from '../utils/log';
 
 import Picture from './Picture';
 
@@ -28,13 +26,19 @@ const Img = styled.div`
       : null}
 `;
 
-const CreatePost = ({ preview, index }) => {
+const CreatePost = ({ preview, index, savingState, onChange }) => {
   const { tags } = useContext(Tag);
-  const {
-    meta,
-    meta: { submitting, submitSucceeded, submitFailed },
-  } = useContext(FormContext);
-  log.error('meta', meta, index);
+  const { progressMap } = useContext(Posts);
+  const [description, setDescription] = useState('');
+  const [tagInput, setTags] = useState([]);
+  const ref = useRef();
+
+  useEffect(
+    () => {
+      onChange({ tag: tagInput, description }, index);
+    },
+    [tagInput, description, ref],
+  );
 
   return (
     <>
@@ -51,26 +55,38 @@ const CreatePost = ({ preview, index }) => {
             />
           </Img>
         ) : null}
-        <Field
+        <InputField
           name="description"
-          component={InputField}
           placeholder="Description"
+          input={{
+            onChange: setDescription,
+            value: description,
+          }}
         />
-        <Field
+        <Drowpdown
           name="tags"
-          component={Drowpdown}
           options={tags.map(tag => ({
             value: tag.id,
             label: tag.name,
           }))}
           isMulti
           placeholder="Type or click for tags"
+          input={{
+            onChange: setTags,
+            value: tagInput,
+          }}
         />
         <div>
-          {submitFailed ? 'Submit Failed' : null}
-          {submitSucceeded ? `Submit succeeded ${index}` : null}
+          {progressMap[index] ? <div>{progressMap[index]}</div> : null}
 
-          {submitting ? `Submitting ${index}` : null}
+          {savingState.state === 'rejected'
+            ? `Submit failed ${index} ${savingState.value}`
+            : null}
+          {savingState.state === 'fulfilled'
+            ? `Submit succeeded ${index}`
+            : null}
+
+          {savingState.state === 'pending' ? `Submitting ${index}` : null}
         </div>
       </>
     </>
@@ -79,6 +95,7 @@ const CreatePost = ({ preview, index }) => {
 
 CreatePost.defaultProps = {
   preview: null,
+  savingState: {},
 };
 
 CreatePost.propTypes = {
@@ -88,5 +105,10 @@ CreatePost.propTypes = {
     height: number.isRequired,
   }),
   index: number.isRequired,
+  savingState: shape({
+    state: string.isRequired,
+    value: shape({ id: string.isRequired }),
+  }),
+  onChange: func.isRequired,
 };
 export default CreatePost;
