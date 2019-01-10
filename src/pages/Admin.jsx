@@ -17,6 +17,7 @@ import Button from '../styles/Button';
 import FlexContainer from '../styles/FlexContainer';
 import Title from '../styles/Title';
 import Wrapper from '../styles/Wrapper';
+import { performance, setInterval, clearInterval } from '../utils/globals';
 
 const Input = styled.input`
   display: none;
@@ -65,10 +66,13 @@ const Admin = () => {
   const [savingState, setSavingState] = useState({});
   const [submit, setSubmitAll] = useState(false);
   const [formMap, setFormMap] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const [clockValue, setClockValue] = useState(null);
   const fileInputRef = useRef();
 
   const submitAll = async () => {
     let innerSavingState = { ...savingState };
+    const executionTimes = [];
     await Object.keys(formMap).reduce(async (promiseChain, index) => {
       let chainedResponses = [];
       try {
@@ -79,6 +83,7 @@ const Admin = () => {
             state: 'pending',
           },
         };
+        const timeStart = performance.now();
         const fileValue = fileInputRef.current.files[index];
         const formData = new FormData();
         Object.keys(formMap[index]).forEach(key =>
@@ -88,6 +93,19 @@ const Admin = () => {
         formData.append('photo', fileValue);
         setSavingState(innerSavingState);
         const response = await createPost(formData, index);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const timeEnd = performance.now();
+        const milliseconds = timeEnd - timeStart;
+        executionTimes.push(milliseconds);
+
+        const average =
+          executionTimes.reduce((acc, time) => acc + time, 0) /
+          executionTimes.length;
+        const total = Object.keys(formMap).length;
+        const remaining = total - index - 1;
+
+        setTimeRemaining(average * remaining);
         innerSavingState = {
           ...innerSavingState,
           [index]: {
@@ -111,6 +129,21 @@ const Admin = () => {
     }, Promise.resolve([]));
     setSubmitAll(false);
   };
+
+  useEffect(
+    () => {
+      let innerTime = timeRemaining;
+      let interval;
+      if (timeRemaining) {
+        interval = setInterval(() => {
+          setClockValue(innerTime);
+          innerTime -= 1000;
+        }, 1000);
+      }
+      return () => clearInterval(interval);
+    },
+    [timeRemaining],
+  );
 
   useEffect(
     () => {
@@ -264,10 +297,11 @@ const Admin = () => {
                 <div>{`Queued: ${queued}`}</div>
                 <div>{`Succeeded: ${succeeded}`}</div>
                 <div>{`Rejected: ${rejected}`}</div>
+                <div>{`Time Remaining: ${clockValue ? Math.floor(clockValue / 1000) : '?'}s`}</div>
               </>
             ) : overall === 100 ? (
-              `Submitted ${succeeded}${
-                rejected ? `&nbsp;${rejected}&nbsp;failed` : null
+              `Submitted ${succeeded} ${
+                rejected ? `&nbsp;${rejected}&nbsp;failed` : ''
               }`
             ) : (
               'Submit All'
