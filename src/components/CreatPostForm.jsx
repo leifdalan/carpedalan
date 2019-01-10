@@ -28,51 +28,51 @@ const Img = styled.div`
       : null}
 `;
 
-const CreatePost = ({ preview }) => {
+const CreatePost = ({ preview, index }) => {
   const { tags } = useContext(Tag);
   const {
     meta,
     meta: { submitting, submitSucceeded, submitFailed },
   } = useContext(FormContext);
-  log.error('submitting, submitSucceeded', meta);
+  log.error('meta', meta, index);
 
   return (
     <>
-      {submitFailed ? 'Submit Failed' : null}
-      {submitting ? 'Submitting' : null}
-      {submitSucceeded ? (
-        'Submit Succeeded'
-      ) : (
-        <>
-          {preview ? (
-            <Img orientation={preview.orientation}>
-              <Picture
-                alt="preview"
-                width="100%"
-                src={preview.url}
-                placeholderColor="white"
-                shouldShowImage
-                ratio={preview.height / preview.width}
-              />
-            </Img>
-          ) : null}
-          <Field
-            name="description"
-            component={InputField}
-            placeholder="Description"
-          />
-          <Field
-            name="tags"
-            component={Drowpdown}
-            options={tags.map(tag => ({
-              value: tag.id,
-              label: tag.name,
-            }))}
-            isMulti
-            placeholder="Type or click for tags"
-          />
-        </>
-      )}
+      <>
+        {preview ? (
+          <Img orientation={preview.orientation}>
+            <Picture
+              alt="preview"
+              width="100%"
+              src={preview.url}
+              placeholderColor="white"
+              shouldShowImage
+              ratio={preview.height / preview.width}
+            />
+          </Img>
+        ) : null}
+        <Field
+          name="description"
+          component={InputField}
+          placeholder="Description"
+        />
+        <Field
+          name="tags"
+          component={Drowpdown}
+          options={tags.map(tag => ({
+            value: tag.id,
+            label: tag.name,
+          }))}
+          isMulti
+          placeholder="Type or click for tags"
+        />
+        <div>
+          {submitFailed ? 'Submit Failed' : null}
+          {submitSucceeded ? `Submit succeeded ${index}` : null}
+
+          {submitting ? `Submitting ${index}` : null}
+        </div>
+      </>
     </>
   );
 };
@@ -87,5 +87,6 @@ CreatePost.propTypes = {
     width: number.isRequired,
     height: number.isRequired,
   }),
+  index: number.isRequired,
 };
 export default CreatePost;

@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { Fragment, useContext, useRef, useState } from 'react';
 import exifReader from 'exifreader';
 import styled from 'styled-components';
 import camelCase from 'lodash/camelCase';
@@ -34,6 +34,9 @@ const HR = styled.hr`
   margin: 3em 0;
 `;
 
+let outerForms = [];
+const outerPromises = [];
+
 const Admin = () => {
   const { createPost } = useContext(Posts);
   const [files, setFiles] = useState([]);
@@ -42,6 +45,19 @@ const Admin = () => {
   const [submit, setSubmitAll] = useState(false);
   const fileInputRef = useRef();
 
+  const submitAll = async forms => {
+    await Array.from(forms).reduce(async (promiseChain, formData, index) => {
+      try {
+        await promiseChain;
+
+        const response = await createPost(formData);
+        outerPromises[index]();
+        return response;
+      } catch (e) {
+        return e;
+      }
+    }, Promise.resolve());
+  };
   const handleChange = async e => {
     setFiles(e.target.files);
 
@@ -83,13 +99,19 @@ const Admin = () => {
     setPreviews(newPreviews);
   };
 
-  const submitToApi = index => async (values = {}) => {
+  const submitToApi = async (index, values = {}) => {
     try {
       const fileValue = fileInputRef.current.files[index];
       const formData = new FormData();
       Object.keys(values).forEach(key => formData.append(key, values[key]));
       formData.append('photo', fileValue);
-      await createPost(formData);
+      // setForms(forms.add(formData));
+      outerForms = [...outerForms, formData];
+      // createPost(formData);
+      if (outerForms.length === Array.from(files).length) {
+        submitAll(outerForms);
+      }
+      await new Promise(resolve => outerPromises.push(resolve));
     } catch (e) {
       log.error(e);
     }
@@ -113,11 +135,10 @@ const Admin = () => {
       ) : (
         <Wrapper>
           {Array.from(files).map((file, index) => (
-            <>
+            <Fragment key={file.name}>
               <Form
-                key={file.name}
                 shouldSubmit={submit}
-                onSubmit={submitToApi(index)}
+                onSubmit={values => submitToApi(index, values)}
                 initial={{ tags: [] }}
                 normalize={values => ({
                   ...values,
@@ -132,7 +153,7 @@ const Admin = () => {
                 />
               </Form>
               <HR />
-            </>
+            </Fragment>
           ))}
           <StyledButton
             type="button"
