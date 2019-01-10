@@ -40,8 +40,10 @@ const StyledButton = styled(Button)`
     'submitting',
     css`
       background-color: green;
-      :before {
-        transition: width 500ms ease-in-out, background-color 500ms ease-in;
+      :after {
+      transition: width ${prop(
+        'averageTime',
+      )}ms ease-in-out, background-color 500ms linear;
         position: absolute;
         top: 0;
         left: 0
@@ -68,6 +70,7 @@ const Admin = () => {
   const [formMap, setFormMap] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [clockValue, setClockValue] = useState(null);
+  const [averageTime, setAverageTime] = useState(2000);
   const fileInputRef = useRef();
 
   const submitAll = async () => {
@@ -93,7 +96,6 @@ const Admin = () => {
         formData.append('photo', fileValue);
         setSavingState(innerSavingState);
         const response = await createPost(formData, index);
-        await new Promise(resolve => setTimeout(resolve, 2000));
 
         const timeEnd = performance.now();
         const milliseconds = timeEnd - timeStart;
@@ -102,6 +104,8 @@ const Admin = () => {
         const average =
           executionTimes.reduce((acc, time) => acc + time, 0) /
           executionTimes.length;
+
+        setAverageTime(average);
         const total = Object.keys(formMap).length;
         const remaining = total - index - 1;
 
@@ -119,9 +123,11 @@ const Admin = () => {
           ...innerSavingState,
           [index]: {
             state: 'rejected',
-            value: e,
+            value: `${e.name}: ${e.message}`,
           },
         };
+        console.error('e', e);
+        console.dir(e);
         return [...chainedResponses, e];
       } finally {
         setSavingState(innerSavingState);
@@ -288,7 +294,8 @@ const Admin = () => {
               setSubmitAll(true);
             }}
             submitting={submit}
-            progress={overall}
+            progress={overall + 100 / Object.keys(savingState).length}
+            averageTime={averageTime}
           >
             {/* eslint-disable */}
             {submit ? (
@@ -301,7 +308,7 @@ const Admin = () => {
               </>
             ) : overall === 100 ? (
               `Submitted ${succeeded} ${
-                rejected ? `&nbsp;${rejected}&nbsp;failed` : ''
+                rejected ? `${rejected} failed` : ''
               }`
             ) : (
               'Submit All'
