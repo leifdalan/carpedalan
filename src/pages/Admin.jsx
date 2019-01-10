@@ -126,8 +126,6 @@ const Admin = () => {
             value: `${e.name}: ${e.message}`,
           },
         };
-        console.error('e', e);
-        console.dir(e);
         return [...chainedResponses, e];
       } finally {
         setSavingState(innerSavingState);

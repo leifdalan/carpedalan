@@ -76,22 +76,22 @@ const CreatePost = ({ preview, index, savingState, onChange }) => {
 
   useEffect(
     () => {
-      onChange({ tag: tagInput, description }, index);
+      onChange({ tag: tagInput.map(({ value }) => value), description }, index);
     },
     [tagInput, description, ref],
   );
 
+  const aggregateProgress = ['fulfilled', 'rejected'].includes(
+    savingState.state,
+  )
+    ? 100
+    : (progressMap[index] / 100) * 120;
   return (
     <>
       <>
         {preview ? (
           <Container>
-            <Img
-              orientation={preview.orientation}
-              progress={
-                savingState.state === 'fulfilled' ? 100 : progressMap[index]
-              }
-            >
+            <Img orientation={preview.orientation} progress={aggregateProgress}>
               <Picture
                 alt="preview"
                 width="100%"
