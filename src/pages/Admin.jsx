@@ -49,7 +49,6 @@ const Admin = () => {
     await Array.from(forms).reduce(async (promiseChain, formData, index) => {
       try {
         await promiseChain;
-
         const response = await createPost(formData);
         outerPromises[index]();
         return response;

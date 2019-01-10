@@ -67,14 +67,15 @@ const PostProvider = ({ children }) => {
 
   const createPost = async formData => {
     try {
-      const { body } = await request
+      const response = await request
         .post(`${API_PATH}/posts`)
-        .send(formData)
         .on('progress', e => {
-          log.info('progress', e.percent);
-        });
+          console.error('progress', e.percent); // eslint-disable-line
+        })
+        .send(formData);
       invalidateAll();
-      return body;
+
+      return response.body;
     } catch (e) {
       log.error(e);
       return Promise.reject(e);
