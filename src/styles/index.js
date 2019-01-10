@@ -9,6 +9,8 @@ export const BODY_FONT = 'bodyFont';
 export const TITLE_FONT = 'titleFont';
 export const getThemeValue = value => ({ theme }) => theme[value];
 export const prop = value => props => props[value];
+export const propTrueFalse = (value, truthy, falsey) => props =>
+  props[value] ? truthy : falsey;
 
 export const GlobalStyleComponent = createGlobalStyle`
   

@@ -77,6 +77,7 @@ const CreatePost = ({ preview, index, savingState, onChange }) => {
           }}
         />
         <div>
+          {savingState.state === 'queued' ? 'queued' : null}
           {progressMap[index] ? <div>{progressMap[index]}</div> : null}
 
           {savingState.state === 'rejected'

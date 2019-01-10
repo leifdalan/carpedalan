@@ -9,11 +9,10 @@ const Wrapper = styled.div`
   margin: 1em 0;
 `;
 
-export default function Dropdown({ input: { onChange, value }, ...etc }) {
+export default function Dropdown({ input: { onChange, value } = {}, ...etc }) {
   const { postNewTag, creatingTag } = useContext(Tag);
   const handleCreate = async thing => {
     const response = await postNewTag(thing);
-
     onChange([...value, { label: thing, value: response.id }]);
   };
   return (

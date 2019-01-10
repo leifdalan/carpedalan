@@ -6,13 +6,13 @@ import React, {
   useState,
 } from 'react';
 import exifReader from 'exifreader';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import camelCase from 'lodash/camelCase';
 import omit from 'lodash/omit';
 
 import CreatPostForm from '../components/CreatPostForm';
 import { Posts } from '../providers/PostsProvider';
-import { BRAND_COLOR, getThemeValue } from '../styles';
+import { BRAND_COLOR, getThemeValue, prop, propTrueFalse } from '../styles';
 import Button from '../styles/Button';
 import FlexContainer from '../styles/FlexContainer';
 import Title from '../styles/Title';
@@ -32,6 +32,26 @@ const StyledButton = styled(Button)`
   position: fixed;
   bottom: 2em;
   right: 2em;
+  width: ${propTrueFalse('submitting', 'calc(100% - 4em)', '200px')};
+  transition: width 500ms ease-in-out, background-color 500ms ease-in;
+  overflow: hidden;
+  ${propTrueFalse(
+    'submitting',
+    css`
+      background-color: green;
+      :before {
+        transition: width 500ms ease-in-out, background-color 500ms ease-in;
+        position: absolute;
+        top: 0;
+        left: 0
+        height: 100%;
+        width: ${prop('progress')}%
+        background-color: rgba(0,0,0,.5);
+        content: ''
+      }
+    `,
+    null,
+  )}
 `;
 
 const HR = styled.hr`
@@ -46,8 +66,9 @@ const Admin = () => {
   const [submit, setSubmitAll] = useState(false);
   const [formMap, setFormMap] = useState(false);
   const fileInputRef = useRef();
+
   const submitAll = async () => {
-    let innerSavingState = {};
+    let innerSavingState = { ...savingState };
     await Object.keys(formMap).reduce(async (promiseChain, index) => {
       let chainedResponses = [];
       try {
@@ -101,6 +122,9 @@ const Admin = () => {
 
   useEffect(
     () => {
+      // Initialize our form object for each preview file, otherwise
+      // we'd have to wait for the user to touch the form for it to
+      // be regestired.
       const newForms = Array.from(files).reduce(
         (acc, _, index) => ({
           ...acc,
@@ -112,10 +136,21 @@ const Admin = () => {
         {},
       );
       setFormMap(newForms);
+      const initialSavingState = Array.from(files).reduce(
+        (acc, _, index) => ({
+          ...acc,
+          [index]: {
+            state: 'queued',
+          },
+        }),
+        {},
+      );
+      setSavingState(initialSavingState);
     },
 
     [files],
   );
+
   const handleChange = async e => {
     setFiles(e.target.files);
 
@@ -161,6 +196,27 @@ const Admin = () => {
     setFormMap({ ...formMap, [index]: values });
   };
 
+  const { rejected, succeeded, queued } = Object.keys(savingState).reduce(
+    (acc, key) => ({
+      succeeded:
+        savingState[key].state === 'fulfilled'
+          ? acc.succeeded + 1
+          : acc.succeeded,
+      rejected:
+        savingState[key].state === 'rejected' ? acc.rejected + 1 : acc.rejected,
+      queued: savingState[key].state === 'queued' ? acc.queued + 1 : acc.queued,
+    }),
+    {
+      rejected: 0,
+      succeeded: 0,
+      queued: 0,
+    },
+  );
+
+  const overall = Math.floor(
+    ((rejected + succeeded) / Object.keys(savingState).length) * 100,
+  );
+
   return (
     <>
       <Input
@@ -198,8 +254,24 @@ const Admin = () => {
               e.preventDefault();
               setSubmitAll(true);
             }}
+            submitting={submit}
+            progress={overall}
           >
-            Submit All
+            {/* eslint-disable */}
+            {submit ? (
+              <>
+                <div>{`Overall: ${overall}%`}</div>
+                <div>{`Queued: ${queued}`}</div>
+                <div>{`Succeeded: ${succeeded}`}</div>
+                <div>{`Rejected: ${rejected}`}</div>
+              </>
+            ) : overall === 100 ? (
+              `Submitted ${succeeded}${
+                rejected ? `&nbsp;${rejected}&nbsp;failed` : null
+              }`
+            ) : (
+              'Submit All'
+            )}
           </StyledButton>
         </Wrapper>
       )}
