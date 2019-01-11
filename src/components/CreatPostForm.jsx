@@ -40,6 +40,11 @@ const Img = styled.div`
   }
 `;
 
+Img.defaultProps = {
+  progress: 0,
+  animationTime: 3000,
+};
+
 const Message = styled(Flex)`
   position: absolute;
   justify-content: center;
