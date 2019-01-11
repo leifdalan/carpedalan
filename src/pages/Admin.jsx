@@ -71,7 +71,8 @@ const Admin = () => {
   const [formMap, setFormMap] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [clockValue, setClockValue] = useState(null);
-  const [averageTime, setAverageTime] = useState(2000);
+  const [averageTime, setAverageTime] = useState(3000);
+  const [processingTime, setProcessTime] = useState(3000);
   const fileInputRef = useRef();
 
   const submitAll = async () => {
@@ -96,7 +97,8 @@ const Admin = () => {
         if (formMap[index].description === 'fail') throw Error('failure');
         formData.append('photo', fileValue);
         setSavingState(innerSavingState);
-        const response = await createPost(formData, index);
+        const { processTime, response } = await createPost(formData, index);
+        setProcessTime(processTime);
 
         const timeEnd = performance.now();
         const milliseconds = timeEnd - timeStart;
@@ -281,6 +283,7 @@ const Admin = () => {
                 preview={previews[index]}
                 savingState={savingState[index]}
                 onChange={handleFormChange}
+                processingTime={processingTime}
               />
               <HR />
             </Fragment>

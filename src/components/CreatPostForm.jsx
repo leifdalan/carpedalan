@@ -36,7 +36,7 @@ const Img = styled.div`
     bottom: 0;
     left: 0;
     height: ${prop('progress')}%;
-    transition: height 200ms linear;
+    transition: height ${prop('animationTime')}ms linear;
   }
 `;
 
@@ -50,7 +50,7 @@ const Message = styled(Flex)`
   bottom: 0;
   left: 0;
   height: 100%;
-  transition: height 200ms linear;
+  transition: height ${prop('animationTime')}ms linear;
 `;
 
 const Wrapper = styled(Flex)`
@@ -67,12 +67,24 @@ const Container = styled.div`
   position: relative;
 `;
 
-const CreatePost = ({ preview, index, savingState, onChange }) => {
+const CreatePost = ({
+  preview,
+  index,
+  savingState,
+  onChange,
+  processingTime,
+}) => {
   const { tags } = useContext(Tag);
   const { progressMap } = useContext(Posts);
   const [description, setDescription] = useState('');
   const [tagInput, setTags] = useState([]);
   const ref = useRef();
+
+  const aggregateProgress = ['fulfilled', 'rejected'].includes(
+    savingState.state,
+  )
+    ? 100
+    : progressMap[index];
 
   useEffect(
     () => {
@@ -84,17 +96,16 @@ const CreatePost = ({ preview, index, savingState, onChange }) => {
     [tagInput, description, ref],
   );
 
-  const aggregateProgress = ['fulfilled', 'rejected'].includes(
-    savingState.state,
-  )
-    ? 100
-    : (progressMap[index] / 120) * 100;
   return (
     <>
       <>
         {preview ? (
           <Container>
-            <Img orientation={preview.orientation} progress={aggregateProgress}>
+            <Img
+              orientation={preview.orientation}
+              progress={aggregateProgress}
+              animationTime={processingTime}
+            >
               <Picture
                 alt="preview"
                 width="100%"
@@ -165,5 +176,6 @@ CreatePost.propTypes = {
     value: shape({ id: string.isRequired }),
   }),
   onChange: func.isRequired,
+  processingTime: number.isRequired,
 };
 export default CreatePost;

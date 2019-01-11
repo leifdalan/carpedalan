@@ -6,6 +6,7 @@ import request from 'superagent';
 
 import { API_PATH } from '../../shared/constants';
 import log from '../utils/log';
+import { performance } from '../utils/globals';
 
 import addPlaceholderColor from './postUtils';
 
@@ -68,6 +69,7 @@ const PostProvider = ({ children }) => {
 
   const createPost = async (formData, index = 0) => {
     try {
+      let afterUploadStart;
       const response = await request
         .post(`${API_PATH}/posts`)
         .send(formData)
@@ -75,12 +77,15 @@ const PostProvider = ({ children }) => {
           if (e.percent) {
             setProgressMap({ ...progressMap, [index]: e.percent });
             console.error('progress', e.percent); // eslint-disable-line
+            if (e.percent === 100) {
+              afterUploadStart = performance.now();
+            }
           }
         });
-
+      const timeEnd = performance.now();
       invalidateAll();
-
-      return response.body;
+      const processTime = timeEnd - afterUploadStart;
+      return { response: response.body, processTime };
     } catch (e) {
       log.error(e);
       return Promise.reject(e);
