@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 
 import { User } from '..';
 
@@ -13,7 +13,7 @@ import log from '../utils/log';
 export default function Slash() {
   const { posts, cache, patchPost } = useContext(Posts);
   const { user } = useContext(User);
-
+  const outerRef = useRef();
   const [isEditing, setEditing] = useState(null);
 
   const isAdmin = user === WRITE_USER;
@@ -23,7 +23,7 @@ export default function Slash() {
     try {
       const editing = isEditing;
       setEditing(null);
-      cache.clear(editing);
+      cache.clearAll();
     } catch (e) {
       log.error(e);
     }
@@ -53,7 +53,7 @@ export default function Slash() {
   }
   return (
     <Wrap {...props}>
-      <Feed isEditing={isEditing} setEditing={setEditing} />
+      <Feed isEditing={isEditing} setEditing={setEditing} outerRef={outerRef} />
     </Wrap>
   );
 }

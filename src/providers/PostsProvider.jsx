@@ -31,6 +31,7 @@ const PostProvider = ({ children }) => {
     try {
       const { body } = await request.patch(`${API_PATH}/posts/${id}`, values);
       setPosts(posts.map(post => (post.id === body.id ? body : post)));
+      cache.clearAll();
     } catch (e) {
       log.error(e);
     }

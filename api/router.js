@@ -1,5 +1,5 @@
 import express from 'express';
-import { S3 } from 'aws-sdk';
+import { S3, SES } from 'aws-sdk';
 import cacheControl from 'express-cache-controller';
 
 import { publicPassword, adminPassword, bucket } from '../server/config';
@@ -13,6 +13,7 @@ import tags from './tags';
 
 // Create S3 interface object
 const s3 = new S3();
+const ses = new SES({ region: 'us-east-1' });
 
 const api = express.Router();
 
@@ -46,6 +47,28 @@ api.post('/logout', (req, res) => {
 });
 
 // Proxy all image requests to private bucket
+api.get(
+  `${IMAGES_PATH}/:size/:id`,
+  isLoggedIn,
+  cacheControl({ maxAge: 31536000, public: true }),
+  async (req, res) => {
+    const withoutExtension = req.params.id.split('.')[0];
+    const originalStream = s3 // try and get original
+      .getObject({
+        Key: `original/${withoutExtension}.jpg`,
+        Bucket: bucket,
+      })
+      .createReadStream()
+      .on('error', e => {
+        // No original, send 404.
+        log.info('error', e);
+        res.status(404).send();
+      });
+    // Give the original
+    originalStream.pipe(res);
+  },
+);
+
 api.get(
   `${IMAGES_PATH}/:size/:id`,
   isLoggedIn,
@@ -100,5 +123,45 @@ api.get(
     stream.pipe(res);
   },
 );
+
+api.post('/request', async (req, res) => {
+  const { email, firstName, lastName } = req.body;
+  const params = {
+    Destination: {
+      ToAddresses: [
+        'leifdalan@gmail.com',
+        /* more items */
+      ],
+    },
+    Message: {
+      Body: {
+        Html: {
+          Charset: 'UTF-8',
+          Data: `${firstName} ${lastName} with email: ${email} requested access.`,
+        },
+        Text: {
+          Charset: 'UTF-8',
+          Data: 'Reqestsz',
+        },
+      },
+      Subject: {
+        Charset: 'UTF-8',
+        Data: 'Request to carpedalan.com',
+      },
+    },
+    Source: '4dMiN@carpedalan.com' /* required */,
+    ReplyToAddresses: [
+      'no-reply@farts.com',
+      /* more items */
+    ],
+  };
+  try {
+    const receipt = await ses.sendEmail(params).promise();
+    res.status(200).json(receipt);
+  } catch (e) {
+    console.log(e);
+    res.status(e.statusCode || 500).json(e);
+  }
+});
 
 export default api;

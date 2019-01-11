@@ -137,7 +137,10 @@ function Form({
   const validate = ({ field, error }) =>
     dispatch({ type: 'VALIDATION', payload: { field, error } });
 
-  const submit = async () => {
+  const submit = async e => {
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
     dispatch({
       type: 'START_SUBMIT',
     });

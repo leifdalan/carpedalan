@@ -26,13 +26,13 @@ const throttled = throttle((e, setShouldShowImages) => {
   setShouldShowImages(e.scrollTop < 100 || delta < 2500);
 }, 250);
 
-export default function Feed({ isEditing, setEditing }) {
+export default function Feed({ isEditing, setEditing, outerRef }) {
   const { getPosts, posts, meta, cache, delPost } = useContext(Posts);
   const { tags } = useContext(Tag);
   const { user } = useContext(User);
 
   const [shouldShowImages, setShouldShowImages] = useState(true);
-  const listRef = useRef(null);
+  const listRef = outerRef;
   const throttledResize = throttle(() => {
     if (listRef.current) {
       cache.clearAll();

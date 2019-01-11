@@ -14,17 +14,23 @@ const Input = styled.input`
   border-radius: 4px;
 `;
 
-export default function InputField({ input: { onChange, value }, ...etc }) {
+export default function InputField({
+  input: { onChange, value },
+  label,
+  ...etc
+}) {
   const handleChange = e => {
     onChange(e.target.value);
   };
 
   return (
     <>
+      {label ? <label htmlFor={etc.id}>{label}</label> : null}
       <Input
         data-test="inputField"
         onChange={handleChange}
         value={value || ''}
+        id={etc.id}
         {...etc}
       />
     </>

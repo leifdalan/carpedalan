@@ -21,6 +21,7 @@ const Download = styled.a`
   color: ${getThemeValue(BRAND_COLOR)};
   font-family: ${getThemeValue(TITLE_FONT)};
   text-transform: uppercase;
+  text-decoration: none;
 `;
 
 const Description = styled.div`
@@ -136,12 +137,14 @@ const RenderRow = props => {
         ) : showDescription ? (
           <Description>
             <StyledFlex justifyContent="space-between">
-              <Download>
+              <Download as="div">
                 {format(fromUnixTime(posts[index].timestamp), 'MMM d YYYY', {
                   awareOfUnicodeTokens: true,
                 })}
               </Download>
-              {/* <Download>Download</Download> */}
+              <Download href={`/api/images/${posts[index].key}`}>
+                Download
+              </Download>
             </StyledFlex>
             {posts[index].description ? (
               <figcaption>{posts[index].description}</figcaption>
