@@ -6,10 +6,11 @@ import InputField from '../fields/InputField';
 import Drowpdown from '../fields/Dropdown';
 import { Posts } from '../providers/PostsProvider';
 import { Tag } from '../providers/TagProvider';
-import { prop } from '../styles';
+import { prop, propTrueFalse } from '../styles';
 import Flex from '../styles/FlexContainer';
 import Title from '../styles/Title';
 
+import Success from './Success';
 import Picture from './Picture';
 
 const Img = styled.div`
@@ -59,9 +60,15 @@ const Message = styled(Flex)`
 `;
 
 const Wrapper = styled(Flex)`
-  background: rgba(255, 255, 255, 0.6);
-  padding: 5px;
-  box-shadow: rgba(255, 255, 255, 0.6) 0px 0px 10px 10px;
+  ${propTrueFalse(
+    'showHalo',
+    css`
+      padding: 5px;
+      background: rgba(255, 255, 255, 0.6);
+      box-shadow: rgba(255, 255, 255, 0.6) 0px 0px 10px 10px;
+    `,
+    null,
+  )}
   justify-content: center;
   align-items: center;
   flex-direction: column;
@@ -121,12 +128,12 @@ const CreatePost = ({
               />
             </Img>
             <Message>
-              <Wrapper>
+              <Wrapper showHalo={savingState.state !== 'fulfilled'}>
                 <Title>
                   {savingState.state === 'queued' ? 'Queued' : null}
 
                   {savingState.state === 'rejected' ? `Failed` : null}
-                  {savingState.state === 'fulfilled' ? `Success!` : null}
+                  {savingState.state === 'fulfilled' ? <Success /> : null}
 
                   {savingState.state === 'pending' ? `Submitting` : null}
                 </Title>
