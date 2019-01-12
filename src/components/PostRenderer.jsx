@@ -76,13 +76,15 @@ const RenderRow = props => {
       },
     },
   } = props;
-
+  let ratio = 1;
   const { width, height } = SIZE_MAP[size];
-  let ratio = height
-    ? height / width
-    : posts[index].imageHeight / posts[index].imageWidth;
+  if (!posts[index].fake) {
+    ratio = height
+      ? height / width
+      : posts[index].imageHeight / posts[index].imageWidth;
 
-  if (Number(posts[index].orientation) === 6) ratio = 1 / ratio;
+    if (Number(posts[index].orientation) === 6) ratio = 1 / ratio;
+  }
 
   const src = posts[index].fake
     ? ''

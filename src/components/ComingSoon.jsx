@@ -40,7 +40,7 @@ export default ({ setShowLogin }) => {
   return (
     <>
       <Comin tabIndex="-1" data-test="comingSoon">
-        Coming in 2019
+        Coming February 1st
       </Comin>
       <Secret data-test="secret" onClick={handleClick} />
     </>
