@@ -84,9 +84,11 @@ const RenderRow = props => {
 
   if (Number(posts[index].orientation) === 6) ratio = 1 / ratio;
 
-  const src = `${API_IMAGES_PATH}/${width}${height ? `-${height}` : ''}/${
-    posts[index].key.split('/')[1]
-  }.webp`;
+  const src = posts[index].fake
+    ? ''
+    : `${API_IMAGES_PATH}/${width}${height ? `-${height}` : ''}/${
+        posts[index].key.split('/')[1]
+      }.webp`;
 
   const showEditButton =
     isAdmin && (isEditing === index || !isNumber(isEditing));

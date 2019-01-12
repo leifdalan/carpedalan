@@ -21,7 +21,7 @@ export default function Slash() {
   const handlePatchPost = id => async values => {
     await patchPost(id)(values);
     try {
-      const editing = isEditing;
+      // const editing = isEditing;
       setEditing(null);
       cache.clearAll();
     } catch (e) {

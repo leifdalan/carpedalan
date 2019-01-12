@@ -16,8 +16,16 @@ export const Posts = createContext({
   meta: {},
 });
 
+const addFakePosts = ({ posts, meta }) => [
+  ...posts,
+  ...[...Array(meta.count - posts.length).keys()]
+    .map(() => ({ fake: true }))
+    .map(addPlaceholderColor),
+];
+
 const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
+  const [postsWithFakes, setPostsWithFakes] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
   const [currentPage, setCurrentPage] = useState(1);
   const [progressMap, setProgressMap] = useState({});
@@ -50,12 +58,19 @@ const PostProvider = ({ children }) => {
       };
 
       // Some super basic caching - don't refetch if we have already.
-      if (posts[page * 100]) return null;
+      // if (posts[page * 100]) return null;
       const apiCall = request.get(`${API_PATH}/posts?${stringify(pageQuery)}`);
       const response = await apiCall;
-      setPosts([...posts, ...response.body.data].map(addPlaceholderColor));
+      const newPosts = [...posts, ...response.body.data].map(
+        addPlaceholderColor,
+      );
+      setPosts(newPosts);
       setMeta(response.body.meta);
       setCurrentPage(currentPage + 1);
+
+      setPostsWithFakes(
+        addFakePosts({ posts: newPosts, meta: response.body.meta }),
+      );
     } catch (e) {
       log.error('loading failed');
     }
@@ -100,7 +115,7 @@ const PostProvider = ({ children }) => {
       value={{
         cache,
         getPosts,
-        posts,
+        posts: postsWithFakes,
         meta,
         patchPost,
         delPost,

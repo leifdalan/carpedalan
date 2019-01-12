@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import throttle from 'lodash/throttle';
 import { arrayOf, func, number, shape, string } from 'prop-types';
 import {
   AutoSizer,
@@ -20,9 +21,16 @@ const cache = new CellMeasurerCache({
   defaultWidth: POST_WIDTH,
   fixedWidth: true,
 });
+let lastValue = 0;
+const throttled = throttle((e, setShouldShowImages) => {
+  const delta = Math.abs(e.scrollTop - lastValue);
+  lastValue = e.scrollTop;
+  setShouldShowImages(e.scrollTop < 100 || delta < 2500);
+}, 250);
 
 export default function Grid({ type, fetchData, data, meta }) {
   const [loading, setLoading] = useState(false);
+  const [shouldShowImages, setShouldShowImages] = useState(true);
   const listRef = useRef(null);
 
   useEffect(
@@ -33,7 +41,8 @@ export default function Grid({ type, fetchData, data, meta }) {
   );
 
   const isRowLoaded = width => ({ index }) =>
-    !!data[index * Math.floor(width / POST_WIDTH)];
+    !!data[index * Math.floor(width / POST_WIDTH)] &&
+    !data[index * Math.floor(width / POST_WIDTH)].fake;
 
   async function loadMoreRows() {
     if (!loading) {
@@ -42,6 +51,10 @@ export default function Grid({ type, fetchData, data, meta }) {
       setLoading(false);
     }
   }
+  const handleScroll = onChildScroll => e => {
+    onChildScroll(e);
+    throttled(e, setShouldShowImages);
+  };
 
   return (
     <WindowScroller>
@@ -64,10 +77,10 @@ export default function Grid({ type, fetchData, data, meta }) {
                       ref={listRef}
                       onRowsRendered={onRowsRendered}
                       deferredMeasurementCache={cache}
-                      onScroll={onChildScroll}
+                      onScroll={handleScroll(onChildScroll)}
                       rowHeight={cache.rowHeight}
                       rowRenderer={PostGridRowRenderer}
-                      rowCount={Math.floor(meta.count / postsPerRow) + 1}
+                      rowCount={Math.floor(data.length / postsPerRow) + 1}
                       overscanRowCount={20}
                       isScrolling={isScrolling}
                       scrollTop={scrollTop}
@@ -75,7 +88,7 @@ export default function Grid({ type, fetchData, data, meta }) {
                       cache={cache}
                       size={THUMB}
                       showDescription={false}
-                      shouldShowImages
+                      shouldShowImages={shouldShowImages}
                       postsPerRow={postsPerRow}
                     />
                   </div>

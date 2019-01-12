@@ -22,6 +22,9 @@ jest.mock('aws-sdk', () => {
   AWS.uploadMock = jest.fn().mockReturnThis();
 
   AWS.s3Promise = jest.fn(() => Promise.resolve({}));
+  AWS.sendEmailMock = jest.fn().mockReturnThis();
+
+  AWS.sesPromise = jest.fn(() => Promise.resolve({}));
 
   AWS.S3 = function() {};
 
@@ -29,6 +32,13 @@ jest.mock('aws-sdk', () => {
     ...AWS.S3.prototype,
     upload: AWS.uploadMock,
     promise: AWS.s3Promise,
+  };
+  AWS.SES = function() {};
+
+  AWS.SES.prototype = {
+    ...AWS.SES.prototype,
+    sendEmail: AWS.sendEmailMock,
+    promise: AWS.sesPromise,
   };
   return AWS;
 });

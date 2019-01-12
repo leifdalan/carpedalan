@@ -23,6 +23,8 @@ function Field({
   } = useContext(FormContext);
 
   useEffect(() => {
+    const error = validate(state.values[name]);
+    validateAction({ field: name, error });
     registerField(name);
     return () => unregisterField(name);
   }, []);
@@ -47,7 +49,7 @@ function Field({
 }
 
 Field.defaultProps = {
-  validate: v => v,
+  validate: () => false,
   format: v => v,
   parse: v => v,
   shouldExist: () => true,

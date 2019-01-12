@@ -25,6 +25,7 @@ const reducer = (
       return {
         ...state,
         meta: {
+          ...state.meta,
           isDirty: true,
         },
       };
@@ -55,6 +56,7 @@ const reducer = (
         meta: {
           ...state.meta,
           submitting: true,
+          hasSubmitted: true,
         },
       };
     case 'STOP_SUBMIT':
@@ -82,6 +84,7 @@ const reducer = (
           ...state.meta,
           submitting: false,
           submitSucceeded: false,
+          submitFailed: true,
         },
       };
     case 'REGISTER_FIELD':
@@ -145,13 +148,16 @@ function Form({
       type: 'START_SUBMIT',
     });
 
-    const errors = validation(state.values);
-
-    if (errors && !isEmpty(errors)) {
+    const errors = validation(state.values) || {};
+    const hasFieldErrors = Object.keys(state.errors).reduce(
+      (acc, key) => [...acc, ...(state.errors[key] ? [state.errors[key]] : [])],
+      [],
+    ).length;
+    if ((errors && !isEmpty(errors)) || hasFieldErrors) {
       dispatch({ type: 'FORM_VALIDATION', payload: errors });
       dispatch({
         type: 'SUBMIT_FAILED',
-        payload: errors,
+        payload: { ...state.errors, ...errors },
       });
     } else {
       try {
@@ -160,10 +166,10 @@ function Form({
         dispatch({
           type: 'SUBMIT_SUCCEEDED',
         });
-      } catch (e) {
+      } catch (error) {
         dispatch({
           type: 'SUBMIT_FAILED',
-          payload: e,
+          payload: error,
         });
       } finally {
         dispatch({

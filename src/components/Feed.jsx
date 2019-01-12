@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { func, number } from 'prop-types';
+import React, { useContext, useEffect, useState } from 'react';
+import { func, number, object } from 'prop-types';
 import {
   AutoSizer,
   InfiniteLoader,
@@ -55,7 +55,7 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
   };
 
   function isRowLoaded({ index }) {
-    return !!posts[index];
+    return !!posts[index] && !posts[index].fake;
   }
 
   function loadMoreRows() {
@@ -129,4 +129,5 @@ Feed.defaultProps = {
 Feed.propTypes = {
   isEditing: number,
   setEditing: func.isRequired,
+  outerRef: object.isRequired, // eslint-disable-line
 };

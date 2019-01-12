@@ -1,5 +1,5 @@
 import React from 'react';
-import { any, func, shape } from 'prop-types';
+import { any, bool, func, node, shape } from 'prop-types';
 import styled from 'styled-components';
 
 import { BODY_FONT, getThemeValue } from '../styles';
@@ -16,6 +16,7 @@ const Input = styled.input`
 
 export default function InputField({
   input: { onChange, value },
+  meta: { error, submitFailed },
   label,
   ...etc
 }) {
@@ -23,8 +24,11 @@ export default function InputField({
     onChange(e.target.value);
   };
 
+  const showError = error && submitFailed;
+
   return (
     <>
+      {/* eslint-disable-next-line */}
       {label ? <label htmlFor={etc.id}>{label}</label> : null}
       <Input
         data-test="inputField"
@@ -33,13 +37,27 @@ export default function InputField({
         id={etc.id}
         {...etc}
       />
+      {showError ? error : null}
     </>
   );
 }
+
+InputField.defaultProps = {
+  meta: {
+    error: {},
+    isDirty: false,
+  },
+  label: null,
+};
 
 InputField.propTypes = {
   input: shape({
     onChange: func.isRequired,
     value: any,
   }).isRequired,
+  meta: shape({
+    error: shape({}),
+    isDirty: bool,
+  }),
+  label: node,
 };

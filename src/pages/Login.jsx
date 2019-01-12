@@ -15,6 +15,8 @@ import ComingSoon from '../components/ComingSoon';
 import { BRAND_COLOR, getThemeValue, prop } from '../styles';
 import Title from '../styles/Title';
 
+const emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i; // eslint-disable-line
+
 const InputWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -58,6 +60,7 @@ export default function Login() {
   const [showLogin, setShowLogin] = useState(false);
   const [requestAccess, setRequestAccess] = useState(false);
   const [accessRequested, setAccessRequested] = useState(false);
+
   const submitLogin = async ({ password }) => {
     try {
       const response = await request.post('/api/login', { password });
@@ -70,7 +73,7 @@ export default function Login() {
 
   const submitRequestAccess = async ({ email, firstName, lastName }) => {
     try {
-      const response = await request.post('/api/request', {
+      await request.post('/api/request', {
         email,
         firstName,
         lastName,
@@ -110,6 +113,9 @@ export default function Login() {
                         placeholder="Last Name"
                         label="Last Name"
                         id="lasttName"
+                        validate={val =>
+                          !val ? 'Last name is required' : false
+                        }
                       />
                       <Field
                         name="email"
@@ -117,6 +123,9 @@ export default function Login() {
                         placeholder="Email address"
                         label="Email Address"
                         id="email"
+                        validate={email =>
+                          !emailRe.test(email) ? 'Must be a valid email' : false
+                        }
                       />
                       <Submit text="Send Request" />
                     </Form>

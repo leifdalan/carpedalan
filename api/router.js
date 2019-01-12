@@ -48,7 +48,7 @@ api.post('/logout', (req, res) => {
 
 // Proxy all image requests to private bucket
 api.get(
-  `${IMAGES_PATH}/:size/:id`,
+  `${IMAGES_PATH}/original/:id`,
   isLoggedIn,
   cacheControl({ maxAge: 31536000, public: true }),
   async (req, res) => {
@@ -159,7 +159,6 @@ api.post('/request', async (req, res) => {
     const receipt = await ses.sendEmail(params).promise();
     res.status(200).json(receipt);
   } catch (e) {
-    console.log(e);
     res.status(e.statusCode || 500).json(e);
   }
 });
