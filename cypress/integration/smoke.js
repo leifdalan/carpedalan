@@ -1,4 +1,5 @@
 describe('Smoke test', () => {
+  beforeEach(cy.logout);
   it('can login', () => {
     cy.server();
     cy.route('POST', '/api/login').as('login');
@@ -11,11 +12,9 @@ describe('Smoke test', () => {
     cy.wait('@login')
       .its('status')
       .should('be', 200);
-    cy.logout();
   });
 
   it('can login as admin', () => {
-    cy.logout();
     cy.server();
     cy.route('POST', '/api/login').as('login');
     cy.visit('/login');
@@ -34,6 +33,12 @@ describe('Smoke test', () => {
     cy.url().should('include', 'admin');
   });
 
+  it('should have images, sidebar', () => {
+    cy.login();
+    cy.get('img');
+    cy.get('[data-test=menu]');
+  });
+
   // it('can logout', () => {
   //   cy.logout();
   // });
@@ -50,7 +55,6 @@ describe('Smoke test', () => {
   });
 
   it("shouldn't be allowed to see photos", () => {
-    cy.logout();
     cy.request({
       failOnStatusCode: false,
       method: 'GET',
@@ -61,8 +65,10 @@ describe('Smoke test', () => {
   });
 
   it('should have coming in 2019 text', () => {
-    cy.logout();
     cy.visit('/');
-    cy.get('[data-test="comingSoon"]').should('have.text', 'Coming in 2019');
+    cy.get('[data-test="comingSoon"]').should(
+      'have.text',
+      'Coming February 1st',
+    );
   });
 });

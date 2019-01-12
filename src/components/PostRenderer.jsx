@@ -76,6 +76,7 @@ const RenderRow = props => {
       },
     },
   } = props;
+  if (!posts[index]) return null;
   let ratio = 1;
   const { width, height } = SIZE_MAP[size];
   if (!posts[index].fake) {

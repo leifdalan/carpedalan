@@ -1,4 +1,5 @@
 import React from 'react';
+import { func } from 'prop-types';
 import styled from 'styled-components';
 
 const Comin = styled.div`
@@ -8,7 +9,7 @@ const Comin = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 13vw;
+  font-size: 11vw;
   color: white;
   font-family: 'england';
   font-weight: normal;
@@ -35,7 +36,7 @@ const Secret = styled.div`
   bottom: 0;
 `;
 
-export default ({ setShowLogin }) => {
+export default function ComingSoon({ setShowLogin }) {
   const handleClick = () => setShowLogin(true);
   return (
     <>
@@ -45,4 +46,8 @@ export default ({ setShowLogin }) => {
       <Secret data-test="secret" onClick={handleClick} />
     </>
   );
+}
+
+ComingSoon.propTypes = {
+  setShowLogin: func.isRequired,
 };
