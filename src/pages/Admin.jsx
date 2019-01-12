@@ -73,6 +73,7 @@ const Admin = () => {
   const [clockValue, setClockValue] = useState(null);
   const [averageTime, setAverageTime] = useState(3000);
   const [processingTime, setProcessTime] = useState(3000);
+
   const fileInputRef = useRef();
 
   const submitAll = async () => {
@@ -80,6 +81,7 @@ const Admin = () => {
     const executionTimes = [];
     await Object.keys(formMap).reduce(async (promiseChain, index) => {
       let chainedResponses = [];
+      let fileValue;
       try {
         chainedResponses = await promiseChain;
         innerSavingState = {
@@ -89,7 +91,8 @@ const Admin = () => {
           },
         };
         const timeStart = performance.now();
-        const fileValue = fileInputRef.current.files[index];
+        fileValue = fileInputRef.current.files[index];
+
         const formData = new FormData();
         Object.keys(formMap[index]).forEach(key =>
           formData.append(key, formMap[index][key]),
@@ -127,6 +130,10 @@ const Admin = () => {
           [index]: {
             state: 'rejected',
             value: `${e.name}: ${e.message}`,
+            meta: {
+              file: fileValue,
+              index,
+            },
           },
         };
         return [...chainedResponses, e];
@@ -240,22 +247,35 @@ const Admin = () => {
     (acc, key) => ({
       succeeded:
         savingState[key].state === 'fulfilled'
-          ? acc.succeeded + 1
+          ? [...acc.succeeded, savingState[key]]
           : acc.succeeded,
       rejected:
-        savingState[key].state === 'rejected' ? acc.rejected + 1 : acc.rejected,
-      queued: savingState[key].state === 'queued' ? acc.queued + 1 : acc.queued,
+        savingState[key].state === 'rejected'
+          ? [...acc.rejected, savingState[key]]
+          : acc.rejected,
+      queued:
+        savingState[key].state === 'queued'
+          ? [...acc.queued, savingState[key]]
+          : acc.queued,
     }),
     {
-      rejected: 0,
-      succeeded: 0,
-      queued: 0,
+      rejected: [],
+      succeeded: [],
+      queued: [],
     },
   );
 
   const overall = Math.floor(
-    ((rejected + succeeded) / Object.keys(savingState).length) * 100,
+    ((rejected.length + succeeded.length) / Object.keys(savingState).length) *
+      100,
   );
+
+  const formatClockValue = () => {
+    if (!clockValue) return '?';
+    const minutes = Math.floor(clockValue / 1000 / 60);
+    const seconds = (clockValue / 1000 / 60 - minutes) * 60;
+    return `${minutes}m ${seconds}s`;
+  };
 
   return (
     <>
@@ -299,18 +319,25 @@ const Admin = () => {
             progress={overall + 100 / Object.keys(savingState).length}
             averageTime={averageTime}
           >
+            {overall === 100 ? (
+              <>
+                <div>Rejected</div>
+                <div>{rejected.map(reject => reject.meta.file.name)}</div>
+              </>
+            ) : null}
+
             {/* eslint-disable */}
             {submit ? (
               <>
                 <div>{`Overall: ${overall}%`}</div>
-                <div>{`Queued: ${queued}`}</div>
-                <div>{`Succeeded: ${succeeded}`}</div>
-                <div>{`Rejected: ${rejected}`}</div>
-                <div>{`Time Remaining: ${clockValue ? Math.floor(clockValue / 1000) : '?'}s`}</div>
+                <div>{`Queued: ${queued.length}`}</div>
+                <div>{`Succeeded: ${succeeded.length}`}</div>
+                <div>{`Rejected: ${rejected.length}`}</div>
+                <div>{`Time Remaining: ${formatClockValue()}`}</div>
               </>
             ) : overall === 100 ? (
-              `Submitted ${succeeded} ${
-                rejected ? `${rejected} failed` : ''
+              `Submitted ${succeeded.length} ${
+                rejected ? `${rejected.length} failed` : ''
               }`
             ) : (
               'Submit All'

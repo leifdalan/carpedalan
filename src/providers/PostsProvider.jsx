@@ -4,7 +4,7 @@ import { stringify } from 'qs';
 import { CellMeasurerCache } from 'react-virtualized';
 import request from 'superagent';
 
-import { API_PATH } from '../../shared/constants';
+import { API_PATH, DEFAULT_POSTS_PER_PAGE } from '../../shared/constants';
 import log from '../utils/log';
 import { performance } from '../utils/globals';
 
@@ -16,15 +16,36 @@ export const Posts = createContext({
   meta: {},
 });
 
-const addFakePosts = ({ posts, meta }) => [
-  ...posts,
-  ...[...Array(meta.count - posts.length).keys()]
-    .map(() => ({ fake: true }))
-    .map(addPlaceholderColor),
-];
+const addFakePosts = ({ posts, meta }) => {
+  const allFakes = [...Array(meta.count).keys()]
+    .map(() => ({ fake: true, tags: [] }))
+    .map(addPlaceholderColor);
+
+  const postsWithFakes = Object.keys(posts).reduce((acc, key) => {
+    const fakesWithPosts = acc.map((fake, index) => {
+      if (
+        key * DEFAULT_POSTS_PER_PAGE <= index &&
+        (key + 1) * DEFAULT_POSTS_PER_PAGE > index
+      ) {
+        return posts[key][index - DEFAULT_POSTS_PER_PAGE * key];
+      }
+      return fake;
+    });
+    return fakesWithPosts;
+  }, allFakes);
+
+  return postsWithFakes;
+
+  // [
+  //   ...posts,
+  //   ...[...Array(meta.count - posts.length).keys()]
+  //     .map(() => ({ fake: true }))
+  //     .map(addPlaceholderColor),
+  // ]
+};
 
 const PostProvider = ({ children }) => {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState({});
   const [postsWithFakes, setPostsWithFakes] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,7 +53,7 @@ const PostProvider = ({ children }) => {
 
   const cache = new CellMeasurerCache({
     fixedWidth: true,
-    defaultHeight: 500,
+    defaultHeight: window.width,
   });
 
   const patchPost = id => async values => {
@@ -58,19 +79,24 @@ const PostProvider = ({ children }) => {
       };
 
       // Some super basic caching - don't refetch if we have already.
-      // if (posts[page * 100]) return null;
+      if (posts[page - 1]) return null;
       const apiCall = request.get(`${API_PATH}/posts?${stringify(pageQuery)}`);
       const response = await apiCall;
-      const newPosts = [...posts, ...response.body.data].map(
-        addPlaceholderColor,
-      );
+      const newPosts = {
+        ...posts,
+        [page - 1]: response.body.data.map(addPlaceholderColor),
+      };
+
       setPosts(newPosts);
       setMeta(response.body.meta);
       setCurrentPage(currentPage + 1);
 
-      setPostsWithFakes(
-        addFakePosts({ posts: newPosts, meta: response.body.meta }),
-      );
+      const finalPosts = addFakePosts({
+        posts: newPosts,
+        meta: response.body.meta,
+      });
+
+      setPostsWithFakes(finalPosts);
     } catch (e) {
       log.error('loading failed');
     }
@@ -79,7 +105,7 @@ const PostProvider = ({ children }) => {
 
   const invalidateAll = () => {
     cache.clearAll();
-    setPosts([]);
+    setPosts({});
     setMeta({ count: 0 });
   };
 

@@ -23,7 +23,7 @@ let lastValue = 0;
 const throttled = throttle((e, setShouldShowImages) => {
   const delta = Math.abs(e.scrollTop - lastValue);
   lastValue = e.scrollTop;
-  setShouldShowImages(e.scrollTop < 100 || delta < 2500);
+  setShouldShowImages(e.scrollTop < 100 || delta < 1500);
 }, 250);
 
 export default function Feed({ isEditing, setEditing, outerRef }) {

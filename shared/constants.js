@@ -1,6 +1,7 @@
 const API_PATH = '/api';
 const IMAGES_PATH = '/images';
 const API_IMAGES_PATH = `${API_PATH}${IMAGES_PATH}`;
+const DEFAULT_POSTS_PER_PAGE = 100;
 
 const PHOTOS = 'photos';
 // columns for photos
@@ -164,4 +165,5 @@ module.exports = {
   THUMB,
   EXIFPROPS,
   SQIP,
+  DEFAULT_POSTS_PER_PAGE,
 };

@@ -23,6 +23,7 @@ import {
   TAGS,
   TIMESTAMP,
   EXIFPROPS,
+  DEFAULT_POSTS_PER_PAGE,
 } from '../../shared/constants';
 import log from '../../src/utils/log';
 
@@ -238,7 +239,7 @@ posts.get('', isLoggedIn, async (req, res) => {
   const tagName = 'tagName';
   const tagId = 'tagId';
   const page = req.query.page || 1;
-  const limit = 100;
+  const limit = DEFAULT_POSTS_PER_PAGE;
   const offset = (page - 1) * limit;
   const selectStatement = db(PHOTOS)
     .select()

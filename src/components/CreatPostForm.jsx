@@ -138,7 +138,11 @@ const CreatePost = ({
                   {savingState.state === 'pending' ? `Submitting` : null}
                 </Title>
                 {savingState.state === 'rejected' ? (
-                  <div>{savingState.value}</div>
+                  <div>
+                    <div>{savingState.value}</div>
+                    <div>{savingState.meta.file.name}</div>
+                    <div>{`File number ${savingState.meta.index + 1}`}</div>
+                  </div>
                 ) : null}
               </Wrapper>
             </Message>

@@ -97,12 +97,7 @@ const RenderRow = props => {
     isAdmin && (isEditing === index || !isNumber(isEditing));
 
   return posts[index] ? (
-    <CellMeasurer
-      key={posts[index].id}
-      cache={cache}
-      parent={parent}
-      index={index}
-    >
+    <CellMeasurer key={index} cache={cache} parent={parent} index={index}>
       <div style={style}>
         {showEditButton ? (
           <EditButton
