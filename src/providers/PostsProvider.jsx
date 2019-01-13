@@ -38,13 +38,6 @@ const addFakePosts = ({ posts, meta }) => {
   }, allFakes);
 
   return postsWithFakes;
-
-  // [
-  //   ...posts,
-  //   ...[...Array(meta.count - posts.length).keys()]
-  //     .map(() => ({ fake: true }))
-  //     .map(addPlaceholderColor),
-  // ]
 };
 
 const PostProvider = ({ children }) => {
