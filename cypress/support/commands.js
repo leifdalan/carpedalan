@@ -44,7 +44,9 @@ Cypress.Commands.add('login', () => {
 });
 
 Cypress.Commands.add('logout', () => {
-  cy.request('POST', '/api/logout');
+  cy.request('POST', '/api/logout').then(() => {
+    cy.log('loggedOut');
+  });
 });
 
 Cypress.Commands.add('cleanDb', () => {

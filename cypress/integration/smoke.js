@@ -35,44 +35,46 @@ describe('Smoke test', () => {
   });
 
   it('should have images, sidebar', () => {
+    cy.server();
+    cy.route('POST', '/api/logout').as('logout');
     cy.logout();
     cy.login();
     cy.get('img');
     cy.get('[data-test=menu]');
   });
 
-  // it('can logout', () => {
-  //   cy.logout();
-  // });
+  it('can logout', () => {
+    cy.logout();
+  });
 
-  // it("shouldn't be allowed to go to /", () => {
-  //   cy.logout();
-  //   cy.visit('/');
-  //   cy.url().should('include', 'login');
-  //   cy.visit('/admin');
-  //   cy.url().should('include', 'login');
-  //   cy.request({ failOnStatusCode: false, method: 'GET', url: '/api/posts' })
-  //     .its('status')
-  //     .should('equal', 401);
-  // });
+  it("shouldn't be allowed to go to /", () => {
+    cy.logout();
+    cy.visit('/');
+    cy.url().should('include', 'login');
+    cy.visit('/admin');
+    cy.url().should('include', 'login');
+    cy.request({ failOnStatusCode: false, method: 'GET', url: '/api/posts' })
+      .its('status')
+      .should('equal', 401);
+  });
 
-  // it("shouldn't be allowed to see photos", () => {
-  //   cy.logout();
-  //   cy.request({
-  //     failOnStatusCode: false,
-  //     method: 'GET',
-  //     url: '/api/images/720/something.jpg',
-  //   })
-  //     .its('status')
-  //     .should('equal', 401);
-  // });
+  it("shouldn't be allowed to see photos", () => {
+    cy.logout();
+    cy.request({
+      failOnStatusCode: false,
+      method: 'GET',
+      url: '/api/images/720/something.jpg',
+    })
+      .its('status')
+      .should('equal', 401);
+  });
 
-  // it('should have coming in 2019 text', () => {
-  //   cy.logout();
-  //   cy.visit('/');
-  //   cy.get('[data-test="comingSoon"]').should(
-  //     'have.text',
-  //     'Coming February 1st',
-  //   );
-  // });
+  it('should have coming in 2019 text', () => {
+    cy.logout();
+    cy.visit('/');
+    cy.get('[data-test="comingSoon"]').should(
+      'have.text',
+      'Coming February 1st',
+    );
+  });
 });

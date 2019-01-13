@@ -124,7 +124,6 @@ const PostProvider = ({ children }) => {
       const timeEnd = performance.now();
       invalidateAll();
       const processTime = timeEnd - afterUploadStart;
-      console.error('processTime', processTime); // eslint-disable-line
 
       return { response: response.body, processTime };
     } catch (e) {
