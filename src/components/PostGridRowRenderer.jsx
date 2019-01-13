@@ -32,8 +32,12 @@ const RenderRow = props => {
     <CellMeasurer key={key} cache={cache} parent={parent} index={index}>
       <div style={{ ...style }}>
         {[...Array(postsPerRow).keys()].map(subIndex => {
-          if (!posts[adjustedPostIndex + subIndex]) return null;
           const post = posts[adjustedPostIndex + subIndex];
+
+          // for rows with lest then row-length cells
+          if (!post) {
+            return null;
+          }
 
           const src = post.fake
             ? ''

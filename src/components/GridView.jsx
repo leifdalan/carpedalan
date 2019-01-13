@@ -13,7 +13,6 @@ import { THUMB } from '../../shared/constants';
 
 import PostGridRowRenderer from './PostGridRowRenderer';
 
-// Default sizes help Masonry decide how many images to batch-measure
 const POST_WIDTH = 100;
 
 const cache = new CellMeasurerCache({

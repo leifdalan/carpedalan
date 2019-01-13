@@ -9,9 +9,23 @@ export const Window = createContext({
 });
 const WindowProvider = ({ children }) => (
   <WindowScroller>
-    {({ height, isScrolling, onChildScroll, registerChild, scrollTop }) => (
+    {({
+      height,
+      isScrolling,
+      onChildScroll,
+      registerChild,
+      scrollTop,
+      width,
+    }) => (
       <Window.Provider
-        value={{ height, isScrolling, onChildScroll, registerChild, scrollTop }}
+        value={{
+          height,
+          isScrolling,
+          onChildScroll,
+          registerChild,
+          scrollTop,
+          width,
+        }}
       >
         {children}
       </Window.Provider>

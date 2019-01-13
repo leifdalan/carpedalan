@@ -45,16 +45,16 @@ describe('Smoke test', () => {
   //   cy.logout();
   // });
 
-  it("shouldn't be allowed to go to /", () => {
-    cy.logout();
-    cy.visit('/');
-    cy.url().should('include', 'login');
-    cy.visit('/admin');
-    cy.url().should('include', 'login');
-    cy.request({ failOnStatusCode: false, method: 'GET', url: '/api/posts' })
-      .its('status')
-      .should('equal', 401);
-  });
+  // it("shouldn't be allowed to go to /", () => {
+  //   cy.logout();
+  //   cy.visit('/');
+  //   cy.url().should('include', 'login');
+  //   cy.visit('/admin');
+  //   cy.url().should('include', 'login');
+  //   cy.request({ failOnStatusCode: false, method: 'GET', url: '/api/posts' })
+  //     .its('status')
+  //     .should('equal', 401);
+  // });
 
   it("shouldn't be allowed to see photos", () => {
     cy.logout();

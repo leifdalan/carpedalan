@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { node } from 'prop-types';
 import { stringify } from 'qs';
 import { CellMeasurerCache } from 'react-virtualized';
@@ -8,6 +8,7 @@ import { API_PATH, DEFAULT_POSTS_PER_PAGE } from '../../shared/constants';
 import log from '../utils/log';
 import { performance } from '../utils/globals';
 
+import { Window } from './WindowProvider';
 import addPlaceholderColor from './postUtils';
 
 export const Posts = createContext({
@@ -24,10 +25,12 @@ const addFakePosts = ({ posts, meta }) => {
   const postsWithFakes = Object.keys(posts).reduce((acc, key) => {
     const fakesWithPosts = acc.map((fake, index) => {
       if (
-        key * DEFAULT_POSTS_PER_PAGE <= index &&
-        (key + 1) * DEFAULT_POSTS_PER_PAGE > index
+        Number(key) * DEFAULT_POSTS_PER_PAGE <= index &&
+        (Number(key) + 1) * DEFAULT_POSTS_PER_PAGE > index
       ) {
-        return posts[key][index - DEFAULT_POSTS_PER_PAGE * key];
+        return addPlaceholderColor(
+          posts[key][index - DEFAULT_POSTS_PER_PAGE * key],
+        );
       }
       return fake;
     });
@@ -45,6 +48,7 @@ const addFakePosts = ({ posts, meta }) => {
 };
 
 const PostProvider = ({ children }) => {
+  const { width } = useContext(Window);
   const [posts, setPosts] = useState({});
   const [postsWithFakes, setPostsWithFakes] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
@@ -53,7 +57,7 @@ const PostProvider = ({ children }) => {
 
   const cache = new CellMeasurerCache({
     fixedWidth: true,
-    defaultHeight: window.width,
+    defaultHeight: width,
   });
 
   const patchPost = id => async values => {
@@ -87,8 +91,8 @@ const PostProvider = ({ children }) => {
         [page - 1]: response.body.data.map(addPlaceholderColor),
       };
 
-      setPosts(newPosts);
       setMeta(response.body.meta);
+      setPosts(newPosts);
       setCurrentPage(currentPage + 1);
 
       const finalPosts = addFakePosts({
