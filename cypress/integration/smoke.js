@@ -56,23 +56,23 @@ describe('Smoke test', () => {
   //     .should('equal', 401);
   // });
 
-  it("shouldn't be allowed to see photos", () => {
-    cy.logout();
-    cy.request({
-      failOnStatusCode: false,
-      method: 'GET',
-      url: '/api/images/720/something.jpg',
-    })
-      .its('status')
-      .should('equal', 401);
-  });
+  // it("shouldn't be allowed to see photos", () => {
+  //   cy.logout();
+  //   cy.request({
+  //     failOnStatusCode: false,
+  //     method: 'GET',
+  //     url: '/api/images/720/something.jpg',
+  //   })
+  //     .its('status')
+  //     .should('equal', 401);
+  // });
 
-  it('should have coming in 2019 text', () => {
-    cy.logout();
-    cy.visit('/');
-    cy.get('[data-test="comingSoon"]').should(
-      'have.text',
-      'Coming February 1st',
-    );
-  });
+  // it('should have coming in 2019 text', () => {
+  //   cy.logout();
+  //   cy.visit('/');
+  //   cy.get('[data-test="comingSoon"]').should(
+  //     'have.text',
+  //     'Coming February 1st',
+  //   );
+  // });
 });
