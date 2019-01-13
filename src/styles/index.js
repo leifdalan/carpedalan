@@ -51,6 +51,11 @@ export const GlobalStyleComponent = createGlobalStyle`
   #root {
     margin-top: 0;
   }  
+  #modal {
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+  }
 `;
 
 const dark = {

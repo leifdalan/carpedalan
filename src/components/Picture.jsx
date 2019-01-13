@@ -1,5 +1,5 @@
 import React from 'react';
-import { bool, number, string } from 'prop-types';
+import { bool, func, number, string } from 'prop-types';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -14,12 +14,14 @@ const Picture = ({
   src,
   placeholderColor,
   alt,
+  onClick,
 }) => (
   <Wrapper
     style={{
       width,
       backgroundColor: placeholderColor,
     }}
+    onClick={onClick}
   >
     <div
       className="image"
@@ -48,6 +50,7 @@ const Picture = ({
 Picture.defaultProps = {
   shouldShowImage: true,
   alt: undefined,
+  onClick: () => {},
 };
 
 Picture.propTypes = {
@@ -57,6 +60,7 @@ Picture.propTypes = {
   width: string.isRequired,
   placeholderColor: string.isRequired,
   alt: string,
+  onClick: func,
 };
 
 export default Picture;

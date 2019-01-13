@@ -8,4 +8,5 @@ export const {
   performance,
   setInterval,
   clearInterval,
+  document,
 } = global;

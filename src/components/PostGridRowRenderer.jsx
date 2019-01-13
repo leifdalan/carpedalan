@@ -20,6 +20,7 @@ const RenderRow = props => {
         showDescription,
         size,
         postsPerRow,
+        onClick,
       },
     },
   } = props;
@@ -53,6 +54,7 @@ const RenderRow = props => {
                 src={src}
                 shouldShowImage={shouldShowImages}
                 placeholderColor={post.placeholderColor}
+                onClick={onClick(adjustedPostIndex + subIndex)}
               />
               {showDescription ? posts[index].description : null}
             </F>

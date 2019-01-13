@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 import { oneOf, string } from 'prop-types';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 import request from 'superagent';
 
@@ -16,6 +16,8 @@ import PostProvider from './providers/PostsProvider';
 import WindowProvider from './providers/WindowProvider';
 import Sidebar from './components/Sidebar';
 import Title from './styles/Title';
+
+export const Router = createContext({});
 
 const Menu = styled(Title)`
   background: none;
@@ -65,7 +67,7 @@ function Root({ user, defaultTheme }) {
             <TagsPostProvider>
               <ThemeProvider theme={themes[theme]}>
                 <>
-                  <Router>
+                  <BrowserRouter>
                     <>
                       {!shouldShowSidebar && userState ? (
                         <Menu
@@ -95,7 +97,7 @@ function Root({ user, defaultTheme }) {
                         <Route render={() => 'no match'} />
                       </Switch>
                     </>
-                  </Router>
+                  </BrowserRouter>
                   <GlobalStyleComponent />
                 </>
               </ThemeProvider>
