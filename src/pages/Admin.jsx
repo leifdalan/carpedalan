@@ -11,6 +11,7 @@ import camelCase from 'lodash/camelCase';
 import omit from 'lodash/omit';
 
 import CreatPostForm from '../components/CreatPostForm';
+import Modal from '../components/Modal';
 import { Posts } from '../providers/PostsProvider';
 import { BRAND_COLOR, getThemeValue, prop, propTrueFalse } from '../styles';
 import Button from '../styles/Button';
@@ -32,7 +33,7 @@ const Flex = styled(FlexContainer)`
 const StyledButton = styled(Button)`
   position: fixed;
   bottom: 2em;
-  right: 2em;
+  ${propTrueFalse('left', 'left', 'right')}: 2em;
   width: ${propTrueFalse('submitting', 'calc(100% - 4em)', '200px')};
   transition: width 500ms ease-in-out, background-color 500ms ease-in;
   overflow: hidden;
@@ -58,6 +59,15 @@ const StyledButton = styled(Button)`
   )}
 `;
 
+const Report = styled.div`
+  width: 50vw;
+  max-height: 90vw;
+  overflow: scroll;
+  background: white;
+  padding: 2em;
+  border-radius: 5em;
+`;
+
 const HR = styled.hr`
   margin: 3em 0;
 `;
@@ -73,10 +83,12 @@ const Admin = () => {
   const [clockValue, setClockValue] = useState(null);
   const [averageTime, setAverageTime] = useState(3000);
   const [processingTime, setProcessTime] = useState(3000);
+  const [showReport, setShowReport] = useState(false);
 
   const fileInputRef = useRef();
 
   const submitAll = async () => {
+    let hasFailure = false;
     let innerSavingState = { ...savingState };
     const executionTimes = [];
     await Object.keys(formMap).reduce(async (promiseChain, index) => {
@@ -125,6 +137,7 @@ const Admin = () => {
         };
         return [...chainedResponses, response];
       } catch (e) {
+        hasFailure = true;
         innerSavingState = {
           ...innerSavingState,
           [index]: {
@@ -142,6 +155,7 @@ const Admin = () => {
       }
     }, Promise.resolve([]));
     setSubmitAll(false);
+    if (hasFailure) setShowReport(true);
   };
 
   useEffect(
@@ -319,13 +333,6 @@ const Admin = () => {
             progress={overall + 100 / Object.keys(savingState).length}
             averageTime={averageTime}
           >
-            {overall === 100 ? (
-              <>
-                <div>Rejected</div>
-                <div>{rejected.map(reject => reject.meta.file.name)}</div>
-              </>
-            ) : null}
-
             {/* eslint-disable */}
             {submit ? (
               <>
@@ -342,7 +349,31 @@ const Admin = () => {
             ) : (
               'Submit All'
             )}
+            {/* eslint-enable */}
           </StyledButton>
+          {overall === 100 ? (
+            <StyledButton
+              type="danger"
+              left
+              onClick={() => setShowReport(true)}
+            >
+              Show report
+            </StyledButton>
+          ) : null}
+          {showReport ? (
+            <>
+              <Modal>
+                <Report onClick={() => setShowReport(false)}>
+                  <div>Rejected</div>
+                  <ul>
+                    {rejected.map(reject => (
+                      <li>{reject.meta.file.name}</li>
+                    ))}
+                  </ul>
+                </Report>
+              </Modal>
+            </>
+          ) : null}
         </Wrapper>
       )}
     </>

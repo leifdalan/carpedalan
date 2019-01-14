@@ -2,9 +2,12 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
+import FlexContainer from '../styles/FlexContainer';
 import { document } from '../utils/globals';
 
-const Background = styled.div`
+const Background = styled(FlexContainer)`
+  justify-content: center;
+  align-items: center;
   position: fixed;
   height: 100%;
   width: 100%;
@@ -20,9 +23,9 @@ const Background = styled.div`
 
 export default function Modal({ children }) {
   useEffect(() => {
-    document.getElementsByTagName('body')[0].style.overflow = 'hidden';
+    document.getElementsByTagName('body')[0].classList.add('show-modal');
     return () => {
-      document.getElementsByTagName('body')[0].style.overflow = 'auto';
+      document.getElementsByTagName('body')[0].classList.remove('show-modal');
     };
   }, []);
   return createPortal(

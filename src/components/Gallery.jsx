@@ -1,10 +1,11 @@
 import React from 'react';
+import { arrayOf, func, number, shape } from 'prop-types';
 import styled from 'styled-components';
 
 import { HIRES, SIZE_MAP } from '../../shared/constants';
 import FlexContainer from '../styles/FlexContainer';
 import Title from '../styles/Title';
-import { formatDate, getImagePath } from '../utils';
+import { formatDate, getImagePath, getImageRatio } from '../utils';
 
 import Modal from './Modal';
 import Picture from './Picture';
@@ -40,26 +41,13 @@ const StyledTitle = styled(Title)`
 
 export default function Gallery({ data, index, onClose }) {
   const post = data[index];
-  let ratio = data[index].imageHeight / data[index].imageWidth;
-  if (Number(data[index].orientation) === 6) ratio = 1 / ratio;
+
+  const ratio = getImageRatio(post);
 
   const src = getImagePath({ post, size: SIZE });
 
   return (
     <Modal>
-      {/* <Grid
-        autoHeight
-        // autoWidth
-        cellRenderer={cellRenderer}
-        columnCount={data.length}
-        columnWidth={width}
-        height={height}
-        rowCount={1}
-        rowHeight={500}
-        width={width}
-        data={data}
-        index={index}
-      /> */}
       <Container onClick={onClose} alignItems="center" justifyContent="center">
         <Inner justifyContent="space-between">
           <Picture
@@ -78,3 +66,9 @@ export default function Gallery({ data, index, onClose }) {
     </Modal>
   );
 }
+
+Gallery.propTypes = {
+  data: arrayOf(shape({})).isRequired,
+  index: number.isRequired,
+  onClose: func.isRequired,
+};

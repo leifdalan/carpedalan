@@ -7,12 +7,12 @@ import isNumber from 'lodash/isNumber';
 import Dropdown from '../fields/Dropdown';
 import InputField from '../fields/InputField';
 import Field from '../form/Field';
-import { API_IMAGES_PATH, SIZE_MAP } from '../../shared/constants';
+import { SIZE_MAP } from '../../shared/constants';
 import Submit from '../form/Submit';
 import { BRAND_COLOR, getThemeValue, TITLE_FONT } from '../styles';
 import Button from '../styles/Button';
 import Flex from '../styles/FlexContainer';
-import { formatDate } from '../utils';
+import { formatDate, getImagePath, getImageRatio } from '../utils';
 
 import Picture from './Picture';
 
@@ -75,27 +75,19 @@ const RenderRow = props => {
       },
     },
   } = props;
-  if (!posts[index]) return null;
-  let ratio = 1;
-  const { width, height } = SIZE_MAP[size];
-  if (!posts[index].fake) {
-    ratio = height
-      ? height / width
-      : posts[index].imageHeight / posts[index].imageWidth;
 
-    if (Number(posts[index].orientation) === 6) ratio = 1 / ratio;
-  }
+  const post = posts[index];
 
-  const src = posts[index].fake
-    ? ''
-    : `${API_IMAGES_PATH}/${width}${height ? `-${height}` : ''}/${
-        posts[index].key.split('/')[1]
-      }.webp`;
+  if (!post) return null;
+
+  const ratio = getImageRatio(post);
+
+  const src = getImagePath({ post, size: SIZE_MAP[size] });
 
   const showEditButton =
     isAdmin && (isEditing === index || !isNumber(isEditing));
 
-  return posts[index] ? (
+  return (
     <CellMeasurer key={index} cache={cache} parent={parent} index={index}>
       <div style={style}>
         {showEditButton ? (
@@ -155,7 +147,7 @@ const RenderRow = props => {
         ) : null}
       </div>
     </CellMeasurer>
-  ) : null;
+  );
 };
 
 export default RenderRow;

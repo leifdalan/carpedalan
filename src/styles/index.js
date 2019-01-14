@@ -52,9 +52,18 @@ export const GlobalStyleComponent = createGlobalStyle`
     margin-top: 0;
   }  
   #modal {
+    display: none;
+  }
+
+  body.show-modal {
+    overflow: hidden;
+  }
+
+  .show-modal #modal {
     z-index: 1;
     height: 100%;
     width: 100%;
+    display: block;
   }
 `;
 
