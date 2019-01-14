@@ -56,7 +56,9 @@ const PostProvider = ({ children }) => {
   const patchPost = id => async values => {
     try {
       const { body } = await request.patch(`${API_PATH}/posts/${id}`, values);
-      setPosts(posts.map(post => (post.id === body.id ? body : post)));
+      setPostsWithFakes(
+        postsWithFakes.map(post => (post.id === body.id ? body : post)),
+      );
       cache.clearAll();
     } catch (e) {
       log.error(e);
@@ -65,7 +67,7 @@ const PostProvider = ({ children }) => {
 
   const delPost = id => async () => {
     await request.delete(`${API_PATH}/posts/${id}`);
-    setPosts(posts.filter(post => post.id !== id));
+    setPostsWithFakes(postsWithFakes.filter(post => post.id !== id));
     cache.clearAll();
   };
 
