@@ -69,7 +69,7 @@ export default function Grid({ type, fetchData, data, meta }) {
     throttled(e, setShouldShowImages);
   };
 
-  const handleClick = index => e => {
+  const handleClick = index => () => {
     setShouldShowGallery(index);
   };
 

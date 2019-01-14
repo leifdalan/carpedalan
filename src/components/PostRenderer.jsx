@@ -1,6 +1,4 @@
 import React from 'react';
-import format from 'date-fns/format';
-import fromUnixTime from 'date-fns/fromUnixTime';
 import { Link } from 'react-router-dom';
 import { CellMeasurer } from 'react-virtualized';
 import styled from 'styled-components';
@@ -14,6 +12,7 @@ import Submit from '../form/Submit';
 import { BRAND_COLOR, getThemeValue, TITLE_FONT } from '../styles';
 import Button from '../styles/Button';
 import Flex from '../styles/FlexContainer';
+import { formatDate } from '../utils';
 
 import Picture from './Picture';
 
@@ -137,11 +136,7 @@ const RenderRow = props => {
         ) : showDescription ? (
           <Description>
             <StyledFlex justifyContent="space-between">
-              <Download as="div">
-                {format(fromUnixTime(posts[index].timestamp), 'MMM d YYYY', {
-                  awareOfUnicodeTokens: true,
-                })}
-              </Download>
+              <Download as="div">{formatDate(posts[index].timestamp)}</Download>
               <Download href={`/api/images/${posts[index].key}`}>
                 Download
               </Download>

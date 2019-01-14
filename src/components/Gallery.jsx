@@ -1,62 +1,49 @@
-import React, { useContext } from 'react';
-import { Grid } from 'react-virtualized';
+import React from 'react';
 import styled from 'styled-components';
 
-import { API_IMAGES_PATH, SIZE_MAP, HIRES } from '../../shared/constants';
-import { Window } from '../providers/WindowProvider';
+import { HIRES, SIZE_MAP } from '../../shared/constants';
 import FlexContainer from '../styles/FlexContainer';
+import Title from '../styles/Title';
+import { formatDate, getImagePath } from '../utils';
 
 import Modal from './Modal';
 import Picture from './Picture';
 
 const SIZE = SIZE_MAP[HIRES];
 
-const list = [
-  ['Brian Vaughn', 'Software Engineer', 'San Jose', 'CA', 95125 /* ... */],
-  // And so on...
-];
-
 const Container = styled(FlexContainer)`
   width: 100%;
   height: 100%;
 `;
 
-function cellRenderer({
-  columnIndex,
-  key,
-  rowIndex,
-  style,
-  parent: {
-    props: { data },
-  },
-}) {
-  const post = data[columnIndex];
+const Inner = styled(FlexContainer)`
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+`;
 
-  const src = post.fake
-    ? ''
-    : `${API_IMAGES_PATH}/${SIZE}/${post.key.split('/')[1]}.webp`;
+const Caption = styled(FlexContainer)`
+  justify-content: space-between;
+  padding: 1em 1em;
+  background: white;
+  width: 100%;
+  > * {
+    padding: 0 1em;
+  }
+`;
 
-  return (
-    <div key={key} style={style}>
-      <Picture
-        width="100%"
-        ratio={1}
-        src={src}
-        shouldShowImage
-        placeholderColor={post.placeholderColor}
-      />
-    </div>
-  );
-}
+const StyledTitle = styled(Title)`
+  margin: 0;
+`;
 
 export default function Gallery({ data, index, onClose }) {
-  const { height, width } = useContext(Window);
   const post = data[index];
-  const ratio = data[index].imageHeight / data[index].imageWidth;
+  let ratio = data[index].imageHeight / data[index].imageWidth;
   if (Number(data[index].orientation) === 6) ratio = 1 / ratio;
-  const src = post.fake
-    ? ''
-    : `${API_IMAGES_PATH}/${SIZE}/${post.key.split('/')[1]}.webp`;
+
+  const src = getImagePath({ post, size: SIZE });
 
   return (
     <Modal>
@@ -74,13 +61,19 @@ export default function Gallery({ data, index, onClose }) {
         index={index}
       /> */}
       <Container onClick={onClose} alignItems="center" justifyContent="center">
-        <Picture
-          width="100%"
-          ratio={ratio}
-          src={src}
-          shouldShowImage
-          placeholderColor={post.placeholderColor}
-        />
+        <Inner justifyContent="space-between">
+          <Picture
+            width="100%"
+            ratio={ratio}
+            src={src}
+            shouldShowImage
+            placeholderColor={post.placeholderColor}
+          />
+          <Caption justifyContent="space-between">
+            <div>{post.description}</div>
+            <StyledTitle size="small">{formatDate(post.timestamp)}</StyledTitle>
+          </Caption>
+        </Inner>
       </Container>
     </Modal>
   );
