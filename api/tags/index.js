@@ -1,7 +1,8 @@
 import express from 'express';
 
 import db from '../../server/db';
-import { isLoggedIn } from '../../server/middlewares';
+import { isAdmin, isLoggedIn } from '../../server/middlewares';
+import { ACTIVE } from '../../shared/constants';
 
 const tags = express.Router();
 
@@ -15,6 +16,7 @@ tags.get('/:tag', isLoggedIn, async (req, res) => {
     .orderBy('timestamp', 'desc')
     .where({
       'tags.name': req.params.tag,
+      'photos.status': ACTIVE,
     });
 
   res.status(200).send({
@@ -25,7 +27,35 @@ tags.get('/:tag', isLoggedIn, async (req, res) => {
 
 tags.get('/', isLoggedIn, async (req, res) => {
   const tagsResponse = await db('tags').select();
-  res.status(200).send(tagsResponse);
+  const counts = await db('photos_tags')
+    .select('tagId')
+    .count('*')
+    .groupBy('tagId');
+
+  const countsById = counts.reduce(
+    (acc, count) => ({
+      ...acc,
+      [count.tagId]: count.count,
+    }),
+    {},
+  );
+
+  const withCount = tagsResponse.map(tag => ({
+    ...tag,
+    count: countsById[tag.id],
+  }));
+  res.status(200).send(withCount);
+});
+
+tags.post('/', isAdmin, async (req, res) => {
+  try {
+    const [tagsResponse] = await db('tags')
+      .insert({ name: req.body.tag })
+      .returning('*');
+    res.status(200).send(tagsResponse);
+  } catch (e) {
+    res.status(500).send(e);
+  }
 });
 
 export default tags;

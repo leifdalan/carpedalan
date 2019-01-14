@@ -29,9 +29,25 @@ Cypress.Commands.add('loginAsAdmin', () => {
     .click();
   cy.url().should('include', 'admin');
 });
+Cypress.Commands.add('login', () => {
+  cy.server();
+  cy.route('POST', '/api/login').as('login');
+  cy.visit('/');
+  cy.get('[data-test="secret"]').click();
+  cy.get('[data-test="inputField"]').type(Cypress.env('PUBLIC_PASSWORD'), {
+    log: false,
+  });
+  cy.get('button[type="submit"]').click();
+  cy.wait('@login')
+    .its('status')
+    .should('be', 200);
+});
 
 Cypress.Commands.add('logout', () => {
-  cy.request('POST', '/api/logout');
+  cy.request('POST', '/api/logout').then(() => {
+    cy.log('loggedOut');
+  });
+  cy.wait(150);
 });
 
 Cypress.Commands.add('cleanDb', () => {

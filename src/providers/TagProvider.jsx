@@ -9,9 +9,7 @@ export const Tag = createContext({ tags: [], postNewTag: () => {} });
 const Tags = ({ children }) => {
   const [tags, setTags] = useState([]);
   const [loadingTags, setLoadingTags] = useState(false);
-  const postNewTag = async () => {
-    setLoadingTags(true);
-  };
+  const [creatingTag, setCreatingTag] = useState(false);
 
   const loadTags = async () => {
     // Super basic caching - don't get tags if we already have them.
@@ -27,8 +25,24 @@ const Tags = ({ children }) => {
     }
   };
 
+  const postNewTag = async tag => {
+    setCreatingTag(true);
+    try {
+      const { body } = await request.post('/api/tags', { tag });
+      setTags([...tags, body]);
+      return body;
+    } catch (e) {
+      log.error('bad request', e);
+    } finally {
+      setCreatingTag(false);
+    }
+    return null;
+  };
+
   return (
-    <Tag.Provider value={{ tags, loadTags, loadingTags, postNewTag }}>
+    <Tag.Provider
+      value={{ tags, loadTags, loadingTags, postNewTag, creatingTag }}
+    >
       {children}
     </Tag.Provider>
   );

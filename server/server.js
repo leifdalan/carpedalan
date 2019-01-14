@@ -65,7 +65,6 @@ export const setup = () => {
 
   // V important
   app.use(customHeader);
-  // OR set your own header here
 
   // Set up session store
   app.use(
@@ -116,6 +115,11 @@ export const setup = () => {
       ),
     }),
   );
+  app.get('/healthcheck', (req, res) => {
+    res.status(200).json({
+      farts: 'for your health',
+    });
+  });
   return { app, store, pool };
   // return { app };
 };

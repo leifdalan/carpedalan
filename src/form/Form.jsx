@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useReducer, useRef } from 'react';
-import { node, shape, func } from 'prop-types';
+import { bool, func, node, shape } from 'prop-types';
 import get from 'lodash/get';
 import unset from 'lodash/unset';
 import isUndefined from 'lodash/isUndefined';
@@ -25,6 +25,7 @@ const reducer = (
       return {
         ...state,
         meta: {
+          ...state.meta,
           isDirty: true,
         },
       };
@@ -55,6 +56,7 @@ const reducer = (
         meta: {
           ...state.meta,
           submitting: true,
+          hasSubmitted: true,
         },
       };
     case 'STOP_SUBMIT':
@@ -82,6 +84,7 @@ const reducer = (
           ...state.meta,
           submitting: false,
           submitSucceeded: false,
+          submitFailed: true,
         },
       };
     case 'REGISTER_FIELD':
@@ -107,6 +110,8 @@ function Form({
   onSubmit,
   validate: validation,
   effect,
+  normalize,
+  shouldSubmit,
 }) {
   const ref = useRef();
   const [state, dispatch] = useReducer(reducer, initialFormReducerState, {
@@ -135,39 +140,41 @@ function Form({
   const validate = ({ field, error }) =>
     dispatch({ type: 'VALIDATION', payload: { field, error } });
 
-  const submit = async () => {
+  const submit = async e => {
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
     dispatch({
       type: 'START_SUBMIT',
     });
 
-    const errors = validation(state.values);
-
-    if (errors && !isEmpty(errors)) {
+    const errors = validation(state.values) || {};
+    const hasFieldErrors = Object.keys(state.errors).reduce(
+      (acc, key) => [...acc, ...(state.errors[key] ? [state.errors[key]] : [])],
+      [],
+    ).length;
+    if ((errors && !isEmpty(errors)) || hasFieldErrors) {
       dispatch({ type: 'FORM_VALIDATION', payload: errors });
       dispatch({
         type: 'SUBMIT_FAILED',
-        payload: errors,
+        payload: { ...state.errors, ...errors },
       });
     } else {
       try {
-        await onSubmit(state.values);
-
-        if (ref.current) {
-          dispatch({
-            type: 'SUBMIT_SUCCEEDED',
-          });
-        }
-      } catch (e) {
+        const normalized = normalize(state.values);
+        await onSubmit(normalized);
+        dispatch({
+          type: 'SUBMIT_SUCCEEDED',
+        });
+      } catch (error) {
         dispatch({
           type: 'SUBMIT_FAILED',
-          payload: e,
+          payload: error,
         });
       } finally {
-        if (ref.current) {
-          dispatch({
-            type: 'SUBMIT_STOP',
-          });
-        }
+        dispatch({
+          type: 'SUBMIT_STOP',
+        });
       }
     }
   };
@@ -183,8 +190,24 @@ function Form({
     [state],
   );
 
+  // I think this is screwing everything up - this causes several "callbacks"
+  // (onSubmit) functions to fire, I've tried to put setStates in. Obviously can't
+  // rely on useState and getState within the *same* callback, but it also doesn't
+  // work trying to access previous state on a _subsequent_ callback. I think because
+  // this useEffect freezes child components' render cycle or something.
+  useEffect(
+    () => {
+      if (shouldSubmit) {
+        submit(state.values);
+      }
+      return null;
+    },
+    [shouldSubmit],
+  );
+
   return (
     <FormProvider
+      ref={ref}
       value={{
         change,
         validate,
@@ -207,6 +230,8 @@ Form.defaultProps = {
   validate: () => {},
   effect: () => {},
   children: [],
+  normalize: f => f,
+  shouldSubmit: false,
 };
 
 Form.propTypes = {
@@ -214,7 +239,9 @@ Form.propTypes = {
   onSubmit: func,
   validate: func,
   effect: func,
+  normalize: func,
   children: node,
+  shouldSubmit: bool,
 };
 
 export default Form;

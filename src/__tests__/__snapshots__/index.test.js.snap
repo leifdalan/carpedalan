@@ -2,8 +2,14 @@
 
 exports[`test should do some stuff 1`] = `
 Array [
-  .c0 {
-  font-family: montserratregular;
+  .c2 .c0 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.c1 {
+  font-family: montserratregular,Helvetica,sans-serif;
+  margin: 2em 0;
   font-size: 18px;
   text-transform: uppercase;
   -webkit-letter-spacing: 5px;
@@ -24,10 +30,11 @@ Array [
   padding: 5px;
   box-shadow: rgba(255,255,255) 0px 0px 10px 10px;
   border-radius: 40%;
+  margin-top: 1em;
 }
 
 <h1
-    className="c0"
+    className="c0 c1"
     data-test="menu"
     onClick={[Function]}
     size="small"
@@ -35,7 +42,33 @@ Array [
   >
     Menu
   </h1>,
-  .c0 {
+  .c6 {
+  background: rgb(0,161,255);
+  font-family: montserratregular,Helvetica,sans-serif;
+  text-transform: uppercase;
+  -webkit-letter-spacing: 3px;
+  -moz-letter-spacing: 3px;
+  -ms-letter-spacing: 3px;
+  letter-spacing: 3px;
+  color: white;
+  border: none;
+  padding: 1em 3em;
+  cursor: pointer;
+  outline: inherit;
+  border-radius: 50px;
+}
+
+.c6:hover {
+  -webkit-filter: brightness(85%);
+  filter: brightness(85%);
+}
+
+.c6:active {
+  -webkit-filter: brightness(125%);
+  filter: brightness(125%);
+}
+
+.c0 {
   position: fixed;
   width: 200px;
   top: 0;
@@ -47,28 +80,34 @@ Array [
   -webkit-transition: left 200ms ease-in;
   transition: left 200ms ease-in;
   font-family: montserratregular;
-  padding: 0em;
+  padding: 1em 0;
 }
 
-.c2 {
+.c0 .c1 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.c3 {
   margin-left: 0;
   padding-left: 0;
 }
 
-.c3 {
+.c4 {
   list-style: none;
   margin-left: 0;
   margin-bottom: 1em;
 }
 
-.c4 {
+.c5 {
   -webkit-text-decoration: none;
   text-decoration: none;
   color: black;
 }
 
-.c1 {
-  font-family: montserratregular;
+.c2 {
+  font-family: montserratregular,Helvetica,sans-serif;
+  margin: 2em 0;
   font-size: 24px;
   text-transform: uppercase;
   -webkit-letter-spacing: 5px;
@@ -88,20 +127,20 @@ Array [
     onClick={[Function]}
   >
     <button
-      className="c1"
+      className="c1 c2"
       onClick={[Function]}
       type="button"
     >
       Close ✖
     </button>
     <ul
-      className="c2"
+      className="c3"
     >
       <li
-        className="c3"
+        className="c4"
       >
         <a
-          className="c4"
+          className="c5"
           href="/admin"
           onClick={[Function]}
         >
@@ -109,10 +148,10 @@ Array [
         </a>
       </li>
       <li
-        className="c3"
+        className="c4"
       >
         <a
-          className="c4"
+          className="c5"
           href="/"
           onClick={[Function]}
         >
@@ -120,10 +159,10 @@ Array [
         </a>
       </li>
       <li
-        className="c3"
+        className="c4"
       >
         <a
-          className="c4"
+          className="c5"
           href="/archive"
           onClick={[Function]}
         >
@@ -138,6 +177,7 @@ Array [
       toggle themeaa
     </button>
     <button
+      className="c6"
       data-test="logout"
       onClick={[Function]}
       type="button"
@@ -145,8 +185,9 @@ Array [
       log out
     </button>
   </div>,
-  .c1 {
-  font-family: montserratregular;
+  .c2 {
+  font-family: montserratregular,Helvetica,sans-serif;
+  margin: 2em 0;
   font-size: 42px;
   text-transform: uppercase;
   -webkit-letter-spacing: 5px;
@@ -157,15 +198,20 @@ Array [
 }
 
 .c0 {
-  max-width: 67em;
+  max-width: 56em;
   margin: 0 auto;
+}
+
+.c3 .c1 {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 <section
     className="c0"
   >
     <h1
-      className="c1"
+      className="c1 c2"
       size="large"
     >
       Carpe Dalan

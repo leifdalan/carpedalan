@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 import { oneOf, string } from 'prop-types';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 import request from 'superagent';
 
@@ -13,8 +13,11 @@ import { themes, GlobalStyleComponent } from './styles';
 import TagProvider from './providers/TagProvider';
 import TagsPostProvider from './providers/TagPostsProvider';
 import PostProvider from './providers/PostsProvider';
+import WindowProvider from './providers/WindowProvider';
 import Sidebar from './components/Sidebar';
 import Title from './styles/Title';
+
+export const Router = createContext({});
 
 const Menu = styled(Title)`
   background: none;
@@ -31,6 +34,7 @@ const Menu = styled(Title)`
   padding: 5px;
   box-shadow: rgba(255, 255, 255) 0px 0px 10px 10px;
   border-radius: 40%;
+  margin-top: 1em;
 `;
 
 export const User = createContext({
@@ -56,50 +60,52 @@ function Root({ user, defaultTheme }) {
   const toggleMenu = () => setShouldShowSidebar(!shouldShowSidebar);
 
   return (
-    <User.Provider value={{ user: userState, setUser }}>
-      <TagProvider>
-        <PostProvider>
-          <TagsPostProvider>
-            <ThemeProvider theme={themes[theme]}>
-              <>
-                <Router>
-                  <>
-                    {!shouldShowSidebar && userState ? (
-                      <Menu
-                        data-test="menu"
-                        size="small"
-                        onClick={toggleMenu}
-                        type="button"
-                      >
-                        Menu
-                      </Menu>
-                    ) : null}
-                    <Sidebar
-                      isOpen={shouldShowSidebar}
-                      userState={userState}
-                      setUser={setUser}
-                      handleChangeTheme={handleChangeTheme}
-                      toggleMenu={toggleMenu}
-                    />
-                    <Switch>
-                      <Route exact path="/" component={Slash} />
-                      <Route exact path="/login" component={Login} />
-                      <Route exact path="/archive" component={Archive} />
-                      <Route exact path="/tag/:tag" component={Tag} />
-                      {userState === 'write' ? (
-                        <Route exact path="/admin" component={Admin} />
+    <WindowProvider>
+      <User.Provider value={{ user: userState, setUser }}>
+        <TagProvider>
+          <PostProvider>
+            <TagsPostProvider>
+              <ThemeProvider theme={themes[theme]}>
+                <>
+                  <BrowserRouter>
+                    <>
+                      {!shouldShowSidebar && userState ? (
+                        <Menu
+                          data-test="menu"
+                          size="small"
+                          onClick={toggleMenu}
+                          type="button"
+                        >
+                          Menu
+                        </Menu>
                       ) : null}
-                      <Route render={() => 'no match'} />
-                    </Switch>
-                  </>
-                </Router>
-                <GlobalStyleComponent />
-              </>
-            </ThemeProvider>
-          </TagsPostProvider>
-        </PostProvider>
-      </TagProvider>
-    </User.Provider>
+                      <Sidebar
+                        isOpen={shouldShowSidebar}
+                        userState={userState}
+                        setUser={setUser}
+                        handleChangeTheme={handleChangeTheme}
+                        toggleMenu={toggleMenu}
+                      />
+                      <Switch>
+                        <Route exact path="/" component={Slash} />
+                        <Route exact path="/login" component={Login} />
+                        <Route exact path="/archive" component={Archive} />
+                        <Route exact path="/tag/:tag" component={Tag} />
+                        {userState === 'write' ? (
+                          <Route exact path="/admin" component={Admin} />
+                        ) : null}
+                        <Route render={() => 'no match'} />
+                      </Switch>
+                    </>
+                  </BrowserRouter>
+                  <GlobalStyleComponent />
+                </>
+              </ThemeProvider>
+            </TagsPostProvider>
+          </PostProvider>
+        </TagProvider>
+      </User.Provider>
+    </WindowProvider>
   );
 }
 

@@ -20,6 +20,7 @@ const RenderRow = props => {
         showDescription,
         size,
         postsPerRow,
+        onClick,
       },
     },
   } = props;
@@ -32,11 +33,18 @@ const RenderRow = props => {
     <CellMeasurer key={key} cache={cache} parent={parent} index={index}>
       <div style={{ ...style }}>
         {[...Array(postsPerRow).keys()].map(subIndex => {
-          if (!posts[adjustedPostIndex + subIndex]) return null;
+          const post = posts[adjustedPostIndex + subIndex];
 
-          const src = `${API_IMAGES_PATH}/${width}${
-            height ? `-${height}` : ''
-          }/${posts[adjustedPostIndex + subIndex].key.split('/')[1]}.webp`;
+          // for rows with lest then row-length cells
+          if (!post) {
+            return null;
+          }
+
+          const src = post.fake
+            ? ''
+            : `${API_IMAGES_PATH}/${width}${height ? `-${height}` : ''}/${
+                post.key.split('/')[1]
+              }.webp`;
 
           return posts[adjustedPostIndex + subIndex] ? (
             <F key={adjustedPostIndex + subIndex}>
@@ -45,9 +53,8 @@ const RenderRow = props => {
                 ratio={1}
                 src={src}
                 shouldShowImage={shouldShowImages}
-                placeholderColor={
-                  posts[adjustedPostIndex + subIndex].placeholderColor
-                }
+                placeholderColor={post.placeholderColor}
+                onClick={onClick(adjustedPostIndex + subIndex)}
               />
               {showDescription ? posts[index].description : null}
             </F>

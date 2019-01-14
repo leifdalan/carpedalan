@@ -3,6 +3,7 @@ import { func, shape } from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import request from 'superagent';
 
+import Button from '../styles/Button';
 import { API_PATH } from '../../shared/constants';
 
 const LogoutButton = ({ setUser, history }) => {
@@ -14,9 +15,9 @@ const LogoutButton = ({ setUser, history }) => {
 
   return (
     <>
-      <button type="button" data-test="logout" onClick={logout}>
+      <Button type="button" data-test="logout" onClick={logout}>
         log out
-      </button>
+      </Button>
     </>
   );
 };

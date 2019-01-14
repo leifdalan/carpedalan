@@ -23,6 +23,7 @@ import {
   TAGS,
   TIMESTAMP,
   EXIFPROPS,
+  DEFAULT_POSTS_PER_PAGE,
 } from '../../shared/constants';
 import log from '../../src/utils/log';
 
@@ -31,6 +32,7 @@ const s3 = new S3({ region: 'us-west-2' });
 // Use memory storage for multer "store" - note: will hold file buffers
 // in-memory! Considering writing custom store that streams to S3 if this
 // becomes a problem
+// -------- This is a problem ahhahaha
 const storage = multer.memoryStorage();
 // Create middleware object
 const uploadMiddleware = multer({ storage });
@@ -50,13 +52,52 @@ posts.delete('/:id', isAdmin, async (req, res) => {
 });
 
 posts.patch('/:id', isAdmin, async (req, res) => {
+  let photoResponse;
+  let tags = [];
   try {
-    const [response] = await db(PHOTOS)
-      .update(req.body)
-      .where({ id: req.params.id })
-      .returning('*');
-    res.status(200).json(response);
+    await db.transaction(trx =>
+      trx(PHOTOS)
+        .update({
+          [DESCRIPTION]: req.body.description,
+        })
+        .where({ id: req.params.id })
+        .returning('*')
+        .then(async ([photo]) => {
+          photoResponse = photo;
+          await trx(PHOTOS_TAGS)
+            .del()
+            .where({
+              photoId: photo.id,
+            });
+
+          if (req.body.tags && req.body.tags.length) {
+            log.info('doing it');
+            const tagsInsert = req.body.tags.map(tag => ({
+              photoId: photo.id,
+              tagId: tag,
+            }));
+            await trx(PHOTOS_TAGS).insert(tagsInsert);
+          }
+
+          tags = await trx(PHOTOS_TAGS)
+            .select(`${TAGS}.${NAME} as tagName`, `${TAGS}.${ID} as tagId`)
+            .where({
+              photoId: req.params.id,
+            })
+            .leftJoin(TAGS, `${TAGS}.${ID}`, `${PHOTOS_TAGS}.${TAG_ID}`);
+          return Promise.resolve();
+        })
+        .catch(err => {
+          trx.rollback(err);
+        }),
+    );
+
+    res.status(200).json({
+      ...photoResponse,
+      tags: tags.map(({ tagName, tagId }) => ({ id: tagId, name: tagName })),
+    });
   } catch (e) {
+    res.status(500);
     log.error(e);
   }
 });
@@ -198,7 +239,7 @@ posts.get('', isLoggedIn, async (req, res) => {
   const tagName = 'tagName';
   const tagId = 'tagId';
   const page = req.query.page || 1;
-  const limit = 100;
+  const limit = DEFAULT_POSTS_PER_PAGE;
   const offset = (page - 1) * limit;
   const selectStatement = db(PHOTOS)
     .select()
