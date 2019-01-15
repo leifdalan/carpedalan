@@ -1,12 +1,20 @@
 import styled from 'styled-components';
 
-import { getThemeValue, BRAND_COLOR, TITLE_FONT, DANGER_COLOR } from '.';
+import {
+  getThemeValue,
+  BRAND_COLOR,
+  TITLE_FONT,
+  DANGER_COLOR,
+  NEUTRAL_COLOR,
+} from '.';
 
 export default styled.button`
   background: ${({ theme, type }) => {
     switch (type) {
       case 'danger':
         return theme[DANGER_COLOR];
+      case 'neutral':
+        return theme[NEUTRAL_COLOR];
       default:
         return theme[BRAND_COLOR];
     }

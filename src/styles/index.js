@@ -8,6 +8,7 @@ export const SECONDARY_COLOR = 'secondaryColor';
 export const BODY_FONT = 'bodyFont';
 export const TITLE_FONT = 'titleFont';
 export const DANGER_COLOR = 'dangerColor';
+export const NEUTRAL_COLOR = 'neutralColor';
 export const getThemeValue = value => ({ theme }) => theme[value];
 export const prop = value => props => props[value];
 export const propTrueFalse = (value, truthy, falsey) => props =>
@@ -85,6 +86,7 @@ const lite = {
   [BRAND_COLOR]: 'rgb(0, 161, 255)',
   [SECONDARY_COLOR]: '#ff8c0e',
   [DANGER_COLOR]: 'rgb(222, 50, 82)',
+  [NEUTRAL_COLOR]: 'rgb(100, 100, 100)',
   [TITLE_FONT]: 'montserratregular, Helvetica, sans-serif',
 };
 

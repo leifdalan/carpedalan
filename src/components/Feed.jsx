@@ -6,6 +6,8 @@ import throttle from 'lodash/throttle';
 import { User } from '..';
 
 import { WRITE_USER } from '../../server/constants';
+import Button from '../styles/Button';
+import FlexContainer from '../styles/FlexContainer';
 import Wrapper from '../styles/Wrapper';
 import { MEDIUM } from '../../shared/constants';
 import { Posts } from '../providers/PostsProvider';
@@ -13,6 +15,7 @@ import { Tag } from '../providers/TagProvider';
 import { Window } from '../providers/WindowProvider';
 import Title from '../styles/Title';
 
+import Dialog from './Dialog';
 import PostRenderer from './PostRenderer';
 
 let lastValue = 0;
@@ -35,6 +38,7 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
   const { user } = useContext(User);
 
   const [shouldShowImages, setShouldShowImages] = useState(true);
+  const [showModal, setShouldShowModal] = useState(null);
   const listRef = outerRef;
   const throttledResize = throttle(() => {
     if (listRef.current) {
@@ -68,6 +72,15 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
   const handleScroll = e => {
     onChildScroll(e);
     throttled(e, setShouldShowImages);
+  };
+
+  const handleDelete = index => () => {
+    setShouldShowModal(index);
+  };
+
+  const handleConfirmDelete = index => () => {
+    delPost(index)();
+    setShouldShowModal(null);
   };
 
   return (
@@ -109,7 +122,7 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
                   isAdmin={isAdmin}
                   setEditing={setEditingForIndex}
                   isEditing={isEditing}
-                  delPost={delPost}
+                  delPost={handleDelete}
                   tags={tags}
                 />
               </div>
@@ -117,6 +130,21 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
           </InfiniteLoader>
         )}
       </AutoSizer>
+      {showModal ? (
+        <Dialog dialog>
+          <Title center size="small">
+            Are you sure?
+          </Title>
+          <FlexContainer justifyContent="space-between">
+            <Button type="danger" onClick={handleConfirmDelete(showModal)}>
+              Yup
+            </Button>
+            <Button type="neutral" onClick={() => setShouldShowModal(null)}>
+              Nah
+            </Button>
+          </FlexContainer>
+        </Dialog>
+      ) : null}
     </Wrapper>
   );
 }

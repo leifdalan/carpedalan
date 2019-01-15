@@ -288,7 +288,7 @@ const Admin = () => {
     if (!clockValue) return '?';
     const minutes = Math.floor(clockValue / 1000 / 60);
     const seconds = (clockValue / 1000 / 60 - minutes) * 60;
-    return `${minutes}m ${seconds}s`;
+    return `${minutes}m ${Math.floor(seconds)}s`;
   };
 
   return (

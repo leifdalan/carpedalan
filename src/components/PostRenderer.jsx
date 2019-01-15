@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CellMeasurer } from 'react-virtualized';
 import styled from 'styled-components';
@@ -14,6 +14,7 @@ import Button from '../styles/Button';
 import Flex from '../styles/FlexContainer';
 import { formatDate, getImagePath, getImageRatio } from '../utils';
 
+import Modal from './Modal';
 import Picture from './Picture';
 
 const Download = styled.a`
@@ -72,10 +73,10 @@ const RenderRow = props => {
         setEditing,
         isAdmin,
         tags,
+        onDelete,
       },
     },
   } = props;
-
   const post = posts[index];
 
   if (!post) return null;
