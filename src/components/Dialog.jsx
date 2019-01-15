@@ -11,7 +11,6 @@ const DialogWrapper = styled.div`
   max-width: 90vw;
   max-height: 90vh;
 
-  width: 30em;
   padding: 2em;
 `;
 
