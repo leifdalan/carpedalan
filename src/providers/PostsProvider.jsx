@@ -28,9 +28,11 @@ const addFakePosts = ({ posts, meta }) => {
         Number(key) * DEFAULT_POSTS_PER_PAGE <= index &&
         (Number(key) + 1) * DEFAULT_POSTS_PER_PAGE > index
       ) {
-        return addPlaceholderColor(
-          posts[key][index - DEFAULT_POSTS_PER_PAGE * key],
-        );
+        return {
+          ...fake,
+          ...posts[key][index - DEFAULT_POSTS_PER_PAGE * key],
+          fake: false,
+        };
       }
       return fake;
     });
@@ -83,7 +85,7 @@ const PostProvider = ({ children }) => {
       const response = await apiCall;
       const newPosts = {
         ...posts,
-        [page - 1]: response.body.data.map(addPlaceholderColor),
+        [page - 1]: response.body.data,
       };
 
       setMeta(response.body.meta);

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { arrayOf, func, number, shape, string } from 'prop-types';
+import { arrayOf, bool, func, number, shape, string } from 'prop-types';
 import styled from 'styled-components';
 
 import { User } from '..';
@@ -10,6 +10,7 @@ import { WRITE_USER } from '../../server/constants';
 import Form from '../form/Form';
 import { Posts } from '../providers/PostsProvider';
 import Button from '../styles/Button';
+import Menu from '../styles/Menu';
 import Title from '../styles/Title';
 import log from '../utils/log';
 import FlexContainer from '../styles/FlexContainer';
@@ -17,17 +18,19 @@ import FlexContainer from '../styles/FlexContainer';
 import GridView from './GridView';
 import Feed from './Feed';
 
-const StyledTitle = styled(Title)`
-  font-family: england;
-  text-transform: none;
-`;
-
 const StyledButton = styled(Button)`
   margin-bottom: 2em;
   margin-right: 1em;
 `;
 
-export default function View({ posts, cache, fetchData, meta, title }) {
+const SVG = styled.svg`
+  margin: 2em auto;
+  text {
+    font-family: england;
+  }
+`;
+
+export default function View({ posts, cache, fetchData, meta, title, fancy }) {
   const { patchPost } = useContext(Posts);
   const { user } = useContext(User);
   const [isEditing, setEditing] = useState(null);
@@ -71,14 +74,20 @@ export default function View({ posts, cache, fetchData, meta, title }) {
 
   return (
     <Wrap {...props}>
-      <StyledTitle center size="large">
-        {title}
-      </StyledTitle>
-      <FlexContainer justifyContent="flex-end">
-        <StyledButton onClick={() => setGridView(!isGridView)}>
-          {isGridView ? 'List View' : 'Grid View'}
-        </StyledButton>
-      </FlexContainer>
+      {fancy ? (
+        <SVG viewBox="0 0 88 20">
+          <text x="2" y="17">
+            {title}
+          </text>
+        </SVG>
+      ) : (
+        <Title center size="large">
+          {title}
+        </Title>
+      )}
+      <Menu size="small" side="right" onClick={() => setGridView(!isGridView)}>
+        {isGridView ? 'List' : 'Grid'}
+      </Menu>
       {isGridView ? (
         <GridView fetchData={fetchData} data={posts} meta={meta} type="main" />
       ) : (
@@ -94,6 +103,10 @@ export default function View({ posts, cache, fetchData, meta, title }) {
   );
 }
 
+View.defaultProps = {
+  fancy: false,
+};
+
 View.propTypes = {
   posts: arrayOf(shape({})).isRequired,
   cache: shape({}).isRequired,
@@ -102,4 +115,5 @@ View.propTypes = {
   }).isRequired,
   fetchData: func.isRequired,
   title: string.isRequired,
+  fancy: bool,
 };

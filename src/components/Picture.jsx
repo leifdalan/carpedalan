@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { bool, func, number, string } from 'prop-types';
 import styled from 'styled-components';
+
+import { propTrueFalse } from '../styles';
 
 const Wrapper = styled.div`
   display: inline-block;
   margin-bottom: -4px;
 `;
+
+const Img = styled.img`
+  position absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: ${propTrueFalse('loaded', 1, 0)};
+  transition: opacity 250ms ease-out;
+`;
+
+Img.defaultProps = {
+  loaded: false,
+};
 
 const Picture = ({
   shouldShowImage,
@@ -15,37 +31,36 @@ const Picture = ({
   placeholderColor,
   alt,
   onClick,
-}) => (
-  <Wrapper
-    style={{
-      width,
-      backgroundColor: placeholderColor,
-    }}
-    onClick={onClick}
-  >
-    <div
-      className="image"
+}) => {
+  const [loaded, setLoaded] = useState(false);
+  const preload = new Image();
+  preload.onload = () => {
+    setLoaded(true);
+  };
+  preload.src = src;
+
+  return (
+    <Wrapper
       style={{
-        paddingTop: `${ratio * 100}%`,
-        position: 'relative',
+        width,
+        backgroundColor: placeholderColor,
       }}
+      onClick={onClick}
     >
-      {shouldShowImage ? (
-        <img
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-          }}
-          src={src}
-          alt={alt || src}
-        />
-      ) : null}
-    </div>
-  </Wrapper>
-);
+      <div
+        className="image"
+        style={{
+          paddingTop: `${ratio * 100}%`,
+          position: 'relative',
+        }}
+      >
+        {shouldShowImage ? (
+          <Img loaded={loaded} src={loaded ? src : ''} alt={alt || src} />
+        ) : null}
+      </div>
+    </Wrapper>
+  );
+};
 
 Picture.defaultProps = {
   shouldShowImage: true,

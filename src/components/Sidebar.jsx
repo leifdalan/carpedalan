@@ -86,9 +86,6 @@ export default function Sidebar({
         <ListItem>
           <StyledLink to="/">HOME</StyledLink>
         </ListItem>
-        <ListItem>
-          <StyledLink to="/archive">ARCHIVE</StyledLink>
-        </ListItem>
 
         {tags.map(({ name, id, count }) => (
           <ListItem key={id}>
@@ -98,10 +95,10 @@ export default function Sidebar({
           </ListItem>
         ))}
       </List>
-      <button type="button" onClick={handleChangeTheme}>
+      {/* <button type="button" onClick={handleChangeTheme}>
         toggle themeaa
       </button>
-      <LogoutButton setUser={setUser} />
+      <LogoutButton setUser={setUser} /> */}
     </StyledSidebar>
   ) : null;
 }

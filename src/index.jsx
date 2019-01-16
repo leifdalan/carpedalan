@@ -1,7 +1,7 @@
 import React, { createContext, useState } from 'react';
 import { oneOf, string } from 'prop-types';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import styled, { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components';
 import request from 'superagent';
 
 import Admin from './pages/Admin';
@@ -15,27 +15,9 @@ import TagsPostProvider from './providers/TagPostsProvider';
 import PostProvider from './providers/PostsProvider';
 import WindowProvider from './providers/WindowProvider';
 import Sidebar from './components/Sidebar';
-import Title from './styles/Title';
+import Menu from './styles/Menu';
 
 export const Router = createContext({});
-
-const Menu = styled(Title)`
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  outline: inherit;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 25px;
-  background: white;
-  padding: 5px;
-  box-shadow: rgba(255, 255, 255) 0px 0px 10px 10px;
-  border-radius: 40%;
-  margin-top: 1em;
-`;
 
 export const User = createContext({
   counter: 0,

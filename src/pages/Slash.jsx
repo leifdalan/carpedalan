@@ -13,6 +13,7 @@ export default function Slash() {
       cache={cache}
       fetchData={getPosts}
       meta={meta}
+      fancy
     />
   );
 }

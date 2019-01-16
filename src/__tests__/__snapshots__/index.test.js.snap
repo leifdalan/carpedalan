@@ -2,12 +2,7 @@
 
 exports[`test should do some stuff 1`] = `
 Array [
-  .c2 .c0 {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.c1 {
+  .c1 {
   font-family: montserratregular,Helvetica,sans-serif;
   margin: 2em 0;
   font-size: 18px;
@@ -26,11 +21,16 @@ Array [
   z-index: 1;
   top: 0;
   left: 25px;
-  background: white;
+  background: rgba(255,255,255,0.6);
   padding: 5px;
-  box-shadow: rgba(255,255,255) 0px 0px 10px 10px;
+  box-shadow: rgba(255,255,255,0.6) 0px 0px 10px 10px;
   border-radius: 40%;
   margin-top: 1em;
+}
+
+.c2 .c0 {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 <h1
@@ -42,33 +42,7 @@ Array [
   >
     Menu
   </h1>,
-  .c6 {
-  background: rgb(0,161,255);
-  font-family: montserratregular,Helvetica,sans-serif;
-  text-transform: uppercase;
-  -webkit-letter-spacing: 3px;
-  -moz-letter-spacing: 3px;
-  -ms-letter-spacing: 3px;
-  letter-spacing: 3px;
-  color: white;
-  border: none;
-  padding: 1em 3em;
-  cursor: pointer;
-  outline: inherit;
-  border-radius: 50px;
-}
-
-.c6:hover {
-  -webkit-filter: brightness(85%);
-  filter: brightness(85%);
-}
-
-.c6:active {
-  -webkit-filter: brightness(125%);
-  filter: brightness(125%);
-}
-
-.c0 {
+  .c0 {
   position: fixed;
   width: 200px;
   top: 0;
@@ -158,45 +132,51 @@ Array [
           HOME
         </a>
       </li>
-      <li
-        className="c4"
-      >
-        <a
-          className="c5"
-          href="/archive"
-          onClick={[Function]}
-        >
-          ARCHIVE
-        </a>
-      </li>
     </ul>
-    <button
-      onClick={[Function]}
-      type="button"
-    >
-      toggle themeaa
-    </button>
-    <button
-      className="c6"
-      data-test="logout"
-      onClick={[Function]}
-      type="button"
-    >
-      log out
-    </button>
   </div>,
+  .c0 {
+  margin: 2em auto;
+}
+
+.c0 text {
+  font-family: england;
+}
+
+<svg
+    className="c0"
+    viewBox="0 0 88 20"
+  >
+    <text
+      x="2"
+      y="17"
+    >
+      Carpe Dalan
+    </text>
+  </svg>,
   .c1 {
   font-family: montserratregular,Helvetica,sans-serif;
   margin: 2em 0;
-  font-size: 42px;
+  font-size: 18px;
   text-transform: uppercase;
   -webkit-letter-spacing: 5px;
   -moz-letter-spacing: 5px;
   -ms-letter-spacing: 5px;
   letter-spacing: 5px;
-  text-align: center;
-  font-family: england;
-  text-transform: none;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: inherit;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 25px;
+  background: rgba(255,255,255,0.6);
+  padding: 5px;
+  box-shadow: rgba(255,255,255,0.6) 0px 0px 10px 10px;
+  border-radius: 40%;
+  margin-top: 1em;
 }
 
 .c2 .c0 {
@@ -206,63 +186,11 @@ Array [
 
 <h1
     className="c0 c1"
-    size="large"
+    onClick={[Function]}
+    size="small"
   >
-    Carpe Dalan
+    Grid
   </h1>,
-  .c0 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: end;
-  -webkit-justify-content: flex-end;
-  -ms-flex-pack: end;
-  justify-content: flex-end;
-}
-
-.c1 {
-  background: rgb(0,161,255);
-  font-family: montserratregular,Helvetica,sans-serif;
-  text-transform: uppercase;
-  -webkit-letter-spacing: 3px;
-  -moz-letter-spacing: 3px;
-  -ms-letter-spacing: 3px;
-  letter-spacing: 3px;
-  color: white;
-  border: none;
-  padding: 1em 3em;
-  cursor: pointer;
-  outline: inherit;
-  border-radius: 50px;
-  margin-bottom: 2em;
-  margin-right: 1em;
-}
-
-.c1:hover {
-  -webkit-filter: brightness(85%);
-  filter: brightness(85%);
-}
-
-.c1:active {
-  -webkit-filter: brightness(125%);
-  filter: brightness(125%);
-}
-
-<div
-    className="c0"
-  >
-    <button
-      className="c1"
-      onClick={[Function]}
-    >
-      Grid View
-    </button>
-  </div>,
   .c0 {
   max-width: 56em;
   margin: 0 auto;
