@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import throttle from 'lodash/throttle';
 import { arrayOf, func, number, shape, string } from 'prop-types';
 import {
@@ -11,7 +11,6 @@ import {
 // import { __RouterContext } from 'react-router';
 
 import { THUMB } from '../../shared/constants';
-import { Window } from '../providers/WindowProvider';
 
 import Gallery from './Gallery';
 import PostGridRowRenderer from './PostGridRowRenderer';

@@ -43,16 +43,26 @@ const StyledLink = styled(Link)`
   color: ${getThemeValue(BRAND_COLOR)};
 `;
 
-const StyledFlex = styled(Flex)`
-  margin-bottom: 0.5em;
+const Header = styled(Flex)`
+  padding: 1em;
 `;
 
 const EditButton = styled(Button)`
   position: absolute;
   right: 1em;
-  top: 1em;
+  top: 6em;
   z-index: 1;
   opacity: 0.6;
+`;
+
+const HR = styled.div`
+  display: flex;
+  justify-content: center;
+  :after {
+    border-bottom: 1px solid #999;
+    width: calc(100% - 2em);
+    content: '';
+  }
 `;
 
 const RenderRow = props => {
@@ -90,6 +100,11 @@ const RenderRow = props => {
   return (
     <CellMeasurer key={index} cache={cache} parent={parent} index={index}>
       <div style={style}>
+        <Header justifyContent="space-between">
+          <Download as="div">{formatDate(posts[index].timestamp)}</Download>
+          <Download href={`/api/images/${posts[index].key}`}>Download</Download>
+        </Header>
+
         {showEditButton ? (
           <EditButton
             onClick={() => setEditing(isNumber(isEditing) ? null : index)}
@@ -127,12 +142,6 @@ const RenderRow = props => {
           </Description>
         ) : showDescription ? (
           <Description>
-            <StyledFlex justifyContent="space-between">
-              <Download as="div">{formatDate(posts[index].timestamp)}</Download>
-              <Download href={`/api/images/${posts[index].key}`}>
-                Download
-              </Download>
-            </StyledFlex>
             {posts[index].description ? (
               <figcaption>{posts[index].description}</figcaption>
             ) : null}
@@ -145,6 +154,7 @@ const RenderRow = props => {
             </ul>
           </Description>
         ) : null}
+        <HR />
       </div>
     </CellMeasurer>
   );
