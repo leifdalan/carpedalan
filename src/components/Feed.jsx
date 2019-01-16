@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { func, number, object } from 'prop-types';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { arrayOf, func, number, shape } from 'prop-types';
 import {
   AutoSizer,
   InfiniteLoader,
@@ -17,7 +17,6 @@ import Wrapper from '../styles/Wrapper';
 import { MEDIUM } from '../../shared/constants';
 import { Posts } from '../providers/PostsProvider';
 import { Tag } from '../providers/TagProvider';
-import { Window } from '../providers/WindowProvider';
 import Title from '../styles/Title';
 
 import Dialog from './Dialog';
@@ -30,14 +29,20 @@ const throttled = throttle((e, setShouldShowImages) => {
   setShouldShowImages(e.scrollTop < 100 || delta < 1500);
 }, 250);
 
-export default function Feed({ isEditing, setEditing, outerRef }) {
-  const { getPosts, posts, meta, cache, delPost } = useContext(Posts);
+export default function Feed({
+  isEditing,
+  setEditing,
+  posts,
+  fetchData,
+  meta,
+}) {
+  const { cache, delPost } = useContext(Posts);
   const { tags } = useContext(Tag);
   const { user } = useContext(User);
 
   const [shouldShowImages, setShouldShowImages] = useState(true);
   const [showModal, setShouldShowModal] = useState(null);
-  const listRef = outerRef;
+  const listRef = useRef();
   const throttledResize = throttle(() => {
     if (listRef.current) {
       cache.clearAll();
@@ -48,7 +53,7 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
 
   window.addEventListener('resize', throttledResize);
   useEffect(() => {
-    getPosts(1);
+    fetchData(1);
     return () => window.removeEventListener('resize', throttledResize);
   }, []);
 
@@ -64,7 +69,7 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
   }
 
   function loadMoreRows() {
-    return getPosts();
+    return fetchData();
   }
 
   const handleScroll = onChildScroll => e => {
@@ -85,10 +90,6 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
     <WindowScroller>
       {({ height, isScrolling, onChildScroll, registerChild, scrollTop }) => (
         <Wrapper>
-          <Title center size="large">
-            Carpe Dalan
-          </Title>
-
           <AutoSizer disableHeight>
             {({ width }) => (
               <InfiniteLoader
@@ -156,7 +157,12 @@ Feed.defaultProps = {
 };
 
 Feed.propTypes = {
+  posts: arrayOf(shape({})).isRequired,
+  fetchData: func.isRequired,
+  meta: shape({
+    count: number,
+  }).isRequired,
   isEditing: number,
   setEditing: func.isRequired,
-  outerRef: object.isRequired, // eslint-disable-line
+  // outerRef: object.isRequired, // eslint-disable-line
 };

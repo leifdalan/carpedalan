@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { CellMeasurer } from 'react-virtualized';
 import styled from 'styled-components';
@@ -14,7 +14,6 @@ import Button from '../styles/Button';
 import Flex from '../styles/FlexContainer';
 import { formatDate, getImagePath, getImageRatio } from '../utils';
 
-import Modal from './Modal';
 import Picture from './Picture';
 
 const Download = styled.a`
@@ -25,7 +24,7 @@ const Download = styled.a`
 `;
 
 const Description = styled.div`
-  padding: 1em;
+  padding: 1em 1em 0;
   li {
     list-style: none;
     padding: 0;
@@ -56,6 +55,7 @@ const EditButton = styled(Button)`
 `;
 
 const HR = styled.div`
+  margin-top: 1em;
   display: flex;
   justify-content: center;
   :after {
@@ -76,7 +76,6 @@ const RenderRow = props => {
         posts,
         cache,
         shouldShowImages,
-        showDescription,
         size,
         isEditing,
         delPost,
@@ -140,21 +139,24 @@ const RenderRow = props => {
               </Button>
             </Flex>
           </Description>
-        ) : showDescription ? (
+        ) : post.description || (post.tags && post.tags.length) ? (
           <Description>
-            {posts[index].description ? (
-              <figcaption>{posts[index].description}</figcaption>
+            {post.description ? (
+              <figcaption>{post.description}</figcaption>
             ) : null}
-            <ul>
-              {posts[index].tags.map(({ name, id }) => (
-                <li key={id}>
-                  <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
-                </li>
-              ))}
-            </ul>
+            {post.tags && post.tags.length ? (
+              <ul>
+                {post.tags.map(({ name, id }) => (
+                  <li key={id}>
+                    <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </Description>
         ) : null}
         <HR />
+        {/* {post.description || post.tags.length ?  : null} */}
       </div>
     </CellMeasurer>
   );

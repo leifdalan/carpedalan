@@ -1,30 +1,32 @@
 import React, { useContext, useEffect } from 'react';
 import { shape } from 'prop-types';
 
+import View from '../components/View';
 import { TagPosts } from '../providers/TagPostsProvider';
-import GridView from '../components/GridView';
-import Title from '../styles/Title';
 
 export default function Tag({ match }) {
-  const { getTagPosts, tagPosts, meta, clearTags } = useContext(TagPosts);
+  const { getTagPosts, tagPosts, meta, clearTags, cache } = useContext(
+    TagPosts,
+  );
+
   useEffect(
     () => {
+      cache.clearAll();
       clearTags();
+      getTagPosts(match.params.tag);
     },
     [match.params.tag],
   );
   const fetchData = () => getTagPosts(match.params.tag);
 
   return (
-    <>
-      <Title center>{match.params.tag}</Title>
-      <GridView
-        fetchData={fetchData}
-        data={tagPosts}
-        meta={meta}
-        type={match.params.tag}
-      />
-    </>
+    <View
+      title={`${match.params.tag}`}
+      posts={tagPosts}
+      cache={cache}
+      fetchData={fetchData}
+      meta={meta}
+    />
   );
 }
 

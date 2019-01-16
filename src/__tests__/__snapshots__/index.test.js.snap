@@ -185,7 +185,7 @@ Array [
       log out
     </button>
   </div>,
-  .c2 {
+  .c1 {
   font-family: montserratregular,Helvetica,sans-serif;
   margin: 2em 0;
   font-size: 42px;
@@ -195,27 +195,82 @@ Array [
   -ms-letter-spacing: 5px;
   letter-spacing: 5px;
   text-align: center;
+  font-family: england;
+  text-transform: none;
 }
 
-.c0 {
-  max-width: 56em;
-  margin: 0 auto;
-}
-
-.c3 .c1 {
+.c2 .c0 {
   margin-top: 0;
   margin-bottom: 0;
+}
+
+<h1
+    className="c0 c1"
+    size="large"
+  >
+    Carpe Dalan
+  </h1>,
+  .c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+.c1 {
+  background: rgb(0,161,255);
+  font-family: montserratregular,Helvetica,sans-serif;
+  text-transform: uppercase;
+  -webkit-letter-spacing: 3px;
+  -moz-letter-spacing: 3px;
+  -ms-letter-spacing: 3px;
+  letter-spacing: 3px;
+  color: white;
+  border: none;
+  padding: 1em 3em;
+  cursor: pointer;
+  outline: inherit;
+  border-radius: 50px;
+  margin-bottom: 2em;
+  margin-right: 1em;
+}
+
+.c1:hover {
+  -webkit-filter: brightness(85%);
+  filter: brightness(85%);
+}
+
+.c1:active {
+  -webkit-filter: brightness(125%);
+  filter: brightness(125%);
+}
+
+<div
+    className="c0"
+  >
+    <button
+      className="c1"
+      onClick={[Function]}
+    >
+      Grid View
+    </button>
+  </div>,
+  .c0 {
+  max-width: 56em;
+  margin: 0 auto;
 }
 
 <section
     className="c0"
   >
-    <h1
-      className="c1 c2"
-      size="large"
-    >
-      Carpe Dalan
-    </h1>
     <div
       style={
         Object {
