@@ -73,7 +73,6 @@ const RenderRow = props => {
         setEditing,
         isAdmin,
         tags,
-        onDelete,
       },
     },
   } = props;

@@ -1,6 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { func, number, object } from 'prop-types';
-import { AutoSizer, InfiniteLoader, List } from 'react-virtualized';
+import {
+  AutoSizer,
+  InfiniteLoader,
+  List,
+  WindowScroller,
+} from 'react-virtualized';
 import throttle from 'lodash/throttle';
 
 import { User } from '..';
@@ -27,13 +32,6 @@ const throttled = throttle((e, setShouldShowImages) => {
 
 export default function Feed({ isEditing, setEditing, outerRef }) {
   const { getPosts, posts, meta, cache, delPost } = useContext(Posts);
-  const {
-    height,
-    isScrolling,
-    registerChild,
-    onChildScroll,
-    scrollTop,
-  } = useContext(Window);
   const { tags } = useContext(Tag);
   const { user } = useContext(User);
 
@@ -69,7 +67,7 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
     return getPosts();
   }
 
-  const handleScroll = e => {
+  const handleScroll = onChildScroll => e => {
     onChildScroll(e);
     throttled(e, setShouldShowImages);
   };
@@ -84,68 +82,72 @@ export default function Feed({ isEditing, setEditing, outerRef }) {
   };
 
   return (
-    <Wrapper>
-      <Title center size="large">
-        Carpe Dalan
-      </Title>
-
-      <AutoSizer disableHeight>
-        {({ width }) => (
-          <InfiniteLoader
-            isRowLoaded={isRowLoaded}
-            loadMoreRows={loadMoreRows}
-            rowCount={meta.count}
-          >
-            {({
-              onRowsRendered /* , registerChild: registerInfiniteChild */,
-            }) => (
-              <div ref={registerChild}>
-                <List
-                  width={width}
-                  height={height}
-                  autoHeight
-                  ref={listRef}
-                  onRowsRendered={onRowsRendered}
-                  deferredMeasurementCache={cache}
-                  onScroll={handleScroll}
-                  rowHeight={cache.rowHeight}
-                  rowRenderer={PostRenderer}
-                  rowCount={meta.count}
-                  overscanRowCount={10}
-                  isScrolling={isScrolling}
-                  scrollTop={scrollTop}
-                  posts={posts}
-                  cache={cache}
-                  shouldShowImages={shouldShowImages}
-                  size={MEDIUM}
-                  showDescription
-                  isAdmin={isAdmin}
-                  setEditing={setEditingForIndex}
-                  isEditing={isEditing}
-                  delPost={handleDelete}
-                  tags={tags}
-                />
-              </div>
-            )}
-          </InfiniteLoader>
-        )}
-      </AutoSizer>
-      {showModal ? (
-        <Dialog dialog>
-          <Title center size="small">
-            Are you sure?
+    <WindowScroller>
+      {({ height, isScrolling, onChildScroll, registerChild, scrollTop }) => (
+        <Wrapper>
+          <Title center size="large">
+            Carpe Dalan
           </Title>
-          <FlexContainer justifyContent="space-between">
-            <Button type="danger" onClick={handleConfirmDelete(showModal)}>
-              Yup
-            </Button>
-            <Button type="neutral" onClick={() => setShouldShowModal(null)}>
-              Nah
-            </Button>
-          </FlexContainer>
-        </Dialog>
-      ) : null}
-    </Wrapper>
+
+          <AutoSizer disableHeight>
+            {({ width }) => (
+              <InfiniteLoader
+                isRowLoaded={isRowLoaded}
+                loadMoreRows={loadMoreRows}
+                rowCount={meta.count}
+              >
+                {({
+                  onRowsRendered /* , registerChild: registerInfiniteChild */,
+                }) => (
+                  <div ref={registerChild}>
+                    <List
+                      width={width}
+                      height={height}
+                      autoHeight
+                      ref={listRef}
+                      onRowsRendered={onRowsRendered}
+                      deferredMeasurementCache={cache}
+                      onScroll={handleScroll(onChildScroll)}
+                      rowHeight={cache.rowHeight}
+                      rowRenderer={PostRenderer}
+                      rowCount={meta.count}
+                      overscanRowCount={10}
+                      isScrolling={isScrolling}
+                      scrollTop={scrollTop}
+                      posts={posts}
+                      cache={cache}
+                      shouldShowImages={shouldShowImages}
+                      size={MEDIUM}
+                      showDescription
+                      isAdmin={isAdmin}
+                      setEditing={setEditingForIndex}
+                      isEditing={isEditing}
+                      delPost={handleDelete}
+                      tags={tags}
+                    />
+                  </div>
+                )}
+              </InfiniteLoader>
+            )}
+          </AutoSizer>
+          {showModal ? (
+            <Dialog>
+              <Title center size="small">
+                Are you sure?
+              </Title>
+              <FlexContainer justifyContent="space-between">
+                <Button type="danger" onClick={handleConfirmDelete(showModal)}>
+                  Yup
+                </Button>
+                <Button type="neutral" onClick={() => setShouldShowModal(null)}>
+                  Nah
+                </Button>
+              </FlexContainer>
+            </Dialog>
+          ) : null}
+        </Wrapper>
+      )}
+    </WindowScroller>
   );
 }
 

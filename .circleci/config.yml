@@ -264,9 +264,9 @@ workflows:
       - integration:
           requires:
             - dependencies
-      - migrate:
-          requires:
-            - dependencies
+      # - migrate:
+      #     requires:
+      #       - dependencies
       - e2e:
           requires:
             - build

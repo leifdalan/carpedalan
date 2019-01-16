@@ -6,6 +6,7 @@ import {
   CellMeasurerCache,
   List,
   InfiniteLoader,
+  WindowScroller,
 } from 'react-virtualized';
 // import { __RouterContext } from 'react-router';
 
@@ -30,14 +31,6 @@ const throttled = throttle((e, setShouldShowImages) => {
 }, 250);
 
 export default function Grid({ type, fetchData, data, meta }) {
-  const {
-    height,
-    isScrolling,
-    registerChild,
-    onChildScroll,
-    scrollTop,
-  } = useContext(Window);
-
   // const stuff = useContext(__RouterContext);
   // console.error('stuff', stuff);
 
@@ -64,7 +57,7 @@ export default function Grid({ type, fetchData, data, meta }) {
       setLoading(false);
     }
   }
-  const handleScroll = e => {
+  const handleScroll = onChildScroll => e => {
     onChildScroll(e);
     throttled(e, setShouldShowImages);
   };
@@ -76,54 +69,58 @@ export default function Grid({ type, fetchData, data, meta }) {
   const handleClose = () => setShouldShowGallery(false);
 
   return (
-    <AutoSizer disableHeight>
-      {({ width }) => {
-        const postsPerRow = Math.floor(width / POST_WIDTH);
-        return (
-          <>
-            <InfiniteLoader
-              isRowLoaded={isRowLoaded(width)}
-              loadMoreRows={loadMoreRows}
-              rowCount={Math.floor(meta.count / postsPerRow) + 1}
-            >
-              {({ onRowsRendered }) => (
-                <div ref={registerChild}>
-                  <List
-                    width={width}
-                    height={height}
-                    autoHeight
-                    ref={listRef}
-                    onRowsRendered={onRowsRendered}
-                    deferredMeasurementCache={cache}
-                    onScroll={handleScroll}
-                    rowHeight={cache.rowHeight}
-                    rowRenderer={PostGridRowRenderer}
-                    rowCount={Math.floor(data.length / postsPerRow) + 1}
-                    overscanRowCount={20}
-                    isScrolling={isScrolling}
-                    scrollTop={scrollTop}
-                    posts={data}
-                    cache={cache}
-                    size={THUMB}
-                    showDescription={false}
-                    shouldShowImages={shouldShowImages}
-                    postsPerRow={postsPerRow}
-                    onClick={handleClick}
+    <WindowScroller>
+      {({ height, isScrolling, onChildScroll, registerChild, scrollTop }) => (
+        <AutoSizer disableHeight>
+          {({ width }) => {
+            const postsPerRow = Math.floor(width / POST_WIDTH);
+            return (
+              <>
+                <InfiniteLoader
+                  isRowLoaded={isRowLoaded(width)}
+                  loadMoreRows={loadMoreRows}
+                  rowCount={Math.floor(meta.count / postsPerRow) + 1}
+                >
+                  {({ onRowsRendered }) => (
+                    <div ref={registerChild}>
+                      <List
+                        width={width}
+                        height={height}
+                        autoHeight
+                        ref={listRef}
+                        onRowsRendered={onRowsRendered}
+                        deferredMeasurementCache={cache}
+                        onScroll={handleScroll(onChildScroll)}
+                        rowHeight={cache.rowHeight}
+                        rowRenderer={PostGridRowRenderer}
+                        rowCount={Math.floor(data.length / postsPerRow) + 1}
+                        overscanRowCount={20}
+                        isScrolling={isScrolling}
+                        scrollTop={scrollTop}
+                        posts={data}
+                        cache={cache}
+                        size={THUMB}
+                        showDescription={false}
+                        shouldShowImages={shouldShowImages}
+                        postsPerRow={postsPerRow}
+                        onClick={handleClick}
+                      />
+                    </div>
+                  )}
+                </InfiniteLoader>
+                {shouldShowGallery ? (
+                  <Gallery
+                    data={data}
+                    index={shouldShowGallery}
+                    onClose={handleClose}
                   />
-                </div>
-              )}
-            </InfiniteLoader>
-            {shouldShowGallery ? (
-              <Gallery
-                data={data}
-                index={shouldShowGallery}
-                onClose={handleClose}
-              />
-            ) : null}
-          </>
-        );
-      }}
-    </AutoSizer>
+                ) : null}
+              </>
+            );
+          }}
+        </AutoSizer>
+      )}
+    </WindowScroller>
   );
 }
 
