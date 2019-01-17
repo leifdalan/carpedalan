@@ -48,7 +48,7 @@ export default function Gallery({ match, data, location }) {
   const post = data.find(({ id }) => id.split('-')[0] === match.params.id);
 
   return (
-    <Link to={{ pathname: match.params[0], hash: location.hash }}>
+    <Link to={{ pathname: match.params[0] || '/', hash: location.hash }}>
       <Modal>
         <Container alignItems="center" justifyContent="center">
           <Inner justifyContent="space-between">
