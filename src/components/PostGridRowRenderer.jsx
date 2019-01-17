@@ -15,7 +15,15 @@ const RenderRow = props => {
     style,
     parent,
     parent: {
-      props: { posts, cache, shouldShowImages, size, postsPerRow, match },
+      props: {
+        posts,
+        cache,
+        shouldShowImages,
+        size,
+        postsPerRow,
+        match,
+        location,
+      },
     },
   } = props;
 
@@ -36,9 +44,12 @@ const RenderRow = props => {
           const elProps = { key: postIndex };
           let Element = Fragment;
           if (!post.fake) {
-            elProps.to = `${match.url === '/' ? '' : match.url}/gallery/${
-              post.id.split('-')[0]
-            }`;
+            elProps.to = {
+              pathname: `${match.url === '/' ? '' : match.url}/gallery/${
+                post.id.split('-')[0]
+              }`,
+              hash: location.hash,
+            };
             Element = Link;
           }
 

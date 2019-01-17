@@ -179,6 +179,12 @@ Array [
   margin-top: 1em;
 }
 
+.c1 a {
+  color: black;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+}
+
 .c2 .c0 {
   margin-top: 0;
   margin-bottom: 0;
@@ -186,10 +192,14 @@ Array [
 
 <h1
     className="c0 c1"
-    onClick={[Function]}
     size="small"
   >
-    Grid
+    <a
+      href="/#grid"
+      onClick={[Function]}
+    >
+      Grid
+    </a>
   </h1>,
   .c0 {
   max-width: 56em;

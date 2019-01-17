@@ -36,6 +36,7 @@ export default function Feed({
   fetchData,
   meta,
   match,
+  location,
 }) {
   const { cache, delPost } = useContext(Posts);
   const { tags } = useContext(Tag);
@@ -126,6 +127,7 @@ export default function Feed({
                       delPost={handleDelete}
                       tags={tags}
                       match={match}
+                      location={location}
                     />
                   </div>
                 )}
@@ -166,5 +168,6 @@ Feed.propTypes = {
   isEditing: number,
   setEditing: func.isRequired,
   match: shape({}).isRequired,
+  location: shape({}).isRequired,
   // outerRef: object.isRequired, // eslint-disable-line
 };

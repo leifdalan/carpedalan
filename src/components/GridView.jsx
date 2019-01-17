@@ -28,7 +28,7 @@ const throttled = throttle((e, setShouldShowImages) => {
   setShouldShowImages(e.scrollTop < 100 || delta < 1500);
 }, 250);
 
-export default function Grid({ type, fetchData, data, meta, match }) {
+export default function Grid({ type, fetchData, data, meta, match, location }) {
   // const stuff = useContext(__RouterContext);
   // console.error('stuff', stuff);
 
@@ -95,6 +95,7 @@ export default function Grid({ type, fetchData, data, meta, match }) {
                         shouldShowImages={shouldShowImages}
                         postsPerRow={postsPerRow}
                         match={match}
+                        location={location}
                       />
                     </div>
                   )}
@@ -120,4 +121,5 @@ Grid.propTypes = {
   }).isRequired,
   type: string,
   match: shape({}).isRequired,
+  location: shape({}).isRequired,
 };

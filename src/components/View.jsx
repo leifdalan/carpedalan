@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { arrayOf, bool, func, number, shape, string } from 'prop-types';
-import { Route } from 'react-router-dom';
+import { Link, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { User } from '..';
@@ -10,6 +10,7 @@ import isNumber from 'lodash/isNumber';
 import { WRITE_USER } from '../../server/constants';
 import Form from '../form/Form';
 import { Posts } from '../providers/PostsProvider';
+import { getThemeValue, TEXT } from '../styles';
 import Menu from '../styles/Menu';
 import Title from '../styles/Title';
 import log from '../utils/log';
@@ -25,6 +26,13 @@ const SVG = styled.svg`
   }
 `;
 
+const StyledMenu = styled(Menu)`
+  a {
+    color: ${getThemeValue(TEXT)};
+    text-decoration: none;
+  }
+`;
+
 export default function View({
   posts,
   cache,
@@ -33,11 +41,11 @@ export default function View({
   title,
   fancy,
   match,
+  location,
 }) {
   const { patchPost } = useContext(Posts);
   const { user } = useContext(User);
   const [isEditing, setEditing] = useState(null);
-  const [isGridView, setGridView] = useState(false);
 
   const isAdmin = user === WRITE_USER;
 
@@ -75,6 +83,8 @@ export default function View({
     }
   }
 
+  const isGridView = location.hash === '#grid';
+
   return (
     <>
       <Wrap {...props}>
@@ -89,13 +99,17 @@ export default function View({
             {title}
           </Title>
         )}
-        <Menu
-          size="small"
-          side="right"
-          onClick={() => setGridView(!isGridView)}
-        >
-          {isGridView ? 'List' : 'Grid'}
-        </Menu>
+        <StyledMenu size="small" side="right">
+          <Link
+            replace
+            to={{
+              pathname: `${match.url}`,
+              hash: isGridView ? '' : '#grid',
+            }}
+          >
+            {isGridView ? 'List' : 'Grid'}
+          </Link>
+        </StyledMenu>
         {isGridView ? (
           <GridView
             fetchData={fetchData}
@@ -103,6 +117,7 @@ export default function View({
             meta={meta}
             type="main"
             match={match}
+            location={location}
           />
         ) : (
           <Feed
@@ -112,6 +127,7 @@ export default function View({
             meta={meta}
             fetchData={fetchData}
             match={match}
+            location={location}
           />
         )}
       </Wrap>
@@ -133,6 +149,7 @@ View.propTypes = {
   posts: arrayOf(shape({})).isRequired,
   cache: shape({}).isRequired,
   match: shape({}).isRequired,
+  location: shape({}).isRequired,
   meta: shape({
     count: number,
   }).isRequired,

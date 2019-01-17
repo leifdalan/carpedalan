@@ -41,14 +41,14 @@ const StyledTitle = styled(Title)`
   margin: 0;
 `;
 
-export default function Gallery({ match, data }) {
+export default function Gallery({ match, data, location }) {
   // console.error('props', props);
   if (!data.length) return null;
 
   const post = data.find(({ id }) => id.split('-')[0] === match.params.id);
 
   return (
-    <Link to={match.params[0]}>
+    <Link to={{ pathname: match.params[0], hash: location.hash }}>
       <Modal>
         <Container alignItems="center" justifyContent="center">
           <Inner justifyContent="space-between">
@@ -81,4 +81,5 @@ export default function Gallery({ match, data }) {
 Gallery.propTypes = {
   data: arrayOf(shape({})).isRequired,
   match: shape({}).isRequired,
+  location: shape({}).isRequired,
 };

@@ -83,6 +83,7 @@ const RenderRow = props => {
         isAdmin,
         tags,
         match,
+        location,
       },
     },
   } = props;
@@ -96,9 +97,12 @@ const RenderRow = props => {
   const elProps = { key: index };
   let Element = Fragment;
   if (!post.fake) {
-    elProps.to = `${match.url === '/' ? '' : match.url}/gallery/${
-      post.id.split('-')[0]
-    }`;
+    elProps.to = {
+      pathname: `${match.url === '/' ? '' : match.url}/gallery/${
+        post.id.split('-')[0]
+      }`,
+      hash: location.hash,
+    };
     Element = Link;
   }
 

@@ -4,7 +4,7 @@ import { shape } from 'prop-types';
 import View from '../components/View';
 import { TagPosts } from '../providers/TagPostsProvider';
 
-export default function Tag({ match }) {
+export default function Tag({ match, location }) {
   const { getTagPosts, tagPosts, meta, clearTags, cache } = useContext(
     TagPosts,
   );
@@ -27,10 +27,12 @@ export default function Tag({ match }) {
       fetchData={fetchData}
       meta={meta}
       match={match}
+      location={location}
     />
   );
 }
 
 Tag.propTypes = {
   match: shape({}).isRequired,
+  location: shape({}).isRequired,
 };
