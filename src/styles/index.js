@@ -38,6 +38,13 @@ export const GlobalStyleComponent = createGlobalStyle`
     src: url('https://cdn.carpedalan.com/source-sans-variable.woff2') format('woff2-variations');
   }
 
+  html {
+  box-sizing: border-box;
+  }
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
   body, html, #root {
     background: ${getThemeValue(MAIN)}; 
     color: ${getThemeValue(TEXT)};

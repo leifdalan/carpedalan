@@ -9,19 +9,12 @@ import isNumber from 'lodash/isNumber';
 import { WRITE_USER } from '../../server/constants';
 import Form from '../form/Form';
 import { Posts } from '../providers/PostsProvider';
-import Button from '../styles/Button';
 import Menu from '../styles/Menu';
 import Title from '../styles/Title';
 import log from '../utils/log';
-import FlexContainer from '../styles/FlexContainer';
 
 import GridView from './GridView';
 import Feed from './Feed';
-
-const StyledButton = styled(Button)`
-  margin-bottom: 2em;
-  margin-right: 1em;
-`;
 
 const SVG = styled.svg`
   margin: 2em auto;
@@ -59,7 +52,7 @@ export default function View({ posts, cache, fetchData, meta, title, fancy }) {
         onSubmit: handlePatchPost(posts[isEditing].id),
         initial: {
           description: posts[isEditing].description,
-          tags: posts[isEditing].tags.map(tag => ({
+          tags: (posts[isEditing].tags || []).map(tag => ({
             value: tag.id,
             label: tag.name,
           })),

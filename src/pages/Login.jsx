@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { number, shape } from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import styled from 'styled-components';
 import request from 'superagent';
@@ -12,7 +13,8 @@ import Submit from '../form/Submit';
 import { User } from '..';
 
 import ComingSoon from '../components/ComingSoon';
-import { BRAND_COLOR, getThemeValue, prop } from '../styles';
+import { BRAND_COLOR, getThemeValue, prop, MAIN } from '../styles';
+import DangerText from '../styles/DangerText';
 import Title from '../styles/Title';
 
 const emailRe = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i; // eslint-disable-line
@@ -31,8 +33,8 @@ const InputForm = styled.form`
   flex-direction: column;
   max-width: ${prop('height')};
   max-height: 25em;
-  width: 40vw;
-  height: 40vh;
+  width: 80vw;
+  height: 80vh;
   input {
     text-align: center;
   }
@@ -48,16 +50,18 @@ const StyledTitle = styled(Title)`
 
 const StyledButton = styled.button`
   color: ${getThemeValue(BRAND_COLOR)};
+  background: ${getThemeValue(MAIN)};
   border: none;
   padding: 1em 3em;
   cursor: pointer;
   outline: inherit;
 `;
 
-export default function Login() {
+export default function Login({ location: { pathname }, status }) {
   const { setUser, user } = useContext(User);
   const [hasLoggedIn, setHasLoggedIn] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [error, setError] = useState(null);
   const [requestAccess, setRequestAccess] = useState(false);
   const [accessRequested, setAccessRequested] = useState(false);
 
@@ -67,6 +71,7 @@ export default function Login() {
       setUser(response.body.user);
       setHasLoggedIn(true);
     } catch (e) {
+      setError(e);
       throw e;
     }
   };
@@ -83,7 +88,7 @@ export default function Login() {
       throw e;
     }
   };
-
+  const redirect = pathname === '/login' ? '/' : pathname;
   return (
     <>
       {showLogin || user ? (
@@ -134,6 +139,7 @@ export default function Login() {
               </>
             ) : (
               <>
+                {status ? <StyledTitle center>{status}</StyledTitle> : null}
                 <StyledTitle center>Login</StyledTitle>
                 <Form onSubmit={submitLogin}>
                   <Field
@@ -142,6 +148,9 @@ export default function Login() {
                     placeholder="Password, please"
                     type="password"
                   />
+                  {error ? (
+                    <DangerText>Oops! That didn&apos;t work</DangerText>
+                  ) : null}
                   <Submit text="Login" />
                 </Form>
               </>
@@ -156,7 +165,7 @@ export default function Login() {
             ) : null}
           </InputForm>
 
-          {hasLoggedIn ? <Redirect to="/" /> : null}
+          {hasLoggedIn ? <Redirect to={redirect} /> : null}
         </InputWrapper>
       ) : (
         <ComingSoon setShowLogin={setShowLogin} />
@@ -164,3 +173,12 @@ export default function Login() {
     </>
   );
 }
+
+Login.defaultProps = {
+  status: undefined,
+};
+
+Login.propTypes = {
+  location: shape({}).isRequired,
+  status: number,
+};

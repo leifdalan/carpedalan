@@ -16,7 +16,10 @@
 <body>
   <section id="root"></section>
   <aside id="modal"></aside>
-  <script>var __SESSION__ = {{{session}}};</script>
+  <script>
+    var __SESSION__ = {{{session}}};
+    var __META__ = {{{meta}}}
+  </script>
   {{#if clientAssets}}
     {{#each clientAssets}}
     <script type="text/javascript" src="https://cdn.carpedalan.com{{this}}"></script>

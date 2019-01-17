@@ -3,15 +3,19 @@ import { any, bool, func, node, shape } from 'prop-types';
 import styled from 'styled-components';
 
 import { BODY_FONT, getThemeValue } from '../styles';
+import DangerText from '../styles/DangerText';
 
-const Input = styled.input`
+const InputWrapper = styled.div`
   margin: 1em 0;
-  padding: 12px;
   width: 50%;
-  border: 1px solid hsl(0, 0%, 80%);
-  font-size: 16px;
-  font-family: ${getThemeValue(BODY_FONT)};
-  border-radius: 4px;
+  input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid hsl(0, 0%, 80%);
+    font-size: 16px;
+    font-family: ${getThemeValue(BODY_FONT)};
+    border-radius: 4px;
+  }
 `;
 
 export default function InputField({
@@ -27,18 +31,18 @@ export default function InputField({
   const showError = error && submitFailed;
 
   return (
-    <>
+    <InputWrapper>
       {/* eslint-disable-next-line */}
       {label ? <label htmlFor={etc.id}>{label}</label> : null}
-      <Input
+      <input
         data-test="inputField"
         onChange={handleChange}
         value={value || ''}
         id={etc.id}
         {...etc}
       />
-      {showError ? error : null}
-    </>
+      {showError ? <DangerText>{error}</DangerText> : null}
+    </InputWrapper>
   );
 }
 

@@ -1,5 +1,13 @@
 import webpack from 'webpack';
 
+import { assets, isProd } from './config';
+
+let clientAssets = false;
+if (isProd) {
+  const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
+  clientAssets = assets.map(asset => manifest[asset]);
+}
+
 export const applyWebpackMiddleware = app => {
   /* eslint-disable import/no-extraneous-dependencies,global-require */
   const webpackConfig = require('../webpack.config');
@@ -22,7 +30,12 @@ export const isAdmin = (req, res, next) => {
 
 export const isLoggedIn = (req, res, next) => {
   if (!['read', 'write'].includes(req.session.user)) {
-    res.status(401).send();
+    res.status(401).render('index', {
+      layout: false,
+      session: JSON.stringify(req.session),
+      clientAssets,
+      meta: {},
+    });
   } else {
     next();
   }

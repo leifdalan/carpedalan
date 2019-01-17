@@ -44,7 +44,7 @@ const reducer = (
     case 'FORM_VALIDATION':
       return {
         ...state,
-        errors: payload,
+        errors: { ...state.errors, ...payload },
         meta: {
           ...state.meta,
           invalid: true,
@@ -144,15 +144,18 @@ function Form({
     if (e.preventDefault) {
       e.preventDefault();
     }
+
     dispatch({
       type: 'START_SUBMIT',
     });
 
     const errors = validation(state.values) || {};
+
     const hasFieldErrors = Object.keys(state.errors).reduce(
       (acc, key) => [...acc, ...(state.errors[key] ? [state.errors[key]] : [])],
       [],
     ).length;
+
     if ((errors && !isEmpty(errors)) || hasFieldErrors) {
       dispatch({ type: 'FORM_VALIDATION', payload: errors });
       dispatch({

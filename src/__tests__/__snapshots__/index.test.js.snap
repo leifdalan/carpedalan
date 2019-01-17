@@ -232,5 +232,69 @@ Array [
       </div>
     </div>
   </section>,
+  .c2 {
+  font-family: montserratregular,Helvetica,sans-serif;
+  margin: 2em 0;
+  font-size: 24px;
+  text-transform: uppercase;
+  -webkit-letter-spacing: 5px;
+  -moz-letter-spacing: 5px;
+  -ms-letter-spacing: 5px;
+  letter-spacing: 5px;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.c3 .c1 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+<div
+    className="c0"
+  >
+    <h1
+      className="c1 c2"
+    >
+      404
+    </h1>
+    <h1
+      className="c1 c2"
+    >
+      Not found
+    </h1>
+  </div>,
+  .c0 {
+  position: fixed;
+  bottom: 1em;
+  width: 95vw;
+  margin-left: 2.5vw;
+  padding: 2em;
+  background-color: rgb(222,50,82);
+}
+
+<div
+    className="c0"
+  >
+    Get failed
+  </div>,
 ]
 `;

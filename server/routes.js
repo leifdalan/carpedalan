@@ -16,6 +16,16 @@ export default app => {
       layout: false,
       session: JSON.stringify(req.session),
       clientAssets,
+      meta: {},
+    });
+  });
+
+  app.get('/', (req, res) => {
+    res.render('index', {
+      layout: false,
+      session: JSON.stringify(req.session),
+      clientAssets,
+      meta: {},
     });
   });
 
@@ -27,19 +37,24 @@ export default app => {
         layout: false,
         session: JSON.stringify(req.session),
         clientAssets,
+        meta: {},
       });
     }
   });
 
   app.use('*', (req, res) => {
-    if (!['read', 'write'].includes(req.session.user) || !req.session.user) {
-      res.redirect(301, '/login');
-    } else if (['read', 'write'].includes(req.session.user)) {
-      res.render('index', {
-        layout: false,
-        session: JSON.stringify(req.session),
-        clientAssets,
-      });
-    }
+    res.status(404).render('index', {
+      layout: false,
+      session: JSON.stringify(req.session),
+      meta: JSON.stringify({
+        status: 404,
+      }),
+      clientAssets,
+    });
+
+    // if (!['read', 'write'].includes(req.session.user) || !req.session.user) {
+    //   res.redirect(301, '/login');
+    // } else if (['read', 'write'].includes(req.session.user)) {
+    // }
   });
 };

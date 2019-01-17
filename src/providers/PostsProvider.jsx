@@ -2,12 +2,12 @@ import React, { createContext, useContext, useState } from 'react';
 import { node } from 'prop-types';
 import { stringify } from 'qs';
 import { CellMeasurerCache } from 'react-virtualized';
-import request from 'superagent';
 
 import { API_PATH, DEFAULT_POSTS_PER_PAGE } from '../../shared/constants';
 import log from '../utils/log';
 import { performance } from '../utils/globals';
 
+import { API } from './APIProvider';
 import { Window } from './WindowProvider';
 import addPlaceholderColor from './postUtils';
 
@@ -44,6 +44,7 @@ const addFakePosts = ({ posts, meta }) => {
 
 const PostProvider = ({ children }) => {
   const { width } = useContext(Window);
+  const { patch, get, post, del } = useContext(API);
   const [posts, setPosts] = useState({});
   const [postsWithFakes, setPostsWithFakes] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
@@ -57,9 +58,9 @@ const PostProvider = ({ children }) => {
 
   const patchPost = id => async values => {
     try {
-      const { body } = await request.patch(`${API_PATH}/posts/${id}`, values);
+      const { body } = await patch(`${API_PATH}/posts/${id}`, values);
       setPostsWithFakes(
-        postsWithFakes.map(post => (post.id === body.id ? body : post)),
+        postsWithFakes.map(data => (data.id === body.id ? body : data)),
       );
       cache.clearAll();
     } catch (e) {
@@ -68,8 +69,8 @@ const PostProvider = ({ children }) => {
   };
 
   const delPost = id => async () => {
-    await request.delete(`${API_PATH}/posts/${id}`);
-    setPostsWithFakes(postsWithFakes.filter(post => post.id !== id));
+    await del(`${API_PATH}/posts/${id}`);
+    setPostsWithFakes(postsWithFakes.filter(data => data.id !== id));
     cache.clearAll();
   };
 
@@ -81,7 +82,7 @@ const PostProvider = ({ children }) => {
 
       // Some super basic caching - don't refetch if we have already.
       if (posts[page - 1]) return null;
-      const apiCall = request.get(`${API_PATH}/posts?${stringify(pageQuery)}`);
+      const apiCall = get(`${API_PATH}/posts?${stringify(pageQuery)}`);
       const response = await apiCall;
       const newPosts = {
         ...posts,
@@ -113,8 +114,7 @@ const PostProvider = ({ children }) => {
   const createPost = async (formData, index = 0) => {
     try {
       let afterUploadStart;
-      const response = await request
-        .post(`${API_PATH}/posts`)
+      const response = await post(`${API_PATH}/posts`)
         .send(formData)
         .on('progress', e => {
           if (e.percent) {

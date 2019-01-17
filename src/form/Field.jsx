@@ -24,6 +24,7 @@ function Field({
 
   useEffect(() => {
     const error = validate(state.values[name]);
+
     validateAction({ field: name, error });
     registerField(name);
     return () => unregisterField(name);

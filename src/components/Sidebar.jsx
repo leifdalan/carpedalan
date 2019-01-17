@@ -9,8 +9,6 @@ import { getThemeValue, SIDEBAR_COLOR, TEXT } from '../styles';
 import { Tag } from '../providers/TagProvider';
 import Title from '../styles/Title';
 
-import LogoutButton from './LogoutButton';
-
 const StyledSidebar = styled.div`
   position: fixed;
   width: 200px;
@@ -57,8 +55,8 @@ const Close = styled(Title)`
 export default function Sidebar({
   toggleMenu,
   userState,
-  setUser,
-  handleChangeTheme,
+  // setUser,
+  // handleChangeTheme,
   isOpen,
 }) {
   const { user } = useContext(User);
@@ -87,13 +85,15 @@ export default function Sidebar({
           <StyledLink to="/">HOME</StyledLink>
         </ListItem>
 
-        {tags.map(({ name, id, count }) => (
-          <ListItem key={id}>
-            <StyledLink to={`/tag/${name}`}>
-              {`#${name} (${count || 0})`}
-            </StyledLink>
-          </ListItem>
-        ))}
+        {tags
+          .sort((a, b) => b.count - a.count)
+          .map(({ name, id, count }) => (
+            <ListItem key={id}>
+              <StyledLink to={`/tag/${name}`}>
+                {`#${name} (${count || 0})`}
+              </StyledLink>
+            </ListItem>
+          ))}
       </List>
       {/* <button type="button" onClick={handleChangeTheme}>
         toggle themeaa
@@ -109,8 +109,8 @@ Sidebar.defaultProps = {
 
 Sidebar.propTypes = {
   userState: string,
-  setUser: func.isRequired,
-  handleChangeTheme: func.isRequired,
+  // setUser: func.isRequired,
+  // handleChangeTheme: func.isRequired,
   toggleMenu: func.isRequired,
   isOpen: bool.isRequired,
 };
