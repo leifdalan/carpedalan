@@ -1,4 +1,5 @@
-import React, { Fragment as F } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { CellMeasurer } from 'react-virtualized';
 
 import { SIZE_MAP } from '../../shared/constants';
@@ -14,7 +15,7 @@ const RenderRow = props => {
     style,
     parent,
     parent: {
-      props: { posts, cache, shouldShowImages, size, postsPerRow, onClick },
+      props: { posts, cache, shouldShowImages, size, postsPerRow, match },
     },
   } = props;
 
@@ -35,16 +36,19 @@ const RenderRow = props => {
           const src = getImagePath({ post, size: SIZE_MAP[size] });
 
           return (
-            <F key={postIndex}>
+            <Link
+              key={postIndex}
+              to={`${match.url}/gallery/${post.id.split('-')[0]}`}
+            >
               <Picture
                 width={`${100 / postsPerRow}%`}
                 ratio={1}
                 src={src}
                 shouldShowImage={shouldShowImages}
                 placeholderColor={post.placeholderColor}
-                onClick={onClick(postIndex)}
+                // onClick={onClick(postIndex)}
               />
-            </F>
+            </Link>
           );
         })}
       </div>

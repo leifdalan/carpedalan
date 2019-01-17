@@ -1,11 +1,12 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { node } from 'prop-types';
+import { node, shape } from 'prop-types';
 import debounce from 'lodash/debounce';
+import { withRouter } from 'react-router-dom';
 
 import { window } from '../utils/globals';
 
 export const Window = createContext({});
-const WindowProvider = ({ children }) => {
+const WindowProvider = ({ children, match, location, history }) => {
   const [width, setWidth] = useState(null);
 
   useEffect(() => {
@@ -16,11 +17,18 @@ const WindowProvider = ({ children }) => {
     window.addEventListener('resize', debounced);
     return () => window.removeEventListener('resize', debounced);
   }, []);
-  return <Window.Provider value={{ width }}>{children}</Window.Provider>;
+  return (
+    <Window.Provider value={{ width, match, location, history }}>
+      {children}
+    </Window.Provider>
+  );
 };
 
 WindowProvider.propTypes = {
   children: node.isRequired,
+  match: shape({}).isRequired,
+  history: shape({}).isRequired,
+  location: shape({}).isRequired,
 };
 
-export default WindowProvider;
+export default withRouter(WindowProvider);

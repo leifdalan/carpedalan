@@ -42,19 +42,20 @@ function Root({ user, defaultTheme, status }) {
       defaultTheme: newTheme,
     });
   };
+  const isLoggedIn = [WRITE_USER, READ_USER].includes(userState);
 
   const toggleMenu = () => setShouldShowSidebar(!shouldShowSidebar);
 
   return (
-    <WindowProvider>
-      <ThemeProvider theme={themes[theme]}>
-        <User.Provider value={{ user: userState, setUser }}>
-          <APIProvider>
-            <TagProvider>
-              <PostProvider>
-                <TagsPostProvider>
-                  <>
-                    <BrowserRouter>
+    <BrowserRouter>
+      <WindowProvider>
+        <ThemeProvider theme={themes[theme]}>
+          <User.Provider value={{ user: userState, setUser }}>
+            <APIProvider>
+              <TagProvider>
+                <PostProvider>
+                  <TagsPostProvider>
+                    <>
                       <>
                         {!shouldShowSidebar && userState ? (
                           <Menu
@@ -78,19 +79,21 @@ function Root({ user, defaultTheme, status }) {
                           {userState === WRITE_USER ? (
                             <Route exact path="/admin" component={Admin} />
                           ) : null}
-                          {[WRITE_USER, READ_USER].includes(userState) ? (
-                            <>
-                              <Route exact path="/" component={Slash} />
-                              <Route
-                                exact
-                                path="/archive"
-                                component={Archive}
-                              />
-                              <Route exact path="/tag/:tag" component={Tag} />
 
-                              <Route component={NotFound} />
-                            </>
-                          ) : (
+                          {isLoggedIn && (
+                            <Route exact path="/" component={Slash} />
+                          )}
+                          {isLoggedIn && (
+                            <Route path="/gallery" component={Slash} />
+                          )}
+                          {isLoggedIn && (
+                            <Route exact path="/archive" component={Archive} />
+                          )}
+                          {isLoggedIn && (
+                            <Route path="/tag/:tag" component={Tag} />
+                          )}
+                          {isLoggedIn && <Route component={NotFound} />}
+                          {!isLoggedIn && (
                             <Route
                               render={props => (
                                 <Login {...props} status={status} />
@@ -99,16 +102,16 @@ function Root({ user, defaultTheme, status }) {
                           )}
                         </Switch>
                       </>
-                    </BrowserRouter>
-                    <GlobalStyleComponent />
-                  </>
-                </TagsPostProvider>
-              </PostProvider>
-            </TagProvider>
-          </APIProvider>
-        </User.Provider>
-      </ThemeProvider>
-    </WindowProvider>
+                      <GlobalStyleComponent />
+                    </>
+                  </TagsPostProvider>
+                </PostProvider>
+              </TagProvider>
+            </APIProvider>
+          </User.Provider>
+        </ThemeProvider>
+      </WindowProvider>
+    </BrowserRouter>
   );
 }
 

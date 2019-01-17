@@ -82,6 +82,7 @@ const RenderRow = props => {
         setEditing,
         isAdmin,
         tags,
+        match,
       },
     },
   } = props;
@@ -111,15 +112,16 @@ const RenderRow = props => {
             {isEditing === index ? 'Close' : 'Edit'}
           </EditButton>
         ) : null}
-
-        <Picture
-          width="100%"
-          ratio={ratio}
-          src={src}
-          shouldShowImage={shouldShowImages}
-          placeholderColor={posts[index].placeholderColor}
-          alt={posts[index].description}
-        />
+        <Link to={`${match.url}/gallery/${post.id.split('-')[0]}`}>
+          <Picture
+            width="100%"
+            ratio={ratio}
+            src={src}
+            shouldShowImage={shouldShowImages}
+            placeholderColor={posts[index].placeholderColor}
+            alt={posts[index].description}
+          />
+        </Link>
         {isEditing === index ? (
           <Description>
             <Field name="description" component={InputField} />

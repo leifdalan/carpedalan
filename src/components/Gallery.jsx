@@ -1,8 +1,10 @@
 import React from 'react';
-import { arrayOf, func, number, shape } from 'prop-types';
+import { arrayOf, shape } from 'prop-types';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { HIRES, SIZE_MAP } from '../../shared/constants';
+import NotFound from '../pages/NotFound';
 import FlexContainer from '../styles/FlexContainer';
 import Title from '../styles/Title';
 import { formatDate, getImagePath, getImageRatio } from '../utils';
@@ -39,36 +41,44 @@ const StyledTitle = styled(Title)`
   margin: 0;
 `;
 
-export default function Gallery({ data, index, onClose }) {
-  const post = data[index];
+export default function Gallery({ match, data }) {
+  // console.error('props', props);
+  if (!data.length) return null;
 
-  const ratio = getImageRatio(post);
-
-  const src = getImagePath({ post, size: SIZE });
+  const post = data.find(({ id }) => id.split('-')[0] === match.params.id);
 
   return (
-    <Modal>
-      <Container onClick={onClose} alignItems="center" justifyContent="center">
-        <Inner justifyContent="space-between">
-          <Picture
-            width="100%"
-            ratio={ratio}
-            src={src}
-            shouldShowImage
-            placeholderColor={post.placeholderColor}
-          />
-          <Caption justifyContent="space-between">
-            <div>{post.description}</div>
-            <StyledTitle size="small">{formatDate(post.timestamp)}</StyledTitle>
-          </Caption>
-        </Inner>
-      </Container>
-    </Modal>
+    <Link to={match.params[0]}>
+      <Modal>
+        <Container alignItems="center" justifyContent="center">
+          <Inner justifyContent="space-between">
+            {!post ? (
+              <NotFound />
+            ) : (
+              <>
+                <Picture
+                  width="100%"
+                  ratio={getImageRatio(post)}
+                  src={getImagePath({ post, size: SIZE })}
+                  shouldShowImage
+                  placeholderColor={post.placeholderColor}
+                />
+                <Caption justifyContent="space-between">
+                  <div>{post.description}</div>
+                  <StyledTitle size="small">
+                    {formatDate(post.timestamp)}
+                  </StyledTitle>
+                </Caption>
+              </>
+            )}
+          </Inner>
+        </Container>
+      </Modal>
+    </Link>
   );
 }
 
 Gallery.propTypes = {
   data: arrayOf(shape({})).isRequired,
-  index: number.isRequired,
-  onClose: func.isRequired,
+  match: shape({}).isRequired,
 };

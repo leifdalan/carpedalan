@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { arrayOf, bool, func, number, shape, string } from 'prop-types';
+import { Route } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { User } from '..';
@@ -13,6 +14,7 @@ import Menu from '../styles/Menu';
 import Title from '../styles/Title';
 import log from '../utils/log';
 
+import Gallery from './Gallery';
 import GridView from './GridView';
 import Feed from './Feed';
 
@@ -23,7 +25,15 @@ const SVG = styled.svg`
   }
 `;
 
-export default function View({ posts, cache, fetchData, meta, title, fancy }) {
+export default function View({
+  posts,
+  cache,
+  fetchData,
+  meta,
+  title,
+  fancy,
+  match,
+}) {
   const { patchPost } = useContext(Posts);
   const { user } = useContext(User);
   const [isEditing, setEditing] = useState(null);
@@ -66,33 +76,52 @@ export default function View({ posts, cache, fetchData, meta, title, fancy }) {
   }
 
   return (
-    <Wrap {...props}>
-      {fancy ? (
-        <SVG viewBox="0 0 88 20">
-          <text x="2" y="17">
+    <>
+      <Wrap {...props}>
+        {fancy ? (
+          <SVG viewBox="0 0 88 20">
+            <text x="2" y="17">
+              {title}
+            </text>
+          </SVG>
+        ) : (
+          <Title center size="large">
             {title}
-          </text>
-        </SVG>
-      ) : (
-        <Title center size="large">
-          {title}
-        </Title>
-      )}
-      <Menu size="small" side="right" onClick={() => setGridView(!isGridView)}>
-        {isGridView ? 'List' : 'Grid'}
-      </Menu>
-      {isGridView ? (
-        <GridView fetchData={fetchData} data={posts} meta={meta} type="main" />
-      ) : (
-        <Feed
-          isEditing={isEditing}
-          setEditing={setEditing}
-          posts={posts}
-          meta={meta}
-          fetchData={fetchData}
-        />
-      )}
-    </Wrap>
+          </Title>
+        )}
+        <Menu
+          size="small"
+          side="right"
+          onClick={() => setGridView(!isGridView)}
+        >
+          {isGridView ? 'List' : 'Grid'}
+        </Menu>
+        {isGridView ? (
+          <GridView
+            fetchData={fetchData}
+            data={posts}
+            meta={meta}
+            type="main"
+            match={match}
+          />
+        ) : (
+          <Feed
+            isEditing={isEditing}
+            setEditing={setEditing}
+            posts={posts}
+            meta={meta}
+            fetchData={fetchData}
+            match={match}
+          />
+        )}
+      </Wrap>
+      <Route
+        render={rrProps => (
+          <Gallery {...rrProps} data={posts} onClose={() => {}} />
+        )}
+        path="*/gallery/:id"
+      />
+    </>
   );
 }
 
@@ -103,6 +132,7 @@ View.defaultProps = {
 View.propTypes = {
   posts: arrayOf(shape({})).isRequired,
   cache: shape({}).isRequired,
+  match: shape({}).isRequired,
   meta: shape({
     count: number,
   }).isRequired,

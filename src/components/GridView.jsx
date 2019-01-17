@@ -12,7 +12,6 @@ import {
 
 import { THUMB } from '../../shared/constants';
 
-import Gallery from './Gallery';
 import PostGridRowRenderer from './PostGridRowRenderer';
 
 const POST_WIDTH = 100;
@@ -29,13 +28,12 @@ const throttled = throttle((e, setShouldShowImages) => {
   setShouldShowImages(e.scrollTop < 100 || delta < 1500);
 }, 250);
 
-export default function Grid({ type, fetchData, data, meta }) {
+export default function Grid({ type, fetchData, data, meta, match }) {
   // const stuff = useContext(__RouterContext);
   // console.error('stuff', stuff);
 
   const [loading, setLoading] = useState(false);
   const [shouldShowImages, setShouldShowImages] = useState(true);
-  const [shouldShowGallery, setShouldShowGallery] = useState(false);
   const listRef = useRef(null);
 
   useEffect(
@@ -60,12 +58,6 @@ export default function Grid({ type, fetchData, data, meta }) {
     onChildScroll(e);
     throttled(e, setShouldShowImages);
   };
-
-  const handleClick = index => () => {
-    setShouldShowGallery(index);
-  };
-
-  const handleClose = () => setShouldShowGallery(false);
 
   return (
     <WindowScroller>
@@ -102,18 +94,11 @@ export default function Grid({ type, fetchData, data, meta }) {
                         showDescription={false}
                         shouldShowImages={shouldShowImages}
                         postsPerRow={postsPerRow}
-                        onClick={handleClick}
+                        match={match}
                       />
                     </div>
                   )}
                 </InfiniteLoader>
-                {shouldShowGallery ? (
-                  <Gallery
-                    data={data}
-                    index={shouldShowGallery}
-                    onClose={handleClose}
-                  />
-                ) : null}
               </>
             );
           }}
@@ -134,4 +119,5 @@ Grid.propTypes = {
     count: number.isRequired,
   }).isRequired,
   type: string,
+  match: shape({}).isRequired,
 };

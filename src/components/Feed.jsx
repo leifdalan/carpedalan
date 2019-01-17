@@ -35,11 +35,11 @@ export default function Feed({
   posts,
   fetchData,
   meta,
+  match,
 }) {
   const { cache, delPost } = useContext(Posts);
   const { tags } = useContext(Tag);
   const { user } = useContext(User);
-
   const [shouldShowImages, setShouldShowImages] = useState(true);
   const [showModal, setShouldShowModal] = useState(null);
   const listRef = useRef();
@@ -125,6 +125,7 @@ export default function Feed({
                       isEditing={isEditing}
                       delPost={handleDelete}
                       tags={tags}
+                      match={match}
                     />
                   </div>
                 )}
@@ -164,5 +165,6 @@ Feed.propTypes = {
   }).isRequired,
   isEditing: number,
   setEditing: func.isRequired,
+  match: shape({}).isRequired,
   // outerRef: object.isRequired, // eslint-disable-line
 };

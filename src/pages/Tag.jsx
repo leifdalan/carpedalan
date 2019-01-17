@@ -26,6 +26,7 @@ export default function Tag({ match }) {
       cache={cache}
       fetchData={fetchData}
       meta={meta}
+      match={match}
     />
   );
 }
