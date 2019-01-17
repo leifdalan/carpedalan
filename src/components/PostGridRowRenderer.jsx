@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { CellMeasurer } from 'react-virtualized';
 
@@ -33,13 +33,19 @@ const RenderRow = props => {
             return null;
           }
 
+          const elProps = { key: postIndex };
+          let Element = Fragment;
+          if (!post.fake) {
+            elProps.to = `${match.url === '/' ? '' : match.url}/gallery/${
+              post.id.split('-')[0]
+            }`;
+            Element = Link;
+          }
+
           const src = getImagePath({ post, size: SIZE_MAP[size] });
 
           return (
-            <Link
-              key={postIndex}
-              to={`${match.url}/gallery/${post.id.split('-')[0]}`}
-            >
+            <Element {...elProps}>
               <Picture
                 width={`${100 / postsPerRow}%`}
                 ratio={1}
@@ -48,7 +54,7 @@ const RenderRow = props => {
                 placeholderColor={post.placeholderColor}
                 // onClick={onClick(postIndex)}
               />
-            </Link>
+            </Element>
           );
         })}
       </div>

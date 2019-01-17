@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { CellMeasurer } from 'react-virtualized';
 import styled from 'styled-components';
@@ -90,12 +90,17 @@ const RenderRow = props => {
 
   if (!post) return null;
 
-  const ratio = getImageRatio(post);
-
-  const src = getImagePath({ post, size: SIZE_MAP[size] });
-
   const showEditButton =
     isAdmin && (isEditing === index || !isNumber(isEditing));
+
+  const elProps = { key: index };
+  let Element = Fragment;
+  if (!post.fake) {
+    elProps.to = `${match.url === '/' ? '' : match.url}/gallery/${
+      post.id.split('-')[0]
+    }`;
+    Element = Link;
+  }
 
   return (
     <CellMeasurer key={index} cache={cache} parent={parent} index={index}>
@@ -112,16 +117,16 @@ const RenderRow = props => {
             {isEditing === index ? 'Close' : 'Edit'}
           </EditButton>
         ) : null}
-        <Link to={`${match.url}/gallery/${post.id.split('-')[0]}`}>
+        <Element {...elProps}>
           <Picture
             width="100%"
-            ratio={ratio}
-            src={src}
+            ratio={getImageRatio(post)}
+            src={getImagePath({ post, size: SIZE_MAP[size] })}
             shouldShowImage={shouldShowImages}
             placeholderColor={posts[index].placeholderColor}
             alt={posts[index].description}
           />
-        </Link>
+        </Element>
         {isEditing === index ? (
           <Description>
             <Field name="description" component={InputField} />
