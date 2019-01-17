@@ -16,7 +16,7 @@ export default app => {
       layout: false,
       session: JSON.stringify(req.session),
       clientAssets,
-      meta: {},
+      meta: JSON.stringify({}),
     });
   });
 
@@ -25,7 +25,7 @@ export default app => {
       layout: false,
       session: JSON.stringify(req.session),
       clientAssets,
-      meta: {},
+      meta: JSON.stringify({}),
     });
   });
 
@@ -37,7 +37,7 @@ export default app => {
         layout: false,
         session: JSON.stringify(req.session),
         clientAssets,
-        meta: {},
+        meta: JSON.stringify({}),
       });
     }
   });
