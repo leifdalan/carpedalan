@@ -27,7 +27,7 @@ describe('Webapp Routes', () => {
 
   it('should redirect the user to login', async () => {
     const { status } = await request.get('/');
-    expect(status).toBe(301);
+    expect(status).toBe(200);
   });
 
   it('it should redirect from admin', async () => {

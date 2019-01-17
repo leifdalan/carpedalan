@@ -21,7 +21,7 @@ describe('Basic routes webapp routes', () => {
   });
   it('should redirect if not logged in', async () => {
     const { status } = await request.get('/');
-    expect(status).toBe(301);
+    expect(status).toBe(200);
   });
 
   it('should return a 401 for a bad login', async () => {
