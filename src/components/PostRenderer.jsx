@@ -157,8 +157,8 @@ const RenderRow = props => {
             ) : null}
             {post.tags && post.tags.length ? (
               <ul>
-                {post.tags.map(({ name, id }, index) => (
-                  <li key={index}>
+                {post.tags.map(({ name, id }) => (
+                  <li key={id}>
                     <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
                   </li>
                 ))}

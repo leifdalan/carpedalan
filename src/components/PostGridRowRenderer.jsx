@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { SIZE_MAP } from '../../shared/constants';
 import usePrevious from '../hooks/usePrevious';
 import { getImagePath } from '../utils';
-import { performance } from '../utils/globals';
+import { performance, window } from '../utils/globals';
 
 import Picture from './Picture';
 
@@ -25,6 +25,9 @@ const RenderRow = props => {
     style,
     parent,
     history,
+    setSelectIndex,
+    selectIndex,
+    previousSelectedIndex,
     parent: {
       props: {
         posts,
@@ -43,7 +46,7 @@ const RenderRow = props => {
   } = props;
 
   const [mouseDown, setMouseDown] = useState(false);
-  const [selectIndex, setSelectIndex] = useState(null);
+
   const previousMouseDown = usePrevious(mouseDown);
   const adjustedPostIndex = index * postsPerRow;
 
@@ -56,10 +59,16 @@ const RenderRow = props => {
 
   useEffect(
     () => {
+      const stopContext = e => {
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+      };
+      window.addEventListener('contextmenu', stopContext, true);
       if (mouseDown && previousMouseDown) {
         if (mouseDown - previousMouseDown > 250) {
           setSelecting(true);
-          addSelect(selectIndex);
+          addSelect([selectIndex])();
         } else {
           history.push(
             `${match.url === '/' ? '' : match.url}/gallery/${
@@ -68,10 +77,22 @@ const RenderRow = props => {
           );
         }
       }
-      return null;
+      return () => window.removeEventListener('contextmenu', stopContext);
     },
     [mouseDown],
   );
+
+  const handleSelect = selectedIndex => e => {
+    if (e.shiftKey) {
+      addSelect(
+        [...Array(selectedIndex - previousSelectedIndex).keys()].map(
+          key => key + previousSelectedIndex + 1,
+        ),
+      )();
+    } else {
+      addSelect([selectedIndex])();
+    }
+  };
 
   return posts[adjustedPostIndex] ? (
     <CellMeasurer
@@ -93,7 +114,7 @@ const RenderRow = props => {
 
           if (isSelecting) {
             picProps = {
-              onClick: addSelect(postIndex),
+              onClick: handleSelect(postIndex),
             };
           } else {
             picProps = {
@@ -124,4 +145,8 @@ const RenderRow = props => {
   ) : null;
 };
 
-export default RenderRow;
+const PostGridRowRenderer = things => props => (
+  <RenderRow {...props} {...things} />
+);
+
+export default PostGridRowRenderer;

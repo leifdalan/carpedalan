@@ -47,6 +47,7 @@ const Picture = ({
       }}
     >
       {shouldShowImage ? <Img src={src} alt={alt || src} /> : null}
+      {children}
     </div>
   </Wrapper>
 );

@@ -9,9 +9,9 @@ import {
   WindowScroller,
 } from 'react-virtualized';
 import styled from 'styled-components';
-import omit from 'lodash/omit';
 
 import { THUMB } from '../../shared/constants';
+import usePrevious from '../hooks/usePrevious';
 import Button from '../styles/Button';
 
 import BulkEditModal from './BulkEditModal';
@@ -54,6 +54,8 @@ export default function Grid({
   const [selected, setSelected] = useState({});
   const [shouldShowImages, setShouldShowImages] = useState(true);
   const [showBulkEditModal, setShowBulkEditModal] = useState(false);
+  const [selectIndex, setSelectIndex] = useState(null);
+  const previousSelectedIndex = usePrevious(selectIndex);
   const listRef = useRef(null);
 
   useEffect(
@@ -83,11 +85,24 @@ export default function Grid({
     setSelecting(true);
   };
 
-  const handleAddSelect = index => () => {
-    setSelected({
-      ...selected,
-      [index]: selected[index] ? false : data[index].id,
-    });
+  const handleAddSelect = indexes => () => {
+    if (indexes.length === 1) {
+      setSelected({
+        ...selected,
+        [indexes[0]]: selected[indexes[0]] ? false : data[indexes[0]].id,
+      });
+    } else {
+      setSelected({
+        ...selected,
+        ...indexes.reduce(
+          (acc, index) => ({
+            ...acc,
+            [index]: data[index].id,
+          }),
+          {},
+        ),
+      });
+    }
   };
 
   return (
@@ -114,13 +129,12 @@ export default function Grid({
                         deferredMeasurementCache={cache}
                         onScroll={handleScroll(onChildScroll)}
                         rowHeight={cache.rowHeight}
-                        rowRenderer={props => (
-                          <PostGridRowRenderer
-                            key={props.index} // eslint-disable-line
-                            {...omit(props, 'key')}
-                            history={history}
-                          />
-                        )}
+                        rowRenderer={PostGridRowRenderer({
+                          history /* etc for proptype checking */,
+                          setSelectIndex,
+                          selectIndex,
+                          previousSelectedIndex,
+                        })}
                         rowCount={Math.floor(data.length / postsPerRow) + 1}
                         overscanRowCount={20}
                         isScrolling={isScrolling}
