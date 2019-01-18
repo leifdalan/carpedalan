@@ -51,7 +51,7 @@ posts.delete('/:id', isAdmin, async (req, res) => {
   }
 });
 
-posts.patch('/bulk', async (req, res) => {
+posts.patch('/bulk', isAdmin, async (req, res) => {
   const { ids, tags, description } = req.body;
   try {
     const photosTagsInsert = ids.reduce((acc, photoId) => {

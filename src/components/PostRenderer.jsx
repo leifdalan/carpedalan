@@ -157,8 +157,9 @@ const RenderRow = props => {
             ) : null}
             {post.tags && post.tags.length ? (
               <ul>
-                {post.tags.map(({ name, id }) => (
-                  <li key={id}>
+                {/* eslint-disable react/no-array-index-key */}
+                {post.tags.map(({ name }, tagIndex) => (
+                  <li key={tagIndex}>
                     <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
                   </li>
                 ))}
@@ -167,7 +168,6 @@ const RenderRow = props => {
           </Description>
         ) : null}
         <HR />
-        {/* {post.description || post.tags.length ?  : null} */}
       </div>
     </CellMeasurer>
   );

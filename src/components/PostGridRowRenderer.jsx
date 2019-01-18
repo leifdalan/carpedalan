@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { SIZE_MAP } from '../../shared/constants';
 import usePrevious from '../hooks/usePrevious';
+import useUser from '../hooks/useUser';
 import { getImagePath } from '../utils';
 import { performance, window } from '../utils/globals';
 
@@ -46,6 +47,7 @@ const RenderRow = props => {
   } = props;
 
   const [mouseDown, setMouseDown] = useState(false);
+  const { isAdmin } = useUser();
 
   const previousMouseDown = usePrevious(mouseDown);
   const adjustedPostIndex = index * postsPerRow;
@@ -56,28 +58,31 @@ const RenderRow = props => {
     e.stopPropagation();
     setSelectIndex(clickedIndex);
   };
+  const getGalleryLocation = galIndex =>
+    `${match.url === '/' ? '' : match.url}/gallery/${
+      posts[galIndex].id.split('-')[0]
+    }${location.hash}`;
 
   useEffect(
     () => {
-      const stopContext = e => {
-        e.stopPropagation();
-        e.preventDefault();
-        return false;
-      };
-      window.addEventListener('contextmenu', stopContext, true);
-      if (mouseDown && previousMouseDown) {
-        if (mouseDown - previousMouseDown > 250) {
-          setSelecting(true);
-          addSelect([selectIndex])();
-        } else {
-          history.push(
-            `${match.url === '/' ? '' : match.url}/gallery/${
-              posts[selectIndex].id.split('-')[0]
-            }${location.hash}`,
-          );
+      if (isAdmin) {
+        const stopContext = e => {
+          e.stopPropagation();
+          e.preventDefault();
+          return false;
+        };
+        window.addEventListener('contextmenu', stopContext, true);
+        if (mouseDown && previousMouseDown) {
+          if (mouseDown - previousMouseDown > 250) {
+            setSelecting(true);
+            addSelect([selectIndex])();
+          } else {
+            history.push(getGalleryLocation(selectIndex));
+          }
         }
+        return () => window.removeEventListener('contextmenu', stopContext);
       }
-      return () => window.removeEventListener('contextmenu', stopContext);
+      return null;
     },
     [mouseDown],
   );
@@ -111,15 +116,20 @@ const RenderRow = props => {
             return null;
           }
           let picProps = {};
-
-          if (isSelecting) {
-            picProps = {
-              onClick: handleSelect(postIndex),
-            };
+          if (isAdmin) {
+            if (isSelecting) {
+              picProps = {
+                onClick: handleSelect(postIndex),
+              };
+            } else {
+              picProps = {
+                onMouseDown: handleMouseDown(postIndex),
+                onMouseUp: () => setMouseDown(performance.now()),
+              };
+            }
           } else {
             picProps = {
-              onMouseDown: handleMouseDown(postIndex),
-              onMouseUp: () => setMouseDown(performance.now()),
+              onClick: () => history.push(getGalleryLocation(postIndex)),
             };
           }
 
