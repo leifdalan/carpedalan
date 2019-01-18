@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { bool, func, number, string } from 'prop-types';
+import { bool, func, node, number, string } from 'prop-types';
 import styled from 'styled-components';
 
 import { propTrueFalse } from '../styles';
@@ -30,7 +30,8 @@ const Picture = ({
   src,
   placeholderColor,
   alt,
-  onClick,
+  children,
+  ...etc
 }) => {
   const [loaded, setLoaded] = useState(false);
   const preload = new Image();
@@ -45,7 +46,7 @@ const Picture = ({
         width,
         backgroundColor: placeholderColor,
       }}
-      onClick={onClick}
+      {...etc}
     >
       <div
         className="image"
@@ -57,6 +58,7 @@ const Picture = ({
         {shouldShowImage ? (
           <Img loaded={loaded} src={loaded ? src : ''} alt={alt || src} />
         ) : null}
+        {children}
       </div>
     </Wrapper>
   );
@@ -66,9 +68,11 @@ Picture.defaultProps = {
   shouldShowImage: true,
   alt: undefined,
   onClick: () => {},
+  children: null,
 };
 
 Picture.propTypes = {
+  children: node,
   src: string.isRequired,
   shouldShowImage: bool,
   ratio: number.isRequired,

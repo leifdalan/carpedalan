@@ -42,6 +42,7 @@ export default function View({
   fancy,
   match,
   location,
+  history,
 }) {
   const { patchPost } = useContext(Posts);
   const { user } = useContext(User);
@@ -118,6 +119,7 @@ export default function View({
             type="main"
             match={match}
             location={location}
+            history={history}
           />
         ) : (
           <Feed
@@ -128,6 +130,7 @@ export default function View({
             fetchData={fetchData}
             match={match}
             location={location}
+            history={history}
           />
         )}
       </Wrap>
@@ -149,6 +152,7 @@ View.propTypes = {
   posts: arrayOf(shape({})).isRequired,
   cache: shape({}).isRequired,
   match: shape({}).isRequired,
+  history: shape({}).isRequired,
   location: shape({}).isRequired,
   meta: shape({
     count: number,

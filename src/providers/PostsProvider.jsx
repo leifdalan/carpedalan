@@ -68,6 +68,23 @@ const PostProvider = ({ children }) => {
     }
   };
 
+  const invalidateAll = () => {
+    cache.clearAll();
+    setPosts({});
+    setMeta({ count: 0 });
+  };
+
+  const bulkEdit = async values => {
+    try {
+      const { body } = await patch(`${API_PATH}/posts/bulk`, values);
+      invalidateAll();
+      return body;
+    } catch (e) {
+      log.error(e);
+      throw e;
+    }
+  };
+
   const delPost = id => async () => {
     await del(`${API_PATH}/posts/${id}`);
     setPostsWithFakes(postsWithFakes.filter(data => data.id !== id));
@@ -103,12 +120,6 @@ const PostProvider = ({ children }) => {
       log.error('loading failed');
     }
     return null;
-  };
-
-  const invalidateAll = () => {
-    cache.clearAll();
-    setPosts({});
-    setMeta({ count: 0 });
   };
 
   const createPost = async (formData, index = 0) => {
@@ -148,6 +159,7 @@ const PostProvider = ({ children }) => {
         invalidateAll,
         createPost,
         progressMap,
+        bulkEdit,
       }}
     >
       {children}

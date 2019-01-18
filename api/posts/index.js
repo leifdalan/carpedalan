@@ -51,6 +51,36 @@ posts.delete('/:id', isAdmin, async (req, res) => {
   }
 });
 
+posts.patch('/bulk', async (req, res) => {
+  const { ids, tags, description } = req.body;
+  try {
+    const photosTagsInsert = ids.reduce((acc, photoId) => {
+      const photoTags = (tags || []).map(tagId => ({
+        photoId,
+        tagId,
+      }));
+      return [...acc, ...photoTags];
+    }, []);
+    await db.transaction(async trx => {
+      try {
+        if (description) {
+          await trx(PHOTOS)
+            .update({
+              [DESCRIPTION]: description,
+            })
+            .whereIn('id', ids);
+        }
+        await trx(PHOTOS_TAGS).insert(photosTagsInsert);
+      } catch (e) {
+        throw e;
+      }
+    });
+    return res.status(200).json();
+  } catch (e) {
+    return res.status(422).json(e);
+  }
+});
+
 posts.patch('/:id', isAdmin, async (req, res) => {
   let photoResponse;
   let tags = [];

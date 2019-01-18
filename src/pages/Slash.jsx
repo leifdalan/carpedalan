@@ -4,7 +4,7 @@ import { shape } from 'prop-types';
 import View from '../components/View';
 import { Posts } from '../providers/PostsProvider';
 
-export default function Slash({ match, location }) {
+export default function Slash({ match, location, history }) {
   const { posts, cache, getPosts, meta } = useContext(Posts);
 
   return (
@@ -16,6 +16,7 @@ export default function Slash({ match, location }) {
       meta={meta}
       match={match}
       location={location}
+      history={history}
       fancy
     />
   );
@@ -24,4 +25,5 @@ export default function Slash({ match, location }) {
 Slash.propTypes = {
   match: shape({}).isRequired,
   location: shape({}).isRequired,
+  history: shape({}).isRequired,
 };

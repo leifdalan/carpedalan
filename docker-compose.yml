@@ -4,9 +4,9 @@ services:
   alb:
     container_name: alb
     depends_on:
-      # - app
-      app: 
-        condition: service_healthy
+      - app
+      # app: 
+      #   condition: service_healthy
     image: ekino/nginx-brotli:latest-1.12.2-bfd2885
     restart: always
     volumes: 
@@ -39,16 +39,16 @@ services:
       - ./public:/app/public
       - ./webpack.config.js:/app/webpack.config.js
     ports:
-      - 3001:3001
+      - 3001:80
       - 9227:9229
     environment:
       PORT: 80
     command: yarn start
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:80/healthcheck || exit 1"]
+      test: ["CMD-SHELL", "curl --silent --fail localhost:3001/healthcheck || exit 1"]
       interval: 1s
       timeout: 1s
-      retries: 20
+      retries: 40
 
   pg:
     image: postgres:10.0-alpine

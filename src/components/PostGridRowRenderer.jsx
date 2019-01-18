@@ -1,19 +1,30 @@
-import React, { Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import React, { Fragment, useEffect, useState } from 'react';
 import { CellMeasurer } from 'react-virtualized';
+import styled from 'styled-components';
 
 import { SIZE_MAP } from '../../shared/constants';
+import usePrevious from '../hooks/usePrevious';
 import { getImagePath } from '../utils';
+import { performance } from '../utils/globals';
 
 import Picture from './Picture';
+
+const SuccessContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 255, 0.4);
+`;
 
 const RenderRow = props => {
   /* eslint-disable react/prop-types */
   const {
     index,
-    key,
     style,
     parent,
+    history,
     parent: {
       props: {
         posts,
@@ -23,14 +34,52 @@ const RenderRow = props => {
         postsPerRow,
         match,
         location,
+        isSelecting,
+        setSelecting,
+        addSelect,
+        selected,
       },
     },
   } = props;
 
+  const [mouseDown, setMouseDown] = useState(false);
+  const [selectIndex, setSelectIndex] = useState(null);
+  const previousMouseDown = usePrevious(mouseDown);
   const adjustedPostIndex = index * postsPerRow;
 
+  const handleMouseDown = clickedIndex => e => {
+    e.preventDefault();
+    setMouseDown(performance.now());
+    e.stopPropagation();
+    setSelectIndex(clickedIndex);
+  };
+
+  useEffect(
+    () => {
+      if (mouseDown && previousMouseDown) {
+        if (mouseDown - previousMouseDown > 250) {
+          setSelecting(true);
+          addSelect(selectIndex);
+        } else {
+          history.push(
+            `${match.url === '/' ? '' : match.url}/gallery/${
+              posts[selectIndex].id.split('-')[0]
+            }${location.hash}`,
+          );
+        }
+      }
+      return null;
+    },
+    [mouseDown],
+  );
+
   return posts[adjustedPostIndex] ? (
-    <CellMeasurer key={key} cache={cache} parent={parent} index={index}>
+    <CellMeasurer
+      key={posts[adjustedPostIndex]}
+      cache={cache}
+      parent={parent}
+      index={index}
+    >
       <div style={{ ...style }}>
         {[...Array(postsPerRow).keys()].map(subIndex => {
           const postIndex = adjustedPostIndex + subIndex;
@@ -40,32 +89,34 @@ const RenderRow = props => {
           if (!post) {
             return null;
           }
+          let picProps = {};
 
-          const elProps = { key: postIndex };
-          let Element = Fragment;
-          if (!post.fake) {
-            elProps.to = {
-              pathname: `${match.url === '/' ? '' : match.url}/gallery/${
-                post.id.split('-')[0]
-              }`,
-              hash: location.hash,
+          if (isSelecting) {
+            picProps = {
+              onClick: addSelect(postIndex),
             };
-            Element = Link;
+          } else {
+            picProps = {
+              onMouseDown: handleMouseDown(postIndex),
+              onMouseUp: () => setMouseDown(performance.now()),
+            };
           }
 
           const src = getImagePath({ post, size: SIZE_MAP[size] });
 
           return (
-            <Element {...elProps}>
+            <Fragment key={postIndex}>
               <Picture
                 width={`${100 / postsPerRow}%`}
                 ratio={1}
                 src={src}
                 shouldShowImage={shouldShowImages}
                 placeholderColor={post.placeholderColor}
-                // onClick={onClick(postIndex)}
-              />
-            </Element>
+                {...picProps}
+              >
+                {selected[postIndex] ? <SuccessContainer /> : null}
+              </Picture>
+            </Fragment>
           );
         })}
       </div>

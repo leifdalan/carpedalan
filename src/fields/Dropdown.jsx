@@ -10,7 +10,7 @@ const Wrapper = styled.div`
 `;
 
 export default function Dropdown({ input: { onChange, value } = {}, ...etc }) {
-  const { postNewTag, creatingTag } = useContext(Tag);
+  const { postNewTag, creatingTag, tags } = useContext(Tag);
   const handleCreate = async thing => {
     const response = await postNewTag(thing);
     onChange([...value, { label: thing, value: response.id }]);
@@ -21,6 +21,10 @@ export default function Dropdown({ input: { onChange, value } = {}, ...etc }) {
         onCreateOption={handleCreate}
         onChange={onChange}
         value={value}
+        options={tags.map(tag => ({
+          value: tag.id,
+          label: tag.name,
+        }))}
         isLoading={creatingTag}
         {...etc}
       />

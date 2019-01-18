@@ -7,6 +7,8 @@ export const {
   FileReader,
   performance,
   setInterval,
+  setTimeout,
+  clearTimeout,
   clearInterval,
   document,
 } = global;

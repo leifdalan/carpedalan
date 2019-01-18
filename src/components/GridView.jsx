@@ -8,13 +8,22 @@ import {
   InfiniteLoader,
   WindowScroller,
 } from 'react-virtualized';
-// import { __RouterContext } from 'react-router';
+import styled from 'styled-components';
+import omit from 'lodash/omit';
 
 import { THUMB } from '../../shared/constants';
+import Button from '../styles/Button';
 
+import BulkEditModal from './BulkEditModal';
 import PostGridRowRenderer from './PostGridRowRenderer';
 
 const POST_WIDTH = 100;
+
+const EditButton = styled(Button)`
+  position: fixed;
+  right: 1em;
+  bottom: 1em;
+`;
 
 const cache = new CellMeasurerCache({
   defaultHeight: POST_WIDTH,
@@ -28,12 +37,23 @@ const throttled = throttle((e, setShouldShowImages) => {
   setShouldShowImages(e.scrollTop < 100 || delta < 1500);
 }, 250);
 
-export default function Grid({ type, fetchData, data, meta, match, location }) {
+export default function Grid({
+  type,
+  fetchData,
+  data,
+  meta,
+  match,
+  location,
+  history,
+}) {
   // const stuff = useContext(__RouterContext);
   // console.error('stuff', stuff);
 
   const [loading, setLoading] = useState(false);
+  const [isSelecting, setSelecting] = useState(false);
+  const [selected, setSelected] = useState({});
   const [shouldShowImages, setShouldShowImages] = useState(true);
+  const [showBulkEditModal, setShowBulkEditModal] = useState(false);
   const listRef = useRef(null);
 
   useEffect(
@@ -57,6 +77,17 @@ export default function Grid({ type, fetchData, data, meta, match, location }) {
   const handleScroll = onChildScroll => e => {
     onChildScroll(e);
     throttled(e, setShouldShowImages);
+  };
+
+  const handleSelecting = () => {
+    setSelecting(true);
+  };
+
+  const handleAddSelect = index => () => {
+    setSelected({
+      ...selected,
+      [index]: selected[index] ? false : data[index].id,
+    });
   };
 
   return (
@@ -83,7 +114,13 @@ export default function Grid({ type, fetchData, data, meta, match, location }) {
                         deferredMeasurementCache={cache}
                         onScroll={handleScroll(onChildScroll)}
                         rowHeight={cache.rowHeight}
-                        rowRenderer={PostGridRowRenderer}
+                        rowRenderer={props => (
+                          <PostGridRowRenderer
+                            key={props.index} // eslint-disable-line
+                            {...omit(props, 'key')}
+                            history={history}
+                          />
+                        )}
                         rowCount={Math.floor(data.length / postsPerRow) + 1}
                         overscanRowCount={20}
                         isScrolling={isScrolling}
@@ -96,7 +133,22 @@ export default function Grid({ type, fetchData, data, meta, match, location }) {
                         postsPerRow={postsPerRow}
                         match={match}
                         location={location}
+                        isSelecting={isSelecting}
+                        setSelecting={handleSelecting}
+                        addSelect={handleAddSelect}
+                        selected={selected}
                       />
+                      {isSelecting ? (
+                        <EditButton onClick={() => setShowBulkEditModal(true)}>
+                          {`Bulk Edit`}
+                        </EditButton>
+                      ) : null}
+                      {showBulkEditModal ? (
+                        <BulkEditModal
+                          ids={selected}
+                          showBulkModal={setShowBulkEditModal}
+                        />
+                      ) : null}
                     </div>
                   )}
                 </InfiniteLoader>
@@ -122,4 +174,5 @@ Grid.propTypes = {
   type: string,
   match: shape({}).isRequired,
   location: shape({}).isRequired,
+  history: shape({}).isRequired,
 };
