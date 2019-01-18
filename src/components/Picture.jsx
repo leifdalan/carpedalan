@@ -33,8 +33,8 @@ const Picture = ({
 }) => (
   <Wrapper
     style={{
-      paddingTop: `${ratio * 100}%`,
       position: 'relative',
+      width,
     }}
     {...etc}
   >
@@ -43,10 +43,10 @@ const Picture = ({
       style={{
         paddingTop: `${ratio * 100}%`,
         position: 'relative',
+        backgroundColor: placeholderColor,
       }}
     >
       {shouldShowImage ? <Img src={src} alt={alt || src} /> : null}
-      {children}
     </div>
   </Wrapper>
 );
