@@ -3,16 +3,13 @@ import { arrayOf, shape } from 'prop-types';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { HIRES, SIZE_MAP } from '../../shared/constants';
 import NotFound from '../pages/NotFound';
 import FlexContainer from '../styles/FlexContainer';
 import Title from '../styles/Title';
-import { formatDate, getImagePath, getImageRatio } from '../utils';
+import { formatDate, getImageRatio } from '../utils';
 
 import Modal from './Modal';
 import Picture from './Picture';
-
-const SIZE = SIZE_MAP[HIRES];
 
 const Container = styled(FlexContainer)`
   width: 100%;
@@ -59,7 +56,7 @@ export default function Gallery({ match, data, location }) {
                 <Picture
                   width="100%"
                   ratio={getImageRatio(post)}
-                  src={getImagePath({ post, size: SIZE })}
+                  post={post}
                   shouldShowImage
                   placeholderColor={post.placeholderColor}
                 />

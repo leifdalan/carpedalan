@@ -102,6 +102,9 @@ const SIZES = [
     width: 250,
   },
   {
+    width: 500,
+  },
+  {
     width: 768,
   },
   {
@@ -111,18 +114,26 @@ const SIZES = [
     width: 250,
     height: 250,
   },
+  {
+    width: 100,
+    height: 100,
+  },
 ];
 
+const TINY = 'tiny';
 const SMALL = 'small';
 const MEDIUM = 'medium';
 const HIRES = 'hires';
-const THUMB = 'thumb';
+const LARGE_THUMB = 'large-thumb';
+const SMALL_THUMB = 'small-thumb';
 
 const SIZE_MAP = {
-  [SMALL]: SIZES[0],
-  [MEDIUM]: SIZES[1],
-  [HIRES]: SIZES[2],
-  [THUMB]: SIZES[3],
+  [TINY]: SIZES[0],
+  [SMALL]: SIZES[1],
+  [MEDIUM]: SIZES[2],
+  [HIRES]: SIZES[3],
+  [SMALL_THUMB]: SIZES[4],
+  [LARGE_THUMB]: SIZES[5],
 };
 
 module.exports = {
@@ -162,8 +173,10 @@ module.exports = {
   SMALL,
   MEDIUM,
   HIRES,
-  THUMB,
+  SMALL_THUMB,
+  LARGE_THUMB,
   EXIFPROPS,
   SQIP,
+  TINY,
   DEFAULT_POSTS_PER_PAGE,
 };

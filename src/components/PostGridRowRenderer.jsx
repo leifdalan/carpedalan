@@ -2,10 +2,8 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { CellMeasurer } from 'react-virtualized';
 import styled from 'styled-components';
 
-import { SIZE_MAP } from '../../shared/constants';
 import usePrevious from '../hooks/usePrevious';
 import useUser from '../hooks/useUser';
-import { getImagePath } from '../utils';
 import { performance, window } from '../utils/globals';
 
 import Picture from './Picture';
@@ -34,7 +32,6 @@ const RenderRow = props => {
         posts,
         cache,
         shouldShowImages,
-        size,
         postsPerRow,
         match,
         location,
@@ -133,14 +130,13 @@ const RenderRow = props => {
             };
           }
 
-          const src = getImagePath({ post, size: SIZE_MAP[size] });
-
           return (
             <Fragment key={postIndex}>
               <Picture
                 width={`${100 / postsPerRow}%`}
                 ratio={1}
-                src={src}
+                post={post}
+                type="square"
                 shouldShowImage={shouldShowImages}
                 placeholderColor={post.placeholderColor}
                 {...picProps}

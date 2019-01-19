@@ -7,12 +7,11 @@ import isNumber from 'lodash/isNumber';
 import Dropdown from '../fields/Dropdown';
 import InputField from '../fields/InputField';
 import Field from '../form/Field';
-import { SIZE_MAP } from '../../shared/constants';
 import Submit from '../form/Submit';
 import { BRAND_COLOR, getThemeValue, TITLE_FONT } from '../styles';
 import Button from '../styles/Button';
 import Flex from '../styles/FlexContainer';
-import { formatDate, getImagePath, getImageRatio } from '../utils';
+import { formatDate, getImageRatio } from '../utils';
 
 import Picture from './Picture';
 
@@ -76,7 +75,6 @@ const RenderRow = props => {
         posts,
         cache,
         shouldShowImages,
-        size,
         isEditing,
         delPost,
         setEditing,
@@ -125,7 +123,7 @@ const RenderRow = props => {
           <Picture
             width="100%"
             ratio={getImageRatio(post)}
-            src={getImagePath({ post, size: SIZE_MAP[size] })}
+            post={post}
             shouldShowImage={shouldShowImages}
             placeholderColor={posts[index].placeholderColor}
             alt={posts[index].description}

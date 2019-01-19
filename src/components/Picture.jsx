@@ -1,6 +1,8 @@
 import React from 'react';
-import { bool, func, number, string, node } from 'prop-types';
+import { bool, func, node, number, oneOf, shape, string } from 'prop-types';
 import styled from 'styled-components';
+
+import { getFullImageSrcSet, getSquareImageSrcSet } from '../utils';
 
 // import { propTrueFalse } from '../styles';
 
@@ -9,15 +11,23 @@ const Wrapper = styled.div`
   margin-bottom: -4px;
 `;
 
-const Img = styled.img`
+const StyledPicture = styled.picture`
   position absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  img {
+      position absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  }
 `;
 
-Img.defaultProps = {
+StyledPicture.defaultProps = {
   loaded: false,
 };
 
@@ -25,10 +35,11 @@ const Picture = ({
   shouldShowImage,
   width,
   ratio,
-  src,
+  post,
   placeholderColor,
   alt,
   children,
+  type,
   ...etc
 }) => (
   <Wrapper
@@ -46,7 +57,13 @@ const Picture = ({
         backgroundColor: placeholderColor,
       }}
     >
-      {shouldShowImage ? <Img src={src} alt={alt || src} /> : null}
+      {shouldShowImage ? (
+        <StyledPicture as="picture">
+          {type === 'original'
+            ? getFullImageSrcSet({ post })
+            : getSquareImageSrcSet({ post })}
+        </StyledPicture>
+      ) : null}
       {children}
     </div>
   </Wrapper>
@@ -57,6 +74,7 @@ Picture.defaultProps = {
   alt: undefined,
   onClick: () => {},
   children: null,
+  type: 'original',
 };
 
 Picture.propTypes = {
@@ -68,6 +86,12 @@ Picture.propTypes = {
   placeholderColor: string.isRequired,
   alt: string,
   onClick: func,
+  post: shape({
+    height: number,
+    width: number,
+    fake: bool,
+  }).isRequired,
+  type: oneOf(['original', 'square']),
 };
 
 export default Picture;

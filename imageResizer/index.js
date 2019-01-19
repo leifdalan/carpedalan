@@ -80,7 +80,7 @@ exports.handler = async (event, context, ...otherThingz) => {
       const isJpeg = index < SIZES.length;
       const extension = isJpeg ? 'jpg' : 'webp';
       const contentType = isJpeg ? 'image/jpeg' : 'image/webp';
-      const size = SIZES[index % 4];
+      const size = SIZES[index % SIZES.length];
       return s3
         .upload({
           Key: `web/${withoutExtension}-${size.width}${

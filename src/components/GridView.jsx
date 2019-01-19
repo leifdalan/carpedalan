@@ -10,7 +10,7 @@ import {
 } from 'react-virtualized';
 import styled from 'styled-components';
 
-import { THUMB } from '../../shared/constants';
+import { LARGE_THUMB } from '../../shared/constants';
 import usePrevious from '../hooks/usePrevious';
 import Button from '../styles/Button';
 
@@ -141,7 +141,7 @@ export default function Grid({
                         scrollTop={scrollTop}
                         posts={data}
                         cache={cache}
-                        size={THUMB}
+                        size={LARGE_THUMB}
                         showDescription={false}
                         shouldShowImages={shouldShowImages}
                         postsPerRow={postsPerRow}
