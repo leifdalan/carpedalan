@@ -23,14 +23,17 @@ export const formatDate = timestamp =>
 
 const { cdn } = window.__META__; // eslint-disable-line no-underscore-dangle
 
-export const getImagePath = ({ post, size, type = 'jpg' }) => {
+export const getImagePath = ({ post, size, type = 'jpg', prefix = 'web' }) => {
   const { width, height } = SIZE_MAP[size];
   return post.fake
     ? ''
-    : `https://${cdn}/web/${post.key.split('/')[1].split('.')[0]}-${width}${
-        height ? `-${height}` : ''
-      }.${type}`;
+    : `https://${cdn}/${prefix}/${
+        post.key.split('/')[1].split('.')[0]
+      }-${width}${height ? `-${height}` : ''}.${type}`;
 };
+
+export const getOriginalImagePath = ({ post }) =>
+  post.fake ? '' : `https://${cdn}${post.key}`;
 
 /* eslint-disable react/prop-types */
 export const getFullImageSrcSet = ({ post }) => (

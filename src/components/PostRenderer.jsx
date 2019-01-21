@@ -11,7 +11,7 @@ import Submit from '../form/Submit';
 import { BRAND_COLOR, getThemeValue, TITLE_FONT } from '../styles';
 import Button from '../styles/Button';
 import Flex from '../styles/FlexContainer';
-import { formatDate, getImageRatio } from '../utils';
+import { formatDate, getImageRatio, getOriginalImagePath } from '../utils';
 
 import Picture from './Picture';
 
@@ -109,7 +109,7 @@ const RenderRow = props => {
       <div style={style}>
         <Header justifyContent="space-between">
           <Download as="div">{formatDate(posts[index].timestamp)}</Download>
-          <Download href={`/api/images/${posts[index].key}`}>Download</Download>
+          <Download href={getOriginalImagePath({ post })}>Download</Download>
         </Header>
 
         {showEditButton ? (
