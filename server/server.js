@@ -22,7 +22,7 @@ import {
   isDev,
   isProd,
   ssl,
-  sercureCookie,
+  secureCookie,
 } from './config';
 
 const app = express();
@@ -79,7 +79,7 @@ export const setup = () => {
       rolling: true,
       cookie: {
         maxAge: 10000 * 60 * 60 * 24 * 30 * 6,
-        secure: sercureCookie,
+        secure: secureCookie,
         http: true,
       },
     }),

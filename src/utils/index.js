@@ -14,18 +14,22 @@ import {
   TINY,
 } from '../../shared/constants';
 
+import { window } from './globals';
+
 export const formatDate = timestamp =>
   format(fromUnixTime(timestamp), 'MMM d YYYY', {
     awareOfUnicodeTokens: true,
   });
 
+const { cdn } = window.__META__; // eslint-disable-line no-underscore-dangle
+
 export const getImagePath = ({ post, size, type = 'jpg' }) => {
   const { width, height } = SIZE_MAP[size];
   return post.fake
     ? ''
-    : `https://photos.local.carpedalan.com/web/${
-        post.key.split('/')[1].split('.')[0]
-      }-${width}${height ? `-${height}` : ''}.${type}`;
+    : `https://${cdn}/web/${post.key.split('/')[1].split('.')[0]}-${width}${
+        height ? `-${height}` : ''
+      }.${type}`;
 };
 
 /* eslint-disable react/prop-types */

@@ -20,7 +20,7 @@ services:
       - ./db:/app/db/
       - ./api:/app/api/
       - ./shared:/app/shared/
-      - ./.env:/app/.env
+      - ./.env.ci:/app/.env
       - ./.env.example:/app/.env.example
     command: bash -c "ls -al && ls cypress -al && pwd && yarn cypress run --env configFile=ci --reporter junit --reporter-options 'mochaFile=/app/cypress/test-output.xml'"  
     networks:
@@ -49,6 +49,8 @@ services:
       PG_PASSWORD: postgres
       PG_DATABASE: carpedalan
       PGSSLMODE: disable
+      PUBLIC_PASSWORD: testpublic
+      ADMIN_PASSWORD: testadmin
 
     healthcheck:
       test: "curl -sS localhost:3001/login"

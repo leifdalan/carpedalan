@@ -1,6 +1,6 @@
 import api from '../api/router';
 
-import { assets, isProd } from './config';
+import { assets, cdnDomain, isProd } from './config';
 
 let clientAssets = false;
 if (isProd) {
@@ -37,7 +37,7 @@ export default app => {
         layout: false,
         session: JSON.stringify(req.session),
         clientAssets,
-        meta: JSON.stringify({}),
+        meta: JSON.stringify({ cdn: cdnDomain }),
       });
     }
   });
@@ -54,6 +54,7 @@ export default app => {
       session: JSON.stringify(req.session),
       meta: JSON.stringify({
         status: 404,
+        cdn: cdnDomain,
       }),
       clientAssets,
     });
