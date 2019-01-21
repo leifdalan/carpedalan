@@ -136,10 +136,10 @@ jobs:
               eval $(aws ecr get-login --region us-east-1 --no-include-email) 
               docker tag app "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
               docker push "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
-      - run: 
-          name: Push image to Heroku registry
-          command: |
-              ./scripts/releaseDocker.sh
+      # - run: 
+      #     name: Push image to Heroku registry
+      #     command: |
+      #         ./scripts/releaseDocker.sh
   dependencies:
     docker:
       - image: circleci/node:10
@@ -152,14 +152,6 @@ jobs:
       - run: 
           name: Install node dependencies
           command: yarn --ignore-optional
-      - run: 
-          name: Upload S3 assets
-          command: |
-              yarn build
-              ls -al
-              pwd
-              ./scripts/uploadAssets.js
-              cat dist/manifest.json
       - save_cache:
           paths:
             - node_modules

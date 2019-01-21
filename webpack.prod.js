@@ -56,6 +56,7 @@ module.exports = {
       },
       s3UploadOptions: {
         Bucket: 'carpe-assets',
+        ContentEncoding: 'gzip',
       },
     }),
   ],
