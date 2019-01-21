@@ -28,8 +28,8 @@ services:
   e2e_app:
     container_name: e2e-app
     domainname: local.carpedalan.com
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
     depends_on:
       e2e_pg:
         condition: service_healthy
