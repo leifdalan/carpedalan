@@ -4,7 +4,7 @@ import cacheControl from 'express-cache-controller';
 
 import { publicPassword, adminPassword, bucket } from '../server/config';
 import { READ_USER, WRITE_USER } from '../server/constants';
-import { isLoggedIn } from '../server/middlewares';
+import { isLoggedIn, setSignedCloudfrontCookie } from '../server/middlewares';
 import { IMAGES_PATH } from '../shared/constants';
 import log from '../src/utils/log';
 
@@ -21,13 +21,19 @@ const api = express.Router();
 api.use('/posts', posts);
 api.use('/tags', tags);
 
+api.get('/refresh', isLoggedIn, (req, res) => {
+  res.status(200).send({ refreshed: true });
+});
+
 // Login route
 api.post('/login', (req, res) => {
   if (req.body.password === publicPassword) {
     req.session.user = READ_USER;
+    setSignedCloudfrontCookie(res);
     res.status(200).send({ user: req.session.user });
   } else if (req.body.password === adminPassword) {
     req.session.user = WRITE_USER;
+    setSignedCloudfrontCookie(res);
     res.status(200).send({ user: req.session.user });
   } else {
     res.status(401).send();

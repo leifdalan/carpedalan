@@ -22,6 +22,7 @@ import {
   isDev,
   isProd,
   ssl,
+  sercureCookie,
 } from './config';
 
 const app = express();
@@ -44,6 +45,7 @@ export const setup = () => {
   });
   const PgSession = connectPgSimple(session);
   const store = new PgSession({ pool });
+  app.set('trust proxy', 1);
 
   // Setup handlebar view engine
   const viewConfig = {
@@ -77,10 +79,11 @@ export const setup = () => {
       rolling: true,
       cookie: {
         maxAge: 10000 * 60 * 60 * 24 * 30 * 6,
+        secure: sercureCookie,
+        http: true,
       },
     }),
   );
-
   // Use dev and hot webpack middlewares
   if (isDev) {
     const { applyWebpackMiddleware } = require('./middlewares'); // eslint-disable-line global-require
@@ -115,11 +118,6 @@ export const setup = () => {
       ),
     }),
   );
-  app.get('/healthcheck', (req, res) => {
-    res.status(200).json({
-      farts: 'for your health',
-    });
-  });
   return { app, store, pool };
   // return { app };
 };

@@ -12,9 +12,13 @@ const readUserAgent = request.agent(app);
 const writeUserAgent = request.agent(app);
 request = request(app);
 
+jest.mock('aws-cloudfront-sign', () => ({
+  getSignedCookies: jest.fn(() => ({})),
+}));
+
 const photo = process.env.WALLABY
-  ? `${process.env.LOCAL_PATH}/api/posts/__tests__/neildegrasse.jpg`
-  : path.resolve(__dirname, 'neildegrasse.jpg');
+  ? `${process.env.LOCAL_PATH}/api/posts/__tests__/kitty2.jpg`
+  : path.resolve(__dirname, 'kitty2.jpg');
 
 jest.mock('aws-sdk', () => {
   const AWS = {};
@@ -91,7 +95,7 @@ describe('/posts', () => {
       aws.s3Promise.mockImplementation(() => Promise.resolve({}));
       await writeUserAgent.post('/api/posts').attach('photo', photo);
       expect(aws.uploadMock.mock.calls[0][0]).toMatchObject({
-        Key: 'original/neildegrasse.jpg',
+        Key: 'original/kitty2.jpg',
       });
     });
   });

@@ -11,8 +11,8 @@ services:
     restart: always
     volumes: 
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/carpe+5.pem:/etc/ssl/certs/carpe+5.pem
-      - ./nginx/carpe+5-key.pem:/etc/ssl/private/carpe+5-key.pem
+      - ./nginx/local.carpedalan.com.pem:/etc/ssl/certs/local.carpedalan.com.pem
+      - ./nginx/local.carpedalan.com-key.pem:/etc/ssl/private/local.carpedalan.com-key.pem
     ports:
       - 80:80
       - 443:443
@@ -38,6 +38,7 @@ services:
       - ./.env-local:/app/.env
       - ./public:/app/public
       - ./webpack.config.js:/app/webpack.config.js
+      - ./pk-APKAIUIJTQRAIWFPJFEA.pem:/app/pk-APKAIUIJTQRAIWFPJFEA.pem
     ports:
       - 3001:80
       - 9227:9229

@@ -119,6 +119,7 @@ jobs:
           name: Get config
           command: |
             aws s3 cp s3://configurations-pipeline/.env . 
+            aws s3 cp s3://configurations-pipeline/pk-APKAIUIJTQRAIWFPJFEA.pem .
       - run:
           name: Build application Docker image
           command: |

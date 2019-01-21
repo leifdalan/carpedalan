@@ -34,6 +34,14 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.DefinePlugin({
+      PRODUCTION: JSON.stringify(true),
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        LOG_LEVEL: JSON.stringify(process.env.LOG_LEVEL),
+        CDN_DOMAIN: JSON.stringify(process.env.CDN_DOMAIN),
+      },
+    }),
     new HappyPack({
       id: 'jsx',
       threads: 12,

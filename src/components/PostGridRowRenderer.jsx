@@ -31,7 +31,7 @@ const RenderRow = props => {
       props: {
         posts,
         cache,
-        shouldShowImages,
+        // shouldShowImages,
         postsPerRow,
         match,
         location,
@@ -137,7 +137,7 @@ const RenderRow = props => {
                 ratio={1}
                 post={post}
                 type="square"
-                shouldShowImage={shouldShowImages}
+                shouldShowImage
                 placeholderColor={post.placeholderColor}
                 {...picProps}
               >

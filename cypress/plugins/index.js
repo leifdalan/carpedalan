@@ -30,7 +30,7 @@ module.exports = (on, pluginConfig) => {
       try {
         await db.seed.run();
       } catch (e) {
-        console.log(e);
+        console.log(e); // eslint-disable-line no-console
         throw e;
       }
       return null;
@@ -39,7 +39,7 @@ module.exports = (on, pluginConfig) => {
       try {
         await S3.deleteObject({
           Bucket: 'carpedev-west',
-          Key: 'original/neildegrasse.jpg',
+          Key: 'original/kitty2.jpg',
         }).promise();
         await S3.deleteObject({
           Bucket: 'carpedev-west',

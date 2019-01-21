@@ -10,9 +10,8 @@ import {
   MEDIUM,
   HIRES,
   SMALL_THUMB,
-  LARGE_THUMB,
+  // LARGE_THUMB,
   TINY,
-  API_IMAGES_PATH,
 } from '../../shared/constants';
 
 export const formatDate = timestamp =>
@@ -24,9 +23,9 @@ export const getImagePath = ({ post, size, type = 'jpg' }) => {
   const { width, height } = SIZE_MAP[size];
   return post.fake
     ? ''
-    : `${API_IMAGES_PATH}/${width}${height ? `-${height}` : ''}/${
-        post.key.split('/')[1]
-      }.${type}`;
+    : `https://photos.local.carpedalan.com/web/${
+        post.key.split('/')[1].split('.')[0]
+      }-${width}${height ? `-${height}` : ''}.${type}`;
 };
 
 /* eslint-disable react/prop-types */
@@ -76,12 +75,6 @@ export const getFullImageSrcSet = ({ post }) => (
     />
     <img
       src={getImagePath({ post, size: MEDIUM, type: 'jpg' })}
-      srcSet={`${getImagePath({
-        post,
-        size: SMALL,
-        type: 'jpg',
-      })} 1.5x,
-      ${getImagePath({ post, size: SMALL, type: 'jpg' })} 2x`}
       alt={post.description || post.key}
     />
   </>
@@ -90,25 +83,15 @@ export const getFullImageSrcSet = ({ post }) => (
 export const getSquareImageSrcSet = ({ post }) => (
   <>
     <source
-      srcSet={`${getImagePath({ post, size: SMALL_THUMB, type: 'webp' })}, 
-  ${getImagePath({ post, size: LARGE_THUMB, type: 'webp' })} 1.5x,
-  ${getImagePath({ post, size: LARGE_THUMB, type: 'webp' })} 2x`}
+      srcSet={getImagePath({ post, size: SMALL_THUMB, type: 'webp' })}
       type="image/webp"
     />
     <source
-      srcSet={`${getImagePath({ post, size: SMALL_THUMB, type: 'webp' })}, 
-  ${getImagePath({ post, size: LARGE_THUMB, type: 'webp' })} 1.5x,
-  ${getImagePath({ post, size: LARGE_THUMB, type: 'webp' })} 2x`}
+      srcSet={getImagePath({ post, size: SMALL_THUMB, type: 'jpg' })}
       type="image/jpg"
     />
     <img
       src={getImagePath({ post, size: SMALL_THUMB, type: 'jpg' })}
-      srcSet={`${getImagePath({
-        post,
-        size: LARGE_THUMB,
-        type: 'jpg',
-      })} 1.5x,
-      ${getImagePath({ post, size: LARGE_THUMB, type: 'jpg' })} 2x`}
       alt={post.description || post.key}
     />
   </>

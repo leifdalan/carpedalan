@@ -2,6 +2,7 @@ const API_PATH = '/api';
 const IMAGES_PATH = '/images';
 const API_IMAGES_PATH = `${API_PATH}${IMAGES_PATH}`;
 const DEFAULT_POSTS_PER_PAGE = 100;
+const CF_TIMEOUT = 1000 * 45;
 
 const PHOTOS = 'photos';
 // columns for photos
@@ -179,4 +180,5 @@ module.exports = {
   SQIP,
   TINY,
   DEFAULT_POSTS_PER_PAGE,
+  CF_TIMEOUT,
 };

@@ -7,6 +7,10 @@ const readUserAgent = request.agent(app);
 const writeUserAgent = request.agent(app);
 request = request(app);
 
+jest.mock('aws-cloudfront-sign', () => ({
+  getSignedCookies: jest.fn(() => ({})),
+}));
+
 describe('/tags', () => {
   beforeAll(async () => {
     await readUserAgent.post('/api/login').send({ password: 'testpublic' });

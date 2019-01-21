@@ -33,3 +33,7 @@ export const ssl = env.PGSSLMODE === 'require';
 export const ci = env.CI === 'true';
 // Optional
 export const logLevel = env.LOG_LEVEL === 'info';
+export const cdnDomain = env.CDN_DOMAIN;
+export const domain = env.DOMAIN;
+export const cfKey = env.CLOUDFRONT_KEY_ID;
+export const sercureCookie = isProd || isDev;

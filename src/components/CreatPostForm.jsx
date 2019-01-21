@@ -10,8 +10,8 @@ import { prop, propTrueFalse } from '../styles';
 import Flex from '../styles/FlexContainer';
 import Title from '../styles/Title';
 
+import PreviewImage from './PreviewImage';
 import Success from './Success';
-import Picture from './Picture';
 
 const Img = styled.div`
   position: relative;
@@ -118,7 +118,7 @@ const CreatePost = ({
               progress={aggregateProgress}
               animationTime={processingTime}
             >
-              <Picture
+              <PreviewImage
                 alt="preview"
                 width="100%"
                 src={preview.url}

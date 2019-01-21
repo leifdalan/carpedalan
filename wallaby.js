@@ -2,6 +2,7 @@ module.exports = function(wallaby) {
   return {
     files: [
       '**/*.js?(x)',
+      '**/*.hbs',
       '!**/__tests__/*.js?(x)',
       '!**/node_modules/**/*',
       '!devtools/**/*',
@@ -9,8 +10,8 @@ module.exports = function(wallaby) {
       '!dist/**/*',
       '!coverage/**/*',
       '!scripts/**/*',
-      '!**/__mocks__/**/*',
       '!**/cypress/**/*',
+      'api/__mocks__/*.*',
     ],
     filesWithNoCoverageCalculated: [
       'db/**/*',
@@ -35,7 +36,7 @@ module.exports = function(wallaby) {
       type: 'node',
       runner: 'node',
       params: {
-        env: `LOCAL_PATH=${process.cwd()};WALLABY=true;NODE_ENV=test;LOG_LEVEL=none;NODE_ENV=test;PG_HOST=localhost;PG_PORT=5555;PG_USER=postgres;PG_PASSWORD=postgres;SESSION_SECRET=test;PUBLIC_PASSWORD=testpublic;ADMIN_PASSWORD=testadmin;PG_DATABASE=carpedalan;PORT=3002`,
+        env: `LOCAL_PATH=${process.cwd()};WALLABY=true;NODE_ENV=test;LOG_LEVEL=none;NODE_ENV=test;PG_HOST=localhost;PG_PORT=5555;PG_USER=postgres;PG_PASSWORD=postgres;SESSION_SECRET=test;PUBLIC_PASSWORD=testpublic;ADMIN_PASSWORD=testadmin;PG_DATABASE=carpedalan;PORT=3002;CLOUDFRONT_KEY_ID=APKAIUIJTQRAIWFPJFEA`,
       },
     },
 

@@ -80,3 +80,4 @@ imageResizer/constants.js
 nginx/*.crt
 nginx/*.key
 nginx/*.pem
+*.pem

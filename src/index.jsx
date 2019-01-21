@@ -51,7 +51,7 @@ function Root({ user, defaultTheme, status }) {
       <WindowProvider>
         <ThemeProvider theme={themes[theme]}>
           <User.Provider value={{ user: userState, setUser }}>
-            <APIProvider>
+            <APIProvider user={userState}>
               <TagProvider>
                 <PostProvider>
                   <TagsPostProvider>

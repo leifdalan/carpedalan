@@ -57,8 +57,8 @@ const Picture = ({
         backgroundColor: placeholderColor,
       }}
     >
-      {shouldShowImage ? (
-        <StyledPicture as="picture">
+      {shouldShowImage && !post.fake ? (
+        <StyledPicture as="picture" data-test={post.key}>
           {type === 'original'
             ? getFullImageSrcSet({ post })
             : getSquareImageSrcSet({ post })}
@@ -79,7 +79,6 @@ Picture.defaultProps = {
 
 Picture.propTypes = {
   children: node,
-  src: string.isRequired,
   shouldShowImage: bool,
   ratio: number.isRequired,
   width: string.isRequired,
