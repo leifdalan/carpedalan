@@ -3,6 +3,7 @@ WORKDIR /app
 COPY yarn.lock .
 
 COPY package.json .
+RUN apk --update add curl git
 RUN yarn --production --ignore-optional
 COPY src/ ./src
 COPY server/ ./server
@@ -14,7 +15,6 @@ COPY .env.example .
 COPY index.js . 
 COPY scripts/ ./scripts
 COPY db/ ./db
-RUN apk --update add curl
 FROM base AS prod
 COPY .env .
 COPY pk-APKAIUIJTQRAIWFPJFEA.pem .
