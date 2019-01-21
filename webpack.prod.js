@@ -5,6 +5,7 @@ const webpack = require('webpack');
 const Manifest = require('webpack-manifest-plugin');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const CompressionPlugin = require('compression-webpack-plugin');
+const S3Plugin = require('webpack-s3-plugin');
 
 dotenv.config();
 
@@ -45,6 +46,17 @@ module.exports = {
     new CompressionPlugin({
       exclude: 'manifest.json',
       filename: '[path]',
+    }),
+    new S3Plugin({
+      // s3Options are required
+      s3Options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: 'us-west-2',
+      },
+      s3UploadOptions: {
+        Bucket: 'carpe-assets',
+      },
     }),
   ],
   optimization: {
