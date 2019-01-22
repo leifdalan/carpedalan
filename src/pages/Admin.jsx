@@ -208,7 +208,6 @@ const Admin = () => {
       );
       setSavingState(initialSavingState);
     },
-
     [files],
   );
 

@@ -36,7 +36,7 @@ module.exports = {
         },
         'react-select': {
           // eslint-disable-next-line
-                transform: 'react-virtualized/lib/${member}',
+                transform: 'react-select/lib/${member}',
           preventFullImport: true,
         },
       },
