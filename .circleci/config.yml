@@ -11,6 +11,30 @@ defaults: &defaults
 version: 2
 jobs:
 
+  stage: 
+    working_directory: ~/repo
+    parallelism: 1
+    steps:
+      - checkout
+      - run: 
+          name: Install AWS CLI
+          command: |
+              apk add curl=7.61.1-r1
+              pip install \
+              awscli==1.15.82
+
+      - run: 
+          name: Download heroku.sh
+          command: |
+              aws s3 cp s3://configurations-pipeline/heroku.sh .
+      - run: 
+          name: Release heroku
+          command: | 
+              source heroku.sh
+              ./scripts/releaseDocker.sh
+
+
+
   deploy: 
     machine: true
     working_directory: ~/repo
@@ -151,6 +175,19 @@ jobs:
               eval $(aws ecr get-login --region us-east-1 --no-include-email) 
               docker tag app "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
               docker push "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
+          name: Push image to heroku
+          command: | 
+            docker login --username=_ --password=${HEROKU_PASSWORD} registry.heroku.com
+            docker tag app registry.heroku.com/carpedalan/web
+            docker push registry.heroku.com/carpedalan/web
+            WEB_DOCKER_IMAGE_ID=`\
+                docker inspect \
+                registry.heroku.com/carpedalan/web \
+                --format={{.Id}} | sed -n 1p`
+                echo $WEB_DOCKER_IMAGE_ID
+            touch heroku.sh
+            echo "WEB_DOCKER_IMAGE_ID=${WEB_DOCKER_IMAGE_ID}" >> heroku.sh
+            aws s3 cp heroku.sh s3://configurations-pipeline/
       # - run: 
       #     name: Push image to Heroku registry
       #     command: |
@@ -292,9 +329,23 @@ workflows:
       - e2e:
           requires:
             - build
+      - stage: 
+          requires: 
+            - e2e
+            - lint
+            - integration
+            - unit_test
+          filters: 
+            branches: 
+              ignore: 
+                - master
       - deploy: 
           requires: 
             - e2e
             - lint
             - integration
             - unit_test
+          filters: 
+            branches: 
+              only: 
+                - master
