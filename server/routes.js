@@ -45,6 +45,7 @@ export default app => {
   app.get('/healthcheck', (req, res) => {
     res.status(200).json({
       farts: 'for your health',
+      clownpenis: 'dot fartz',
     });
   });
 
