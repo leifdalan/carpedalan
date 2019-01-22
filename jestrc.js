@@ -24,6 +24,10 @@ module.exports = {
   //   '\\.m?js$': 'esm',
   // },
   // transformIgnorePatterns: [],
+  transformIgnorePatterns: [
+    'node_modules/(?!(react-virtualized|react-select|)/)',
+  ],
+
   testEnvironment: 'node',
   roots: ['api', 'server'],
   setupTestFrameworkScriptFile: './api/setup/setupTests.js',

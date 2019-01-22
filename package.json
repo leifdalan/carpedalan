@@ -35,6 +35,9 @@
     "transform": {
       "^.+\\.jsx?$": "babel7-jest"
     },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-virtualized|react-select|)/)"
+    ],
     "roots": [
       "src"
     ],

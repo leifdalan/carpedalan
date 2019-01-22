@@ -33,7 +33,7 @@ export const getImagePath = ({ post, size, type = 'jpg', prefix = 'web' }) => {
 };
 
 export const getOriginalImagePath = ({ post }) =>
-  post.fake ? '' : `https://${cdn}${post.key}`;
+  post.fake ? '' : `https://${cdn}/${post.key}`;
 
 /* eslint-disable react/prop-types */
 export const getFullImageSrcSet = ({ post }) => (

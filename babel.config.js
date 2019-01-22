@@ -3,7 +3,7 @@ module.exports = {
     [
       '@babel/env',
       {
-        modules: false,
+        // modules: false,
         useBuiltIns: 'usage',
         targets: {
           browsers: ['last 2 versions', 'safari > 8', 'not ie < 11'],
@@ -19,6 +19,26 @@ module.exports = {
         ssr: true,
         displayName: true,
         preprocess: false,
+      },
+    ],
+    [
+      'transform-imports',
+      {
+        'react-router': {
+          // eslint-disable-next-line
+          transform: 'react-router/${member}',
+          preventFullImport: true,
+        },
+        'react-virtualized': {
+          // eslint-disable-next-line
+                transform: 'react-virtualized/dist/es/${member}',
+          preventFullImport: true,
+        },
+        'react-select': {
+          // eslint-disable-next-line
+                transform: 'react-virtualized/lib/${member}',
+          preventFullImport: true,
+        },
       },
     ],
   ],
