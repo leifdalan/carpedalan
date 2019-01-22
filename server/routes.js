@@ -16,7 +16,9 @@ export default app => {
       layout: false,
       session: JSON.stringify(req.session),
       clientAssets,
-      meta: JSON.stringify({}),
+      meta: JSON.stringify({
+        cdn: cdnDomain,
+      }),
     });
   });
 
@@ -25,7 +27,9 @@ export default app => {
       layout: false,
       session: JSON.stringify(req.session),
       clientAssets,
-      meta: JSON.stringify({}),
+      meta: JSON.stringify({
+        cdn: cdnDomain,
+      }),
     });
   });
 

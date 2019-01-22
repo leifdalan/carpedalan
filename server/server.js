@@ -122,6 +122,9 @@ export const setup = () => {
   // return { app };
 };
 
-export const start = expressApp => expressApp.listen(port);
+export const start = expressApp => {
+  console.log(`Listening on port ${port} `);
+  expressApp.listen(port);
+};
 
 export const stop = expressApp => expressApp.close();

@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { CellMeasurer } from 'react-virtualized';
+import CellMeasurer from 'react-virtualized/dist/es/CellMeasurer';
 import styled from 'styled-components';
 
 import usePrevious from '../hooks/usePrevious';

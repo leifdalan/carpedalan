@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { CellMeasurer } from 'react-virtualized';
+import CellMeasurer from 'react-virtualized/dist/es/CellMeasurer';
 import styled from 'styled-components';
 import isNumber from 'lodash/isNumber';
 

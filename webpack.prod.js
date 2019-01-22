@@ -6,6 +6,7 @@ const Manifest = require('webpack-manifest-plugin');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const CompressionPlugin = require('compression-webpack-plugin');
 const S3Plugin = require('webpack-s3-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 dotenv.config();
 
@@ -22,6 +23,19 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.jsx'],
+    // alias: {
+    //   'react-virtualized/List': 'react-virtualized/dist/es/List',
+    //   'react-virtualized/Grid': 'react-virtualized/dist/es/Grid',
+    //   'react-virtualized/CellMeasurer':
+    //     'react-virtualized/dist/es/CellMeasurer',
+    //   'react-virtualized/CellMeasurerCache':
+    //     'react-virtualized/dist/es/CellMeasurerCache',
+    //   'react-virtualized/AutoSizer': 'react-virtualized/dist/es/AutoSizer',
+    //   'react-virtualized/WindowScroller':
+    //     'react-virtualized/dist/es/WindowScroller',
+    //   'react-virtualized/InfiniteLoader':
+    //     'react-virtualized/dist/es/InfiniteLoader',
+    // },
   },
   module: {
     rules: [
@@ -43,6 +57,7 @@ module.exports = {
       },
     }),
     new Manifest(),
+    new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false }),
     new CompressionPlugin({
       exclude: 'manifest.json',
       filename: '[path]',
