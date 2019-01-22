@@ -56,12 +56,9 @@ export default function Grid({
   const previousSelectedIndex = usePrevious(selectIndex);
   const listRef = useRef(null);
 
-  useEffect(
-    () => {
-      fetchData(1);
-    },
-    [type],
-  );
+  useEffect(() => {
+    fetchData(1);
+  }, [type]);
 
   const isRowLoaded = width => ({ index }) =>
     !!data[index * Math.floor(width / POST_WIDTH)] &&
