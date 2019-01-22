@@ -79,7 +79,7 @@ services:
       timeout: 1s
       retries: 20
     networks:
-      - backend      
+      - backend
 
 networks:
   backend:
