@@ -11,6 +11,31 @@ defaults: &defaults
 version: 2
 jobs:
 
+  stage: 
+    machine: true
+    working_directory: ~/repo
+    parallelism: 1
+    steps:
+      - checkout
+      - run: 
+          name: Install AWS CLI
+          command: |
+              sudo apt-get install curl
+              pip install \
+              awscli==1.15.82
+
+      - run: 
+          name: Download heroku.sh
+          command: |
+              aws s3 cp s3://configurations-pipeline/heroku.sh .
+      - run: 
+          name: Release heroku
+          command: | 
+              source heroku.sh
+              ./scripts/releaseDocker.sh
+
+
+
   deploy: 
     machine: true
     working_directory: ~/repo
@@ -144,13 +169,26 @@ jobs:
             -t "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}" .
 
       - run:
-
           name: Push image to ECR repository
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
               eval $(aws ecr get-login --region us-east-1 --no-include-email) 
               docker tag app "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
               docker push "${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}"
+      - run: 
+          name: Push image to heroku
+          command: | 
+            docker login --username=_ --password=${HEROKU_PASSWORD} registry.heroku.com
+            docker tag app registry.heroku.com/carpedalan/web
+            docker push registry.heroku.com/carpedalan/web
+            WEB_DOCKER_IMAGE_ID=`\
+                docker inspect \
+                registry.heroku.com/carpedalan/web \
+                --format={{.Id}} | sed -n 1p`
+                echo $WEB_DOCKER_IMAGE_ID
+            touch heroku.sh
+            echo "WEB_DOCKER_IMAGE_ID=${WEB_DOCKER_IMAGE_ID}" >> heroku.sh
+            aws s3 cp heroku.sh s3://configurations-pipeline/
       # - run: 
       #     name: Push image to Heroku registry
       #     command: |
@@ -201,7 +239,10 @@ jobs:
           path: reports/junit
 
   migrate:
-    <<: *defaults
+    machine: true
+    working_directory: ~/repo
+    parallelism: 1
+
     steps:
       - checkout
       - restore_cache:
@@ -210,6 +251,11 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
+      - run: 
+          name: Install AWS CLI
+          command: |
+              pip install \
+              awscli==1.15.82
       
 
       - run: 
@@ -220,7 +266,7 @@ jobs:
 
       - run:
           name: "Migrate"
-          command: yarn migrate
+          command: NODE_ENV=production yarn migrate
 
   unit_test:
     <<: *defaults
@@ -286,15 +332,30 @@ workflows:
       - integration:
           requires:
             - dependencies
-      # - migrate:
-      #     requires:
-      #       - dependencies
+      - migrate:
+          requires:
+        #   change this to deploy
+            - dependencies
       - e2e:
           requires:
             - build
+      - stage: 
+          requires: 
+            - e2e
+            - lint
+            - integration
+            - unit_test
+        #   filters: 
+        #     branches: 
+        #       ignore: 
+        #         - master
       - deploy: 
           requires: 
             - e2e
             - lint
             - integration
             - unit_test
+        #   filters: 
+        #     branches: 
+        #       only: 
+        #         - master
