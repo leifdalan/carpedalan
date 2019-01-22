@@ -26,10 +26,10 @@
   "jest": {
     "coverageThreshold": {
       "global": {
-        "statements": 70.5,
-        "branches": 40.5,
-        "functions": 50.5,
-        "lines": 75
+        "statements": 40.5,
+        "branches": 10.5,
+        "functions": 20.5,
+        "lines": 20
       }
     },
     "transform": {
@@ -45,6 +45,8 @@
       "default",
       "jest-junit"
     ],
+    "coverageDirectory": "reports/coverage",
+    "coverageReporters": ["json", "lcov", "text", "clover"],
     "setupTestFrameworkScriptFile": "./setupTests.js"
   },
   "lint-staged": {
