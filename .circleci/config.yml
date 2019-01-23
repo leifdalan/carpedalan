@@ -239,10 +239,7 @@ jobs:
           path: reports/junit
 
   migrate:
-    machine: true
-    working_directory: ~/repo
-    parallelism: 1
-
+    <<: *defaults
     steps:
       - checkout
       - restore_cache:
@@ -252,21 +249,19 @@ jobs:
           - v1-dependencies-
 
       - run: 
-          name: Install AWS CLI
+          name: Get env file
           command: |
-              pip install \
-              awscli==1.15.82
+              ./scripts/getFromS3.js
+              ls -al
+              cat .env
       
-
-      - run: 
-          name: Fetch config
-          command: |
-            aws s3 cp s3://configurations-pipeline/.env . 
-
 
       - run:
           name: "Migrate"
-          command: NODE_ENV=production yarn migrate
+          command: |
+            ls -al
+            NODE_ENV=production yarn migrate
+
 
   unit_test:
     <<: *defaults
