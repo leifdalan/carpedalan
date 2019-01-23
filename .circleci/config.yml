@@ -32,6 +32,7 @@ jobs:
           name: Release heroku
           command: | 
               source heroku.sh
+              echo $WEB_DOCKER_IMAGE_ID
               ./scripts/releaseDocker.sh
 
 
@@ -252,15 +253,13 @@ jobs:
           name: Get env file
           command: |
               ./scripts/getFromS3.js
-              ls -al
-              cat .env
       
 
       - run:
           name: "Migrate"
           command: |
             ls -al
-            NODE_ENV=production yarn migrate
+            NODE_ENV=production MIGRATING=true yarn knex migrate:latest --knexfile db/knexfile.js
 
 
   unit_test:
@@ -329,8 +328,7 @@ workflows:
             - dependencies
       - migrate:
           requires:
-        #   change this to deploy
-            - dependencies
+            - deploy
       - e2e:
           requires:
             - build
@@ -340,17 +338,17 @@ workflows:
             - lint
             - integration
             - unit_test
-        #   filters: 
-        #     branches: 
-        #       ignore: 
-        #         - master
+          filters: 
+            branches: 
+              ignore: 
+                - master
       - deploy: 
           requires: 
             - e2e
             - lint
             - integration
             - unit_test
-        #   filters: 
-        #     branches: 
-        #       only: 
-        #         - master
+          filters: 
+            branches: 
+              only: 
+                - master
