@@ -11,6 +11,7 @@ import { API } from './APIProvider';
 import { Window } from './WindowProvider';
 import addPlaceholderColor from './postUtils';
 
+let progressMap = {};
 export const Posts = createContext({
   posts: [],
   getPosts: () => {},
@@ -48,8 +49,8 @@ const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState({});
   const [postsWithFakes, setPostsWithFakes] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
+  const [progressState, setProgressState] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const [progressMap, setProgressMap] = useState({});
 
   const cache = new CellMeasurerCache({
     fixedWidth: true,
@@ -136,8 +137,9 @@ const PostProvider = ({ children }) => {
         .send(s3FormData)
         .on('progress', e => {
           if (e.percent) {
-            setProgressMap({ ...progressMap, [index]: e.percent });
-            console.error('progress', e.percent); // eslint-disable-line
+            progressMap = { ...progressMap, [index]: e.percent };
+            setProgressState(progressMap);
+            // console.error('progress', e.percent); // eslint-disable-line
             if (e.percent === 100) {
               afterUploadStart = performance.now();
             }
@@ -166,7 +168,7 @@ const PostProvider = ({ children }) => {
         delPost,
         invalidateAll,
         createPost,
-        progressMap,
+        progressMap: progressState,
         bulkEdit,
       }}
     >

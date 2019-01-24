@@ -36,6 +36,7 @@ const Picture = ({
       position: 'relative',
       width,
     }}
+    className="preview"
     {...etc}
   >
     <div

@@ -18,27 +18,30 @@ const Img = styled.div`
   ${props =>
     props.orientation === 'portrait'
       ? css`
-          padding-top: 100%;
+          padding-top: 25%;
           position: relative;
-          > div {
+          .preview {
             position: absolute;
             top: 0;
             left: 0;
-            transform-origin: 37.5%;
+            transform-origin: 62.5%;
             transform: rotate(90deg);
           }
         `
       : null}
   :after {
-    position: absolute;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    content: '';
-    bottom: 0;
-    left: 0;
-    height: ${prop('progress')}%;
-    transition: height ${prop('animationTime')}ms linear;
   }
+`;
+
+const Progress = styled.div`
+  position: absolute;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  content: '';
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  transition: height ${prop('animationTime')}ms linear;
 `;
 
 Img.defaultProps = {
@@ -112,6 +115,13 @@ const CreatePost = ({
               progress={aggregateProgress}
               animationTime={processingTime}
             >
+              <Progress
+                progress={aggregateProgress}
+                animationTime={processingTime}
+                style={{
+                  height: `${aggregateProgress}%`,
+                }}
+              />
               <PreviewImage
                 alt="preview"
                 width="100%"

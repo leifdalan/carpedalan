@@ -43,14 +43,12 @@ const StyledButton = styled(Button)`
       position: 
       background-color: green;
       :after {
-      transition: width ${prop(
-        'averageTime',
-      )}ms ease-in-out, background-color 500ms linear;
+      transition: width 200ms ease-in-out, background-color 500ms linear;
         position: absolute;
         top: 0;
         left: 0
         height: 100%;
-        width: ${prop('progress')}%
+        /* width: ${prop('progress')}% */
         background-color: rgba(0,0,0,.5);
         content: ''
       }
@@ -84,18 +82,20 @@ const Admin = () => {
   const [averageTime, setAverageTime] = useState(3000);
   const [processingTime, setProcessTime] = useState(3000);
   const [showReport, setShowReport] = useState(false);
+  const [startTime, setStartTime] = useState(null);
 
   const fileInputRef = useRef();
 
   const submitAll = async () => {
+    setStartTime(performance.now());
     let hasFailure = false;
     let innerSavingState = { ...savingState };
     const executionTimes = [];
     await Object.keys(formMap).reduce(async (promiseChain, index) => {
-      const chainedResponses = [];
+      let chainedResponses = [];
       let fileValue;
       try {
-        // chainedResponses = await promiseChain;
+        chainedResponses = await promiseChain;
         innerSavingState = {
           ...innerSavingState,
           [index]: {
@@ -153,7 +153,7 @@ const Admin = () => {
         setSavingState(innerSavingState);
       }
     }, Promise.resolve([]));
-    setSubmitAll(false);
+    // setSubmitAll(false);
     if (hasFailure) setShowReport(true);
   };
 
@@ -168,6 +168,26 @@ const Admin = () => {
     }
     return () => clearInterval(interval);
   }, [timeRemaining]);
+
+  // useEffect(() => {
+  //   if (Object.keys(progressMap).length === 0) {
+  //     setProgress(0);
+  //     setClockValue(0);
+  //   } else {
+  //     const now = performance.now();
+  //     const total = Object.keys(progressMap).reduce(
+  //       (acc, key) => progressMap[key] + acc,
+  //       0,
+  //     );
+  //     const decimalDone = total / Object.keys(progressMap).length / 100;
+  //     const elapsed = now - startTime;
+  //     const totalProjected = elapsed / decimalDone;
+  //     const remaining = totalProjected - elapsed;
+
+  //     setClockValue(remaining);
+  //     setProgress(Math.floor(total / Object.keys(progressMap).length));
+  //   }
+  // }, [progressMap]);
 
   useEffect(() => {
     if (submit) submitAll();
@@ -273,10 +293,10 @@ const Admin = () => {
       100,
   );
 
-  const formatClockValue = () => {
-    if (!clockValue) return '?';
-    const minutes = Math.floor(clockValue / 1000 / 60);
-    const seconds = (clockValue / 1000 / 60 - minutes) * 60;
+  const formatClockValue = (value = clockValue) => {
+    if (!value) return '?';
+    const minutes = Math.floor(value / 1000 / 60);
+    const seconds = (value / 1000 / 60 - minutes) * 60;
     return `${minutes}m ${Math.floor(seconds)}s`;
   };
 
@@ -319,11 +339,10 @@ const Admin = () => {
               setSubmitAll(true);
             }}
             submitting={submit}
-            progress={overall + 100 / Object.keys(savingState).length}
+            progress={overall}
             averageTime={averageTime}
           >
-            {/* eslint-disable */}
-            {submit ? (
+            {overall > 0 && overall < 100 ? (
               <>
                 <div>{`Overall: ${overall}%`}</div>
                 <div>{`Queued: ${queued.length}`}</div>
@@ -331,14 +350,13 @@ const Admin = () => {
                 <div>{`Rejected: ${rejected.length}`}</div>
                 <div>{`Time Remaining: ${formatClockValue()}`}</div>
               </>
-            ) : overall === 100 ? (
-              `Submitted ${succeeded.length} ${
-                rejected ? `${rejected.length} failed` : ''
-              }`
-            ) : (
-              'Submit All'
-            )}
-            {/* eslint-enable */}
+            ) : null}
+            {overall === 0 ? 'Submit All' : null}
+            {overall === 100
+              ? `Submitted ${succeeded.length} ${
+                  rejected ? `${rejected.length} failed` : ''
+                } in ${formatClockValue(performance.now() - startTime)}`
+              : null}
           </StyledButton>
           {overall === 100 ? (
             <StyledButton
