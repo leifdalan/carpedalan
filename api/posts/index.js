@@ -27,6 +27,8 @@ import {
 } from '../../shared/constants';
 import log from '../../src/utils/log';
 
+import upload from './upload';
+
 // Create S3 interface object
 const s3 = new S3({ region: 'us-west-2' });
 // Use memory storage for multer "store" - note: will hold file buffers
@@ -38,6 +40,8 @@ const storage = multer.memoryStorage();
 const uploadMiddleware = multer({ storage });
 
 const posts = express.Router();
+
+posts.use('/upload', upload);
 
 posts.delete('/:id', isAdmin, async (req, res) => {
   try {
@@ -163,74 +167,73 @@ posts.post(
     let exifData;
     let pgResponse;
     const description = req.body[DESCRIPTION];
+    const { name } = req.body;
     const tags = req.body[TAGS] ? req.body[TAGS].split(',') : false;
-    // Parse exif data for original timestamp and other
-    // metadata
-    // console.time('exif');
-    try {
-      const parser = exif.create(req.file.buffer);
-      exifData = parser.parse();
-    } catch (e) {
-      return res.status(500).json({
-        type: 'EXIF parsing error',
-        error: e,
-      });
-    }
+    // // Parse exif data for original timestamp and other
+    // // metadata
+    // // console.time('exif');
+    // try {
+    //   const parser = exif.create(req.file.buffer);
+    //   exifData = parser.parse();
+    // } catch (e) {
+    //   return res.status(500).json({
+    //     type: 'EXIF parsing error',
+    //     error: e,
+    //   });
+    // }
     // console.timeEnd('exif');
 
     // console.time('sharp');
-    let buffer;
-    try {
-      buffer = await sharp(req.file.buffer)
-        .rotate()
-        .toBuffer();
-    } catch (e) {
-      return res.status(500).json({
-        type: 'Sharp error',
-        error: e,
-      });
-    }
+    // let buffer;
+    // try {
+    //   buffer = await sharp(req.file.buffer)
+    //     .rotate()
+    //     .toBuffer();
+    // } catch (e) {
+    //   return res.status(500).json({
+    //     type: 'Sharp error',
+    //     error: e,
+    //   });
+    // }
     // console.timeEnd('sharp');
     // Upload to s3
     // console.time('s3');
-    try {
-      s3Response = await s3
-        .upload({
-          Key: `original/${req.file.originalname}`,
-          Bucket: bucket,
-          Body: buffer,
-          Region: 'us-west-2',
-          ContentType: 'image/jpeg',
-        })
-        .promise();
-    } catch (e) {
-      log.error(e);
-      return res.status(500).json({
-        type: 'AWS Error',
-        error: e,
-      });
-    }
+    // try {
+    //   s3Response = await s3
+    //     .upload({
+    //       Key: `original/${req.file.originalname}`,
+    //       Bucket: bucket,
+    //       Body: buffer,
+    //       Region: 'us-west-2',
+    //       ContentType: 'image/jpeg',
+    //     })
+    //     .promise();
+    // } catch (e) {
+    //   log.error(e);
+    //   return res.status(500).json({
+    //     type: 'AWS Error',
+    //     error: e,
+    //   });
+    // }
     // console.timeEnd('s3');
 
     // Transact photos and tags, depending
     try {
-      const validExifData = Object.keys(EXIFPROPS).reduce(
-        (acc, key) => ({
-          ...acc,
-          ...(exifData.tags[key]
-            ? { [EXIFPROPS[key]]: exifData.tags[key] }
-            : {}),
-        }),
-        {},
-      );
+      // const validExifData = Object.keys(EXIFPROPS).reduce(
+      //   (acc, key) => ({
+      //     ...acc,
+      //     ...(exifData.tags[key]
+      //       ? { [EXIFPROPS[key]]: exifData.tags[key] }
+      //       : {}),
+      //   }),
+      //   {},
+      // );
       await db.transaction(trx =>
         trx(PHOTOS)
           .insert({
-            [TIMESTAMP]: exifData.tags.DateTimeOriginal,
-            [ETAG]: s3Response.ETag,
-            [KEY]: s3Response.Key,
+            [KEY]: `original/${name}`,
             [DESCRIPTION]: description,
-            ...validExifData,
+            status: 'deleted',
           })
           .returning('*')
           .then(photo => {

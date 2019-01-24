@@ -2,10 +2,12 @@
 
 const sharp = require('sharp');
 const aws = require('aws-sdk');
-// const sqip = require('sqip');
-// const knex = require('knex');
+const sqip = require('sqip');
+const knex = require('knex');
+const exif = require('exif-parser');
+const pg = require('pg');
 
-const { SIZES } = require('./constants');
+const { SIZES, EXIFPROPS } = require('./constants');
 
 const s3 = new aws.S3();
 
@@ -41,6 +43,14 @@ exports.handler = async (event, context, ...otherThingz) => {
   }
   let resized;
   let rotated;
+  let exifData;
+  let withoutOriginal;
+  try {
+    const parser = exif.create(buffer);
+    exifData = parser.parse();
+  } catch (e) {
+    console.log('exif error', e);
+  }
   try {
     console.time('sharp');
     rotated = await sharp(buffer.Body)
@@ -74,7 +84,7 @@ exports.handler = async (event, context, ...otherThingz) => {
   let response;
   try {
     console.time('put');
-    const withoutOriginal = key.split('/')[1];
+    withoutOriginal = key.split('/')[1];
     const withoutExtension = withoutOriginal.split('.')[0];
     const putPromises = resized.map((resize, index) => {
       const isJpeg = index < SIZES.length;
@@ -94,7 +104,7 @@ exports.handler = async (event, context, ...otherThingz) => {
     });
 
     const rotatedOriginalPromise = s3.upload({
-      Key: event.Records[0].s3.object.key,
+      Key: `original/${withoutOriginal}`,
       Bucket: bucket,
       Body: rotated,
       ContentType: 'image/jpeg',
@@ -106,6 +116,37 @@ exports.handler = async (event, context, ...otherThingz) => {
     throw e;
   } finally {
     console.timeEnd('put');
+  }
+
+  // Update record
+  try {
+    const validExifData = Object.keys(EXIFPROPS).reduce(
+      (acc, exifKey) => ({
+        ...acc,
+        ...(exifData.tags[exifKey]
+          ? { [EXIFPROPS[exifKey]]: exifData.tags[exifKey] }
+          : {}),
+      }),
+      {},
+    );
+    const db = knex({
+      client: 'pg',
+      connection: process.env.PG_URI,
+      pool: {
+        min: 2,
+        max: 10,
+      },
+    });
+    const response = await db('photos')
+      .update({
+        ...validExifData,
+      })
+      .where({
+        key: `original/${withoutOriginal}`,
+      });
+    console.log(response);
+  } catch (e) {
+    console.log('PG error', e);
   }
 
   console.timeEnd('fire');

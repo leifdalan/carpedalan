@@ -81,3 +81,4 @@ nginx/*.crt
 nginx/*.key
 nginx/*.pem
 *.pem
+upload/*

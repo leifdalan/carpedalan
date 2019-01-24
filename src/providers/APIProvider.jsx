@@ -34,6 +34,12 @@ export default function APIProvider({ children, user }) {
     setLoading(false);
     return req;
   };
+  const put = (...args) => {
+    setLoading(true);
+    const req = request.patch(...args);
+    setLoading(false);
+    return req;
+  };
 
   // Function that calls the refresh endpoint with blunt error tolerance. This endpoing
   // refreshes the signed cookie for the private cloudfront distrobution
@@ -87,7 +93,7 @@ export default function APIProvider({ children, user }) {
   };
 
   return (
-    <API.Provider value={{ patch, get, post, del, loading }}>
+    <API.Provider value={{ patch, put, get, post, del, loading }}>
       {children}
       {error ? <Toast>{error}</Toast> : null}
     </API.Provider>

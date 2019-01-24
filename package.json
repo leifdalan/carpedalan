@@ -46,7 +46,12 @@
       "jest-junit"
     ],
     "coverageDirectory": "reports/coverage",
-    "coverageReporters": ["json", "lcov", "text", "clover"],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover"
+    ],
     "setupTestFrameworkScriptFile": "./setupTests.js"
   },
   "lint-staged": {
@@ -101,6 +106,7 @@
     "connect-pg-simple": "^5.0.0",
     "cookie-parser": "^1.4.3",
     "date-fns": "2.0.0-alpha.26",
+    "docker-compose": "^0.10.0",
     "dotenv-safe": "^6.1.0",
     "eslint-plugin-react-hooks": "^0.0.0",
     "esm": "^3.0.84",
@@ -132,6 +138,7 @@
     "sharp": "^0.21.1",
     "styled-components": "^4.1.3",
     "superagent": "^4.1.0",
+    "up": "^1.0.2",
     "uuid": "^3.3.2",
     "webpack": "^4.28.3",
     "webpack-bundle-analyzer": "^3.0.3",

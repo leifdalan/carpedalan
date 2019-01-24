@@ -5,7 +5,7 @@ import { CellMeasurerCache } from 'react-virtualized/dist/es/CellMeasurer';
 
 import { API_PATH, DEFAULT_POSTS_PER_PAGE } from '../../shared/constants';
 import log from '../utils/log';
-import { performance } from '../utils/globals';
+import { performance, FormData } from '../utils/globals';
 
 import { API } from './APIProvider';
 import { Window } from './WindowProvider';
@@ -44,7 +44,7 @@ const addFakePosts = ({ posts, meta }) => {
 
 const PostProvider = ({ children }) => {
   const { width } = useContext(Window);
-  const { patch, get, post, del } = useContext(API);
+  const { patch, get, put, post, del } = useContext(API);
   const [posts, setPosts] = useState({});
   const [postsWithFakes, setPostsWithFakes] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
@@ -122,11 +122,18 @@ const PostProvider = ({ children }) => {
     return null;
   };
 
-  const createPost = async (formData, index = 0) => {
+  const createPost = async ({ description, tags, index = 0, file }) => {
     try {
+      const { name, type } = file;
+      const res = await get('/api/posts/upload', { type, name });
+      const s3FormData = new FormData();
+      Object.keys(res.body.params).forEach(key =>
+        s3FormData.append(key, res.body.params[key]),
+      );
+      s3FormData.append('file', file);
       let afterUploadStart;
-      const response = await post(`${API_PATH}/posts`)
-        .send(formData)
+      await post(res.body.upload_url)
+        .send(s3FormData)
         .on('progress', e => {
           if (e.percent) {
             setProgressMap({ ...progressMap, [index]: e.percent });
@@ -136,11 +143,12 @@ const PostProvider = ({ children }) => {
             }
           }
         });
+      const apiResponse = await post('/api/posts', { tags, description, name });
       const timeEnd = performance.now();
       invalidateAll();
       const processTime = timeEnd - afterUploadStart;
 
-      return { response: response.body, processTime };
+      return { response: apiResponse.body, processTime };
     } catch (e) {
       log.error(e);
       return Promise.reject(e);

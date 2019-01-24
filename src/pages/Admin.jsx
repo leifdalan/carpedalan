@@ -92,10 +92,10 @@ const Admin = () => {
     let innerSavingState = { ...savingState };
     const executionTimes = [];
     await Object.keys(formMap).reduce(async (promiseChain, index) => {
-      let chainedResponses = [];
+      const chainedResponses = [];
       let fileValue;
       try {
-        chainedResponses = await promiseChain;
+        // chainedResponses = await promiseChain;
         innerSavingState = {
           ...innerSavingState,
           [index]: {
@@ -104,15 +104,18 @@ const Admin = () => {
         };
         const timeStart = performance.now();
         fileValue = fileInputRef.current.files[index];
-
         const formData = new FormData();
-        Object.keys(formMap[index]).forEach(key =>
-          formData.append(key, formMap[index][key]),
-        );
+        // Object.keys(formMap[index]).forEach(key =>
+        //   formData.append(key, formMap[index][key]),
+        // );
         if (formMap[index].description === 'fail') throw Error('failure');
-        formData.append('photo', fileValue);
         setSavingState(innerSavingState);
-        const { processTime, response } = await createPost(formData, index);
+        const { processTime, response } = await createPost({
+          index,
+          description: formMap[index].description,
+          tags: formMap[index].tags,
+          file: fileValue,
+        });
         setProcessTime(processTime);
 
         const timeEnd = performance.now();

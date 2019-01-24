@@ -37,6 +37,8 @@ export const ci = env.CI === 'true';
 export const logLevel = env.LOG_LEVEL === 'info';
 export const cdnDomain = env.CDN_DOMAIN;
 export const domain = env.DOMAIN;
+export const awsAccessKeyId = env.AWS_ACCESS_KEY_ID;
+export const awsSecretAccessKey = env.AWS_SECRET_ACCESS_KEY;
 export const cfKey = env.CLOUDFRONT_KEY_ID;
 export const secureCookie = isProd || isDev;
 console.log('secureCookie', secureCookie); // eslint-disable-line

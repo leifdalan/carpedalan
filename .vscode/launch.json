@@ -20,7 +20,7 @@
       "type": "chrome",
       "request": "attach",
       "port": 9222,
-      "url": "http://carpe*",
+      "url": "http://*carpe*",
       "webRoot": "${workspaceFolder}",
       "sourceMaps": true
     }

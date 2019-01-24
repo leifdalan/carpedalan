@@ -328,7 +328,7 @@ workflows:
             - dependencies
       - migrate:
           requires:
-            - deploy
+            - stage
       - e2e:
           requires:
             - build
