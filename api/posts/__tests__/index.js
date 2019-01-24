@@ -79,25 +79,6 @@ describe('/posts', () => {
         .attach('photo', photo);
       expect(status).toBe(200);
     });
-
-    it('should throw if s3 throws', async () => {
-      aws.s3Promise.mockImplementation(() => Promise.reject());
-      const { status, body } = await writeUserAgent
-        .post('/api/posts')
-        .attach('photo', photo);
-      expect(status).toBe(500);
-      expect(body).toMatchObject({
-        type: 'AWS Error',
-      });
-    });
-
-    it('should call s3 with the correct key', async () => {
-      aws.s3Promise.mockImplementation(() => Promise.resolve({}));
-      await writeUserAgent.post('/api/posts').attach('photo', photo);
-      expect(aws.uploadMock.mock.calls[0][0]).toMatchObject({
-        Key: 'original/kitty2.jpg',
-      });
-    });
   });
 
   describe('PATCH', () => {
@@ -163,17 +144,15 @@ describe('/posts', () => {
   });
 
   describe('GET (single)', () => {
-    it('should get a post', async () => {
+    it('should return a 404 even if a post is successful', async () => {
       aws.s3Promise.mockImplementation(() => Promise.resolve({}));
-      const { status, body } = await writeUserAgent
-        .post('/api/posts')
-        .attach('photo', photo);
+      const { status, body } = await writeUserAgent.post('/api/posts');
       expect(status).toBe(200);
 
       const { status: getStatus } = await writeUserAgent.get(
         `/api/posts/${body.id}`,
       );
-      expect(getStatus).toBe(200);
+      expect(getStatus).toBe(404);
     });
 
     it('should return a 500 if the id is bad exist', async () => {

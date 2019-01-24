@@ -2,10 +2,10 @@
 
 const sharp = require('sharp');
 const aws = require('aws-sdk');
-const sqip = require('sqip');
+// const sqip = require('sqip');
 const knex = require('knex');
 const exif = require('exif-parser');
-const pg = require('pg');
+// const pg = require('pg');
 
 const { SIZES, EXIFPROPS } = require('./constants');
 
@@ -137,14 +137,14 @@ exports.handler = async (event, context, ...otherThingz) => {
         max: 10,
       },
     });
-    const response = await db('photos')
+    const pgResponse = await db('photos')
       .update({
         ...validExifData,
       })
       .where({
         key: `original/${withoutOriginal}`,
       });
-    console.log(response);
+    console.log(pgResponse);
   } catch (e) {
     console.log('PG error', e);
   }

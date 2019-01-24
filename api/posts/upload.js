@@ -8,12 +8,6 @@ import {
 
 const crypto = require('crypto');
 
-console.error(
-  'awsAccessKeyId, awsSecretAccessKey',
-  awsAccessKeyId,
-  awsSecretAccessKey,
-);
-
 const awsS3Config = {
   bucket,
   access_key: awsAccessKeyId,
@@ -56,10 +50,9 @@ function getS3Parameters(config, filename) {
       { 'x-amz-date': `${dateString}T000000Z` },
     ],
   };
-  console.log(policy);
 
   // base64 encode policy
-  const policyBase64 = new Buffer(JSON.stringify(policy)).toString('base64');
+  const policyBase64 = Buffer.from(JSON.stringify(policy)).toString('base64');
 
   // create signature with policy, aws secret key & other scope information
   const dateKey = createHmacDigest(`AWS4${config.secret_key}`, dateString);
@@ -96,16 +89,14 @@ function getS3Credentials(config, filename) {
   return result;
 }
 
-upload.get('/', (req, res, next) => {
-  console.log('hi there');
-  const { name, type } = req.query;
+upload.get('/', (req, res) => {
+  const { name } = req.query;
   try {
     const result = getS3Credentials(awsS3Config, name);
-    console.error('result', result);
 
     res.status(201).json(result);
   } catch (e) {
-    console.log(e);
+    console.log(e); // eslint-disable-line no-console
   }
 });
 

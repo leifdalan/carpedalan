@@ -104,10 +104,6 @@ const Admin = () => {
         };
         const timeStart = performance.now();
         fileValue = fileInputRef.current.files[index];
-        const formData = new FormData();
-        // Object.keys(formMap[index]).forEach(key =>
-        //   formData.append(key, formMap[index][key]),
-        // );
         if (formMap[index].description === 'fail') throw Error('failure');
         setSavingState(innerSavingState);
         const { processTime, response } = await createPost({

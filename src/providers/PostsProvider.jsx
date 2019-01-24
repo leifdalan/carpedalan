@@ -44,7 +44,7 @@ const addFakePosts = ({ posts, meta }) => {
 
 const PostProvider = ({ children }) => {
   const { width } = useContext(Window);
-  const { patch, get, put, post, del } = useContext(API);
+  const { patch, get, post, del } = useContext(API);
   const [posts, setPosts] = useState({});
   const [postsWithFakes, setPostsWithFakes] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });

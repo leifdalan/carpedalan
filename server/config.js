@@ -3,7 +3,6 @@ import path from 'path';
 import dotenv from 'dotenv-safe';
 
 let { env } = process;
-console.log('test', env.FARTS); // eslint-disable-line
 if (env.NODE_ENV === 'test' && !env.WALLABY) {
   env = dotenv.config({
     path: '.env.test',
@@ -41,4 +40,3 @@ export const awsAccessKeyId = env.AWS_ACCESS_KEY_ID;
 export const awsSecretAccessKey = env.AWS_SECRET_ACCESS_KEY;
 export const cfKey = env.CLOUDFRONT_KEY_ID;
 export const secureCookie = isProd || isDev;
-console.log('secureCookie', secureCookie); // eslint-disable-line

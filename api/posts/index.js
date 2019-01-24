@@ -1,17 +1,13 @@
 import express from 'express';
-import { S3 } from 'aws-sdk';
 import multer from 'multer';
-import exif from 'exif-parser';
-import sharp from 'sharp';
 
-import { bucket } from '../../server/config';
 import db from '../../server/db';
 import { isLoggedIn, isAdmin } from '../../server/middlewares';
 import {
   ACTIVE,
+  DEFAULT_POSTS_PER_PAGE,
   DELETED,
   DESCRIPTION,
-  ETAG,
   ID,
   KEY,
   NAME,
@@ -22,15 +18,11 @@ import {
   TAG_ID,
   TAGS,
   TIMESTAMP,
-  EXIFPROPS,
-  DEFAULT_POSTS_PER_PAGE,
 } from '../../shared/constants';
 import log from '../../src/utils/log';
 
 import upload from './upload';
 
-// Create S3 interface object
-const s3 = new S3({ region: 'us-west-2' });
 // Use memory storage for multer "store" - note: will hold file buffers
 // in-memory! Considering writing custom store that streams to S3 if this
 // becomes a problem
@@ -163,8 +155,6 @@ posts.post(
   },
 
   async (req, res) => {
-    let s3Response;
-    let exifData;
     let pgResponse;
     const description = req.body[DESCRIPTION];
     const { name } = req.body;
