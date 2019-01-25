@@ -169,7 +169,7 @@ posts.post('', isAdmin, async (req, res) => {
       error: e,
     });
   }
-  // log.info(s3Response[0]);
+
   return res.json(pgResponse[0]);
 });
 

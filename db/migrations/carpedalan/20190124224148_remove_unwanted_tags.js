@@ -20,22 +20,28 @@ exports.up = async knex => {
     .orWhere('name', 'space jams')
     .orWhere('name', 'bathtime')
     .delete();
-  const { id } = await knex(TAGS)
+
+  const tagResults = await knex(TAGS)
     .select('id')
     .where('name', 'dealwithit')
     .first();
-  const { id: badId } = await knex(TAGS)
+
+  const secondTagResults = await knex(TAGS)
     .select('id')
     .where('name', 'deal with it')
     .first();
 
-  await knex(PHOTOS_TAGS)
-    .update('tagId', id)
-    .where('tagId', badId);
+  if (tagResults && secondTagResults) {
+    const { id } = tagResults;
+    const { id: badId } = secondTagResults;
+    await knex(PHOTOS_TAGS)
+      .update('tagId', id)
+      .where('tagId', badId);
 
-  await knex(TAGS)
-    .where('name', 'deal with it')
-    .delete();
+    await knex(TAGS)
+      .where('name', 'deal with it')
+      .delete();
+  }
 };
 
 exports.down = knex => knex.schema.dropTable('photos_tags');
