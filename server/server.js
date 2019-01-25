@@ -107,6 +107,10 @@ export const setup = () => {
   // Define routes
   router(app);
 
+  if (isProd) {
+    const Sentry = require('@sentry/node'); // eslint-disable-line
+    app.use(Sentry.Handlers.errorHandler());
+  }
   // Winston error logger
   app.use(
     expressWinston.errorLogger({

@@ -93,6 +93,8 @@
     "@babel/plugin-proposal-class-properties": "^7.2.3",
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
+    "@sentry/browser": "^4.5.3",
+    "@sentry/node": "^4.5.3",
     "aws-cloudfront-sign": "^2.2.0",
     "aws-sdk": "^2.383.0",
     "babel-loader": "^8.0.5",
