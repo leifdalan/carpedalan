@@ -16,6 +16,7 @@ export default app => {
       layout: false,
       session: JSON.stringify(req.session),
       clientAssets,
+      isProd,
       meta: JSON.stringify({
         cdn: cdnDomain,
       }),
@@ -26,6 +27,7 @@ export default app => {
     res.render('index', {
       layout: false,
       session: JSON.stringify(req.session),
+      isProd,
       clientAssets,
       meta: JSON.stringify({
         cdn: cdnDomain,
@@ -39,6 +41,7 @@ export default app => {
     } else {
       res.render('index', {
         layout: false,
+        isProd,
         session: JSON.stringify(req.session),
         clientAssets,
         meta: JSON.stringify({ cdn: cdnDomain }),
@@ -56,6 +59,7 @@ export default app => {
   app.use('*', (req, res) => {
     res.status(404).render('index', {
       layout: false,
+      isProd,
       session: JSON.stringify(req.session),
       meta: JSON.stringify({
         status: 404,

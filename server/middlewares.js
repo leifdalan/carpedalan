@@ -60,6 +60,7 @@ export const isLoggedIn = (req, res, next) => {
       session: JSON.stringify(req.session),
       clientAssets,
       meta: {},
+      isProd,
     });
   } else {
     setSignedCloudfrontCookie(res);
