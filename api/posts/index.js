@@ -1,5 +1,4 @@
 import express from 'express';
-import multer from 'multer';
 
 import db from '../../server/db';
 import { isLoggedIn, isAdmin } from '../../server/middlewares';
@@ -22,14 +21,6 @@ import {
 import log from '../../src/utils/log';
 
 import upload from './upload';
-
-// Use memory storage for multer "store" - note: will hold file buffers
-// in-memory! Considering writing custom store that streams to S3 if this
-// becomes a problem
-// -------- This is a problem ahhahaha
-const storage = multer.memoryStorage();
-// Create middleware object
-const uploadMiddleware = multer({ storage });
 
 const posts = express.Router();
 
@@ -141,118 +132,46 @@ posts.get('/:id', isLoggedIn, async (req, res) => {
   }
 });
 
-posts.post(
-  '',
-  isAdmin,
-  (req, res, next) => {
-    // console.time('middleWare');
-    next();
-  },
-  uploadMiddleware.single('photo'),
-  (req, res, next) => {
-    // console.timeEnd('middleWare');
-    next();
-  },
+posts.post('', isAdmin, async (req, res) => {
+  let pgResponse;
+  const description = req.body[DESCRIPTION];
+  const { name } = req.body;
+  const tags = req.body[TAGS] ? req.body[TAGS].split(',') : false;
+  try {
+    await db.transaction(trx =>
+      trx(PHOTOS)
+        .insert({
+          [KEY]: `original/${name}`,
+          [DESCRIPTION]: description,
+          status: 'deleted',
+        })
+        .returning('*')
+        .then(photo => {
+          pgResponse = photo;
 
-  async (req, res) => {
-    let pgResponse;
-    const description = req.body[DESCRIPTION];
-    const { name } = req.body;
-    const tags = req.body[TAGS] ? req.body[TAGS].split(',') : false;
-    // // Parse exif data for original timestamp and other
-    // // metadata
-    // // console.time('exif');
-    // try {
-    //   const parser = exif.create(req.file.buffer);
-    //   exifData = parser.parse();
-    // } catch (e) {
-    //   return res.status(500).json({
-    //     type: 'EXIF parsing error',
-    //     error: e,
-    //   });
-    // }
-    // console.timeEnd('exif');
+          if (tags.length) {
+            log.info('doing it');
+            const tagsInsert = tags.map(tag => ({
+              photoId: photo[0].id,
+              tagId: tag,
+            }));
 
-    // console.time('sharp');
-    // let buffer;
-    // try {
-    //   buffer = await sharp(req.file.buffer)
-    //     .rotate()
-    //     .toBuffer();
-    // } catch (e) {
-    //   return res.status(500).json({
-    //     type: 'Sharp error',
-    //     error: e,
-    //   });
-    // }
-    // console.timeEnd('sharp');
-    // Upload to s3
-    // console.time('s3');
-    // try {
-    //   s3Response = await s3
-    //     .upload({
-    //       Key: `original/${req.file.originalname}`,
-    //       Bucket: bucket,
-    //       Body: buffer,
-    //       Region: 'us-west-2',
-    //       ContentType: 'image/jpeg',
-    //     })
-    //     .promise();
-    // } catch (e) {
-    //   log.error(e);
-    //   return res.status(500).json({
-    //     type: 'AWS Error',
-    //     error: e,
-    //   });
-    // }
-    // console.timeEnd('s3');
-
-    // Transact photos and tags, depending
-    try {
-      // const validExifData = Object.keys(EXIFPROPS).reduce(
-      //   (acc, key) => ({
-      //     ...acc,
-      //     ...(exifData.tags[key]
-      //       ? { [EXIFPROPS[key]]: exifData.tags[key] }
-      //       : {}),
-      //   }),
-      //   {},
-      // );
-      await db.transaction(trx =>
-        trx(PHOTOS)
-          .insert({
-            [KEY]: `original/${name}`,
-            [DESCRIPTION]: description,
-            status: 'deleted',
-          })
-          .returning('*')
-          .then(photo => {
-            pgResponse = photo;
-
-            if (tags.length) {
-              log.info('doing it');
-              const tagsInsert = tags.map(tag => ({
-                photoId: photo[0].id,
-                tagId: tag,
-              }));
-
-              return trx(PHOTOS_TAGS).insert(tagsInsert);
-            }
-            return Promise.resolve();
-          })
-          .catch(trx.rollback),
-      );
-    } catch (e) {
-      log.error('PG', e);
-      return res.status(500).json({
-        type: 'PG Error',
-        error: e,
-      });
-    }
-    // log.info(s3Response[0]);
-    return res.json(pgResponse[0]);
-  },
-);
+            return trx(PHOTOS_TAGS).insert(tagsInsert);
+          }
+          return Promise.resolve();
+        })
+        .catch(trx.rollback),
+    );
+  } catch (e) {
+    log.error('PG', e);
+    return res.status(500).json({
+      type: 'PG Error',
+      error: e,
+    });
+  }
+  // log.info(s3Response[0]);
+  return res.json(pgResponse[0]);
+});
 
 // Get all
 posts.get('', isLoggedIn, async (req, res) => {
