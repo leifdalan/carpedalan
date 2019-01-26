@@ -109,6 +109,9 @@ export const setup = () => {
 
   if (isProd) {
     const Sentry = require('@sentry/node'); // eslint-disable-line
+    Sentry.init({
+      dsn: 'https://c5f5ee9e1c904e618af3e609d3fdd7d2@sentry.io/1380082',
+    });
     app.use(Sentry.Handlers.errorHandler());
   }
   // Winston error logger
