@@ -59,6 +59,7 @@ export const setup = () => {
   // static assets
   app.use('/dist', express.static('dist'));
   app.use('/public', express.static('public'));
+  app.use('/sw.js', express.static('server/sw.js'));
 
   // Setup app to parse cookies and POST requests
   app.use(cookieParser());
