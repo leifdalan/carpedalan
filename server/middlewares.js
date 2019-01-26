@@ -24,7 +24,7 @@ export function setSignedCloudfrontCookie(res) {
       res.cookie(key, signedCookies[key], {
         domain: `.${domain}`,
         path: '/',
-        secure: true,
+        // secure: true,
         http: true,
         // maxAge: 1000 * 5,
       });

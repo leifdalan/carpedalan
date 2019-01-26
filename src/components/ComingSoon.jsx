@@ -11,7 +11,7 @@ const Comin = styled.div`
   align-items: center;
   font-size: 11vw;
   color: white;
-  font-family: 'england';
+  font-family: 'lobster';
   font-weight: normal;
   &:before {
     z-index: -1;

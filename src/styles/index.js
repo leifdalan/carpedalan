@@ -20,12 +20,14 @@ export const propTrueFalseWithTheme = (value, truthy, falsey) => props =>
 export const GlobalStyleComponent = createGlobalStyle`
   
   @font-face {
-    font-family: 'england';
-    src: url('https://cdn.carpedalan.com/england-webfont.woff2') format('woff2'),
-         url('https://cdn.carpedalan.com/england-webfont.woff') format('woff');
+    font-family: 'lobster';
+    src: url('https://cdn.carpedalan.com/lobster.woff2') format('woff2'),
+         url('https://cdn.carpedalan.com/lobster.woff') format('woff');
     font-weight: normal;
     font-style: normal;
   }
+
+  
   @font-face {
     font-family: 'montserratregular';
     src: url('https://cdn.carpedalan.com/montserrat-regular-webfont.woff2') format('woff2'),
@@ -79,8 +81,8 @@ const dark = {
   [BODY_FONT]: `SourceSans, Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
   [MAIN]: 'black',
   [TEXT]: 'white',
-  [SIDEBAR_COLOR]: 'rgba(0, 255, 231, 0.8)',
-  [BRAND_COLOR]: 'rgb(0, 161, 255)',
+  [SIDEBAR_COLOR]: 'rgba(247, 205, 219, 0.8)',
+  [BRAND_COLOR]: 'rgb(0, 72, 206)',
   [SECONDARY_COLOR]: '#ff8c0e',
   [TITLE_FONT]: 'montserratregular, Helvetica, sans-serif',
 };
@@ -88,9 +90,9 @@ const dark = {
 const lite = {
   [BODY_FONT]: `SourceSans, Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
   [MAIN]: 'white',
-  [TEXT]: 'black',
-  [SIDEBAR_COLOR]: 'rgba(0, 255, 231, 0.8)',
-  [BRAND_COLOR]: 'rgb(0, 161, 255)',
+  [TEXT]: '#444',
+  [SIDEBAR_COLOR]: 'rgba(247, 205, 219, 0.8)',
+  [BRAND_COLOR]: 'rgb(0, 72, 206)',
   [SECONDARY_COLOR]: '#ff8c0e',
   [DANGER_COLOR]: 'rgb(222, 50, 82)',
   [NEUTRAL_COLOR]: 'rgb(100, 100, 100)',

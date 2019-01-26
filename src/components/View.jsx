@@ -10,7 +10,7 @@ import isNumber from 'lodash/isNumber';
 import { WRITE_USER } from '../../server/constants';
 import Form from '../form/Form';
 import { Posts } from '../providers/PostsProvider';
-import { getThemeValue, TEXT } from '../styles';
+import { getThemeValue, TEXT, prop } from '../styles';
 import Menu from '../styles/Menu';
 import Title from '../styles/Title';
 import log from '../utils/log';
@@ -19,10 +19,21 @@ import Gallery from './Gallery';
 import GridView from './GridView';
 import Feed from './Feed';
 
+/* eslint-disable */
+const StyledTitle = styled(Title)`
+  font-family: lobster;
+  font-size: ${prop('fontSize')};
+  text-align: center;
+  text-transform: lowercase;
+  margin-top: 2em;
+  letter-spacing: 2px;
+`;
+/* eslint-enable */
 const SVG = styled.svg`
   margin: 2em auto;
   text {
-    font-family: england;
+    font-family: lobster;
+    fill: #444;
   }
 `;
 
@@ -86,19 +97,27 @@ export default function View({
 
   const isGridView = location.hash === '#grid';
 
+  let fontSize = '52  px';
+  if (title.length > 20) {
+    fontSize = '36px';
+  }
+  if (title.length > 25) {
+    fontSize = '24px';
+  }
+
   return (
     <>
       <Wrap {...props}>
         {fancy ? (
           <SVG viewBox="0 0 88 20">
-            <text x="2" y="17">
+            <text x="4" y="17">
               {title}
             </text>
           </SVG>
         ) : (
-          <Title center size="large">
-            {title}
-          </Title>
+          <>
+            <StyledTitle fontSize={fontSize}>{title}</StyledTitle>
+          </>
         )}
         <StyledMenu size="small" side="right">
           <Link

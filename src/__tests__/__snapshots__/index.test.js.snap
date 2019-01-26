@@ -48,7 +48,7 @@ Array [
   top: 0;
   left: -20em;
   z-index: 1;
-  background: rgba(0,255,231,0.8);
+  background: rgba(247,205,219,0.8);
   height: 100%;
   overflow: scroll;
   -webkit-transition: left 200ms ease-in;
@@ -76,7 +76,7 @@ Array [
 .c5 {
   -webkit-text-decoration: none;
   text-decoration: none;
-  color: black;
+  color: #444;
 }
 
 .c2 {
@@ -139,7 +139,8 @@ Array [
 }
 
 .c0 text {
-  font-family: england;
+  font-family: lobster;
+  fill: #444;
 }
 
 <svg
@@ -147,7 +148,7 @@ Array [
     viewBox="0 0 88 20"
   >
     <text
-      x="2"
+      x="4"
       y="17"
     >
       Carpe Dalan
@@ -180,7 +181,7 @@ Array [
 }
 
 .c1 a {
-  color: black;
+  color: #444;
   -webkit-text-decoration: none;
   text-decoration: none;
 }
