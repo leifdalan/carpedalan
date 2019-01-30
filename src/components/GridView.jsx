@@ -11,7 +11,9 @@ import styled from 'styled-components';
 import { LARGE_THUMB } from '../../shared/constants';
 import usePrevious from '../hooks/usePrevious';
 import Button from '../styles/Button';
+import { propTrueFalse } from '../styles';
 
+import BulkDeleteModal from './BulkDeleteModal';
 import BulkEditModal from './BulkEditModal';
 import PostGridRowRenderer from './PostGridRowRenderer';
 
@@ -19,7 +21,7 @@ const POST_WIDTH = 100;
 
 const EditButton = styled(Button)`
   position: fixed;
-  right: 1em;
+  ${propTrueFalse('left', 'left', 'right')}: 1em;
   bottom: 1em;
 `;
 
@@ -52,6 +54,7 @@ export default function Grid({
   const [selected, setSelected] = useState({});
   const [shouldShowImages, setShouldShowImages] = useState(true);
   const [showBulkEditModal, setShowBulkEditModal] = useState(false);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [selectIndex, setSelectIndex] = useState(null);
   const previousSelectedIndex = usePrevious(selectIndex);
   const listRef = useRef(null);
@@ -152,10 +155,25 @@ export default function Grid({
                           {`Bulk Edit`}
                         </EditButton>
                       ) : null}
+                      {isSelecting ? (
+                        <EditButton
+                          left
+                          onClick={() => setShowBulkDeleteModal(true)}
+                          type="danger"
+                        >
+                          {`Bulk Delete`}
+                        </EditButton>
+                      ) : null}
                       {showBulkEditModal ? (
                         <BulkEditModal
                           ids={selected}
                           showBulkModal={setShowBulkEditModal}
+                        />
+                      ) : null}
+                      {showBulkDeleteModal ? (
+                        <BulkDeleteModal
+                          ids={selected}
+                          showBulkModal={setShowBulkDeleteModal}
                         />
                       ) : null}
                     </div>

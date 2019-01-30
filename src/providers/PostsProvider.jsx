@@ -86,6 +86,17 @@ const PostProvider = ({ children }) => {
     }
   };
 
+  const bulkDelete = async values => {
+    try {
+      const { body } = await del(`${API_PATH}/posts/bulk`, values);
+      invalidateAll();
+      return body;
+    } catch (e) {
+      log.error(e);
+      throw e;
+    }
+  };
+
   const delPost = id => async () => {
     await del(`${API_PATH}/posts/${id}`);
     setPostsWithFakes(postsWithFakes.filter(data => data.id !== id));
@@ -170,6 +181,7 @@ const PostProvider = ({ children }) => {
         createPost,
         progressMap: progressState,
         bulkEdit,
+        bulkDelete,
       }}
     >
       {children}

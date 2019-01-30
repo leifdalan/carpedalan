@@ -26,15 +26,23 @@ const posts = express.Router();
 
 posts.use('/upload', upload);
 
-posts.delete('/:id', isAdmin, async (req, res) => {
+posts.delete('/bulk', isAdmin, async (req, res) => {
+  const { ids } = req.body;
   try {
-    const response = await db('photos')
-      .update({ [STATUS]: DELETED })
-      .where({ id: req.params.id });
-    res.status(204).json(response);
+    await db.transaction(async trx => {
+      try {
+        await trx(PHOTOS)
+          .update({
+            [STATUS]: DELETED,
+          })
+          .whereIn('id', ids);
+      } catch (e) {
+        throw e;
+      }
+    });
+    return res.status(204).json();
   } catch (e) {
-    res.status(404).send();
-    log.error(e);
+    return res.status(422).json(e);
   }
 });
 
@@ -65,6 +73,18 @@ posts.patch('/bulk', isAdmin, async (req, res) => {
     return res.status(200).json();
   } catch (e) {
     return res.status(422).json(e);
+  }
+});
+
+posts.delete('/:id', isAdmin, async (req, res) => {
+  try {
+    const response = await db('photos')
+      .update({ [STATUS]: DELETED })
+      .where({ id: req.params.id });
+    res.status(204).json(response);
+  } catch (e) {
+    res.status(404).send();
+    log.error(e);
   }
 });
 
