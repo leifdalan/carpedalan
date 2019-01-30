@@ -17,7 +17,7 @@
     "d": "docker-compose down",
     "du": "docker-compose down && docker-compose up",
     "dub": "docker-compose down && docker-compose up --build",
-    "e2e": "PG_PORT=5555 PG_HOST=localhost CYPRESS_BASE_URL=https://local.carpedalan.com cypress open --env configFile=local",
+    "e2e": "PG_PORT=5555 PG_HOST=localhost CYPRESS_BASE_URL=http://local.carpedalan.com:3001 cypress open --env configFile=local",
     "cypress": "PG_PORT=5555 PG_HOST=localhost CYPRESS_BASE_URL=http://e2e_app cypress run --env configFile=local",
     "e2e:ci": "MIGRATING=true NODE_ENV=ci yarn migrate NODE_ENV=ci yarn knex seed:run --knexfile db/knexfile.js && yarn start:prod",
     "test-junit": "cypress run --reporter junit --reporter-options 'mochaFile=junit-results/my-test-output.xml'",

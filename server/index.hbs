@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Carpe Dalan</title>
+  <meta name="description" content="The Dalan family app" />
   <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.carpedalan.com/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.carpedalan.com/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.carpedalan.com/favicon-16x16.png">
@@ -28,7 +29,8 @@
   <script type="text/javascript" src="/client.bundle.js"></script>
   {{/if}}
   {{#if isProd}}
-<!-- Global site tag (gtag.js) - Google Analytics -->
+  {{#unless ci}}
+  <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133308117-1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -37,7 +39,7 @@
 
     gtag('config', 'UA-133308117-1');
   </script>
-
+  {{/unless}}
   {{/if}}
 </body>
 </html>
