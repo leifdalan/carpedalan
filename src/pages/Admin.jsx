@@ -338,6 +338,7 @@ const Admin = () => {
               e.preventDefault();
               setSubmitAll(true);
             }}
+            disabled={submit}
             submitting={submit}
             progress={overall}
             averageTime={averageTime}
