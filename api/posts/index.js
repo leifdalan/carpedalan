@@ -156,7 +156,7 @@ posts.post('', isAdmin, async (req, res) => {
   let pgResponse;
   const description = req.body[DESCRIPTION];
   const { name } = req.body;
-  const tags = req.body[TAGS] ? req.body[TAGS].split(',') : false;
+  const tags = req.body[TAGS] ? req.body[TAGS] : false;
   try {
     await db.transaction(trx =>
       trx(PHOTOS)
