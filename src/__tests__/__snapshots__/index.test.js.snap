@@ -135,25 +135,34 @@ Array [
     </ul>
   </div>,
   .c0 {
+  max-width: 39em;
+  margin: 0 auto;
+}
+
+.c1 {
   margin: 2em auto;
 }
 
-.c0 text {
+.c1 text {
   font-family: lobster;
   fill: #444;
 }
 
-<svg
+<section
     className="c0"
-    viewBox="0 0 88 20"
   >
-    <text
-      x="4"
-      y="17"
+    <svg
+      className="c1"
+      viewBox="0 0 88 20"
     >
-      Carpe Dalan
-    </text>
-  </svg>,
+      <text
+        x="4"
+        y="17"
+      >
+        Carpe Dalan
+      </text>
+    </svg>
+  </section>,
   .c1 {
   font-family: montserratregular,Helvetica,sans-serif;
   margin: 2em 0;
@@ -203,7 +212,7 @@ Array [
     </a>
   </h1>,
   .c0 {
-  max-width: 56em;
+  max-width: 39em;
   margin: 0 auto;
 }
 

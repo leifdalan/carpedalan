@@ -13,6 +13,7 @@ import { Posts } from '../providers/PostsProvider';
 import { getThemeValue, TEXT, prop } from '../styles';
 import Menu from '../styles/Menu';
 import Title from '../styles/Title';
+import Wrapper from '../styles/Wrapper';
 import log from '../utils/log';
 
 import Gallery from './Gallery';
@@ -108,17 +109,19 @@ export default function View({
   return (
     <>
       <Wrap {...props}>
-        {fancy ? (
-          <SVG viewBox="0 0 88 20">
-            <text x="4" y="17">
-              {title}
-            </text>
-          </SVG>
-        ) : (
-          <>
-            <StyledTitle fontSize={fontSize}>{title}</StyledTitle>
-          </>
-        )}
+        <Wrapper>
+          {fancy ? (
+            <SVG viewBox="0 0 88 20">
+              <text x="4" y="17">
+                {title}
+              </text>
+            </SVG>
+          ) : (
+            <>
+              <StyledTitle fontSize={fontSize}>{title}</StyledTitle>
+            </>
+          )}
+        </Wrapper>
         <StyledMenu size="small" side="right">
           <Link
             replace

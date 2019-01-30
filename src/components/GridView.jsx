@@ -12,6 +12,7 @@ import { LARGE_THUMB } from '../../shared/constants';
 import usePrevious from '../hooks/usePrevious';
 import Button from '../styles/Button';
 import { propTrueFalse } from '../styles';
+import Wrapper from '../styles/Wrapper';
 
 import BulkDeleteModal from './BulkDeleteModal';
 import BulkEditModal from './BulkEditModal';
@@ -106,83 +107,87 @@ export default function Grid({
   return (
     <WindowScroller>
       {({ height, isScrolling, onChildScroll, registerChild, scrollTop }) => (
-        <AutoSizer disableHeight>
-          {({ width }) => {
-            const postsPerRow = Math.floor(width / POST_WIDTH);
-            return (
-              <>
-                <InfiniteLoader
-                  isRowLoaded={isRowLoaded(width)}
-                  loadMoreRows={loadMoreRows}
-                  rowCount={Math.floor(meta.count / postsPerRow) + 1}
-                >
-                  {({ onRowsRendered }) => (
-                    <div ref={registerChild}>
-                      <List
-                        width={width}
-                        height={height}
-                        autoHeight
-                        ref={listRef}
-                        onRowsRendered={onRowsRendered}
-                        deferredMeasurementCache={cache}
-                        onScroll={handleScroll(onChildScroll)}
-                        rowHeight={cache.rowHeight}
-                        rowRenderer={PostGridRowRenderer({
-                          history /* etc for proptype checking */,
-                          setSelectIndex,
-                          selectIndex,
-                          previousSelectedIndex,
-                        })}
-                        rowCount={Math.floor(data.length / postsPerRow) + 1}
-                        overscanRowCount={20}
-                        isScrolling={isScrolling}
-                        scrollTop={scrollTop}
-                        posts={data}
-                        cache={cache}
-                        size={LARGE_THUMB}
-                        showDescription={false}
-                        shouldShowImages={shouldShowImages}
-                        postsPerRow={postsPerRow}
-                        match={match}
-                        location={location}
-                        isSelecting={isSelecting}
-                        setSelecting={handleSelecting}
-                        addSelect={handleAddSelect}
-                        selected={selected}
-                      />
-                      {isSelecting ? (
-                        <EditButton onClick={() => setShowBulkEditModal(true)}>
-                          {`Bulk Edit`}
-                        </EditButton>
-                      ) : null}
-                      {isSelecting ? (
-                        <EditButton
-                          left
-                          onClick={() => setShowBulkDeleteModal(true)}
-                          type="danger"
-                        >
-                          {`Bulk Delete`}
-                        </EditButton>
-                      ) : null}
-                      {showBulkEditModal ? (
-                        <BulkEditModal
-                          ids={selected}
-                          showBulkModal={setShowBulkEditModal}
+        <Wrapper>
+          <AutoSizer disableHeight>
+            {({ width }) => {
+              const postsPerRow = Math.floor(width / POST_WIDTH);
+              return (
+                <>
+                  <InfiniteLoader
+                    isRowLoaded={isRowLoaded(width)}
+                    loadMoreRows={loadMoreRows}
+                    rowCount={Math.floor(meta.count / postsPerRow) + 1}
+                  >
+                    {({ onRowsRendered }) => (
+                      <div ref={registerChild}>
+                        <List
+                          width={width}
+                          height={height}
+                          autoHeight
+                          ref={listRef}
+                          onRowsRendered={onRowsRendered}
+                          deferredMeasurementCache={cache}
+                          onScroll={handleScroll(onChildScroll)}
+                          rowHeight={cache.rowHeight}
+                          rowRenderer={PostGridRowRenderer({
+                            history /* etc for proptype checking */,
+                            setSelectIndex,
+                            selectIndex,
+                            previousSelectedIndex,
+                          })}
+                          rowCount={Math.floor(data.length / postsPerRow) + 1}
+                          overscanRowCount={20}
+                          isScrolling={isScrolling}
+                          scrollTop={scrollTop}
+                          posts={data}
+                          cache={cache}
+                          size={LARGE_THUMB}
+                          showDescription={false}
+                          shouldShowImages={shouldShowImages}
+                          postsPerRow={postsPerRow}
+                          match={match}
+                          location={location}
+                          isSelecting={isSelecting}
+                          setSelecting={handleSelecting}
+                          addSelect={handleAddSelect}
+                          selected={selected}
                         />
-                      ) : null}
-                      {showBulkDeleteModal ? (
-                        <BulkDeleteModal
-                          ids={selected}
-                          showBulkModal={setShowBulkDeleteModal}
-                        />
-                      ) : null}
-                    </div>
-                  )}
-                </InfiniteLoader>
-              </>
-            );
-          }}
-        </AutoSizer>
+                        {isSelecting ? (
+                          <EditButton
+                            onClick={() => setShowBulkEditModal(true)}
+                          >
+                            {`Bulk Edit`}
+                          </EditButton>
+                        ) : null}
+                        {isSelecting ? (
+                          <EditButton
+                            left
+                            onClick={() => setShowBulkDeleteModal(true)}
+                            type="danger"
+                          >
+                            {`Bulk Delete`}
+                          </EditButton>
+                        ) : null}
+                        {showBulkEditModal ? (
+                          <BulkEditModal
+                            ids={selected}
+                            showBulkModal={setShowBulkEditModal}
+                          />
+                        ) : null}
+                        {showBulkDeleteModal ? (
+                          <BulkDeleteModal
+                            ids={selected}
+                            showBulkModal={setShowBulkDeleteModal}
+                          />
+                        ) : null}
+                      </div>
+                    )}
+                  </InfiniteLoader>
+                </>
+              );
+            }}
+          </AutoSizer>
+        </Wrapper>
       )}
     </WindowScroller>
   );
