@@ -1,6 +1,5 @@
 /* eslint-disable */
 
-console.log('halllllloooo');
 var version = 'v1::';
 
 self.addEventListener("install", function(event) {

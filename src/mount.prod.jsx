@@ -11,6 +11,11 @@ Sentry.init({
   dsn: 'https://56efb56b3ba44197ad36ba25fb1e64a6@sentry.io/1380053',
 });
 
+Sentry.setDataCallback(data => {
+  data.extra.sessionURL = LogRocket.sessionURL; // eslint-disable-line
+  return data;
+});
+
 /* eslint-disable no-underscore-dangle */
 DOM.render(
   <App {...window.__SESSION__} {...window.__META__} />,
