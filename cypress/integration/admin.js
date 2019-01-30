@@ -26,10 +26,10 @@ describe('admin', () => {
             dataTransfer.items.add(testFile2);
             el.files = dataTransfer.files;
             cy.get('[data-test=submitAll]').click({ force: true });
-            cy.wait('@posts')
+            cy.wait('@posts', { timeout: 20000 })
               .its('status')
               .should('be', 200);
-            cy.wait('@posts')
+            cy.wait('@posts', { timeout: 20000 })
               .its('status')
               .should('be', 200);
             // cy.get('[data-test=menu]').click();
