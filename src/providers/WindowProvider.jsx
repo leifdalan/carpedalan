@@ -8,17 +8,20 @@ import { window } from '../utils/globals';
 export const Window = createContext({});
 const WindowProvider = ({ children, match, location, history }) => {
   const [width, setWidth] = useState(null);
+  const [height, setHeight] = useState(null);
 
   useEffect(() => {
     setWidth(window.innerWidth);
+    setHeight(window.innerHeight);
     const debounced = debounce(() => {
       setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
     }, 250);
     window.addEventListener('resize', debounced);
     return () => window.removeEventListener('resize', debounced);
   }, []);
   return (
-    <Window.Provider value={{ width, match, location, history }}>
+    <Window.Provider value={{ width, match, location, history, height }}>
       {children}
     </Window.Provider>
   );

@@ -1,4 +1,4 @@
-import path from 'path';
+// import path from 'path';
 
 import aws from 'aws-sdk';
 import { v4 as uuid } from 'uuid';
@@ -16,9 +16,9 @@ jest.mock('aws-cloudfront-sign', () => ({
   getSignedCookies: jest.fn(() => ({})),
 }));
 
-const photo = process.env.WALLABY
-  ? `${process.env.LOCAL_PATH}/api/posts/__tests__/kitty2.jpg`
-  : path.resolve(__dirname, 'kitty2.jpg');
+// const photo = process.env.WALLABY
+//   ? `${process.env.LOCAL_PATH}/api/posts/__tests__/kitty2.jpg`
+//   : path.resolve(__dirname, 'kitty2.jpg');
 
 jest.mock('aws-sdk', () => {
   const AWS = {};
@@ -74,9 +74,7 @@ describe('/posts', () => {
     });
 
     it('should be able to make a post to posts with the right user', async () => {
-      const { status } = await writeUserAgent
-        .post('/api/posts')
-        .attach('photo', photo);
+      const { status } = await writeUserAgent.post('/api/posts');
       expect(status).toBe(200);
     });
   });
@@ -92,9 +90,7 @@ describe('/posts', () => {
 
     it('should be able to patch', async () => {
       aws.s3Promise.mockImplementation(() => Promise.resolve({}));
-      const { status, body } = await writeUserAgent
-        .post('/api/posts')
-        .attach('photo', photo);
+      const { status, body } = await writeUserAgent.post('/api/posts');
       expect(status).toBe(200);
       expect(body.description).toBeNull();
       const description = 'description';
@@ -119,9 +115,7 @@ describe('/posts', () => {
 
     it('should be able to delete', async () => {
       aws.s3Promise.mockImplementation(() => Promise.resolve({}));
-      const { status, body } = await writeUserAgent
-        .post('/api/posts')
-        .attach('photo', photo);
+      const { status, body } = await writeUserAgent.post('/api/posts');
       expect(status).toBe(200);
       const { status: deleteStatus } = await writeUserAgent.delete(
         `/api/posts/${body.id}`,
