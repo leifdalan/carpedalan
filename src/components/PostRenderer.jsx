@@ -70,20 +70,16 @@ const RenderRow = props => {
     index,
     style,
     parent,
-    parent: {
-      props: {
-        posts,
-        cache,
-        shouldShowImages,
-        isEditing,
-        delPost,
-        setEditing,
-        isAdmin,
-        tags,
-        match,
-        location,
-      },
-    },
+    posts,
+    cache,
+    shouldShowImages,
+    isEditing,
+    delPost,
+    setEditing,
+    isAdmin,
+    tags,
+    match,
+    location,
   } = props;
   const post = posts[index];
 

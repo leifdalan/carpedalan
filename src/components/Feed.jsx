@@ -12,7 +12,6 @@ import { WRITE_USER } from '../../server/constants';
 import Button from '../styles/Button';
 import FlexContainer from '../styles/FlexContainer';
 import Wrapper from '../styles/Wrapper';
-import { MEDIUM } from '../../shared/constants';
 import { Posts } from '../providers/PostsProvider';
 import { Tag } from '../providers/TagProvider';
 import Title from '../styles/Title';
@@ -109,23 +108,25 @@ export default function Feed({
                       deferredMeasurementCache={cache}
                       onScroll={handleScroll(onChildScroll)}
                       rowHeight={cache.rowHeight}
-                      rowRenderer={PostRenderer}
+                      rowRenderer={things => (
+                        <PostRenderer
+                          posts={posts}
+                          cache={cache}
+                          shouldShowImages={shouldShowImages}
+                          isEditing={isEditing}
+                          delPost={handleDelete}
+                          setEditing={setEditingForIndex}
+                          isAdmin={isAdmin}
+                          tags={tags}
+                          match={match}
+                          location={location}
+                          {...things}
+                        />
+                      )}
                       rowCount={meta.count}
                       overscanRowCount={10}
                       isScrolling={isScrolling}
                       scrollTop={scrollTop}
-                      posts={posts}
-                      cache={cache}
-                      shouldShowImages={shouldShowImages}
-                      size={MEDIUM}
-                      showDescription
-                      isAdmin={isAdmin}
-                      setEditing={setEditingForIndex}
-                      isEditing={isEditing}
-                      delPost={handleDelete}
-                      tags={tags}
-                      match={match}
-                      location={location}
                     />
                   </div>
                 )}
