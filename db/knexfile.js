@@ -108,7 +108,7 @@ module.exports = {
     connection: process.env.PG_URI2 || process.env.PG_URI,
     pool: {
       min: 2,
-      max: 10,
+      max: 200,
     },
     migrations: {
       directory: './migrations/carpedalan',

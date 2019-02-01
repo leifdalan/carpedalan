@@ -102,6 +102,7 @@ export const setup = () => {
         json: true,
       }),
     );
+    winston.log('info', 'Logger starting');
 
     app.use(
       expressWinston.logger({
