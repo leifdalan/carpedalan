@@ -98,7 +98,7 @@ export default function View({
 
   const isGridView = location.hash === '#grid';
 
-  let fontSize = '52  px';
+  let fontSize = '52px';
   if (title.length > 20) {
     fontSize = '36px';
   }
@@ -158,7 +158,16 @@ export default function View({
       </Wrap>
       <Route
         render={rrProps => (
-          <Gallery {...rrProps} data={posts} onClose={() => {}} />
+          <Gallery
+            {...rrProps}
+            data={posts}
+            onClose={() =>
+              history.push({
+                pathname: match.params[0] || '/',
+                hash: location.hash,
+              })
+            }
+          />
         )}
         path="*/gallery/:id"
       />

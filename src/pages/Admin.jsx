@@ -370,8 +370,8 @@ const Admin = () => {
           ) : null}
           {showReport ? (
             <>
-              <Modal>
-                <Report onClick={() => setShowReport(false)}>
+              <Modal onClose={() => setShowReport(false)}>
+                <Report>
                   <div>Rejected</div>
                   <ul>
                     {rejected.map(reject => (

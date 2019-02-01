@@ -44,9 +44,10 @@ Array [
   </h1>,
   .c0 {
   position: fixed;
-  width: 200px;
+  width: 400px;
+  max-width: 80vw;
   top: 0;
-  left: -20em;
+  left: -40em;
   z-index: 1;
   background: rgba(247,205,219,0.8);
   height: 100%;
@@ -130,6 +131,17 @@ Array [
           onClick={[Function]}
         >
           HOME
+        </a>
+      </li>
+      <li
+        className="c4"
+      >
+        <a
+          className="c5"
+          href="/faq"
+          onClick={[Function]}
+        >
+          FAQ
         </a>
       </li>
     </ul>

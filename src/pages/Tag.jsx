@@ -18,7 +18,7 @@ export default function Tag({ match, location, history }) {
 
   return (
     <View
-      title={`${match.params.tag}`}
+      title={`#${match.params.tag}`}
       posts={tagPosts}
       cache={cache}
       fetchData={fetchData}

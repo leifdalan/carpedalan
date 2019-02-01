@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
-import { arrayOf, shape } from 'prop-types';
-import { Link } from 'react-router-dom';
+import { arrayOf, func, shape } from 'prop-types';
 import styled from 'styled-components';
 
 import NotFound from '../pages/NotFound';
@@ -16,7 +15,7 @@ const Container = styled(FlexContainer)`
   height: 100%;
 `;
 
-export default function Gallery({ match, data, location }) {
+export default function Gallery({ match, data, onClose }) {
   // console.error('props', props);
   const { width, height } = useContext(Window);
   if (!data.length) return null;
@@ -32,27 +31,29 @@ export default function Gallery({ match, data, location }) {
   const photoWidth =
     photoAspectRatio > viewPortAspectRatio
       ? `${height / photoAspectRatio - 100}px`
-      : 'calc(100%)';
+      : '100%';
 
   return (
-    <Link to={{ pathname: match.params[0] || '/', hash: location.hash }}>
-      <Modal>
-        <Container alignItems="center" justifyContent="center">
-          {/* <Inner justifyContent="space-between"> */}
-          {!post ? (
-            <NotFound />
-          ) : (
-            <Post post={post} shouldShowImages tags={[]} width={photoWidth} />
-          )}
-          {/* </Inner> */}
-        </Container>
-      </Modal>
-    </Link>
+    <Modal onClose={onClose}>
+      <Container alignItems="center" justifyContent="center">
+        {/* <Inner justifyContent="space-between"> */}
+        {!post ? (
+          <NotFound />
+        ) : (
+          <Post post={post} shouldShowImages tags={[]} width={photoWidth} />
+        )}
+        {/* </Inner> */}
+      </Container>
+    </Modal>
   );
 }
 
 Gallery.propTypes = {
   data: arrayOf(shape({})).isRequired,
   match: shape({}).isRequired,
-  location: shape({}).isRequired,
+  onClose: func,
+};
+
+Gallery.defaultProps = {
+  onClose: () => {},
 };

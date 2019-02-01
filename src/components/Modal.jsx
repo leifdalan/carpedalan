@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
@@ -21,15 +21,38 @@ const Background = styled(FlexContainer)`
   left: 0;
 `;
 
-export default function Modal({ children }) {
+const CloseButton = styled.button`
+  position: fixed;
+  top: 0;
+  right: 0;
+  background: black;
+  color: white;
+  border: none;
+  outline: inherit;
+  padding: 1em;
+  font-size: 16px;
+`;
+
+export default function Modal({ children, onClose }) {
   useEffect(() => {
     document.getElementsByTagName('body')[0].classList.add('show-modal');
     return () => {
       document.getElementsByTagName('body')[0].classList.remove('show-modal');
     };
   }, []);
+
+  const backgroundRef = useRef();
+
+  function handleClick(e) {
+    if (!backgroundRef.current.contains(e.target)) {
+      onClose(e);
+    }
+  }
   return createPortal(
-    <Background>{children}</Background>,
+    <Background onClick={handleClick}>
+      <CloseButton onClick={onClose}>✖</CloseButton>
+      <div ref={backgroundRef}>{children}</div>
+    </Background>,
     document.getElementById('modal'),
   );
 }

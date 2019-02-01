@@ -11,9 +11,10 @@ import Title from '../styles/Title';
 
 const StyledSidebar = styled.div`
   position: fixed;
-  width: 200px;
+  width: 400px;
+  max-width: 80vw;
   top: 0;
-  left: ${({ isOpen }) => (isOpen ? 0 : -20)}em;
+  left: ${({ isOpen }) => (isOpen ? 0 : -40)}em;
   z-index: 1;
   background: ${getThemeValue(SIDEBAR_COLOR)};
   height: 100%;
@@ -80,6 +81,10 @@ export default function Sidebar({
 
         <ListItem>
           <StyledLink to="/">HOME</StyledLink>
+        </ListItem>
+
+        <ListItem>
+          <StyledLink to="/faq">FAQ</StyledLink>
         </ListItem>
 
         {tags

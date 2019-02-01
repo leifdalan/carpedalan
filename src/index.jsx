@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 import { number, oneOf, string } from 'prop-types';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import request from 'superagent';
 
@@ -29,7 +29,7 @@ export const User = createContext({
   isLoading: false,
 });
 
-function Root({ user, defaultTheme, status }) {
+function Root({ user, defaultTheme, status, requests }) {
   const [userState, setUser] = useState(user);
   const [theme, setTheme] = useState(defaultTheme);
   const [shouldShowSidebar, setShouldShowSidebar] = useState(false);
@@ -74,6 +74,7 @@ function Root({ user, defaultTheme, status }) {
                           handleChangeTheme={handleChangeTheme}
                           toggleMenu={toggleMenu}
                         />
+
                         <Switch>
                           <Route exact path="/login" component={Login} />
                           {userState === WRITE_USER ? (
@@ -82,6 +83,9 @@ function Root({ user, defaultTheme, status }) {
 
                           {isLoggedIn && (
                             <Route exact path="/" component={Slash} />
+                          )}
+                          {isLoggedIn && (
+                            <Route exact path="/faq" component={Slash} />
                           )}
                           {isLoggedIn && (
                             <Route path="/gallery" component={Slash} />
@@ -101,6 +105,9 @@ function Root({ user, defaultTheme, status }) {
                             />
                           )}
                         </Switch>
+                        {!requests && isLoggedIn && userState !== WRITE_USER ? (
+                          <Redirect to="/faq" />
+                        ) : null}
                       </>
                       <GlobalStyleComponent />
                     </>
@@ -119,12 +126,14 @@ Root.defaultProps = {
   defaultTheme: 'lite',
   user: undefined,
   status: undefined,
+  requests: undefined,
 };
 
 Root.propTypes = {
   user: string,
   defaultTheme: oneOf(Object.keys(themes)),
   status: number,
+  requests: number,
 };
 
 export default Root;

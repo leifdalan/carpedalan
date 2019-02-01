@@ -1,5 +1,5 @@
 import React from 'react';
-import { node, oneOf } from 'prop-types';
+import { node, oneOf, func } from 'prop-types';
 import styled, { css } from 'styled-components';
 
 import { getThemeValue, MAIN } from '../styles';
@@ -11,6 +11,7 @@ const DialogWrapper = styled.div`
   max-width: 90vw;
   max-height: 90vh;
   padding: 2em;
+  overflow: auto;
   ${({ type }) => {
     switch (type) {
       case 'wide':
@@ -27,20 +28,22 @@ DialogWrapper.defaultProps = {
   type: 'normal',
 };
 
-export default function Dialog({ children, type }) {
+export default function Dialog({ children, type, onClose }) {
   return (
-    <Modal>
+    <Modal onClose={onClose}>
       <DialogWrapper type={type}>{children}</DialogWrapper>
     </Modal>
   );
 }
 
 Dialog.defaultProps = {
+  onClose: () => {},
   children: null,
   type: 'normal',
 };
 
 Dialog.propTypes = {
   children: node,
+  onClose: func,
   type: oneOf(['normal, wide']),
 };

@@ -48,6 +48,7 @@ export const isAdmin = (req, res, next) => {
   if (req.session.user !== 'write') {
     res.status(401).send();
   } else {
+    req.session.requests = req.session.requests + 1; // eslint-disable-line operator-assignment
     setSignedCloudfrontCookie(res);
     next();
   }
@@ -63,6 +64,7 @@ export const isLoggedIn = (req, res, next) => {
       isProd,
     });
   } else {
+    req.session.requests = req.session.requests + 1; // eslint-disable-line operator-assignment
     setSignedCloudfrontCookie(res);
     next();
   }
