@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { arrayOf, func, shape } from 'prop-types';
 import styled from 'styled-components';
 
@@ -18,6 +18,7 @@ const Container = styled(FlexContainer)`
 export default function Gallery({ match, data, onClose }) {
   // console.error('props', props);
   const { width, height } = useContext(Window);
+  const safeRef = useRef();
   if (!data.length) return null;
 
   const post = data.find(
@@ -34,13 +35,19 @@ export default function Gallery({ match, data, onClose }) {
       : '100%';
 
   return (
-    <Modal onClose={onClose}>
+    <Modal onClose={onClose} safeRef={safeRef}>
       <Container alignItems="center" justifyContent="center">
         {/* <Inner justifyContent="space-between"> */}
         {!post ? (
           <NotFound />
         ) : (
-          <Post post={post} shouldShowImages tags={[]} width={photoWidth} />
+          <Post
+            safeRef={safeRef}
+            post={post}
+            shouldShowImages
+            tags={[]}
+            width={photoWidth}
+          />
         )}
         {/* </Inner> */}
       </Container>

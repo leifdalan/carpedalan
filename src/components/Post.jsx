@@ -49,10 +49,11 @@ export default function Post({
   post,
   shouldShowImages,
   width,
+  safeRef,
   // umnm
 }) {
   return (
-    <PostContainer width={width}>
+    <PostContainer width={width} ref={safeRef}>
       <Header justifyContent="space-between">
         <Download as="div">{formatDate(post.timestamp)}</Download>
         <Download
@@ -92,8 +93,13 @@ export default function Post({
   );
 }
 
+Post.defaultProps = {
+  safeRef: null,
+};
+
 Post.propTypes = {
   post: shape({}).isRequired,
   shouldShowImages: bool.isRequired,
   width: string.isRequired,
+  safeRef: shape({}),
 };

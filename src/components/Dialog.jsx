@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { node, oneOf, func } from 'prop-types';
 import styled, { css } from 'styled-components';
 
@@ -29,9 +29,12 @@ DialogWrapper.defaultProps = {
 };
 
 export default function Dialog({ children, type, onClose }) {
+  const safeRef = useRef();
   return (
-    <Modal onClose={onClose}>
-      <DialogWrapper type={type}>{children}</DialogWrapper>
+    <Modal onClose={onClose} safeRef={safeRef}>
+      <DialogWrapper ref={safeRef} type={type}>
+        {children}
+      </DialogWrapper>
     </Modal>
   );
 }

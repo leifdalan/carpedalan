@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
@@ -33,7 +33,7 @@ const CloseButton = styled.button`
   font-size: 16px;
 `;
 
-export default function Modal({ children, onClose }) {
+export default function Modal({ children, onClose, safeRef }) {
   useEffect(() => {
     document.getElementsByTagName('body')[0].classList.add('show-modal');
     return () => {
@@ -41,17 +41,15 @@ export default function Modal({ children, onClose }) {
     };
   }, []);
 
-  const backgroundRef = useRef();
-
   function handleClick(e) {
-    if (!backgroundRef.current.contains(e.target)) {
+    if (!safeRef.current.contains(e.target)) {
       onClose(e);
     }
   }
   return createPortal(
     <Background onClick={handleClick}>
       <CloseButton onClick={onClose}>✖</CloseButton>
-      <div ref={backgroundRef}>{children}</div>
+      {children}
     </Background>,
     document.getElementById('modal'),
   );
