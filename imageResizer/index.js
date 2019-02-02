@@ -46,8 +46,9 @@ exports.handler = async (event, context, ...otherThingz) => {
   let exifData;
   let withoutOriginal;
   try {
-    const parser = exif.create(buffer);
+    const parser = exif.create(buffer.Body);
     exifData = parser.parse();
+    console.log('exifData', exifData);
   } catch (e) {
     console.log('exif error', e);
   }
@@ -103,12 +104,14 @@ exports.handler = async (event, context, ...otherThingz) => {
         .promise();
     });
 
-    const rotatedOriginalPromise = s3.upload({
-      Key: `original/${withoutOriginal}`,
-      Bucket: bucket,
-      Body: rotated,
-      ContentType: 'image/jpeg',
-    });
+    const rotatedOriginalPromise = s3
+      .upload({
+        Key: `original/${withoutOriginal}`,
+        Bucket: bucket,
+        Body: rotated,
+        ContentType: 'image/jpeg',
+      })
+      .promise();
     await Promise.all([...putPromises, rotatedOriginalPromise]);
   } catch (e) {
     console.log(e);
@@ -119,6 +122,7 @@ exports.handler = async (event, context, ...otherThingz) => {
   }
 
   // Update record
+  console.log(EXIFPROPS);
   try {
     const validExifData = Object.keys(EXIFPROPS).reduce(
       (acc, exifKey) => ({
@@ -137,14 +141,36 @@ exports.handler = async (event, context, ...otherThingz) => {
         max: 10,
       },
     });
-    const pgResponse = await db('photos')
-      .update({
+    console.log(validExifData);
+    console.log(withoutOriginal);
+    // Check for bad exif
+    // const success = false;
+    let updateClause = {};
+    if (!exifData || !exifData.tags) {
+      updateClause = {
+        isPending: true,
+      };
+    } else if (
+      !exifData.tags.DateTimeOriginal ||
+      !exifData.tags.imageHeight ||
+      !exifData.tags.imageWidth
+    ) {
+      updateClause = {
+        isPending: true,
+      };
+    } else {
+      updateClause = {
+        timestamp: exifData.tags.DateTimeOriginal,
+        status: 'active',
         ...validExifData,
-      })
-      .where({
-        key: `original/${withoutOriginal}`,
-      });
-    console.log(pgResponse);
+      };
+    }
+
+    const pgResponse = await db('photos')
+      .update(updateClause)
+      .where('key', `original/${withoutOriginal}`)
+      .returning('*');
+    console.log('pgResponse', pgResponse);
   } catch (e) {
     console.log('PG error', e);
   }

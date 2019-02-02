@@ -11,19 +11,24 @@ const FancyTitle = styled(Title)`
   letter-spacing: 1px;
   font-size: 50px;
   margin-top: 1em;
+  margin-bottom: 0.5em;
 `;
 
 const Signature = styled.span`
   font-family: lobster;
 `;
 
+const StyledTitle = styled(Title)`
+  margin-bottom: 0;
+`;
+
 export default function FAQ({ history }) {
   return (
-    <Dialog onClose={() => history.push('/')}>
+    <Dialog onClose={() => history.push('/')} type="copy">
+      {/* eslint-disable react/jsx-one-expression-per-line */}
       <FancyTitle center>Carpe Dalan</FancyTitle>
       <p>
-        Welcome to our family!
-        <em>What is this website?</em>
+        Welcome to our family! <em>What is this website?</em>
       </p>
       <p>
         Before Vega was born, Leif and I had some tough talks about her and our
@@ -35,37 +40,38 @@ export default function FAQ({ history }) {
         we love and trust.
       </p>
       <p>We hope you enjoy this content as much we as we enjoy creating it!</p>
-      <p style={{ whiteSpace: 'pre-line' }}>
+      <p style={{ whiteSpace: 'pre-line', textAlign: 'right' }}>
         {`XOXO - 
 `}
         <Signature>The Dalans</Signature>
       </p>
-      <Title as="h3" size="small">
+      <StyledTitle as="h3" size="small">
         Downloading
-      </Title>
+      </StyledTitle>
       <p>
         You are welcome to download images for personal use, however we ask that
         you refrain from posting anything on social media and use discretion
         when sharing by email/ text/ IM.
       </p>
-      <Title as="h3" size="small">
+      <StyledTitle as="h3" size="small">
         Printing
-      </Title>
+      </StyledTitle>
       <p>
-        {/* eslint-disable react/jsx-one-expression-per-line */}
         Clicking the download button on an image will save a full resolution
         copy of that image to your device. If you want to print physical copies
         of images, we highly recommend using{' '}
-        <a href="https://www.mpix.com/products/prints">MPIX</a>. This service is
-        popular with professional photographers for everything from school
-        portraits to wedding photography. In our experience, print services with
-        quick turnarounds such as Walgreens, Costco and Shutterfly produce
-        significantly lower quality images regardless of the resolution of the
-        digital file.
+        <a href="https://www.mpix.com/products/prints">MPIX</a>.
+        <p>
+          This service is popular with professional photographers for everything
+          from school portraits to wedding photography. In our experience, print
+          services with quick turnarounds such as Walgreens, Costco and
+          Shutterfly produce significantly lower quality images regardless of
+          the resolution of the digital file.
+        </p>
       </p>
-      <Title as="h3" size="small">
+      <StyledTitle as="h3" size="small">
         Sharing
-      </Title>
+      </StyledTitle>
       <p>
         The best way to share images by email/ text/ IM is by sharing the link.
         This simplifies things for you, introduces the viewer to our website,
@@ -73,11 +79,11 @@ export default function FAQ({ history }) {
         Please know that shared links will prompt the viewer to enter or request
         a password to view the content.
       </p>
-      <Title as="h3" size="small">
+      <StyledTitle as="h3" size="small">
         Need Help?
-      </Title>
+      </StyledTitle>
       <p>
-        Have a question about the website or how to navigate it?
+        Have a question about the website or how to navigate it?{' '}
         <a href="mailto:leifdalan@gmail.com">Just email us.</a>
       </p>
     </Dialog>

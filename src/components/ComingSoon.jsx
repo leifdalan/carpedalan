@@ -41,7 +41,7 @@ export default function ComingSoon({ setShowLogin }) {
   return (
     <>
       <Comin tabIndex="-1" data-test="comingSoon">
-        Coming February 1st
+        Coming February
       </Comin>
       <Secret data-test="secret" onClick={handleClick} />
     </>

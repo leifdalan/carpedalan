@@ -18,6 +18,10 @@ const DialogWrapper = styled.div`
         return css`
           width: 75vw;
         `;
+      case 'copy':
+        return css`
+          width: 35em;
+        `;
       default:
         return null;
     }
