@@ -31,6 +31,7 @@ tags.get('/:tag', isLoggedIn, async (req, res) => {
     .where({
       'tags.name': req.params.tag,
       'photos.status': ACTIVE,
+      'photos.isPending': false,
     })
     .as(as);
 

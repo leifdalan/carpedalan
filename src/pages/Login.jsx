@@ -72,7 +72,6 @@ export default function Login({ location: { pathname }, status }) {
       setHasLoggedIn(true);
     } catch (e) {
       setError(e);
-      throw e;
     }
   };
 

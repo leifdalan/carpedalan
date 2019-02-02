@@ -211,6 +211,7 @@ posts.get('', isLoggedIn, async (req, res) => {
     .limit(limit)
     .offset(offset)
     .where({ [STATUS]: ACTIVE })
+    .andWhere({ [IS_PENDING]: false })
     .as(as);
 
   // Join with many-to-many tables
