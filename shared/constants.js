@@ -95,6 +95,8 @@ const READ_ONLY = 'read';
 
 const ACTIVE = 'active';
 const DELETED = 'deleted';
+const PENDING = 'pending';
+const IS_PENDING = 'isPending';
 
 const isAdmin = user => user === ADMIN;
 
@@ -181,4 +183,6 @@ module.exports = {
   TINY,
   DEFAULT_POSTS_PER_PAGE,
   CF_TIMEOUT,
+  PENDING,
+  IS_PENDING,
 };

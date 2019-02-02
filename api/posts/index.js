@@ -17,6 +17,7 @@ import {
   TAG_ID,
   TAGS,
   TIMESTAMP,
+  IS_PENDING,
 } from '../../shared/constants';
 import log from '../../src/utils/log';
 
@@ -163,7 +164,8 @@ posts.post('', isAdmin, async (req, res) => {
         .insert({
           [KEY]: `original/${name}`,
           [DESCRIPTION]: description,
-          status: 'deleted',
+          [STATUS]: DELETED,
+          [IS_PENDING]: true,
         })
         .returning('*')
         .then(photo => {
