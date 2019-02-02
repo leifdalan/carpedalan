@@ -163,7 +163,7 @@ export default function View({
             data={posts}
             onClose={() =>
               history.push({
-                pathname: match.params[0] || '/',
+                pathname: match.url || '/',
                 hash: location.hash,
               })
             }

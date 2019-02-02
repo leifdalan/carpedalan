@@ -10,6 +10,9 @@ import { Tag } from '../providers/TagProvider';
 import Title from '../styles/Title';
 
 const StyledSidebar = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   position: fixed;
   width: 400px;
   max-width: 80vw;
@@ -53,6 +56,11 @@ const Close = styled(Title)`
   outline: inherit;
 `;
 
+const StyledHelp = styled(Title)`
+  text-decoration: none;
+  color: ${getThemeValue(TEXT)};
+`;
+
 export default function Sidebar({
   toggleMenu,
   userState,
@@ -67,36 +75,42 @@ export default function Sidebar({
     if (user) loadTags();
     return null;
   }, [user]);
+
   return userState ? (
     <StyledSidebar isOpen={isOpen} onClick={toggleMenu}>
-      <Close type="button" as="button" onClick={toggleMenu}>
-        Close ✖
-      </Close>
-      <List>
-        {userState === 'write' ? (
-          <ListItem>
-            <StyledLink to="/admin">ADMIN</StyledLink>
-          </ListItem>
-        ) : null}
-
-        <ListItem>
-          <StyledLink to="/">HOME</StyledLink>
-        </ListItem>
-
-        <ListItem>
-          <StyledLink to="/faq">FAQ</StyledLink>
-        </ListItem>
-
-        {tags
-          .sort((a, b) => b.count - a.count)
-          .map(({ name, id, count }) => (
-            <ListItem key={id}>
-              <StyledLink to={`/tag/${name}`}>
-                {`#${name} (${count || 0})`}
-              </StyledLink>
+      <div>
+        <Close type="button" as="button" onClick={toggleMenu}>
+          Close ✖
+        </Close>
+        <List>
+          {userState === 'write' ? (
+            <ListItem>
+              <StyledLink to="/admin">ADMIN</StyledLink>
             </ListItem>
-          ))}
-      </List>
+          ) : null}
+
+          <ListItem>
+            <StyledLink to="/">HOME</StyledLink>
+          </ListItem>
+
+          <ListItem>
+            <StyledLink to="/faq">FAQ</StyledLink>
+          </ListItem>
+
+          {tags
+            .sort((a, b) => b.count - a.count)
+            .map(({ name, id, count }) => (
+              <ListItem key={id}>
+                <StyledLink to={`/tag/${name}`}>
+                  {`#${name} (${count || 0})`}
+                </StyledLink>
+              </ListItem>
+            ))}
+        </List>
+      </div>
+      <StyledHelp as="a" href="mailto:leifdalan@gmail.com">
+        Help!
+      </StyledHelp>
       {/* <button type="button" onClick={handleChangeTheme}>
         toggle themeaa
       </button>

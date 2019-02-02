@@ -43,6 +43,17 @@ Array [
     Menu
   </h1>,
   .c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
   position: fixed;
   width: 400px;
   max-width: 80vw;
@@ -97,54 +108,76 @@ Array [
   outline: inherit;
 }
 
+.c6 {
+  font-family: montserratregular,Helvetica,sans-serif;
+  margin: 2em 0;
+  font-size: 24px;
+  text-transform: uppercase;
+  -webkit-letter-spacing: 5px;
+  -moz-letter-spacing: 5px;
+  -ms-letter-spacing: 5px;
+  letter-spacing: 5px;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  color: #444;
+}
+
 <div
     className="c0"
     onClick={[Function]}
   >
-    <button
-      className="c1 c2"
-      onClick={[Function]}
-      type="button"
+    <div>
+      <button
+        className="c1 c2"
+        onClick={[Function]}
+        type="button"
+      >
+        Close ✖
+      </button>
+      <ul
+        className="c3"
+      >
+        <li
+          className="c4"
+        >
+          <a
+            className="c5"
+            href="/admin"
+            onClick={[Function]}
+          >
+            ADMIN
+          </a>
+        </li>
+        <li
+          className="c4"
+        >
+          <a
+            className="c5"
+            href="/"
+            onClick={[Function]}
+          >
+            HOME
+          </a>
+        </li>
+        <li
+          className="c4"
+        >
+          <a
+            className="c5"
+            href="/faq"
+            onClick={[Function]}
+          >
+            FAQ
+          </a>
+        </li>
+      </ul>
+    </div>
+    <a
+      className="c1 c6"
+      href="mailto:leifdalan@gmail.com"
     >
-      Close ✖
-    </button>
-    <ul
-      className="c3"
-    >
-      <li
-        className="c4"
-      >
-        <a
-          className="c5"
-          href="/admin"
-          onClick={[Function]}
-        >
-          ADMIN
-        </a>
-      </li>
-      <li
-        className="c4"
-      >
-        <a
-          className="c5"
-          href="/"
-          onClick={[Function]}
-        >
-          HOME
-        </a>
-      </li>
-      <li
-        className="c4"
-      >
-        <a
-          className="c5"
-          href="/faq"
-          onClick={[Function]}
-        >
-          FAQ
-        </a>
-      </li>
-    </ul>
+      Help!
+    </a>
   </div>,
   .c0 {
   max-width: 39em;
