@@ -1,4 +1,5 @@
 import express from 'express';
+import omit from 'lodash/omit';
 
 import db from '../../server/db';
 import { isLoggedIn, isAdmin } from '../../server/middlewares';
@@ -92,11 +93,12 @@ posts.delete('/:id', isAdmin, async (req, res) => {
 posts.patch('/:id', isAdmin, async (req, res) => {
   let photoResponse;
   let tags = [];
+  const body = omit(req.body, 'tags');
   try {
     await db.transaction(trx =>
       trx(PHOTOS)
         .update({
-          [DESCRIPTION]: req.body.description,
+          ...body,
         })
         .where({ id: req.params.id })
         .returning('*')

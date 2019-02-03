@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import CellMeasurer from 'react-virtualized/dist/es/CellMeasurer';
 import styled from 'styled-components';
@@ -8,6 +8,7 @@ import Dropdown from '../fields/Dropdown';
 import InputField from '../fields/InputField';
 import Field from '../form/Field';
 import Submit from '../form/Submit';
+import { Posts } from '../providers/PostsProvider';
 import { BRAND_COLOR, getThemeValue, TITLE_FONT } from '../styles';
 import Button from '../styles/Button';
 import Flex from '../styles/FlexContainer';
@@ -72,7 +73,7 @@ const RenderRow = props => {
     parent,
     posts,
     cache,
-    shouldShowImages,
+    // shouldShowImages,
     isEditing,
     delPost,
     setEditing,
@@ -81,10 +82,14 @@ const RenderRow = props => {
     match,
     location,
   } = props;
+  const { patchPost } = useContext(Posts);
   const post = posts[index];
 
   if (!post) return null;
-
+  const handlePending = id => async () => {
+    await patchPost(id)({ isPending: true });
+    setEditing(false);
+  };
   const showEditButton =
     isAdmin && (isEditing === index || !isNumber(isEditing));
 
@@ -120,7 +125,7 @@ const RenderRow = props => {
             width="100%"
             ratio={getImageRatio(post)}
             post={post}
-            shouldShowImage={shouldShowImages}
+            shouldShowImage
             placeholderColor={posts[index].placeholderColor}
             alt={posts[index].description}
           />
@@ -139,6 +144,9 @@ const RenderRow = props => {
             />
             <Flex justifyContent="space-between">
               <Submit />
+              <Button type="neutral" onClick={handlePending(posts[index].id)}>
+                Pending
+              </Button>
               <Button type="danger" onClick={delPost(posts[index].id)}>
                 Delete
               </Button>
