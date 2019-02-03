@@ -12,6 +12,11 @@ import connectPgSimple from 'connect-pg-simple';
 
 import router from './routes';
 import {
+  assets,
+  cdnDomain,
+  isProd,
+  ci,
+  nodeEnv,
   pgHost,
   pgUser,
   pgPassword,
@@ -20,7 +25,6 @@ import {
   port,
   pgPort,
   isDev,
-  isProd,
   ssl,
   secureCookie,
 } from './config';
@@ -137,6 +141,24 @@ export const setup = () => {
       ),
     }),
   );
+  app.use((req, res, next, err) => {
+    const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
+    const clientAssets = assets.map(asset => manifest[asset]);
+
+    res.status(500).render('index', {
+      layout: false,
+      isProd,
+      session: JSON.stringify(req.session),
+      meta: JSON.stringify({
+        status: 500,
+        cdn: cdnDomain,
+        ci,
+        nodeEnv,
+        error: err,
+      }),
+      clientAssets,
+    });
+  });
   return { app, store, pool };
   // return { app };
 };

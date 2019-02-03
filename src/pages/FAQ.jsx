@@ -40,8 +40,14 @@ export default function FAQ({ history }) {
         we love and trust.
       </p>
       <p>We hope you enjoy this content as much we as we enjoy creating it!</p>
-      <p style={{ whiteSpace: 'pre-line', textAlign: 'right' }}>
-        {`XOXO - 
+      <p
+        style={{
+          whiteSpace: 'pre-line',
+          textAlign: 'left',
+          marginLeft: '66%',
+        }}
+      >
+        {`XOXO
 `}
         <Signature>The Dalans</Signature>
       </p>
