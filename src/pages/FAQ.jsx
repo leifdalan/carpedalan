@@ -10,7 +10,7 @@ const FancyTitle = styled(Title)`
   text-transform: none;
   letter-spacing: 1px;
   font-size: 50px;
-  margin-top: 1em;
+  margin-top: 0em;
   margin-bottom: 0.5em;
 `;
 

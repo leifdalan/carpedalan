@@ -3,7 +3,6 @@ describe('Smoke test', () => {
     cy.server();
     cy.route('POST', '/api/login').as('login');
     cy.visit('/login');
-    cy.get('[data-test="secret"]').click();
     cy.get('[data-test="inputField"]').type(Cypress.env('PUBLIC_PASSWORD'), {
       log: false,
     });
@@ -19,7 +18,6 @@ describe('Smoke test', () => {
     cy.server();
     cy.route('POST', '/api/login').as('login');
     cy.visit('/login');
-    cy.get('[data-test="secret"]').click();
     cy.get('[data-test="inputField"]').type(Cypress.env('ADMIN_PASSWORD'), {
       log: false,
     });
