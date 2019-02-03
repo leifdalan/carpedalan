@@ -122,7 +122,6 @@ exports.handler = async (event, context, ...otherThingz) => {
   }
 
   // Update record
-  console.log(EXIFPROPS);
   try {
     const validExifData = Object.keys(EXIFPROPS).reduce(
       (acc, exifKey) => ({
@@ -152,8 +151,8 @@ exports.handler = async (event, context, ...otherThingz) => {
       };
     } else if (
       !exifData.tags.DateTimeOriginal ||
-      !exifData.tags.imageHeight ||
-      !exifData.tags.imageWidth
+      !exifData.tags.ImageHeight ||
+      !exifData.tags.ImageWidth
     ) {
       updateClause = {
         isPending: true,
@@ -162,6 +161,7 @@ exports.handler = async (event, context, ...otherThingz) => {
       updateClause = {
         timestamp: exifData.tags.DateTimeOriginal,
         status: 'active',
+        isPending: false,
         ...validExifData,
       };
     }
