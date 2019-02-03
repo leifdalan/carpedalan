@@ -82,3 +82,5 @@ nginx/*.key
 nginx/*.pem
 *.pem
 upload/*
+scripts/touch.js
+commands.sh
