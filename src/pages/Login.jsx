@@ -70,6 +70,8 @@ export default function Login({ location: { pathname }, status }) {
       const response = await request.post('/api/login', { password });
       setUser(response.body.user);
       setHasLoggedIn(true);
+      // Force recaching for service worker
+      await request.get('/');
     } catch (e) {
       setError(e);
     }

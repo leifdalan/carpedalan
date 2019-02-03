@@ -61,6 +61,10 @@ export const setup = () => {
   app.set('view engine', 'hbs');
   app.set('views', viewConfig.layoutsDir);
   // static assets
+  app.get('/robots.txt', (req, res) => {
+    res.type('text/plain');
+    res.send('User-agent: *\nDisallow: /');
+  });
   app.use('/dist', express.static('dist'));
   app.use('/public', express.static('public'));
   app.use('/sw.js', express.static('server/sw.js'));

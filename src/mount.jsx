@@ -14,7 +14,7 @@ if (!isCi) {
   if ('serviceWorker' in navigator) {
     console.log('CLIENT: service worker registration in progress.');
     navigator.serviceWorker.register('/sw.js').then(function(registration) {
-      registration.unregister();
+      // registration.unregister();
       console.log('CLIENT: service worker registration complete.');
     }, function() {
       console.log('CLIENT: service worker registration failure.');
