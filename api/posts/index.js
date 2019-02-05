@@ -200,21 +200,32 @@ posts.post('', isAdmin, async (req, res) => {
 // Get all
 posts.get('', isLoggedIn, async (req, res) => {
   // Create sub-select statement
-  const order = req.query.order || 'desc';
   const as = 'photoz';
+  const order = req.query.order || 'desc';
+
   const tagName = 'tagName';
   const tagId = 'tagId';
   const page = req.query.page || 1;
   const limit = DEFAULT_POSTS_PER_PAGE;
   const offset = (page - 1) * limit;
-  const selectStatement = db(PHOTOS)
-    .select()
-    .orderBy(TIMESTAMP, order)
-    .limit(limit)
-    .offset(offset)
-    .where({ [STATUS]: ACTIVE })
-    .andWhere({ [IS_PENDING]: false })
-    .as(as);
+
+  let selectStatement;
+  if (req.query.isPending) {
+    selectStatement = db(PHOTOS)
+      .select()
+      .orderBy(TIMESTAMP)
+      .where({ [IS_PENDING]: true })
+      .as(as);
+  } else {
+    selectStatement = db(PHOTOS)
+      .select()
+      .orderBy(TIMESTAMP, order)
+      .limit(limit)
+      .offset(offset)
+      .where({ [STATUS]: ACTIVE })
+      .andWhere({ [IS_PENDING]: false })
+      .as(as);
+  }
 
   // Join with many-to-many tables
   const photos = await db

@@ -49,6 +49,7 @@ const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState({});
   const [postsWithFakes, setPostsWithFakes] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
+  const [pending, setPending] = useState([]);
   const [progressState, setProgressState] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -67,6 +68,11 @@ const PostProvider = ({ children }) => {
     } catch (e) {
       log.error(e);
     }
+  };
+
+  const getPending = async () => {
+    const { body } = await get(`${API_PATH}/posts/`, { isPending: true });
+    setPending(body.data);
   };
 
   const invalidateAll = () => {
@@ -182,6 +188,8 @@ const PostProvider = ({ children }) => {
         progressMap: progressState,
         bulkEdit,
         bulkDelete,
+        getPending,
+        pending,
       }}
     >
       {children}

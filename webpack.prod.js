@@ -19,6 +19,7 @@ module.exports = {
   output: {
     path: path.resolve('dist'),
     filename: '[name].[contenthash].js',
+    chunkFilename: '[name].[contenthash].js',
     publicPath: '/',
   },
   resolve: {
@@ -80,7 +81,7 @@ module.exports = {
     splitChunks: {
       cacheGroups: {
         vendor: {
-          test: /[\\/]node_modules[\\/]/,
+          test: /node_modules\/(?!(react-day-picker|ANOTHER-ONE)\/).*/,
           name: 'vendors',
           chunks: 'all',
         },

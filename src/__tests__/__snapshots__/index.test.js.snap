@@ -153,6 +153,17 @@ Array [
         >
           <a
             className="c5"
+            href="/pending"
+            onClick={[Function]}
+          >
+            Pendingw
+          </a>
+        </li>
+        <li
+          className="c4"
+        >
+          <a
+            className="c5"
             href="/"
             onClick={[Function]}
           >

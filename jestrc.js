@@ -7,9 +7,6 @@ module.exports = {
       lines: 42,
     },
   },
-  transform: {
-    '^.+\\.jsx?$': 'babel7-jest',
-  },
   collectCoverageFrom: [
     'api/**/*',
     'server/**/*',
@@ -33,7 +30,7 @@ module.exports = {
 
   testEnvironment: 'node',
   roots: ['api', 'server'],
-  setupTestFrameworkScriptFile: './api/setup/setupTests.js',
+  setupFilesAfterEnv: ['./api/setup/setupTests.js'],
   globalSetup: './api/setup/globalSetup.js',
   globalTeardown: './api/setup/globalTeardown.js',
 };

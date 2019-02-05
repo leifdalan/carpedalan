@@ -1,5 +1,4 @@
 import path from 'path';
-import 'babel-polyfill';
 import 'jest-styled-components';
 
 global.__META__ = {

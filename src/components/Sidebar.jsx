@@ -84,9 +84,14 @@ export default function Sidebar({
         </Close>
         <List>
           {userState === 'write' ? (
-            <ListItem>
-              <StyledLink to="/admin">ADMIN</StyledLink>
-            </ListItem>
+            <>
+              <ListItem>
+                <StyledLink to="/admin">ADMIN</StyledLink>
+              </ListItem>
+              <ListItem>
+                <StyledLink to="/pending">Pendingw</StyledLink>
+              </ListItem>
+            </>
           ) : null}
 
           <ListItem>

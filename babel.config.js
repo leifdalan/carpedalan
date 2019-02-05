@@ -13,6 +13,7 @@ module.exports = {
     '@babel/react',
   ],
   plugins: [
+    'babel-plugin-dynamic-import-node',
     [
       'styled-components',
       {
@@ -43,6 +44,9 @@ module.exports = {
     ],
   ],
   env: {
+    test: {
+      plugins: ['babel-plugin-dynamic-import-node'],
+    },
     development: {
       plugins: ['react-hot-loader/babel'],
     },
