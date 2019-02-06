@@ -60,7 +60,7 @@ export const getFullImageSrcSet = ({ post }) => (
       media="(min-width: 500px)"
     />
     <source
-      srcSet={`${getImagePath({ post, size: SMALL, type: 'jpg' })}, 
+      srcSet={`${getImagePath({ post, size: MEDIUM, type: 'jpg' })}, 
   ${getImagePath({ post, size: MEDIUM, type: 'jpg' })} 1.5x,
   ${getImagePath({ post, size: MEDIUM, type: 'jpg' })} 2x`}
       type="image/jpg"
@@ -68,15 +68,15 @@ export const getFullImageSrcSet = ({ post }) => (
     />
     <source
       srcSet={`${getImagePath({ post, size: TINY, type: 'webp' })},
-  ${getImagePath({ post, size: SMALL, type: 'webp' })} 1.5x,
-  ${getImagePath({ post, size: SMALL, type: 'webp' })} 2x`}
+  ${getImagePath({ post, size: MEDIUM, type: 'webp' })} 1.5x,
+  ${getImagePath({ post, size: MEDIUM, type: 'webp' })} 2x`}
       type="image/webp"
       media="(max-width: 499px)"
     />
     <source
       srcSet={`${getImagePath({ post, size: TINY, type: 'jpg' })},
-  ${getImagePath({ post, size: SMALL, type: 'jpg' })} 1.5x,
-  ${getImagePath({ post, size: SMALL, type: 'jpg' })} 2x`}
+  ${getImagePath({ post, size: MEDIUM, type: 'jpg' })} 1.5x,
+  ${getImagePath({ post, size: MEDIUM, type: 'jpg' })} 2x`}
       type="image/jpg"
       media="(max-width: 499px)"
     />
