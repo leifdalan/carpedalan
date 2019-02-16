@@ -89,7 +89,7 @@ function Root({ user, defaultTheme, status, requests }) {
                               exact
                               path="/pending"
                               load={() =>
-                                import(/* webpackChunkName "panding" */ './components/PendingTest')
+                                import(/* webpackChunkName "panding" */ './components/Pending/PendingTest')
                               }
                             />
                           )}

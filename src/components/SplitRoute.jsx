@@ -18,15 +18,18 @@ export default function SplitRoute({ load, ...etc }) {
       setLoading(false);
     }
   }
+
   useEffect(() => {
     loadComponent();
     return null;
   }, []);
+
   if (error) return 'Error loading';
+
   return loading ? (
     <div>Loading</div>
   ) : (
-    <Route component={Component} {...etc} />
+    <Route render={() => Component} {...etc} />
   );
 }
 

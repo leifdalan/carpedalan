@@ -73,7 +73,6 @@ export default function Sidebar({
 
   useEffect(() => {
     if (user) loadTags();
-    return null;
   }, [user]);
 
   return userState ? (

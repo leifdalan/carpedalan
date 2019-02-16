@@ -114,9 +114,9 @@ function Form({
   shouldSubmit,
 }) {
   const ref = useRef();
-  const [state, dispatch] = useReducer(reducer, initialFormReducerState, {
-    type: 'INITIALIZE',
-    payload: initial,
+  const [state, dispatch] = useReducer(reducer, {
+    ...initialFormReducerState,
+    ...initial,
   });
 
   const registerField = name =>
@@ -144,7 +144,6 @@ function Form({
     if (e.preventDefault) {
       e.preventDefault();
     }
-
     dispatch({
       type: 'START_SUBMIT',
     });
@@ -166,17 +165,13 @@ function Form({
       try {
         const normalized = normalize(state.values);
         await onSubmit(normalized);
-        dispatch({
-          type: 'SUBMIT_SUCCEEDED',
-        });
+        // dispatch({
+        //   type: 'SUBMIT_SUCCEEDED',
+        // });
       } catch (error) {
         dispatch({
           type: 'SUBMIT_FAILED',
           payload: error,
-        });
-      } finally {
-        dispatch({
-          type: 'SUBMIT_STOP',
         });
       }
     }
@@ -199,8 +194,19 @@ function Form({
     if (shouldSubmit) {
       submit(state.values);
     }
-    return null;
   }, [shouldSubmit]);
+  let renderChildren = children;
+  if (typeof children === 'function')
+    renderChildren = children({
+      change,
+      validate,
+      state,
+      submit,
+      meta: state.meta,
+      values: state.values,
+      registerField,
+      unregisterField,
+    });
 
   return (
     <FormProvider
@@ -216,7 +222,7 @@ function Form({
         unregisterField,
       }}
     >
-      {children}
+      {renderChildren}
     </FormProvider>
   );
 }

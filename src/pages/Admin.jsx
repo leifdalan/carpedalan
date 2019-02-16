@@ -191,7 +191,6 @@ const Admin = () => {
 
   useEffect(() => {
     if (submit) submitAll();
-    return null;
   }, [submit]);
 
   useEffect(() => {

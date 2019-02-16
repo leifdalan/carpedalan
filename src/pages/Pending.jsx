@@ -1,7 +1,8 @@
 import React, { useContext, useEffect } from 'react';
-// import DayPicker from 'react-day-picker';
 
 import { Posts } from '../providers/PostsProvider';
+import PatchPendingForm from '../components/Pending/PatchPendingForm';
+import Wrapper from '../styles/Wrapper';
 
 import GlobalStyleComponent from './styles/Pending';
 
@@ -11,13 +12,13 @@ export default function Pending() {
   useEffect(() => {
     getPending();
   }, []);
+
   return (
-    <>
+    <Wrapper>
       {pending.map(pend => (
-        <div>{pend.id}</div>
+        <PatchPendingForm record={pend} />
       ))}
       <GlobalStyleComponent />
-      {/* <DayPicker onDayClick={console.log} /> */}
-    </>
+    </Wrapper>
   );
 }
