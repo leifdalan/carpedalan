@@ -21,7 +21,6 @@ export default function SplitRoute({ load, ...etc }) {
 
   useEffect(() => {
     loadComponent();
-    return null;
   }, []);
 
   if (error) return 'Error loading';

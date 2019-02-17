@@ -61,9 +61,14 @@ const PostProvider = ({ children }) => {
   const patchPost = id => async values => {
     try {
       const { body } = await patch(`${API_PATH}/posts/${id}`, values);
-      setPostsWithFakes(
-        postsWithFakes.map(data => (data.id === body.id ? body : data)),
-      );
+
+      const newPostsWithFakes = values.isPending
+        ? postsWithFakes.filter(data => data.id !== body.id)
+        : postsWithFakes.map(data =>
+            data.id === body.id ? addPlaceholderColor(body) : data,
+          );
+
+      setPostsWithFakes(newPostsWithFakes);
       cache.clearAll();
     } catch (e) {
       log.error(e);

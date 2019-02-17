@@ -16,7 +16,7 @@ export default function Pending() {
   return (
     <Wrapper>
       {pending.map(pend => (
-        <PatchPendingForm record={pend} />
+        <PatchPendingForm key={pend.id} record={pend} />
       ))}
       <GlobalStyleComponent />
     </Wrapper>

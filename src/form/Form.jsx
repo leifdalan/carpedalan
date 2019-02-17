@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useReducer, useRef } from 'react';
-import { bool, func, node, shape } from 'prop-types';
+import { bool, func, node, oneOfType, shape } from 'prop-types';
 import get from 'lodash/get';
 import unset from 'lodash/unset';
 import isUndefined from 'lodash/isUndefined';
@@ -243,7 +243,7 @@ Form.propTypes = {
   validate: func,
   effect: func,
   normalize: func,
-  children: node,
+  children: oneOfType([node, func]),
   shouldSubmit: bool,
 };
 

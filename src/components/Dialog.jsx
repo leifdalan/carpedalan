@@ -52,5 +52,5 @@ Dialog.defaultProps = {
 Dialog.propTypes = {
   children: node,
   onClose: func,
-  type: oneOf(['normal, wide']),
+  type: oneOf(['normal', 'wide', 'copy']),
 };
