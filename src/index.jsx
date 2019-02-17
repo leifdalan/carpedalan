@@ -6,6 +6,7 @@ import request from 'superagent';
 
 import { READ_USER, WRITE_USER } from '../server/constants';
 
+import SplitRoute from './components/SplitRoute';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
@@ -44,6 +45,8 @@ function Root({ user, defaultTheme, status, requests }) {
   };
   const isLoggedIn = [WRITE_USER, READ_USER].includes(userState);
 
+  const isAdmin = WRITE_USER === userState;
+
   const toggleMenu = () => setShouldShowSidebar(!shouldShowSidebar);
 
   return (
@@ -77,9 +80,23 @@ function Root({ user, defaultTheme, status, requests }) {
 
                         <Switch>
                           <Route exact path="/login" component={Login} />
-                          {userState === WRITE_USER ? (
+                          {isAdmin ? (
                             <Route exact path="/admin" component={Admin} />
                           ) : null}
+
+                          {isAdmin && (
+                            <Route
+                              exact
+                              path="/pending"
+                              render={() => (
+                                <SplitRoute
+                                  load={() =>
+                                    import(/* webpackChunkName "panding" */ './components/Pending/PendingTest')
+                                  }
+                                />
+                              )}
+                            />
+                          )}
 
                           {isLoggedIn && (
                             <Route exact path="/" component={Slash} />

@@ -153,6 +153,17 @@ Array [
         >
           <a
             className="c5"
+            href="/pending"
+            onClick={[Function]}
+          >
+            Pendingw
+          </a>
+        </li>
+        <li
+          className="c4"
+        >
+          <a
+            className="c5"
             href="/"
             onClick={[Function]}
           >
@@ -297,19 +308,5 @@ Array [
       </div>
     </div>
   </section>,
-  .c0 {
-  position: fixed;
-  bottom: 1em;
-  width: 95vw;
-  margin-left: 2.5vw;
-  padding: 2em;
-  background-color: rgb(222,50,82);
-}
-
-<div
-    className="c0"
-  >
-    Get failed
-  </div>,
 ]
 `;

@@ -73,7 +73,6 @@ export default function Sidebar({
 
   useEffect(() => {
     if (user) loadTags();
-    return null;
   }, [user]);
 
   return userState ? (
@@ -84,9 +83,14 @@ export default function Sidebar({
         </Close>
         <List>
           {userState === 'write' ? (
-            <ListItem>
-              <StyledLink to="/admin">ADMIN</StyledLink>
-            </ListItem>
+            <>
+              <ListItem>
+                <StyledLink to="/admin">ADMIN</StyledLink>
+              </ListItem>
+              <ListItem>
+                <StyledLink to="/pending">Pendingw</StyledLink>
+              </ListItem>
+            </>
           ) : null}
 
           <ListItem>

@@ -26,7 +26,6 @@ exports.handler = async (event, context, ...otherThingz) => {
   console.error('sizes', SIZES);
 
   let buffer;
-
   try {
     console.time('s3');
     buffer = await s3
@@ -41,10 +40,12 @@ exports.handler = async (event, context, ...otherThingz) => {
   } finally {
     console.timeEnd('s3');
   }
+  // / TODO CHECK METADATA FOR ROTATE HERE
+
+  console.log('rotate', buffer.Metadata.rotate);
   let resized;
   let rotated;
   let exifData;
-  let withoutOriginal;
   try {
     const parser = exif.create(buffer.Body);
     exifData = parser.parse();
@@ -52,10 +53,13 @@ exports.handler = async (event, context, ...otherThingz) => {
   } catch (e) {
     console.log('exif error', e);
   }
+  const rotate = buffer.Metadata.rotate
+    ? Number(buffer.Metadata.rotate) + (exifData.Orientation === 6 ? 90 : 0)
+    : null;
   try {
     console.time('sharp');
     rotated = await sharp(buffer.Body)
-      .rotate()
+      .rotate(rotate)
       .toBuffer();
     const jpegPromises = SIZES.map(size =>
       sharp(rotated)
@@ -78,15 +82,17 @@ exports.handler = async (event, context, ...otherThingz) => {
     );
     resized = await Promise.all([...jpegPromises, ...webpPromises]);
   } catch (e) {
-    console.log('sharp error', JSON.stringify(e));
+    console.log('sharp error', e);
   } finally {
     console.timeEnd('sharp');
   }
   let response;
+  const withoutOriginal = key.split('/')[1];
+  const withoutExtension = withoutOriginal.split('.')[0];
+  const rotateString = rotate ? `-${rotate}` : '';
   try {
     console.time('put');
-    withoutOriginal = key.split('/')[1];
-    const withoutExtension = withoutOriginal.split('.')[0];
+
     const putPromises = resized.map((resize, index) => {
       const isJpeg = index < SIZES.length;
       const extension = isJpeg ? 'jpg' : 'webp';
@@ -94,7 +100,7 @@ exports.handler = async (event, context, ...otherThingz) => {
       const size = SIZES[index % SIZES.length];
       return s3
         .upload({
-          Key: `web/${withoutExtension}-${size.width}${
+          Key: `web/${withoutExtension}${rotateString}-${size.width}${
             size.height ? `-${size.height}` : ''
           }.${extension}`,
           Bucket: bucket,
@@ -106,7 +112,7 @@ exports.handler = async (event, context, ...otherThingz) => {
 
     const rotatedOriginalPromise = s3
       .upload({
-        Key: `original/${withoutOriginal}`,
+        Key: `original/${withoutExtension}${rotateString}.jpg`,
         Bucket: bucket,
         Body: rotated,
         ContentType: 'image/jpeg',
@@ -144,7 +150,11 @@ exports.handler = async (event, context, ...otherThingz) => {
     console.log(withoutOriginal);
     // Check for bad exif
     // const success = false;
-    let updateClause = {};
+    console.error(`original/${withoutExtension}${rotateString}.jpg`);
+
+    let updateClause = {
+      key: `original/${withoutExtension}${rotateString}.jpg`,
+    };
     if (!exifData || !exifData.tags) {
       updateClause = {
         isPending: true,

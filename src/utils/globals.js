@@ -11,4 +11,5 @@ export const {
   clearTimeout,
   clearInterval,
   document,
+  Image,
 } = global;
