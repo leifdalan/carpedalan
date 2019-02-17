@@ -85,12 +85,16 @@ function Root({ user, defaultTheme, status, requests }) {
                           ) : null}
 
                           {isAdmin && (
-                            <SplitRoute
+                            <Route
                               exact
                               path="/pending"
-                              load={() =>
-                                import(/* webpackChunkName "panding" */ './components/Pending/PendingTest')
-                              }
+                              render={() => (
+                                <SplitRoute
+                                  load={() =>
+                                    import(/* webpackChunkName "panding" */ './components/Pending/PendingTest')
+                                  }
+                                />
+                              )}
                             />
                           )}
 
