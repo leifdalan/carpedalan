@@ -1,5 +1,6 @@
 import path from 'path';
 
+import cors from 'cors';
 import express from 'express';
 import winston from 'winston';
 import expressWinston from 'express-winston';
@@ -8,8 +9,15 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import expbhs from 'express-handlebars';
 import pg from 'pg';
+import { initialize } from 'express-openapi';
 import connectPgSimple from 'connect-pg-simple';
+import swaggerUi from 'swagger-ui-express';
 
+import v1ApiDoc from '../api-v1/api-doc';
+import posts from '../api-v1/services/posts';
+
+import db from './db';
+import { UnauthenticatedError, UnauthorizedError } from './errors';
 import router from './routes';
 import {
   assets,
@@ -35,6 +43,11 @@ const app = express();
 const customHeader = (req, res, next) => {
   res.setHeader('x-powered-by', 'Carpe Dalan');
   next();
+};
+
+const corsOptions = {
+  origin: ['http://local.carpedalan.com', /\.local\.carpedalan\.com$/],
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
 export const setup = () => {
@@ -73,7 +86,7 @@ export const setup = () => {
   app.use(cookieParser());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-
+  app.use(cors(corsOptions));
   // V important
   app.use(customHeader);
 
@@ -93,6 +106,86 @@ export const setup = () => {
       },
     }),
   );
+
+  // Winston error logger
+  app.use(
+    expressWinston.errorLogger({
+      transports: [new winston.transports.Console()],
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.json(),
+        winston.format.prettyPrint(),
+      ),
+    }),
+  );
+
+  initialize({
+    app,
+    // NOTE: If using yaml you can provide a path relative to process.cwd() e.g.
+    // apiDoc: './api-v1/api-doc.yml',
+    apiDoc: v1ApiDoc,
+    paths: [
+      {
+        path: '/posts/',
+        module: require('../api-v1/paths/posts').default, // eslint-disable-line
+      },
+      {
+        path: '/posts/{id}',
+        module: require('../api-v1/paths/posts/{id}').default, // eslint-disable-line
+      },
+      {
+        path: '/posts/bulk',
+        module: require('../api-v1/paths/posts/bulk').default, // eslint-disable-line
+      },
+      {
+        path: '/login/',
+        module: require('../api-v1/paths/login').default, // eslint-disable-line
+      },
+    ],
+    dependencies: {
+      db,
+      posts,
+    },
+    errorMiddleware: (err, req, res, next) => { // eslint-disable-line 
+      if (!err.status) {
+        res.status(500).json({
+          status: 500,
+          message: 'Internal Server Error',
+          errors: [err],
+        });
+      } else {
+        res.status(err.status).json({
+          status: err.status,
+          message: err.message,
+          errors: err.errors,
+        });
+      }
+    },
+    securityHandlers: {
+      sessionAuthentication: (req, scopes) => {
+        console.error('req.session', req.session);
+        console.error('req.cookie', req.cookie);
+        return true; // @TODO FIX ME
+        if (!req.session.user) {
+          throw new UnauthenticatedError();
+        }
+        if (!scopes.includes(req.session.user)) {
+          throw new UnauthorizedError();
+        } else {
+          return true;
+        }
+      },
+    },
+  });
+
+  app.use(
+    '/docs',
+    swaggerUi.serve,
+    swaggerUi.setup(null, {
+      swaggerUrl: '/v1/api-docs',
+    }),
+  );
+
   // Use dev and hot webpack middlewares
   if (isDev) {
     const { applyWebpackMiddleware } = require('./middlewares'); // eslint-disable-line global-require
@@ -134,17 +227,7 @@ export const setup = () => {
     });
     app.use(Sentry.Handlers.errorHandler());
   }
-  // Winston error logger
-  app.use(
-    expressWinston.errorLogger({
-      transports: [new winston.transports.Console()],
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.json(),
-        winston.format.prettyPrint(),
-      ),
-    }),
-  );
+
   app.use((req, res, next, err) => {
     const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
     const clientAssets = assets.map(asset => manifest[asset]);
