@@ -14,7 +14,7 @@ export default function(posts) {
   bulkDelete.apiDoc = {
     description: 'Delete bulk posts',
     operationId: 'deleteBulkPosts',
-    tags: ['posts', 'bulk'],
+    tags: ['posts', 'bulk', 'write'],
     requestBody: {
       description: 'Request body for posts',
       required: true,

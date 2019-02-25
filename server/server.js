@@ -9,32 +9,27 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import expbhs from 'express-handlebars';
 import pg from 'pg';
-import { initialize } from 'express-openapi';
 import connectPgSimple from 'connect-pg-simple';
 import swaggerUi from 'swagger-ui-express';
 
-import v1ApiDoc from '../api-v1/api-doc';
-import posts from '../api-v1/services/posts';
+import initialize from '../api-v1/initialize';
 
-import db from './db';
-import { UnauthenticatedError, UnauthorizedError } from './errors';
 import router from './routes';
 import {
   assets,
   cdnDomain,
-  isProd,
   ci,
-  nodeEnv,
-  pgHost,
-  pgUser,
-  pgPassword,
-  pgDatabase,
-  sessionSecret,
-  port,
-  pgPort,
   isDev,
+  isProd,
+  nodeEnv,
+  pgDatabase,
+  pgHost,
+  pgPassword,
+  pgPort,
+  pgUser,
+  port,
+  sessionSecret,
   ssl,
-  secureCookie,
 } from './config';
 
 const app = express();
@@ -101,7 +96,7 @@ export const setup = () => {
       rolling: true,
       cookie: {
         maxAge: 10000 * 60 * 60 * 24 * 30 * 6,
-        secure: secureCookie,
+        secure: false,
         http: true,
       },
     }),
@@ -119,64 +114,7 @@ export const setup = () => {
     }),
   );
 
-  initialize({
-    app,
-    // NOTE: If using yaml you can provide a path relative to process.cwd() e.g.
-    // apiDoc: './api-v1/api-doc.yml',
-    apiDoc: v1ApiDoc,
-    paths: [
-      {
-        path: '/posts/',
-        module: require('../api-v1/paths/posts').default, // eslint-disable-line
-      },
-      {
-        path: '/posts/{id}',
-        module: require('../api-v1/paths/posts/{id}').default, // eslint-disable-line
-      },
-      {
-        path: '/posts/bulk',
-        module: require('../api-v1/paths/posts/bulk').default, // eslint-disable-line
-      },
-      {
-        path: '/login/',
-        module: require('../api-v1/paths/login').default, // eslint-disable-line
-      },
-    ],
-    dependencies: {
-      db,
-      posts,
-    },
-    errorMiddleware: (err, req, res, next) => { // eslint-disable-line 
-      if (!err.status) {
-        res.status(500).json({
-          status: 500,
-          message: 'Internal Server Error',
-          errors: [err],
-        });
-      } else {
-        res.status(err.status).json({
-          status: err.status,
-          message: err.message,
-          errors: err.errors,
-        });
-      }
-    },
-    securityHandlers: {
-      sessionAuthentication: (req, scopes) => {
-        console.error('req.session', req.session);
-        console.error('req.cookie', req.cookie);
-        return true; // @TODO FIX ME
-        if (!req.session.user) {
-          throw new UnauthenticatedError();
-        }
-        if (!scopes.includes(req.session.user)) {
-          throw new UnauthorizedError();
-        } else {
-          return true;
-        }
-      },
-    },
-  });
+  initialize(app);
 
   app.use(
     '/docs',

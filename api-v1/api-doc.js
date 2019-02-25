@@ -1,7 +1,11 @@
 // args.apiDoc needs to be a js object.  This file could be a json file, but we can't add
 // comments in json files.
 
+import { READ_USER, WRITE_USER } from '../server/constants';
+
+import { setCloudfrontCookie } from './middlewares';
 import PostSchema, { PostWithTags } from './refs/post';
+import PostList from './refs/postList';
 import Tag from './refs/tag';
 import Error from './refs/error';
 
@@ -30,6 +34,7 @@ export default {
       PostWithTags,
       Tag,
       Error,
+      PostList,
     },
     securitySchemes: {
       sessionAuthentication: {
@@ -47,11 +52,22 @@ export default {
   tags: [
     // {name: 'creating'} will be inserted by ./api-routes/users.js
     // {name: 'fooey'} will be inserted by ./api-routes/users/{id}.js
-    { description: 'Everything users', name: 'users' },
+    { description: 'Post Operations', name: 'posts' },
+    { description: 'Bulk operatins', name: 'bulk' },
+    { description: 'Login/User operations', name: 'user' },
+    { description: 'Tag operations', name: 'tags' },
+    { description: 'Operations for read users', name: 'read' },
+    { description: 'Operations for write users', name: 'write' },
   ],
   security: [
     {
-      sessionAuthentication: ['read', 'write'],
+      sessionAuthentication: [READ_USER, WRITE_USER],
+    },
+  ],
+  'x-express-openapi-additional-middleware': [
+    (req, res, next) => {
+      setCloudfrontCookie(res);
+      next();
     },
   ],
 };

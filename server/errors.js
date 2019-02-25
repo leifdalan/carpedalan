@@ -25,7 +25,7 @@ export class UnauthenticatedError extends Error {
     this.status = 401;
     this.errors = [
       {
-        type: 'Unauthorized',
+        type: 'Unauthenticated',
         message: 'You are not authenticated',
       },
     ];

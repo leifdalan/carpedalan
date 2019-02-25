@@ -16,7 +16,7 @@ import {
 } from '../../../shared/constants';
 
 // Get all
-const getAll = async ({ order = 'desc', page = 1, isPending }) => {
+const getAll = async ({ order = 'desc', page = 1, isPending, tag }) => {
   // Create sub-select statement
   try {
     const as = 'photoz';
@@ -25,13 +25,15 @@ const getAll = async ({ order = 'desc', page = 1, isPending }) => {
     const tagId = 'tagId';
     const limit = DEFAULT_POSTS_PER_PAGE;
     const offset = (page - 1) * limit;
-
+    const tagWhere = tag ? { 'tags.id': tag } : {};
     let selectStatement;
+    let count;
     if (isPending) {
       selectStatement = db(PHOTOS)
         .select()
         .orderBy(TIMESTAMP)
         .where({ [IS_PENDING]: true })
+        // .andWhere(tagWhere)
         .as(as);
     } else {
       selectStatement = db(PHOTOS)
@@ -39,9 +41,22 @@ const getAll = async ({ order = 'desc', page = 1, isPending }) => {
         .orderBy(TIMESTAMP, order)
         .limit(limit)
         .offset(offset)
-        .where({ [STATUS]: ACTIVE })
-        .andWhere({ [IS_PENDING]: false })
+        .where({ 'photos.status': ACTIVE })
+        .andWhere({ 'photos.isPending': false })
+        // .andWhere(tagWhere)
         .as(as);
+    }
+    if (tag) {
+      selectStatement = selectStatement
+        .select('photos.*', 'tags.name as tagName', 'tags.id as tagId')
+        .leftJoin('photos_tags', 'photos_tags.photoId', 'photos.id')
+        .leftJoin('tags', 'tags.id', 'photos_tags.tagId')
+        .where({ [IS_PENDING]: false, [STATUS]: ACTIVE, ...tagWhere });
+    } else {
+      ({ count } = await db(PHOTOS)
+        .where({ [STATUS]: ACTIVE })
+        .count()
+        .first());
     }
 
     // Join with many-to-many tables
@@ -80,18 +95,15 @@ const getAll = async ({ order = 'desc', page = 1, isPending }) => {
         },
       ];
     }, []);
-
-    const { count } = await db(PHOTOS)
-      .where({ [STATUS]: ACTIVE })
-      .count()
-      .first();
-
+    if (tag) {
+      count = dedupped.length;
+    }
     return {
       data: dedupped,
       meta: {
         page,
         count: Number(count),
-        pages: Math.floor(Number(count) / limit),
+        pages: Math.floor(Number(count) / limit) + 1,
       },
     };
   } catch (e) {

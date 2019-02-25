@@ -1,21 +1,28 @@
 // Showing that you don't need to have apiDoc defined on methodHandlers.
+
 import { commonErrors } from '../../refs/error';
 
+const status = 200;
+
 export default function(posts) {
-  async function get(req, res) {
+  async function get(req, res, next) {
     const { order, page, isPending } = req.query;
-    const response = await posts.getAll({
-      order,
-      page,
-      isPending,
-    });
-    res.status(200).json(response);
+    try {
+      const response = await posts.getAll({
+        order,
+        page,
+        isPending,
+      });
+      res.status(status).json(response);
+    } catch (e) {
+      next(e);
+    }
   }
 
   get.apiDoc = {
     description: 'Get Posts',
     operationId: 'getPosts',
-    tags: ['posts'],
+    tags: ['posts', 'read'],
     parameters: [
       {
         in: 'query',
@@ -23,6 +30,7 @@ export default function(posts) {
         schema: {
           type: 'string',
           enum: ['asc', 'desc'],
+          default: 'desc',
         },
       },
       {
@@ -31,8 +39,8 @@ export default function(posts) {
         schema: {
           type: 'integer',
           minimum: 1,
+          default: 1,
         },
-        required: true,
       },
       {
         in: 'query',
@@ -44,34 +52,12 @@ export default function(posts) {
     ],
     responses: {
       ...commonErrors,
-      200: {
+      [status]: {
         description: 'Users were successfully deleted.',
         content: {
           'application/json': {
             schema: {
-              type: 'object',
-              properties: {
-                data: {
-                  type: 'array',
-                  items: {
-                    $ref: '#/components/schemas/PostWithTags',
-                  },
-                },
-                meta: {
-                  type: 'object',
-                  properties: {
-                    count: {
-                      type: 'integer',
-                    },
-                    page: {
-                      type: 'integer',
-                    },
-                    pages: {
-                      type: 'integer',
-                    },
-                  },
-                },
-              },
+              $ref: '#/components/schemas/PostList',
             },
           },
         },

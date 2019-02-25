@@ -1,17 +1,15 @@
 import db from '../../../server/db';
+import { NotFoundError } from '../../../server/errors';
 import { DELETED, STATUS } from '../../../shared/constants';
-import log from '../../../src/utils/log';
 
-const del = async (req, res) => {
-  try {
-    const response = await db('photos')
-      .update({ [STATUS]: DELETED })
-      .where({ id: req.params.id });
-    res.status(204).json(response);
-  } catch (e) {
-    res.status(404).send();
-    log.error(e);
-  }
+const del = async id => {
+  const response = await db('photos')
+    .update({ [STATUS]: DELETED })
+    .where({ id });
+  console.error('response', response);
+
+  if (!response) throw new NotFoundError();
+  return response;
 };
 
 export default del;

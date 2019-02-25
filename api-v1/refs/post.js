@@ -2,7 +2,7 @@ import { DESCRIPTION, TAGS } from '../../shared/constants';
 
 const post = {
   type: 'object',
-
+  additionalProperties: false,
   properties: {
     timestamp: {
       type: 'integer',

@@ -10,9 +10,9 @@ export default function(posts) {
   };
 
   patch.apiDoc = {
-    description: 'Get Posts',
+    description: 'Patch Posts',
     operationId: 'postPosts',
-    tags: ['posts'],
+    tags: ['posts', 'write'],
     requestBody: {
       description: 'Request body for posts',
       required: true,

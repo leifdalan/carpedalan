@@ -27,7 +27,7 @@ const error = {
 
 export const commonErrors = {
   400: {
-    description: 'Users were successfully deleted.',
+    description: 'Bad requestBody or malformed request parameters.',
     content: {
       'application/json': {
         schema: {
@@ -37,7 +37,7 @@ export const commonErrors = {
     },
   },
   401: {
-    description: 'Users were successfully deleted.',
+    description: 'User was unauthenticated.',
     content: {
       'application/json': {
         schema: {
@@ -47,7 +47,7 @@ export const commonErrors = {
     },
   },
   403: {
-    description: 'Users were successfully deleted.',
+    description: 'User was unauthorized to perform this operation.',
     content: {
       'application/json': {
         schema: {
@@ -57,7 +57,7 @@ export const commonErrors = {
     },
   },
   422: {
-    description: 'Users were successfully deleted.',
+    description: 'Request was not processable in the service handler.',
     content: {
       'application/json': {
         schema: {
@@ -67,7 +67,7 @@ export const commonErrors = {
     },
   },
   500: {
-    description: 'Users were successfully deleted.',
+    description: 'Request failed due to an unkown error.',
     content: {
       'application/json': {
         schema: {

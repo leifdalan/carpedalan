@@ -11,7 +11,18 @@ export default function(posts) {
   patch.apiDoc = {
     description: 'Get Posts',
     operationId: 'postPosts',
-    tags: ['posts'],
+    tags: ['posts', 'read'],
+    parameters: [
+      {
+        in: 'path',
+        name: 'id',
+        schema: {
+          type: 'string',
+          format: 'uuid',
+          description: 'uuid of post record to retrieve',
+        },
+      },
+    ],
     responses: {
       200: {
         description: 'Users were successfully deleted.',

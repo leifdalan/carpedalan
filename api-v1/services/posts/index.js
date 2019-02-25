@@ -11,7 +11,7 @@ export default {
   bulkDelete,
   bulkPatch,
   create,
-  del,
+  delete: del,
   getAll,
   update,
 };

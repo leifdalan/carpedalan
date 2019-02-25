@@ -14,7 +14,7 @@ export default function(posts) {
   bulkPatch.apiDoc = {
     description: 'Get Posts',
     operationId: 'postPosts',
-    tags: ['posts', 'bulk'],
+    tags: ['posts', 'bulk', 'write'],
     requestBody: {
       description: 'Request body for posts',
       required: true,

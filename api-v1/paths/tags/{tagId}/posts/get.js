@@ -1,0 +1,48 @@
+import { commonErrors } from '../../../../refs/error';
+
+const status = 200;
+
+export default function(posts) {
+  const get = async (req, res, next) => {
+    try {
+      const { tagId } = req.params;
+      const postsWithCount = await posts.getAll({ tag: tagId });
+      res.status(status).json(postsWithCount);
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  get.apiDoc = {
+    description: 'Get Tags',
+    operationId: 'getTags',
+    tags: ['tags', 'read'],
+    parameters: [
+      {
+        in: 'path',
+        name: 'tagId',
+        schema: {
+          type: 'string',
+          format: 'uuid',
+          example: '0f634edd-e401-4d6a-b5b2-9ae32dffa871',
+        },
+      },
+    ],
+
+    responses: {
+      ...commonErrors,
+      [status]: {
+        description: 'Tags were successfully fetched.',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/PostList',
+            },
+          },
+        },
+      },
+    },
+    security: [{ sessionAuthentication: ['write', 'read'] }],
+  };
+  return get;
+}

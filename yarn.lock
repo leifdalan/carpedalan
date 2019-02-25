@@ -7362,7 +7362,7 @@ openapi-request-validator@3.6.0:
     openapi-jsonschema-parameters "1.1.1"
     openapi-types "1.3.4"
 
-openapi-response-validator@3.7.0:
+openapi-response-validator@3.7.0, openapi-response-validator@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/openapi-response-validator/-/openapi-response-validator-3.7.0.tgz#87e57f75f7495fc8df3ca5f762072ee8146c7ebf"
   integrity sha512-lCGHHsLjfrCDk+PVGfRIc/FIqQcm8PGn+9IuhAaSTsNT5X8DbjcwE6/7UwYlGU/gQHXmgXIL+pmliP5KtfT4xg==

@@ -13,7 +13,7 @@ export default function(posts) {
   post.apiDoc = {
     description: 'Create Post',
     operationId: 'createPost',
-    tags: ['posts'],
+    tags: ['posts', 'write'],
     requestBody: {
       description: 'Request body for posts',
       required: true,
