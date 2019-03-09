@@ -30,9 +30,15 @@ import {
   port,
   sessionSecret,
   ssl,
+  assetDomain,
 } from './config';
 
 const app = express();
+let clientAssets = false;
+if (isProd) {
+  const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
+  clientAssets = assets.map(asset => manifest[asset]);
+}
 
 // V important
 const customHeader = (req, res, next) => {
@@ -154,7 +160,6 @@ export const setup = () => {
       }),
     );
   }
-
   // Define routes
   router(app);
 
@@ -166,14 +171,14 @@ export const setup = () => {
     app.use(Sentry.Handlers.errorHandler());
   }
 
-  app.use((req, res, next, err) => {
-    const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
-    const clientAssets = assets.map(asset => manifest[asset]);
+  app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars,prettier/prettier
+    console.error('err', err);
 
     res.status(500).render('index', {
       layout: false,
       isProd,
       session: JSON.stringify(req.session),
+      assetDomain,
       meta: JSON.stringify({
         status: 500,
         cdn: cdnDomain,
@@ -189,7 +194,7 @@ export const setup = () => {
 };
 
 export const start = expressApp => {
-  console.log(`Listening on port ${port} `); // eslint-disable-line no-console
+  console.log(`Listening on portz ${port} `); // eslint-disable-line no-console
   expressApp.listen(port);
 };
 

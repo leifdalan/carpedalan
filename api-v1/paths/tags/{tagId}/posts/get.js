@@ -14,8 +14,8 @@ export default function(posts) {
   };
 
   get.apiDoc = {
-    description: 'Get Tags',
-    operationId: 'getTags',
+    description: 'Get Posts associated with a tag',
+    operationId: 'getPostsByTag',
     tags: ['tags', 'read'],
     parameters: [
       {
@@ -25,6 +25,7 @@ export default function(posts) {
           type: 'string',
           format: 'uuid',
           example: '0f634edd-e401-4d6a-b5b2-9ae32dffa871',
+          description: 'uuid of tag that all posts are associated with',
         },
       },
     ],

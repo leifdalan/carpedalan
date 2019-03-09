@@ -1,3 +1,5 @@
+import { commonErrors } from '../../../refs/error';
+
 const responseCode = 201;
 
 export default function(posts) {
@@ -22,22 +24,28 @@ export default function(posts) {
         'application/json': {
           schema: {
             type: 'object',
+            description: 'Object containing bulk patch request',
             properties: {
               ids: {
                 type: 'array',
+                description: 'Array of post ids affected by request',
                 items: {
                   type: 'string',
                   format: 'uuid',
+                  description: 'uuid of post',
                 },
               },
               tags: {
                 type: 'array',
+                description: 'array of ids to ADD to all post ids',
                 items: {
                   type: 'string',
                   format: 'uuid',
+                  description: 'uuid of tag',
                 },
               },
               description: {
+                description: 'Descrtiption to update for all post ids',
                 type: 'string',
               },
             },
@@ -46,6 +54,7 @@ export default function(posts) {
       },
     },
     responses: {
+      ...commonErrors,
       [responseCode]: {
         description: 'Posts were successfully updated',
       },

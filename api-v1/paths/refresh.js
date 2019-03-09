@@ -7,7 +7,7 @@ const login = () => {
   post.apiDoc = {
     description: 'User refreshed cookie',
     operationId: 'refresh',
-    tags: ['user'],
+    tags: ['_user'],
     responses: {
       [status]: {
         description: 'User successfully refreshed',
@@ -16,8 +16,11 @@ const login = () => {
             schema: {
               type: 'object',
               properties: {
-                name: {
-                  type: 'string',
+                refreshed: {
+                  description:
+                    'Acknoweldgement that the user has been refreshed',
+                  type: 'boolean',
+                  example: true,
                 },
               },
             },

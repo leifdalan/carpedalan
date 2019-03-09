@@ -5,6 +5,7 @@ const path = require('path');
 
 const webpack = require('webpack');
 const HappyPack = require('happypack');
+const Stylish = require('webpack-stylish');
 
 module.exports = {
   context: path.resolve(__dirname),
@@ -12,7 +13,7 @@ module.exports = {
   devtool: 'eval-source-map',
   entry: {
     client: [
-      'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
+      'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&noInfo=true&quiet=true',
       './src/mount',
     ],
   },
@@ -30,7 +31,14 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        use: 'happypack/loader?id=jsx',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false,
+          },
+        },
+
       },
     ],
   },
@@ -43,19 +51,6 @@ module.exports = {
         CDN_DOMAIN: JSON.stringify(process.env.CDN_DOMAIN),
       },
     }),
-    new HappyPack({
-      id: 'jsx',
-      threads: 12,
-      loaders: [
-        {
-          loader: 'babel-loader',
-          options: {
-            cacheDirectory: true,
-            cacheCompression: false,
-          },
-        },
-      ],
-    }),
     new webpack.DefinePlugin({
       process: {
         env: {
@@ -63,26 +58,11 @@ module.exports = {
         },
       },
     }),
-
+    new Stylish(),
     new webpack.HotModuleReplacementPlugin(),
   ],
   devServer: {
-    stats: {
-      // copied from `'minimal'`
-      all: false,
-      modules: false,
-      maxModules: 0,
-      errors: true,
-      warnings: true,
-    },
+    stats: 'none',
   },
-  stats: {
-    // copied from `'minimal'`
-    all: false,
-    modules: true,
-    maxModules: 0,
-    errors: true,
-    warnings: true,
-    // our additional options
-  },
+  stats: 'none',
 };

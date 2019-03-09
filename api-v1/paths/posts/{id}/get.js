@@ -1,16 +1,18 @@
+const status = 200;
+
 export default function(posts) {
-  const patch = async function(req, res, next) {
+  const get = async function(req, res, next) {
     try {
       const response = await posts.get(req.params.id);
-      res.status(200).json(response);
+      res.status(status).json(response);
     } catch (e) {
       next(e);
     }
   };
 
-  patch.apiDoc = {
-    description: 'Get Posts',
-    operationId: 'postPosts',
+  get.apiDoc = {
+    description: 'Get Post',
+    operationId: 'getPost',
     tags: ['posts', 'read'],
     parameters: [
       {
@@ -24,12 +26,12 @@ export default function(posts) {
       },
     ],
     responses: {
-      200: {
+      [status]: {
         description: 'Users were successfully deleted.',
       },
     },
-    security: [{ sessionAuthentication: ['read'] }],
+    security: [{ sessionAuthentication: ['read', 'write'] }],
   };
 
-  return patch;
+  return get;
 }

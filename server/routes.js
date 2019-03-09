@@ -1,6 +1,6 @@
 import api from '../api/router';
 
-import { assets, cdnDomain, isProd, ci, nodeEnv } from './config';
+import { assets, cdnDomain, isProd, ci, nodeEnv, assetDomain } from './config';
 
 let clientAssets = false;
 if (isProd) {
@@ -17,6 +17,7 @@ export default app => {
       session: JSON.stringify(req.session),
       clientAssets,
       isProd,
+      assetDomain,
       meta: JSON.stringify({
         cdn: cdnDomain,
         ci,
@@ -31,6 +32,7 @@ export default app => {
       session: JSON.stringify(req.session),
       isProd,
       clientAssets,
+      assetDomain,
       meta: JSON.stringify({
         cdn: cdnDomain,
         ci,
@@ -48,6 +50,7 @@ export default app => {
         isProd,
         session: JSON.stringify(req.session),
         clientAssets,
+        assetDomain,
         meta: JSON.stringify({ cdn: cdnDomain, ci, nodeEnv }),
       });
     }
@@ -64,6 +67,7 @@ export default app => {
     res.status(200).render('index', {
       layout: false,
       isProd,
+      assetDomain,
       session: JSON.stringify(req.session),
       meta: JSON.stringify({
         status: 404,

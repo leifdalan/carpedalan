@@ -2,6 +2,7 @@ import { adminPassword, publicPassword } from '../../server/config';
 import { READ_USER, WRITE_USER } from '../../server/constants';
 import { UnauthenticatedError } from '../../server/errors';
 import { setSignedCloudfrontCookie } from '../../server/middlewares';
+import { commonErrors } from '../refs/error';
 
 const status = 200;
 
@@ -24,7 +25,7 @@ const login = () => {
   post.apiDoc = {
     description: 'Log user in',
     operationId: 'login',
-    tags: ['user'],
+    tags: ['_user'],
     requestBody: {
       description: 'Request body for login',
       required: true,
@@ -32,8 +33,10 @@ const login = () => {
         'application/json': {
           schema: {
             type: 'object',
+            description: 'Object with password property',
             properties: {
               password: {
+                description: 'password',
                 type: 'string',
                 format: 'password',
               },
@@ -49,9 +52,11 @@ const login = () => {
         content: {
           'application/json': {
             schema: {
+              description: 'Result of logging in',
               type: 'object',
               properties: {
                 user: {
+                  description: 'Role of user',
                   type: 'string',
                   enum: [READ_USER, WRITE_USER],
                 },
@@ -60,6 +65,7 @@ const login = () => {
           },
         },
       },
+      ...commonErrors,
       401: {
         description: 'User sent a bad password',
         content: {

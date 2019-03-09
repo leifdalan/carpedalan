@@ -22,8 +22,8 @@ const logout = () => {
   };
   post.apiDoc = {
     description: 'Log user logout',
-    operationId: 'login',
-    tags: ['user'],
+    operationId: 'logout',
+    tags: ['_user'],
     responses: {
       [status]: {
         description: 'User successfully logged in',

@@ -3,12 +3,13 @@ WORKDIR /app
 COPY yarn.lock .
 
 COPY package.json .
-RUN apk add curl=7.61.1-r1 git=2.18.1-r0
+RUN apk add curl=7.61.1-r2 git=2.18.1-r0
 RUN yarn --production --ignore-optional
 COPY src/ ./src
 COPY server/ ./server
 COPY api/ ./api
 COPY public/ ./public
+COPY api-v1/ ./api-v1
 COPY shared/ ./shared
 COPY babel.config.js .
 COPY .env.example .
@@ -19,7 +20,6 @@ EXPOSE 3001
 
 FROM base AS prod
 COPY .env .
-COPY pk-APKAIUIJTQRAIWFPJFEA.pem .
 COPY webpack.prod.js .
 RUN yarn build
 EXPOSE 80

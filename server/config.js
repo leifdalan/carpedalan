@@ -35,6 +35,7 @@ export const ci = env.CI === 'true';
 // Optional
 export const logLevel = env.LOG_LEVEL === 'info';
 export const cdnDomain = env.CDN_DOMAIN;
+export const assetDomain = env.ASSET_CDN_DOMAIN;
 export const domain = env.DOMAIN;
 export const awsAccessKeyId = env.AWS_ACCESS_KEY_ID;
 export const awsSecretAccessKey = env.AWS_SECRET_ACCESS_KEY;

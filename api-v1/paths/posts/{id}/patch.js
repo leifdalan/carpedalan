@@ -1,9 +1,13 @@
+import { commonErrors } from '../../../refs/error';
+
+const status = 200;
+
 export default function(posts) {
   const patch = async function(req, res, next) {
     const { body } = req;
     try {
       const response = await posts.update(body, req.params.id);
-      res.status(200).json(response);
+      res.status(status).json(response);
     } catch (e) {
       next(e);
     }
@@ -11,7 +15,7 @@ export default function(posts) {
 
   patch.apiDoc = {
     description: 'Patch Posts',
-    operationId: 'postPosts',
+    operationId: 'patchPost',
     tags: ['posts', 'write'],
     requestBody: {
       description: 'Request body for posts',
@@ -25,7 +29,8 @@ export default function(posts) {
       },
     },
     responses: {
-      201: {
+      ...commonErrors,
+      [status]: {
         description: 'Users were successfully deleted.',
       },
     },

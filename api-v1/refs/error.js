@@ -4,20 +4,30 @@ const error = {
   properties: {
     status: {
       type: 'integer',
+      example: 420,
+      description: 'HTTP status code of response',
     },
     message: {
       type: 'string',
+      example: "Oops, that's not right",
+      description: 'Human readable explanation of error',
     },
     errors: {
+      description: 'Array of errors that provide explanation',
       type: 'array',
       items: {
+        description: 'Explanatory error object',
         type: 'object',
         properties: {
           type: {
+            description: 'Coded error type',
             type: 'string',
+            example: 'openapi.validation.error',
           },
           message: {
+            description: 'Human readable error message',
             type: 'string',
+            example: 'request body should have x',
           },
         },
       },

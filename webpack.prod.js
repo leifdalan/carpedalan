@@ -20,7 +20,7 @@ module.exports = {
     path: path.resolve('dist'),
     filename: '[name].[contenthash].js',
     chunkFilename: '[name].[contenthash].js',
-    publicPath: '/',
+    publicPath: `https://${process.env.ASSET_CDN_DOMAIN}/`,
   },
   resolve: {
     extensions: ['.js', '.jsx'],
@@ -71,7 +71,7 @@ module.exports = {
         region: 'us-west-2',
       },
       s3UploadOptions: {
-        Bucket: 'carpe-assets',
+        Bucket: process.env.S3_ASSETS_BUCKET,
         ContentEncoding: 'gzip',
       },
     }),

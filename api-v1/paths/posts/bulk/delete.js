@@ -1,3 +1,5 @@
+import { commonErrors } from '../../../refs/error';
+
 const responseCode = 204;
 
 export default function(posts) {
@@ -24,21 +26,13 @@ export default function(posts) {
             type: 'object',
             properties: {
               ids: {
+                description: 'Array of ids to delete',
                 type: 'array',
                 items: {
                   type: 'string',
                   format: 'uuid',
+                  description: 'uuid of post',
                 },
-              },
-              tags: {
-                type: 'array',
-                items: {
-                  type: 'string',
-                  format: 'uuid',
-                },
-              },
-              description: {
-                type: 'string',
               },
             },
           },
@@ -46,6 +40,7 @@ export default function(posts) {
       },
     },
     responses: {
+      ...commonErrors,
       [responseCode]: {
         description: 'Posts were successfully updated',
       },

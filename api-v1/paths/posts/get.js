@@ -1,17 +1,33 @@
 // Showing that you don't need to have apiDoc defined on methodHandlers.
 
 import { commonErrors } from '../../refs/error';
+import {
+  ID,
+  TIMESTAMP,
+  DATE,
+  ORIGINALURL,
+  DESCRIPTION,
+  ETAG,
+  KEY,
+  CREATEDAT,
+  UPDATEDAT,
+  STATUS,
+  ACTIVE,
+  DELETED,
+  EXIFPROPS,
+} from '../../../shared/constants';
 
 const status = 200;
 
 export default function(posts) {
   async function get(req, res, next) {
-    const { order, page, isPending } = req.query;
+    const { order, page, isPending, fields } = req.query;
     try {
       const response = await posts.getAll({
         order,
         page,
         isPending,
+        fields,
       });
       res.status(status).json(response);
     } catch (e) {
@@ -31,6 +47,7 @@ export default function(posts) {
           type: 'string',
           enum: ['asc', 'desc'],
           default: 'desc',
+          description: 'Order of query of posts',
         },
       },
       {
@@ -41,6 +58,7 @@ export default function(posts) {
           minimum: 1,
           default: 1,
         },
+        description: 'Page of posts query',
       },
       {
         in: 'query',
@@ -48,6 +66,31 @@ export default function(posts) {
         schema: {
           type: 'boolean',
         },
+        description: 'Filter by `isPending` on column',
+      },
+      {
+        in: 'query',
+        name: 'fields',
+        schema: {
+          type: 'array',
+          items: {
+            type: 'string',
+            enum: [
+              ID,
+              TIMESTAMP,
+              DATE,
+              ORIGINALURL,
+              DESCRIPTION,
+              ETAG,
+              KEY,
+              CREATEDAT,
+              UPDATEDAT,
+              STATUS,
+              ...Object.values(EXIFPROPS),
+            ],
+          },
+        },
+        description: 'Fields to return in the response',
       },
     ],
     responses: {

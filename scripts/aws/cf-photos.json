@@ -1,0 +1,114 @@
+{
+    "ETag": "EJZVKLMYG8ER4", 
+    "DistributionConfig": {
+        "Comment": "", 
+        "CacheBehaviors": {
+            "Quantity": 0
+        }, 
+        "IsIPV6Enabled": true, 
+        "Logging": {
+            "Bucket": "", 
+            "Prefix": "", 
+            "Enabled": false, 
+            "IncludeCookies": false
+        }, 
+        "WebACLId": "", 
+        "Origins": {
+            "Items": [
+                {
+                    "S3OriginConfig": {
+                        "OriginAccessIdentity": "origin-access-identity/cloudfront/E210MN6M4IRWJD"
+                    }, 
+                    "OriginPath": "", 
+                    "CustomHeaders": {
+                        "Items": [
+                            {
+                                "HeaderName": "x-carpe", 
+                                "HeaderValue": "dalan"
+                            }
+                        ], 
+                        "Quantity": 1
+                    }, 
+                    "Id": "S3-carpedev-west", 
+                    "DomainName": "carpedev-west.s3.amazonaws.com"
+                }
+            ], 
+            "Quantity": 1
+        }, 
+        "DefaultRootObject": "", 
+        "PriceClass": "PriceClass_100", 
+        "Enabled": true, 
+        "DefaultCacheBehavior": {
+            "FieldLevelEncryptionId": "", 
+            "TrustedSigners": {
+                "Items": [
+                    "self"
+                ], 
+                "Enabled": true, 
+                "Quantity": 1
+            }, 
+            "LambdaFunctionAssociations": {
+                "Quantity": 0
+            }, 
+            "TargetOriginId": "S3-carpedev-west", 
+            "ViewerProtocolPolicy": "redirect-to-https", 
+            "ForwardedValues": {
+                "Headers": {
+                    "Quantity": 0
+                }, 
+                "Cookies": {
+                    "Forward": "none"
+                }, 
+                "QueryStringCacheKeys": {
+                    "Quantity": 0
+                }, 
+                "QueryString": false
+            }, 
+            "MaxTTL": 31536000, 
+            "SmoothStreaming": false, 
+            "DefaultTTL": 86400, 
+            "AllowedMethods": {
+                "Items": [
+                    "HEAD", 
+                    "GET"
+                ], 
+                "CachedMethods": {
+                    "Items": [
+                        "HEAD", 
+                        "GET"
+                    ], 
+                    "Quantity": 2
+                }, 
+                "Quantity": 2
+            }, 
+            "MinTTL": 0, 
+            "Compress": true
+        }, 
+        "CallerReference": "1547959564835", 
+        "ViewerCertificate": {
+            "SSLSupportMethod": "sni-only", 
+            "ACMCertificateArn": "arn:aws:acm:us-east-1:771396871964:certificate/33a0e2d5-54d5-45b9-bb19-c552a2651ea6", 
+            "MinimumProtocolVersion": "TLSv1.1_2016", 
+            "Certificate": "arn:aws:acm:us-east-1:771396871964:certificate/33a0e2d5-54d5-45b9-bb19-c552a2651ea6", 
+            "CertificateSource": "acm"
+        }, 
+        "CustomErrorResponses": {
+            "Quantity": 0
+        }, 
+        "HttpVersion": "http2", 
+        "Restrictions": {
+            "GeoRestriction": {
+                "RestrictionType": "none", 
+                "Quantity": 0
+            }
+        }, 
+        "Aliases": {
+            "Items": [
+                "photos.carpedalan.com", 
+                "photos.local.carpedalan.com", 
+                "photos.staging.carpedalan.com"
+            ], 
+            "Quantity": 3
+        }
+    }
+}

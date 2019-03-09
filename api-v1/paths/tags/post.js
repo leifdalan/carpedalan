@@ -5,7 +5,7 @@ const status = 201;
 export default function(tags) {
   const post = async (req, res, next) => {
     try {
-      const tagsWithCount = await tags.createTag(req.body.tag);
+      const tagsWithCount = await tags.createTag(req.body.name);
       res.status(status).json(tagsWithCount);
     } catch (e) {
       next(e);
@@ -39,7 +39,7 @@ export default function(tags) {
     responses: {
       ...commonErrors,
       [status]: {
-        description: 'Tags were successfully created.',
+        description: 'Tag was successfully created.',
         content: {
           'application/json': {
             schema: {

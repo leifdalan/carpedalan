@@ -15,17 +15,19 @@ const post = (req, res, next) => {
 post.apiDoc = {
   description: 'Setting a property on the user session cookie token',
   operationId: 'setUser',
-  tags: ['user'],
+  tags: ['_user'],
   requestBody: {
     content: {
       'application/json': {
         schema: {
           type: 'object',
+          additionalProperties: false,
           properties: {
             requests: {
               type: 'integer',
               minimum: 1,
               example: 1,
+              description: 'How many times the user has requested a login',
             },
           },
         },

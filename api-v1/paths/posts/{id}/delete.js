@@ -9,7 +9,6 @@ export default function(posts) {
       await posts.delete(id);
       res.status(status).end();
     } catch (e) {
-      console.log('e', e);
       next(e);
     }
   };
@@ -25,6 +24,7 @@ export default function(posts) {
         schema: {
           type: 'string',
           format: 'uuid',
+          description: 'uuid of post',
         },
         required: true,
       },

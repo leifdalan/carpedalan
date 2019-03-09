@@ -32,6 +32,7 @@ export default function(tags) {
                   id: {
                     type: 'string',
                     format: 'uuid',
+                    description: 'uuid of tag',
                   },
                   count: {
                     type: 'integer',

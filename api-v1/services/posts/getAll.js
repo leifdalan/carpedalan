@@ -16,11 +16,23 @@ import {
 } from '../../../shared/constants';
 
 // Get all
-const getAll = async ({ order = 'desc', page = 1, isPending, tag }) => {
+const getAll = async ({
+  order = 'desc',
+  page = 1,
+  isPending,
+  tag,
+  fields = '*',
+}) => {
   // Create sub-select statement
+  const fieldsToMap = ['id', TIMESTAMP, IS_PENDING, STATUS, ...fields];
   try {
     const as = 'photoz';
-
+    let fieldsToSelect;
+    if (Array.isArray(fields)) {
+      fieldsToSelect = fieldsToMap.map(field => `photos.${field}`);
+    } else {
+      fieldsToSelect = [`photos.${fields}`];
+    }
     const tagName = 'tagName';
     const tagId = 'tagId';
     const limit = DEFAULT_POSTS_PER_PAGE;
@@ -30,20 +42,19 @@ const getAll = async ({ order = 'desc', page = 1, isPending, tag }) => {
     let count;
     if (isPending) {
       selectStatement = db(PHOTOS)
-        .select()
+        .select(...fieldsToSelect)
         .orderBy(TIMESTAMP)
         .where({ [IS_PENDING]: true })
         // .andWhere(tagWhere)
         .as(as);
     } else {
       selectStatement = db(PHOTOS)
-        .select()
+        .select(...fieldsToSelect)
         .orderBy(TIMESTAMP, order)
         .limit(limit)
         .offset(offset)
         .where({ 'photos.status': ACTIVE })
         .andWhere({ 'photos.isPending': false })
-        // .andWhere(tagWhere)
         .as(as);
     }
     if (tag) {
@@ -62,9 +73,9 @@ const getAll = async ({ order = 'desc', page = 1, isPending, tag }) => {
     // Join with many-to-many tables
     const photos = await db
       .select(
-        `${as}.*`,
         `${TAGS}.${NAME} as ${tagName}`,
         `${TAGS}.${ID} as ${tagId}`,
+        `${as}.*`,
       )
       .from(selectStatement)
       .leftJoin(PHOTOS_TAGS, `${PHOTOS_TAGS}.${PHOTO_ID}`, `${as}.${ID}`)
