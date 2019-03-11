@@ -120,7 +120,7 @@ export const setup = () => {
     }),
   );
 
-  initialize(app);
+  const openApiDoc = initialize(app);
 
   app.use(
     '/docs',
@@ -172,12 +172,11 @@ export const setup = () => {
   }
 
   app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars,prettier/prettier
-    console.error('err', err);
 
     res.status(500).render('index', {
       layout: false,
       isProd,
-      session: JSON.stringify(req.session),
+      session: req.session ? JSON.stringify(req.session) : 'false',
       assetDomain,
       meta: JSON.stringify({
         status: 500,
@@ -189,7 +188,7 @@ export const setup = () => {
       clientAssets,
     });
   });
-  return { app, store, pool };
+  return { app, store, pool, openApiDoc };
   // return { app };
 };
 

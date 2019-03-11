@@ -34,6 +34,7 @@ const login = () => {
           schema: {
             type: 'object',
             description: 'Object with password property',
+            required: ['password'],
             properties: {
               password: {
                 description: 'password',
@@ -41,7 +42,6 @@ const login = () => {
                 format: 'password',
               },
             },
-            required: ['password'],
           },
         },
       },
@@ -71,7 +71,7 @@ const login = () => {
         content: {
           'application/json': {
             schema: {
-              $ref: '#components/schemas/Error',
+              $ref: '#/components/schemas/Error',
             },
           },
         },

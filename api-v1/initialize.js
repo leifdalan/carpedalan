@@ -19,7 +19,7 @@ import tags from './services/tags';
 import aws from './services/aws';
 
 export default function initializeSwagger(app) {
-  initialize({
+  return initialize({
     app,
     // NOTE: If using yaml you can provide a path relative to process.cwd() e.g.
     // apiDoc: './api-v1/api-doc.yml',

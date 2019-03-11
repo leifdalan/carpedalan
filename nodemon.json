@@ -1,3 +1,3 @@
 {
-  "watch": ["api/**/*", "server/**/*", "api-v1/**/*"]
+  "watch": ["!**__tests__/**/*", "api/**/*", "server/**/*", "api-v1/**/*" ]
 }

@@ -58,31 +58,29 @@ jobs:
               
               aws ecs register-task-definition \
                 --cli-input-json file://container-definition.json \
-                --family carpedalan \
-                --region us-east-1
+                --family carpedalan
       - run: 
           name: Update ECS service
           command: |
               OLD_TASK_ID=`aws ecs list-tasks \
                 --cluster carpedalan \
                 --desired-status RUNNING \
-                --region us-east-1 \
+                --profile carpedalan-prod \
                 --family carpedalan | \
                   egrep "task" | tr "/" " " | tr "[" " " |  awk '{print $2}' | sed 's/"$//'`
 
               TASK_REVISION=`aws ecs describe-task-definition \
                 --task-definition carpedalan \
-                --region us-east-1 | \
                 egrep "revision" | tr "/" " " | awk '{print $2}' | sed 's/"$//'`
 
               echo "Updating with task revision ${TASK_REVISION}";
 
               aws ecs update-service \
                 --cluster carpedalan \
-                --service carpedalan \
-                --region us-east-1 \
-                --task-definition carpedalan:${TASK_REVISION} \
-                --desired-count 1
+                --service carpedalan-service \
+                --task-definition carpedalan:18 \
+                --desired-count 1 \ 
+                --profile carpedalan-prod
 
               # sleep 30
               # echo "Stopping ${OLD_TASK_ID}"

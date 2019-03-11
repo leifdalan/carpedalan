@@ -6,7 +6,6 @@ const del = async id => {
   const response = await db('photos')
     .update({ [STATUS]: DELETED })
     .where({ id });
-  console.error('response', response);
 
   if (!response) throw new NotFoundError();
   return response;

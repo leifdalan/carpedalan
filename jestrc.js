@@ -8,7 +8,7 @@ module.exports = {
     },
   },
   collectCoverageFrom: [
-    'api/**/*',
+    'api-v1/**/*',
     'server/**/*',
     '!server/config.js',
     '!server/constants.js',

@@ -28,7 +28,7 @@ services:
       target: dev
     volumes:
       - ./src:/app/src:delegated
-      - ./nodemon.json:/app/nodmon.json:delegated
+      - ./nodemon.json:/app/nodemon.json:delegated
       - ./server:/app/server:delegated
       - ./api:/app/api:delegated
       - ./scripts:/app/scripts:delegated
@@ -45,7 +45,7 @@ services:
       - 9227:9229
     environment:
       PORT: 80
-    command: yarn start
+    command: yarn migrateAndStart
     healthcheck:
       test: ["CMD-SHELL", "curl --silent --fail localhost:80/healthcheck || exit 1"]
       interval: 1s

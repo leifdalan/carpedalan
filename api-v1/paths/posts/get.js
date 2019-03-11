@@ -2,19 +2,17 @@
 
 import { commonErrors } from '../../refs/error';
 import {
-  ID,
-  TIMESTAMP,
+  CREATEDAT,
   DATE,
-  ORIGINALURL,
   DESCRIPTION,
   ETAG,
-  KEY,
-  CREATEDAT,
-  UPDATEDAT,
-  STATUS,
-  ACTIVE,
-  DELETED,
   EXIFPROPS,
+  ID,
+  KEY,
+  ORIGINALURL,
+  STATUS,
+  TIMESTAMP,
+  UPDATEDAT,
 } from '../../../shared/constants';
 
 const status = 200;

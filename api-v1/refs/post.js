@@ -3,7 +3,13 @@ import { DESCRIPTION, TAGS } from '../../shared/constants';
 const post = {
   type: 'object',
   additionalProperties: false,
+  required: ['key'],
   properties: {
+    id: {
+      type: 'string',
+      format: 'uuid',
+      readOnly: true,
+    },
     timestamp: {
       type: 'integer',
       description: 'Integer unix epoch timestamp',
@@ -13,17 +19,20 @@ const post = {
       type: 'string',
       format: 'date-time',
       readOnly: true,
+      nullable: true,
       description: 'Date time from legacy tumblr images',
     },
     originalUrl: {
       type: 'string',
       format: 'uri',
       readOnly: true,
+      nullable: true,
       description: 'Original URL from legacy tumblr images',
     },
     [DESCRIPTION]: {
       type: 'string',
       description: 'Descrtipion/caption for the post',
+      nullable: true,
     },
     key: {
       type: 'string',
@@ -53,6 +62,9 @@ const post = {
         type: 'string',
         format: 'uuid',
       },
+    },
+    etag: {
+      type: 'string',
     },
 
     apertureValue: {
@@ -378,6 +390,9 @@ const post = {
       type: 'string',
       description: 'exif data extracted for yResolution',
       readOnly: true,
+    },
+    isPending: {
+      type: 'boolean',
     },
   },
 };
