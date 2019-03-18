@@ -10,10 +10,16 @@ const post = {
       format: 'uuid',
       readOnly: true,
     },
+    rotate: {
+      type: 'integer',
+      enum: [90, 180, 270],
+    },
+
     timestamp: {
       type: 'integer',
       description: 'Integer unix epoch timestamp',
       maximum: 9999999999,
+      nullable: true,
     },
     date: {
       type: 'string',
@@ -40,7 +46,7 @@ const post = {
     },
     status: {
       type: 'string',
-      enum: ['active', 'disabled'],
+      enum: ['active', 'deleted'],
       readOnly: true,
     },
     createdAt: {
@@ -65,6 +71,7 @@ const post = {
     },
     etag: {
       type: 'string',
+      nullable: true,
     },
 
     apertureValue: {
@@ -390,9 +397,6 @@ const post = {
       type: 'string',
       description: 'exif data extracted for yResolution',
       readOnly: true,
-    },
-    isPending: {
-      type: 'boolean',
     },
   },
 };

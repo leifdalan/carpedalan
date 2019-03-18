@@ -1,21 +1,26 @@
 import db from '../../../server/db';
-import { BadRequestError } from '../../../server/errors';
+import { BadRequestError, NotFoundError } from '../../../server/errors';
 import { DELETED, PHOTOS, STATUS } from '../../../shared/constants';
 
 const bulkDelete = async ids => {
   try {
     await db.transaction(async trx => {
       try {
-        await trx(PHOTOS)
+        const records = await trx(PHOTOS)
           .update({
             [STATUS]: DELETED,
           })
           .whereIn('id', ids);
+        if (ids.length != records) {
+          trx.rollback();
+          throw new NotFoundError(JSON.stringify(ids));
+        }
       } catch (e) {
         throw e;
       }
     });
   } catch (e) {
+    if (e instanceof Error) throw e;
     throw new BadRequestError('PG error');
   }
 };

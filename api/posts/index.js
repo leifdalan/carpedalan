@@ -133,7 +133,6 @@ posts.patch('/:id', isAdmin, async (req, res) => {
             });
 
           if (req.body.tags && req.body.tags.length) {
-            log.info('doing it');
             const tagsInsert = req.body.tags.map(tag => ({
               photoId: photo.id,
               tagId: tag,
@@ -196,7 +195,6 @@ posts.post('', isAdmin, async (req, res) => {
           pgResponse = photo;
 
           if (tags.length) {
-            log.info('doing it');
             const tagsInsert = tags.map(tag => ({
               photoId: photo[0].id,
               tagId: tag,

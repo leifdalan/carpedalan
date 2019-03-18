@@ -40,7 +40,7 @@ post.apiDoc = {
       description: 'User successfully logged in',
     },
   },
-  security: [],
+  security: [{ sessionAuthentication: ['write', 'read'] }],
 };
 
 export default { post };

@@ -8,11 +8,12 @@ if (isProd) {
   clientAssets = assets.map(asset => manifest[asset]);
 }
 
-export default app => {
+export default (app, openApiDoc) => {
   app.use('/api', api);
 
   app.get('/login', (req, res) => {
     res.render('index', {
+      openApiDoc: JSON.stringify(openApiDoc),
       layout: false,
       session: JSON.stringify(req.session),
       clientAssets,
@@ -29,6 +30,7 @@ export default app => {
   app.get('/', (req, res) => {
     res.render('index', {
       layout: false,
+      openApiDoc: JSON.stringify(openApiDoc),
       session: JSON.stringify(req.session),
       isProd,
       clientAssets,
@@ -47,6 +49,7 @@ export default app => {
     } else {
       res.render('index', {
         layout: false,
+        openApiDoc: JSON.stringify(openApiDoc),
         isProd,
         session: JSON.stringify(req.session),
         clientAssets,
@@ -67,6 +70,7 @@ export default app => {
     res.status(200).render('index', {
       layout: false,
       isProd,
+      openApiDoc: JSON.stringify(openApiDoc),
       assetDomain,
       session: JSON.stringify(req.session),
       meta: JSON.stringify({

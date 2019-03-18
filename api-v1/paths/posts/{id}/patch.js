@@ -17,6 +17,19 @@ export default function(posts) {
     description: 'Patch Posts',
     operationId: 'patchPost',
     tags: ['posts', 'write'],
+    parameters: [
+      {
+        in: 'path',
+        name: 'id',
+        schema: {
+          type: 'string',
+          format: 'uuid',
+        },
+        required: true,
+        description: 'UUID of post to patch',
+        example: 'f7bbd0d4-4508-11e9-b851-bf22de2ec42d',
+      },
+    ],
     requestBody: {
       description: 'Request body for posts',
       required: true,
@@ -31,7 +44,14 @@ export default function(posts) {
     responses: {
       ...commonErrors,
       [status]: {
-        description: 'Users were successfully deleted.',
+        description: 'Post was successfully updated.',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/PostWithTags',
+            },
+          },
+        },
       },
     },
     security: [{ sessionAuthentication: ['write'] }],

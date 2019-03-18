@@ -75,8 +75,10 @@ describe('GET /posts', () => {
     });
 
     const validation = instance.validateResponse(200, response.body);
+
     expect(validation).toBeUndefined();
     expect(response.status).toBe(200);
+
     expect(response.body.data[0]).toHaveProperty(KEY);
     expect(response.body.data[0]).not.toHaveProperty(DESCRIPTION);
   });

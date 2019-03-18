@@ -7,7 +7,7 @@ const del = async id => {
     .update({ [STATUS]: DELETED })
     .where({ id });
 
-  if (!response) throw new NotFoundError();
+  if (!response) throw new NotFoundError('id');
   return response;
 };
 

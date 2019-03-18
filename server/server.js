@@ -161,7 +161,7 @@ export const setup = () => {
     );
   }
   // Define routes
-  router(app);
+  router(app, openApiDoc);
 
   if (isProd) {
     const Sentry = require('@sentry/node'); // eslint-disable-line

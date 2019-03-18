@@ -66,6 +66,17 @@ export const commonErrors = {
       },
     },
   },
+  404: {
+    description: 'Requested resource was not found.',
+    content: {
+      'application/json': {
+        schema: {
+          $ref: '#/components/schemas/Error',
+        },
+      },
+    },
+  },
+
   422: {
     description: 'Request was not processable in the service handler.',
     content: {

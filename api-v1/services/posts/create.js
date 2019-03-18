@@ -10,18 +10,17 @@ import {
   STATUS,
   TAGS,
 } from '../../../shared/constants';
-import log from '../../../src/utils/log';
 
 const create = async body => {
   let pgResponse;
   const description = body[DESCRIPTION];
-  const { name } = body;
+  const { key } = body;
   const tags = body[TAGS] ? body[TAGS] : false;
   try {
     await db.transaction(trx =>
       trx(PHOTOS)
         .insert({
-          [KEY]: `original/${name}`,
+          [KEY]: `original/${key}`,
           [DESCRIPTION]: description,
           [STATUS]: DELETED,
           [IS_PENDING]: true,
@@ -31,7 +30,6 @@ const create = async body => {
           pgResponse = photo;
 
           if (tags.length) {
-            log.info('doing it');
             const tagsInsert = tags.map(tag => ({
               photoId: photo[0].id,
               tagId: tag,

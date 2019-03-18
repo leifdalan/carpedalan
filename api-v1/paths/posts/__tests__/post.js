@@ -1,5 +1,3 @@
-import { DESCRIPTION, KEY } from '../../../../shared/constants';
-
 let request = require('supertest');
 const OpenApiResponseValidator = require('openapi-response-validator').default;
 
@@ -87,5 +85,52 @@ describe('POST /posts', () => {
     expect(response.body.errors[0].message).toMatch(
       "should have required property 'key'",
     );
+  });
+
+  it('should return a return a 400 the additional fields are specified', async () => {
+    const response = await writeUserAgent
+      .post('/v1/posts')
+      .set('Content-Type', 'application/json')
+      .send({ farts: 'foo', key: 'something' });
+
+    const instance = new OpenApiResponseValidator(responseValidator);
+    const validation = instance.validateResponse(400, response);
+
+    expect(validation).toBeUndefined();
+    expect(response.status).toBe(400);
+
+    expect(response.body.errors[0].message).toMatch(
+      'should NOT have additional properties',
+    );
+  });
+
+  it('should return a return a 400 if key is the wrong format', async () => {
+    const response = await writeUserAgent
+      .post('/v1/posts')
+      .set('Content-Type', 'application/json')
+      .send({ key: 'something' });
+
+    const instance = new OpenApiResponseValidator(responseValidator);
+    const validation = instance.validateResponse(400, response);
+
+    expect(validation).toBeUndefined();
+    expect(response.status).toBe(400);
+
+    expect(response.body.errors[0].message).toMatch('should match pattern');
+  });
+
+  it('should return a return a 201 if key is the wrong format', async () => {
+    const response = await writeUserAgent
+      .post('/v1/posts')
+      .set('Content-Type', 'application/json')
+      .send({ key: 'something.jpg' });
+
+    const instance = new OpenApiResponseValidator(responseValidator);
+    const validation = instance.validateResponse(201, response.body);
+
+    expect(validation).toBeUndefined();
+    expect(response.status).toBe(201);
+
+    // expect(response.body.errors[0].message).toMatch('should match pattern');
   });
 });

@@ -24,6 +24,7 @@ export default function(posts) {
         'application/json': {
           schema: {
             type: 'object',
+            required: ['ids'],
             properties: {
               ids: {
                 description: 'Array of ids to delete',

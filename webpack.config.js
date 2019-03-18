@@ -4,7 +4,7 @@
 const path = require('path');
 
 const webpack = require('webpack');
-const HappyPack = require('happypack');
+// const HappyPack = require('happypack');
 const Stylish = require('webpack-stylish');
 
 module.exports = {
@@ -38,7 +38,6 @@ module.exports = {
             cacheCompression: false,
           },
         },
-
       },
     ],
   },

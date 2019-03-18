@@ -1,5 +1,3 @@
-import { DESCRIPTION, KEY } from '../../../shared/constants';
-
 let request = require('supertest');
 const OpenApiResponseValidator = require('openapi-response-validator').default;
 
@@ -7,7 +5,6 @@ const { setup } = require('.../../../server/server');
 
 const { app, store, pool, openApiDoc } = setup();
 const readUserAgent = request.agent(app);
-const writeUserAgent = request.agent(app);
 request = request(app);
 
 jest.mock('aws-cloudfront-sign', () => ({

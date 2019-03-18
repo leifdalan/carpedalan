@@ -1,5 +1,5 @@
 import db from '../../../server/db';
-import { BadRequestError } from '../../../server/errors';
+import { BadRequestError, NotFoundError } from '../../../server/errors';
 import { DESCRIPTION, PHOTOS, PHOTOS_TAGS } from '../../../shared/constants';
 
 const bulkPatch = async ({ ids, tags, description }) => {
@@ -12,20 +12,29 @@ const bulkPatch = async ({ ids, tags, description }) => {
       return [...acc, ...photoTags];
     }, []);
     await db.transaction(async trx => {
+      let records = 0;
       try {
         if (description) {
-          await trx(PHOTOS)
+          records = await trx(PHOTOS)
             .update({
               [DESCRIPTION]: description,
             })
             .whereIn('id', ids);
         }
-        await trx(PHOTOS_TAGS).insert(photosTagsInsert);
+        if (ids.length != records) {
+          throw new NotFoundError(JSON.stringify(ids));
+        }
+        if (tags.length) {
+          await trx(PHOTOS_TAGS).insert(photosTagsInsert);
+        }
       } catch (e) {
+        if (e instanceof Error) throw e;
+
         throw new BadRequestError(e.detail);
       }
     });
   } catch (e) {
+    if (e instanceof Error) throw e;
     throw new BadRequestError(e.detail);
   }
 };

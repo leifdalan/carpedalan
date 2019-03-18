@@ -25,6 +25,7 @@ export default function(posts) {
           schema: {
             type: 'object',
             description: 'Object containing bulk patch request',
+            required: ['ids'],
             properties: {
               ids: {
                 type: 'array',

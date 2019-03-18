@@ -1,11 +1,13 @@
-export class BadRequestError extends Error {
+export class CustomError extends Error {}
+
+export class BadRequestError extends CustomError {
   constructor(message = 'There was an issue with your request') {
     super(message);
     this.message = message;
     this.status = 400;
   }
 }
-export class UnauthorizedError extends Error {
+export class UnauthorizedError extends CustomError {
   constructor(message = 'Unauthorized') {
     super(message);
     this.message = message;
@@ -18,7 +20,7 @@ export class UnauthorizedError extends Error {
     ];
   }
 }
-export class UnauthenticatedError extends Error {
+export class UnauthenticatedError extends CustomError {
   constructor(message = 'Unauthenticated') {
     super(message);
     this.message = message;
@@ -31,7 +33,7 @@ export class UnauthenticatedError extends Error {
     ];
   }
 }
-export class NotFoundError extends Error {
+export class NotFoundError extends CustomError {
   constructor(id) {
     super('Not Found');
     this.message = 'Not Found';
@@ -53,6 +55,18 @@ export class PGError extends BadRequestError {
     this.errors = [
       {
         type: 'PG Error',
+        message,
+      },
+    ];
+  }
+}
+export class AWSError extends CustomError {
+  constructor(message = 'AWS Error') {
+    super(message);
+    this.message = message;
+    this.errors = [
+      {
+        type: 'AWS Error',
         message,
       },
     ];

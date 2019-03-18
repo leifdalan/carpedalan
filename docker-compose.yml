@@ -2,7 +2,7 @@ version: '2.3'
 
 services:
   alb:
-    container_name: alb
+    container_name: c_alb
     depends_on:
       app: 
         condition: service_healthy

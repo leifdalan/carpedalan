@@ -30,7 +30,7 @@ export const User = createContext({
   isLoading: false,
 });
 
-function Root({ user, defaultTheme, status, requests }) {
+function Root({ user, defaultTheme, status, requests, api }) {
   const [userState, setUser] = useState(user);
   const [theme, setTheme] = useState(defaultTheme);
   const [shouldShowSidebar, setShouldShowSidebar] = useState(false);

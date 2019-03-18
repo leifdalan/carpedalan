@@ -1,3 +1,5 @@
+import { commonErrors } from '../../../refs/error';
+
 const status = 200;
 
 export default function(posts) {
@@ -23,11 +25,20 @@ export default function(posts) {
           format: 'uuid',
           description: 'uuid of post record to retrieve',
         },
+        required: true,
       },
     ],
     responses: {
+      ...commonErrors,
       [status]: {
-        description: 'Users were successfully deleted.',
+        description: 'Post was successfully retrieved.',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/PostWithTags',
+            },
+          },
+        },
       },
     },
     security: [{ sessionAuthentication: ['read', 'write'] }],

@@ -32,7 +32,7 @@ module.exports = {
         },
         'react-virtualized': {
           // eslint-disable-next-line
-                transform: 'react-virtualized/dist/es/${member}',
+          transform: 'react-virtualized/dist/es/${member}',
           preventFullImport: true,
         },
         'react-select': {

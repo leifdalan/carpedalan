@@ -8,7 +8,7 @@ import { window } from './utils/globals';
 // eslint-disable-next-line no-underscore-dangle
 const isCi = window.__META__.ci; // eslint-disable-line
 
-DOM.render(<App {...window.__SESSION__} {...window.__META__}  />, document.getElementById('root'));
+DOM.render(<App {...window.__SESSION__} {...window.__META__} api={window.__API__} />, document.getElementById('root'));
 
 if (!isCi) {
   navigator.serviceWorker.getRegistrations().then(
