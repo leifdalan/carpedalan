@@ -39,15 +39,18 @@ const post = {
       type: 'string',
       description: 'Descrtipion/caption for the post',
       nullable: true,
+      example: 'a description',
     },
     key: {
       type: 'string',
       pattern: '.jpg$',
+      example: 'something.jpg',
     },
     status: {
       type: 'string',
       enum: ['active', 'deleted'],
       readOnly: true,
+      example: 'active',
     },
     createdAt: {
       type: 'string',

@@ -1,5 +1,5 @@
 {
   "hooks": {
-    "pre-commit": "lint-staged && yarn test && yarn integration"
+    "pre-commit": "lint-staged && yarn test --verbose && yarn integration --verbose"
   }
 }

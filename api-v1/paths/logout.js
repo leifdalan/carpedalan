@@ -1,35 +1,23 @@
-import { adminPassword, publicPassword } from '../../server/config';
-import { READ_USER, WRITE_USER } from '../../server/constants';
-import { setSignedCloudfrontCookie } from '../../server/middlewares';
+import { commonErrors } from '../refs/error';
 
 const status = 200;
 
 const logout = () => {
   const post = (req, res) => {
-    if (req.body.password === publicPassword) {
-      req.session.user = READ_USER;
-      req.session.requests = 1;
-      setSignedCloudfrontCookie(res);
-      res.status(status).send({ user: req.session.user });
-    } else if (req.body.password === adminPassword) {
-      req.session.user = WRITE_USER;
-      req.session.requests = 1;
-      setSignedCloudfrontCookie(res);
-      res.status(status).send({ user: req.session.user });
-    } else {
-      res.status(401).send();
-    }
+    req.session.destroy();
+    res.status(status).send();
   };
   post.apiDoc = {
     description: 'Log user logout',
     operationId: 'logout',
     tags: ['_user'],
     responses: {
+      ...commonErrors,
       [status]: {
         description: 'User successfully logged in',
       },
     },
-    security: [],
+    security: [{ sessionAuthentication: ['write', 'read'] }],
   };
   return { post };
 };

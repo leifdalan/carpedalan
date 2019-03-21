@@ -27,6 +27,7 @@ export default function(posts) {
           example: '0f634edd-e401-4d6a-b5b2-9ae32dffa871',
           description: 'uuid of tag that all posts are associated with',
         },
+        required: true,
       },
     ],
 

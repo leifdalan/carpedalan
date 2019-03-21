@@ -30,6 +30,7 @@ export const User = createContext({
   isLoading: false,
 });
 
+// eslint-disable-next-line
 function Root({ user, defaultTheme, status, requests, api }) {
   const [userState, setUser] = useState(user);
   const [theme, setTheme] = useState(defaultTheme);

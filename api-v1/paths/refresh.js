@@ -1,6 +1,6 @@
 const status = 200;
 
-const login = () => {
+const refresh = () => {
   const post = (req, res) => {
     res.status(200).send({ refreshed: true });
   };
@@ -38,9 +38,9 @@ const login = () => {
         },
       },
     },
-    security: [],
+    security: [{ sessionAuthentication: ['write', 'read'] }],
   };
   return { post };
 };
 
-export default login;
+export default refresh;

@@ -17,7 +17,7 @@ export default async function() {
 
   const withCount = tagsResponse.map(tag => ({
     ...tag,
-    count: countsById[tag.id],
+    count: Number(countsById[tag.id]) || 0,
   }));
   return withCount;
 }

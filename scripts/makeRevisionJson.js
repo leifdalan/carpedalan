@@ -2,9 +2,6 @@
 
 const fs = require('fs');
 
-const dotenv = require('dotenv-safe');
-
-dotenv.config();
 const { ECR_REPOSITORY, CIRCLE_SHA1 } = process.env;
 const json = {
   containerDefinitions: [

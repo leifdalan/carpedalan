@@ -43,7 +43,7 @@ export default function(tags) {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schema/Tag',
+              $ref: '#/components/schemas/Tag',
             },
           },
         },

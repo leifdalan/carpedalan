@@ -11,8 +11,8 @@ const bulkDelete = async ids => {
             [STATUS]: DELETED,
           })
           .whereIn('id', ids);
+        // eslint-disable-next-line eqeqeq
         if (ids.length != records) {
-          trx.rollback();
           throw new NotFoundError(JSON.stringify(ids));
         }
       } catch (e) {

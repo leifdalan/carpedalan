@@ -1,5 +1,9 @@
 import isEmpty from 'lodash/isEmpty';
 
+import db from '../../../../../server/db';
+import { PHOTOS_TAGS } from '../../../../../shared/constants';
+import getTags from '../../../../services/tags/getTags';
+
 let request = require('supertest');
 const OpenApiResponseValidator = require('openapi-response-validator').default;
 
@@ -109,18 +113,31 @@ describe('PATCH /posts/bulk', () => {
     expect(response.status).toBe(404);
   });
 
-  it('should return a 200 if the patchete was successful', async () => {
+  it('should return a 200 if the patch was successful and make sure all the tags were added', async () => {
     const {
       body: { id: id1 },
     } = await writeUserAgent
       .post('/v1/posts')
       .set('Content-Type', 'application/json')
-      .send({ key: 'something.jpg' });
+      .send({ key: 'something.jpg', description: 'description' });
+
+    const {
+      body: { id: id2 },
+    } = await writeUserAgent
+      .post('/v1/posts')
+      .set('Content-Type', 'application/json')
+      .send({ key: 'something.jpg', description: 'description' });
+
+    const tags = await getTags();
 
     const response = await writeUserAgent
       .patch(`/v1/posts/bulk`)
       .set('Content-Type', 'application/json')
-      .send({ ids: [id1], description: 'hallo' });
+      .send({
+        ids: [id1, id2],
+        description: 'hallo',
+        tags: [tags[0].id, tags[1].id],
+      });
     const instance = new OpenApiResponseValidator({
       responses,
       components,
@@ -133,5 +150,33 @@ describe('PATCH /posts/bulk', () => {
 
     expect(validation).toBeUndefined();
     expect(response.status).toBe(201);
+    const joinRecord = await db(PHOTOS_TAGS)
+      .select()
+      .where({
+        tagId: tags[0].id,
+        photoId: id1,
+      });
+    expect(joinRecord.length).toBe(1);
+    const joinRecord1 = await db(PHOTOS_TAGS)
+      .select()
+      .where({
+        tagId: tags[1].id,
+        photoId: id1,
+      });
+    expect(joinRecord1.length).toBe(1);
+    const joinRecord2 = await db(PHOTOS_TAGS)
+      .select()
+      .where({
+        tagId: tags[1].id,
+        photoId: id2,
+      });
+    expect(joinRecord2.length).toBe(1);
+    const joinRecord3 = await db(PHOTOS_TAGS)
+      .select()
+      .where({
+        tagId: tags[0].id,
+        photoId: id2,
+      });
+    expect(joinRecord3.length).toBe(1);
   });
 });

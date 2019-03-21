@@ -28,28 +28,31 @@ const getAll = async ({
   try {
     const as = 'photoz';
     let fieldsToSelect;
-    if (Array.isArray(fields)) {
+    if (tag) {
+      fieldsToSelect = null;
+    } else if (Array.isArray(fields)) {
       fieldsToSelect = fieldsToMap.map(field => `photos.${field}`);
     } else {
       fieldsToSelect = [`photos.${fields}`];
     }
+
     const tagName = 'tagName';
     const tagId = 'tagId';
     const limit = DEFAULT_POSTS_PER_PAGE;
     const offset = (page - 1) * limit;
-    const tagWhere = tag ? { 'tags.id': tag } : {};
+    const tagWhere = tag ? { tagId: tag } : {};
     let selectStatement;
     let count;
     if (isPending) {
       selectStatement = db(PHOTOS)
-        .select(...fieldsToSelect)
+        .select(fieldsToSelect)
         .orderBy(TIMESTAMP)
         .where({ [IS_PENDING]: true })
         // .andWhere(tagWhere)
         .as(as);
     } else {
       selectStatement = db(PHOTOS)
-        .select(...fieldsToSelect)
+        .select(fieldsToSelect)
         .orderBy(TIMESTAMP, order)
         .limit(limit)
         .offset(offset)

@@ -19,7 +19,7 @@
     "du": "docker-compose down && docker-compose up",
     "dub": "docker-compose down && docker-compose up --build",
     "e2e": "PG_PORT=5555 PG_HOST=localhost CYPRESS_BASE_URL=http://local.carpedalan.com:3001 cypress open --env configFile=local",
-    "cypress": "PG_PORT=5555 PG_HOST=localhost CYPRESS_BASE_URL=http://e2e_app cypress run --env configFile=local",
+    "cypress": "PG_PORT=5555 PG_HOST=localhost CYPRESS_BASE_URL=http://local.carpedalan.com cypress run --env configFile=local",
     "e2e:ci": "MIGRATING=true NODE_ENV=ci yarn migrate NODE_ENV=ci yarn knex seed:run --knexfile db/knexfile.js && yarn start:prod",
     "test-junit": "cypress run --reporter junit --reporter-options 'mochaFile=junit-results/my-test-output.xml'",
     "test-multiple": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=config.json",
@@ -164,6 +164,6 @@
     "winston-loggly-bulk": "https://github.com/loggly/winston-loggly-bulk.git#3.x"
   },
   "optionalDependencies": {
-    "cypress": "3.1.3"
+    "cypress": "3.2.0"
   }
 }

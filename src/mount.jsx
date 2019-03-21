@@ -10,15 +10,15 @@ const isCi = window.__META__.ci; // eslint-disable-line
 
 DOM.render(<App {...window.__SESSION__} {...window.__META__} api={window.__API__} />, document.getElementById('root'));
 
-if (!isCi) {
-  navigator.serviceWorker.getRegistrations().then(
+// if (!isCi) {
+//   navigator.serviceWorker.getRegistrations().then(
 
-    function(registrations) {
+//     function(registrations) {
 
-        for(let registration of registrations) {  
-            registration.unregister();
+//         for(let registration of registrations) {  
+//             registration.unregister();
 
-        }
+//         }
 
-});
-}
+// });
+// }
