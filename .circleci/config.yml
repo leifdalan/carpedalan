@@ -52,22 +52,20 @@ jobs:
                 --cluster carpedalan \
                 --service carpedalan-service \
                 --task-definition carpedalan:${TASK_REVISION} \
+                --desired-count 2
+
+              sleep 30
+              echo "Stopping ${OLD_TASK_ID}"
+              aws ecs stop-task \
+                --task ${OLD_TASK_ID} \
+                --cluster carpedalan
+
+              echo "Updating to desired count=1"
+              aws ecs update-service \
+                --cluster carpedalan \
+                --service carpedalan-service \
+                --task-definition carpedalan:${TASK_REVISION} \
                 --desired-count 1
-
-              # sleep 30
-              # echo "Stopping ${OLD_TASK_ID}"
-              # aws ecs stop-task \
-              #   --task 92244d16-8569-4ebe-a1a2-069f7bf5c0c0 \
-              #   --cluster carpedalan \
-              #   --region us-east-1
-
-              # echo "Updating to desired count=2"
-              # aws ecs update-service \
-              #   --cluster carpedalan \
-              #   --service carpedalan \
-              #   --task-definition carpedalan:${TASK_REVISION} \
-              #   --desired-count 2 \
-              #   --region us-east-1
       # - run:
       #     name: Deploy to heroku
       #     command: |
