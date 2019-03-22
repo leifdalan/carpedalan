@@ -53,7 +53,7 @@ export default {
     // {name: 'creating'} will be inserted by ./api-routes/users.js
     // {name: 'fooey'} will be inserted by ./api-routes/users/{id}.js
     { description: 'Post Operations', name: 'posts' },
-    { description: 'Bulk operatins', name: 'bulk' },
+    { description: 'Bulk operations', name: 'bulk' },
     { description: 'Login/User operations', name: '_user' },
     { description: 'Tag operations', name: 'tags' },
     { description: 'Operations for read users', name: 'read' },
