@@ -40,7 +40,7 @@ jobs:
                 --cluster carpedalan \
                 --desired-status RUNNING \
                 --family carpedalan | \
-                  egrep "task" | tr "/" " " | tr "[" " " |  awk '{print $2}' | sed 's/"$//'`
+                  egrep "task" | tr "/" " " | tr "[" " " | awk '{print $3}' | sed 's/"$//' | sed -n 2p`
 
               TASK_REVISION=`aws ecs describe-task-definition \
                 --task-definition carpedalan | \
