@@ -139,24 +139,28 @@ export const setup = () => {
   // express-winston logger BEFORE the router
   if (isProd) {
     const { Loggly } = require('winston-loggly-bulk'); // eslint-disable-line global-require
-    winston.add(
-      new Loggly({
-        token: '9841fd82-a324-49ab-8389-bacf0d73d9d9',
-        subdomain: 'leifdalan',
-        tags: ['Winston-NodeJS'],
-        json: true,
-      }),
-    );
+    const loggly = new Loggly({
+      token: '49a65f8a-56e0-4025-818d-e3f064e6ef01',
+      subdomain: 'carpedalan',
+      tags: ['Winston-NodeJS'],
+      json: true,
+    });
+
+    winston.add(loggly);
     winston.log('info', 'Logger starting');
 
     app.use(
       expressWinston.logger({
         expressFormat: true,
-        transports: [new winston.transports.Console()],
-        format: winston.format.combine(
-          winston.format.prettyPrint(),
-          winston.format.colorize(),
-        ),
+        transports: [
+          new winston.transports.Console(),
+          new winston.transports.Loggly({
+            token: '49a65f8a-56e0-4025-818d-e3f064e6ef01',
+            subdomain: 'carpedalan',
+            tags: ['Winston-NodeJS'],
+            json: true,
+          }),
+        ],
       }),
     );
   }
