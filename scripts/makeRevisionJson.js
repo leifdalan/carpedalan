@@ -18,9 +18,24 @@ const json = {
       name: 'carpedalan',
       portMappings: [
         {
-          containerPort: 80,
           hostPort: 80,
           protocol: 'tcp',
+          containerPort: 80,
+        },
+        {
+          hostPort: 3000,
+          protocol: 'tcp',
+          containerPort: 3000,
+        },
+        {
+          hostPort: 514,
+          protocol: 'tcp',
+          containerPort: 514,
+        },
+        {
+          hostPort: 6514,
+          protocol: 'tcp',
+          containerPort: 6514,
         },
       ],
     },

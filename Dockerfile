@@ -23,6 +23,8 @@ COPY .env .
 COPY webpack.prod.js .
 RUN yarn build
 EXPOSE 80
+EXPOSE 514
+EXPOSE 6514
 
 CMD ["yarn", "start:prod"]
 
