@@ -30,8 +30,12 @@ export default function BulkEditModal({ ids, showBulkModal }) {
   };
   return (
     <Dialog type="wide">
-      <InputField input={{ onChange: setDescription, value: description }} />
+      <InputField
+        data-test="description"
+        input={{ onChange: setDescription, value: description }}
+      />
       <Dropdown
+        data-test="tagsDropdown"
         name="tags"
         component={Dropdown}
         options={tags.map(tag => ({
@@ -45,7 +49,9 @@ export default function BulkEditModal({ ids, showBulkModal }) {
         isMulti
       />
       <FlexContainer justifyContent="space-between">
-        <Button onClick={handleSubmit}>{`Edit (${idArray.length})`}</Button>
+        <Button data-test="confirm" onClick={handleSubmit}>
+          {`Edit (${idArray.length})`}
+        </Button>
         <Button type="neutral" onClick={() => showBulkModal(false)}>
           Cancel
         </Button>

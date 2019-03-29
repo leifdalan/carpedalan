@@ -6,7 +6,7 @@ import { cdnDomain, cfKey, domain } from '../../server/config';
 export default function setSignedCloudfrontCookie(res) {
   const options = {
     keypairId: cfKey,
-    privateKeyPath: `/app/pk-${cfKey}.pem`,
+    privateKeyPath: `/app/server/cfkeys/pk-${cfKey}.pem`,
     expireTime: new Date().getTime() + CF_TIMEOUT,
   };
   const signedCookies = cf.getSignedCookies(`https://${cdnDomain}/*`, options);

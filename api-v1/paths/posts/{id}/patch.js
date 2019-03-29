@@ -36,7 +36,7 @@ export default function(posts) {
       content: {
         'application/json': {
           schema: {
-            $ref: '#/components/schemas/Post',
+            $ref: '#/components/schemas/PostPatch',
           },
         },
       },

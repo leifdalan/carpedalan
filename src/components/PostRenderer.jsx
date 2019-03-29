@@ -109,12 +109,17 @@ const RenderRow = props => {
     <CellMeasurer key={index} cache={cache} parent={parent} index={index}>
       <div style={style}>
         <Header justifyContent="space-between">
-          <Download as="div">{formatDate(posts[index].timestamp)}</Download>
-          <Download href={getOriginalImagePath({ post })}>Download</Download>
+          <Download data-test="date" as="div">
+            {formatDate(posts[index].timestamp)}
+          </Download>
+          <Download data-test="download" href={getOriginalImagePath({ post })}>
+            Download
+          </Download>
         </Header>
 
         {showEditButton ? (
           <EditButton
+            data-test="editButton"
             onClick={() => setEditing(isNumber(isEditing) ? null : index)}
           >
             {isEditing === index ? 'Close' : 'Edit'}
@@ -132,8 +137,13 @@ const RenderRow = props => {
         </Element>
         {isEditing === index ? (
           <Description>
-            <Field name="description" component={InputField} />
             <Field
+              data-test="descriptionField"
+              name="description"
+              component={InputField}
+            />
+            <Field
+              data-test="tagsDropdown"
               name="tags"
               component={Dropdown}
               options={tags.map(tag => ({
@@ -143,11 +153,19 @@ const RenderRow = props => {
               isMulti
             />
             <Flex justifyContent="space-between">
-              <Submit />
-              <Button type="neutral" onClick={handlePending(posts[index].id)}>
+              <Submit data-test="submit" />
+              <Button
+                data-test="pending"
+                type="neutral"
+                onClick={handlePending(posts[index].id)}
+              >
                 Pending
               </Button>
-              <Button type="danger" onClick={delPost(posts[index].id)}>
+              <Button
+                data-test="delete"
+                type="danger"
+                onClick={delPost(posts[index].id)}
+              >
                 Delete
               </Button>
             </Flex>
@@ -155,13 +173,15 @@ const RenderRow = props => {
         ) : post.description || (post.tags && post.tags.length) ? (
           <Description>
             {post.description ? (
-              <figcaption>{post.description}</figcaption>
+              <figcaption data-test="description">
+                {post.description}
+              </figcaption>
             ) : null}
             {post.tags && post.tags.length ? (
               <ul>
                 {/* eslint-disable react/no-array-index-key */}
                 {post.tags.map(({ name }, tagIndex) => (
-                  <li key={tagIndex}>
+                  <li data-test="tags" key={tagIndex}>
                     <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
                   </li>
                 ))}

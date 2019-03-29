@@ -156,7 +156,7 @@ Array [
             href="/pending"
             onClick={[Function]}
           >
-            Pendingw
+            Pending
           </a>
         </li>
         <li
@@ -164,6 +164,7 @@ Array [
         >
           <a
             className="c5"
+            data-test="home"
             href="/"
             onClick={[Function]}
           >
@@ -261,6 +262,7 @@ Array [
     size="small"
   >
     <a
+      data-test="Grid"
       href="/#grid"
       onClick={[Function]}
     >

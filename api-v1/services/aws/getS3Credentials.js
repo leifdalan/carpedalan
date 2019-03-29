@@ -11,7 +11,7 @@ const awsS3Config = {
   access_key: awsAccessKeyId,
   secret_key: awsSecretAccessKey,
   region: 'us-west-2',
-  acl: 'public-read', // to allow the uploaded file to be publicly accessible
+  acl: 'private', // to allow the uploaded file to be publicly accessible
   'x-amz-algorithm': 'AWS4-HMAC-SHA256', // algorithm used for signing the policy document
   success_action_status: '201', // to return an XML object to the browser detailing the file state
 };

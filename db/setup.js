@@ -42,7 +42,7 @@ module.exports = {
       port: process.env.PG_PORT || 5555,
     },
     pool: {
-      min: 2,
+      min: 0,
       max: 10,
     },
     migrations: {

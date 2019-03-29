@@ -1,3 +1,5 @@
+import omit from 'lodash/omit';
+
 import { DESCRIPTION, TAGS } from '../../shared/constants';
 
 const post = {
@@ -12,7 +14,8 @@ const post = {
     },
     rotate: {
       type: 'integer',
-      enum: [90, 180, 270],
+      enum: [0, 90, 180, 270],
+      nullable: true,
     },
 
     timestamp: {
@@ -303,7 +306,6 @@ const post = {
       nullable: true,
       type: 'string',
       description: 'exif data extracted for orientation',
-      readOnly: true,
     },
     resolutionUnit: {
       nullable: true,
@@ -415,6 +417,10 @@ export const PostWithTags = {
       },
     },
   },
+};
+
+export const PostPatch = {
+  ...omit(post, 'required'),
 };
 
 export default post;

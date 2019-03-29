@@ -35,11 +35,6 @@ module.exports = {
           transform: 'react-virtualized/dist/es/${member}',
           preventFullImport: true,
         },
-        'react-select': {
-          // eslint-disable-next-line
-                transform: 'react-select/lib/${member}',
-          preventFullImport: true,
-        },
       },
     ],
   ],
@@ -64,11 +59,6 @@ module.exports = {
             'react-virtualized': {
               // eslint-disable-next-line
                     transform: 'react-virtualized/dist/es/${member}',
-              preventFullImport: true,
-            },
-            'react-select': {
-              // eslint-disable-next-line
-                    transform: 'react-virtualized/lib/${member}',
               preventFullImport: true,
             },
           },

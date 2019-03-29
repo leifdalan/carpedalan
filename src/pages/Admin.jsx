@@ -220,10 +220,10 @@ const Admin = () => {
     setSavingState(initialSavingState);
   }, [files]);
 
-  const handleChange = async e => {
-    setFiles(e.target.files);
+  const handleChange = async () => {
+    setFiles(fileInputRef.current.files);
 
-    const newPreviewsPromises = Array.from(e.target.files).map(
+    const newPreviewsPromises = Array.from(fileInputRef.current.files).map(
       file =>
         new Promise(resolve => {
           const reader = new FileReader();
@@ -307,12 +307,15 @@ const Admin = () => {
         type="file"
         ref={fileInputRef}
         multiple
-        onChange={handleChange}
+        onInput={handleChange}
       />
 
       {!files.length ? (
         <Flex as="label" htmlFor="multiUploader">
           <Title>Click to Upload</Title>
+          <button type="button" onClick={handleChange} data-test="handle">
+            handle
+          </button>
         </Flex>
       ) : (
         <Wrapper>

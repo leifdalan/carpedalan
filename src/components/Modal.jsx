@@ -47,8 +47,10 @@ export default function Modal({ children, onClose, safeRef }) {
     }
   }
   return createPortal(
-    <Background onClick={handleClick}>
-      <CloseButton onClick={onClose}>✖</CloseButton>
+    <Background data-test="background" onClick={handleClick}>
+      <CloseButton data-test="closeModal" onClick={onClose}>
+        ✖
+      </CloseButton>
       {children}
     </Background>,
     document.getElementById('modal'),

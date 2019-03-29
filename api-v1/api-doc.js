@@ -4,7 +4,7 @@
 import { READ_USER, WRITE_USER } from '../server/constants';
 
 import { setCloudfrontCookie } from './middlewares';
-import PostSchema, { PostWithTags } from './refs/post';
+import PostSchema, { PostWithTags, PostPatch } from './refs/post';
 import PostList from './refs/postList';
 import Tag from './refs/tag';
 import Error from './refs/error';
@@ -35,6 +35,7 @@ export default {
       Tag,
       Error,
       PostList,
+      PostPatch,
     },
     securitySchemes: {
       sessionAuthentication: {

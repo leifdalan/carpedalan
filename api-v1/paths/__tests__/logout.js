@@ -13,12 +13,16 @@ jest.mock('aws-cloudfront-sign', () => ({
   getSignedCookies: jest.fn(() => ({})),
 }));
 
+/**
+ * This test is ignored by wallaby!
+ *
+ */
 describe('POST /logout', () => {
   const { components } = openApiDoc.args.apiDoc;
   const { responses } = openApiDoc.apiDoc.paths['/logout/'].post;
   const responseValidator = { components, responses };
   beforeEach(async () => {
-    await readUserAgent.post('/api/login').send({ password: 'testpublic' });
+    await readUserAgent.post('/v1/login').send({ password: 'testpublic' });
     1;
   });
 
@@ -28,13 +32,17 @@ describe('POST /logout', () => {
     await app.close();
     readUserAgent.app.close();
   });
-  it('should return a 400 with the right response', async () => {
+  it('should return a 200 with the right response', async () => {
     const response = await request.post('/v1/logout');
 
     const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(400, response);
+    const validation = instance.validateResponse(
+      200,
+      isEmpty(response.body) ? null : response.body,
+    );
+
     expect(validation).toBeUndefined();
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(200);
   });
 
   it('should logout successfully', async () => {

@@ -9,6 +9,7 @@ import InputField from '../fields/InputField';
 import Field from '../form/Field';
 import Form from '../form/Form';
 import Submit from '../form/Submit';
+import { API_PATH } from '../../shared/constants';
 
 import { User } from '..';
 
@@ -64,7 +65,7 @@ export default function Login({ location: { pathname }, status }) {
 
   const submitLogin = async ({ password }) => {
     try {
-      const response = await request.post('/api/login', { password });
+      const response = await request.post(`${API_PATH}/login`, { password });
 
       await request.get('/');
       setUser(response.body.user);
@@ -76,7 +77,7 @@ export default function Login({ location: { pathname }, status }) {
 
   const submitRequestAccess = async ({ email, firstName, lastName }) => {
     try {
-      await request.post('/api/request', {
+      await request.post(`${API_PATH}/request`, {
         email,
         firstName,
         lastName,

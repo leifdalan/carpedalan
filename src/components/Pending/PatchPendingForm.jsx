@@ -64,8 +64,10 @@ export default function PatchPendingForm({ record }) {
     let dimensions = {};
     if (!record.imageHeight) {
       dimensions = {
-        [transform % 180 ? 'imageHeight' : 'imageWidth']: imageSizes.height,
-        [transform % 180 ? 'imageWidth' : 'imageHeight']: imageSizes.width,
+        [transform % 180 ? 'imageHeight' : 'imageWidth']: `${
+          imageSizes.height
+        }`,
+        [transform % 180 ? 'imageWidth' : 'imageHeight']: `${imageSizes.width}`,
       };
     }
     await patchPost(record.id)({
@@ -73,7 +75,6 @@ export default function PatchPendingForm({ record }) {
       timestamp,
       isPending: false,
       status: ACTIVE,
-      orientation: null,
       key: record.key,
       ...dimensions,
     });

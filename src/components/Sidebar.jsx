@@ -88,13 +88,15 @@ export default function Sidebar({
                 <StyledLink to="/admin">ADMIN</StyledLink>
               </ListItem>
               <ListItem>
-                <StyledLink to="/pending">Pendingw</StyledLink>
+                <StyledLink to="/pending">Pending</StyledLink>
               </ListItem>
             </>
           ) : null}
 
           <ListItem>
-            <StyledLink to="/">HOME</StyledLink>
+            <StyledLink data-test="home" to="/">
+              HOME
+            </StyledLink>
           </ListItem>
 
           <ListItem>
@@ -105,7 +107,14 @@ export default function Sidebar({
             .sort((a, b) => b.count - a.count)
             .map(({ name, id, count }) => (
               <ListItem key={id}>
-                <StyledLink to={`/tag/${name}`}>
+                <StyledLink
+                  data-test="tag"
+                  to={{
+                    pathname: `/tag/${name}`,
+                    state: { tagId: id },
+                  }}
+                  state={{ tagId: id }}
+                >
                   {`#${name} (${count || 0})`}
                 </StyledLink>
               </ListItem>

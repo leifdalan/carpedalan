@@ -48,8 +48,8 @@ describe('PATCH /posts/{id}', () => {
   const { components } = openApiDoc.args.apiDoc;
   let id;
   beforeAll(async () => {
-    await readUserAgent.post('/api/login').send({ password: 'testpublic' });
-    await writeUserAgent.post('/api/login').send({ password: 'testadmin' });
+    await readUserAgent.post('/v1/login').send({ password: 'testpublic' });
+    await writeUserAgent.post('/v1/login').send({ password: 'testadmin' });
     ({ responses } = openApiDoc.apiDoc.paths[path].patch);
   });
   afterAll(async () => {

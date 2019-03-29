@@ -5,6 +5,7 @@ import { ThemeProvider } from 'styled-components';
 import request from 'superagent';
 
 import { READ_USER, WRITE_USER } from '../server/constants';
+import { API_PATH } from '../shared/constants';
 
 import SplitRoute from './components/SplitRoute';
 import Admin from './pages/Admin';
@@ -40,7 +41,7 @@ function Root({ user, defaultTheme, status, requests, api }) {
     const newTheme = theme === 'dark' ? 'lite' : 'dark';
     if (theme === 'dark') setTheme('lite');
     else setTheme('dark');
-    await request.post('/api/user', {
+    await request.post(`${API_PATH}/user`, {
       defaultTheme: newTheme,
     });
   };
@@ -112,7 +113,7 @@ function Root({ user, defaultTheme, status, requests, api }) {
                             <Route exact path="/archive" component={Archive} />
                           )}
                           {isLoggedIn && (
-                            <Route path="/tag/:tag" component={Tag} />
+                            <Route path="/tag/:tagName" component={Tag} />
                           )}
                           {isLoggedIn && <Route component={NotFound} />}
                           {!isLoggedIn && (

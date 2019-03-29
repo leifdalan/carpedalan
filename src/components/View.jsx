@@ -118,12 +118,15 @@ export default function View({
             </SVG>
           ) : (
             <>
-              <StyledTitle fontSize={fontSize}>{title}</StyledTitle>
+              <StyledTitle data-test="title" fontSize={fontSize}>
+                {title}
+              </StyledTitle>
             </>
           )}
         </Wrapper>
         <StyledMenu size="small" side="right">
           <Link
+            data-test={isGridView ? 'List' : 'Grid'}
             replace
             to={{
               pathname: `${match.url}`,

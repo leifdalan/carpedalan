@@ -2,6 +2,7 @@ import React, { createContext, useState } from 'react';
 import { node } from 'prop-types';
 import request from 'superagent';
 
+import { API_PATH } from '../../shared/constants';
 import log from '../utils/log';
 
 export const Tag = createContext({ tags: [], postNewTag: () => {} });
@@ -16,7 +17,7 @@ const Tags = ({ children }) => {
     if (tags.length) return;
     try {
       setLoadingTags(true);
-      const response = await request.get('/api/tags');
+      const response = await request.get(`${API_PATH}/tags`);
       setTags(response.body);
     } catch (e) {
       log.error('loading failed');
@@ -28,7 +29,7 @@ const Tags = ({ children }) => {
   const postNewTag = async tag => {
     setCreatingTag(true);
     try {
-      const { body } = await request.post('/api/tags', { tag });
+      const { body } = await request.post(`${API_PATH}/tags`, { tag });
       setTags([...tags, body]);
       return body;
     } catch (e) {

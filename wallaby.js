@@ -29,7 +29,9 @@ module.exports = function(wallaby) {
     ],
     tests: [
       '**/__tests__/*.js?(x)',
+      '!api/**/__tests__/*',
       '!node_modules/**/*',
+      '!**/logout.js',
       '!**/node_modules/**/*',
     ],
 

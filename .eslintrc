@@ -32,6 +32,11 @@
         "react/forbid-foreign-prop-types": "off"
   
       }
+    }, {
+      "files": "cypress/**/*",
+      "rules": {
+        "jest/valid-expect": "off"
+      } 
     }
   ]
 }

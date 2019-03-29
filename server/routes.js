@@ -1,5 +1,3 @@
-import api from '../api/router';
-
 import { assets, cdnDomain, isProd, ci, nodeEnv, assetDomain } from './config';
 
 let clientAssets = false;
@@ -9,7 +7,7 @@ if (isProd) {
 }
 
 export default (app, openApiDoc) => {
-  app.use('/api', api);
+  // app.use('/api', api);
 
   app.get('/login', (req, res) => {
     res.render('index', {
@@ -67,7 +65,7 @@ export default (app, openApiDoc) => {
   });
 
   app.use('*', (req, res) => {
-    res.status(200).render('index', {
+    res.status(404).render('index', {
       layout: false,
       isProd,
       openApiDoc: JSON.stringify(openApiDoc),
@@ -81,10 +79,5 @@ export default (app, openApiDoc) => {
       }),
       clientAssets,
     });
-
-    // if (!['read', 'write'].includes(req.session.user) || !req.session.user) {
-    //   res.redirect(301, '/login');
-    // } else if (['read', 'write'].includes(req.session.user)) {
-    // }
   });
 };

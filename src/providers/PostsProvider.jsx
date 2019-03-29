@@ -148,7 +148,7 @@ const PostProvider = ({ children }) => {
   const createPost = async ({ description, tags, index = 0, file }) => {
     try {
       const { name, type } = file;
-      const res = await get('/api/posts/upload', { type, name });
+      const res = await get(`${API_PATH}/upload`, { type, name });
       const s3FormData = new FormData();
       Object.keys(res.body.params).forEach(key =>
         s3FormData.append(key, res.body.params[key]),
@@ -167,7 +167,11 @@ const PostProvider = ({ children }) => {
             }
           }
         });
-      const apiResponse = await post('/api/posts', { tags, description, name });
+      const apiResponse = await post(`${API_PATH}/posts`, {
+        tags,
+        description,
+        key: name,
+      });
       const timeEnd = performance.now();
       invalidateAll();
       const processTime = timeEnd - afterUploadStart;

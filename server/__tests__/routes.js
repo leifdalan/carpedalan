@@ -13,8 +13,8 @@ jest.mock('aws-cloudfront-sign', () => ({
 
 describe('Webapp Routes', () => {
   beforeAll(async () => {
-    await readUserAgent.post('/api/login').send({ password: 'testpublic' });
-    await writeUserAgent.post('/api/login').send({ password: 'testadmin' });
+    await readUserAgent.post('/v1/login').send({ password: 'testpublic' });
+    await writeUserAgent.post('/v1/login').send({ password: 'testadmin' });
   });
 
   afterAll(async () => {

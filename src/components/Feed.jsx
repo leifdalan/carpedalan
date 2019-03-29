@@ -139,7 +139,11 @@ export default function Feed({
                 Are you sure?
               </Title>
               <FlexContainer justifyContent="space-between">
-                <Button type="danger" onClick={handleConfirmDelete(showModal)}>
+                <Button
+                  type="danger"
+                  data-test="confirm"
+                  onClick={handleConfirmDelete(showModal)}
+                >
                   Yup
                 </Button>
                 <Button type="neutral" onClick={() => setShouldShowModal(null)}>
