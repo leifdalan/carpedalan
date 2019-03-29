@@ -90,6 +90,7 @@ jobs:
             docker-compose --version
             aws s3 cp s3://carpedalan-pipeline-prod/.env . 
             aws s3 cp s3://carpedalan-pipeline-prod/cfkeys/ ./server/cfkeys/ --recursive 
+            aws s3 cp s3://carpedalan-pipeline-prod/goodDataWithEtagAndKey.json .
             eval $(aws ecr \
                 get-login \
                 --region us-west-2 \
@@ -264,10 +265,18 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
-
+      - run: 
+          name: Install AWS CLI
+          command: |
+              pip install \
+              awscli==1.15.82
+            
       - run:
           name: API Integration tests
-          command: yarn integration:ci --coverage
+          command: |
+              aws s3 cp s3://carpedalan-pipeline-prod/goodDataWithEtagAndKey.json .
+              yarn integration:ci --coverage
+
       - run: 
           name: Upload Coverage
           command: |

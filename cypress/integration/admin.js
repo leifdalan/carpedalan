@@ -1,12 +1,12 @@
 import { API_PATH } from '../../shared/constants';
 
-describe('admin', () => {
+describe('Admin capabilities', () => {
   before(cy.loginAsAdmin);
   beforeEach(() => {
     cy.cleanDb();
   });
 
-  describe('Uploading', () => {
+  describe('Uploading Photos', () => {
     it('should be able to upload multiple files', function() {
       cy.goHome();
       cy.server();
@@ -56,17 +56,19 @@ describe('admin', () => {
     });
   });
 
-  describe('Main Feed', () => {
-    beforeEach(cy.goHome);
+  describe('Main Feed Inline Editing', () => {
+    beforeEach(() => cy.visit('/'));
     it('can edit a post', () => {
       const description = 'descriptionz';
       cy.server();
       cy.route('PATCH', `${API_PATH}/posts/*`).as('patchPost');
+      cy.scrollTo('top');
       cy.getTestId('editButton')
         .first()
         .click();
       cy.getTestId('descriptionField')
         .scrollIntoView()
+        .clear()
         .type(description);
       cy.get('[data-test="tagsDropdown"]').click();
       cy.get('[data-test="maui2017"] > div').click({ force: true });
@@ -74,6 +76,7 @@ describe('admin', () => {
       cy.wait('@patchPost').then(xhr => {
         cy.log(xhr);
         expect(xhr.request.body.description).to.equal(description);
+        expect(xhr.status).to.equal(200);
       });
     });
 
@@ -88,6 +91,7 @@ describe('admin', () => {
       cy.wait('@patchPost').then(xhr => {
         cy.log(xhr);
         expect(xhr.request.body.isPending).to.equal(true);
+        expect(xhr.status).to.equal(200);
       });
     });
     it('can delete a post', () => {
@@ -107,10 +111,12 @@ describe('admin', () => {
 
   describe('Bulk edits', () => {
     beforeEach(() => {
-      cy.goHome();
-      cy.getTestId('Grid').click();
+      cy.visit('/#grid');
     });
     it('should be able to bulk delete', () => {
+      // Have to hard refresh because the db has been cleaned and need to have
+      // correct ids for bulk operations (otherwise will be stale)
+
       cy.server();
       cy.route('DELETE', `${API_PATH}/posts/bulk`).as('bulkDelete');
       cy.get('picture')
@@ -133,32 +139,35 @@ describe('admin', () => {
       });
     });
 
-    // it.skip('should be able to bulk edit', () => {
-    //   cy.server();
-    //   cy.route('PATCH', `${API_PATH}/posts/bulk`).as('bulkPatch');
-    //   cy.get('div.image')
-    //     .first()
-    //     .trigger('mousedown');
-    //   cy.wait(1000);
-    //   cy.get('div.image')
-    //     .first()
-    //     .trigger('mouseup');
-    //   cy.get('body')
-    //     .type('{shift}', { release: false })
-    //     .get('div.image')
-    //     .eq(4)
-    //     .click();
-    //   cy.getTestId('bulkEdit').click();
-    //   const description = 'farts';
-    //   cy.get('[data-test="description"]').type(description);
-    //   cy.get('[data-test="tagsDropdown"] > div').click();
-    //   cy.get('[data-test="peps"] > div').click({ force: true });
-    //   cy.getTestId('confirm').click();
-    //   cy.wait('@bulkPatch').then(xhr => {
-    //     expect(xhr.request.body.ids.length).to.equal(5);
-    //     expect(xhr.request.body.description).to.equal(description);
-    //     expect(xhr.request.body.tags.length).to.equal(1);
-    //   });
-    // });
+    it('should be able to bulk edit', () => {
+      // Have to hard refresh because the db has been cleaned and need to have
+      // correct ids for bulk operations (otherwise will be stale)
+      cy.visit('/#grid');
+      cy.server();
+      cy.route('PATCH', `${API_PATH}/posts/bulk`).as('bulkPatch');
+      cy.get('div.image')
+        .first()
+        .trigger('mousedown');
+      cy.wait(1000);
+      cy.get('div.image')
+        .first()
+        .trigger('mouseup');
+      cy.get('body')
+        .type('{shift}', { release: false })
+        .get('div.image')
+        .eq(4)
+        .click();
+      cy.getTestId('bulkEdit').click();
+      const description = 'farts';
+      cy.get('[data-test="description"]').type(description);
+      cy.get('[data-test="tagsDropdown"]').click();
+      cy.get('[data-test="peps"] > div').click({ force: true });
+      cy.getTestId('confirm').click();
+      cy.wait('@bulkPatch').then(xhr => {
+        expect(xhr.request.body.ids.length).to.equal(5);
+        expect(xhr.request.body.description).to.equal(description);
+        expect(xhr.request.body.tags.length).to.equal(1);
+      });
+    });
   });
 });

@@ -83,7 +83,7 @@ export default function PatchPendingForm({ record }) {
   return (
     <Wrapper>
       <div>
-        <Frame transform={transform}>
+        <Frame data-test={record.key} transform={transform}>
           {image ? <img alt="pending" src={image.src} /> : null}
         </Frame>
         <Button type="neutral" onClick={rotate}>
