@@ -15,7 +15,7 @@ const checkPosts = (description = false) => {
     cy.get('[data-test="download"]')
       .first()
       .should($el => {
-        expect($el.attr('href')).to.contain('photos.local');
+        expect($el.attr('href')).to.contain('photo');
       });
   });
 };

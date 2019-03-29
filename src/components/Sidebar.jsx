@@ -85,7 +85,9 @@ export default function Sidebar({
           {userState === 'write' ? (
             <>
               <ListItem>
-                <StyledLink to="/admin">ADMIN</StyledLink>
+                <StyledLink data-test="admin" to="/admin">
+                  ADMIN
+                </StyledLink>
               </ListItem>
               <ListItem>
                 <StyledLink to="/pending">Pending</StyledLink>

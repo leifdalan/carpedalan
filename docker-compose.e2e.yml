@@ -22,6 +22,8 @@ services:
       - ./shared:/app/shared/
       - ./.env.ci:/app/.env
       - ./.env.example:/app/.env.example
+      - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
+
     command: bash -c "ls -al && ls cypress -al && pwd && yarn cypress run --env configFile=ci --reporter junit --reporter-options 'mochaFile=/app/cypress/test-output.xml'"  
     networks:
       - backend

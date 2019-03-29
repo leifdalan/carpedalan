@@ -161,7 +161,7 @@ describe('Admin capabilities', () => {
       const description = 'farts';
       cy.get('[data-test="description"]').type(description);
       cy.get('[data-test="tagsDropdown"]').click();
-      cy.get('[data-test="peps"] > div').click({ force: true });
+      cy.get('[data-test="kitty"] > div').click({ force: true });
       cy.getTestId('confirm').click();
       cy.wait('@bulkPatch').then(xhr => {
         expect(xhr.request.body.ids.length).to.equal(5);

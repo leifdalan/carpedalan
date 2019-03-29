@@ -42,9 +42,7 @@ import { API_PATH } from '../../shared/constants';
           .its('status')
           .should('be', 200);
         cy.get('[data-test="menu"]').click();
-        cy.get('a')
-          .contains('ADMIN')
-          .click();
+        cy.getTestId('admin').click();
         cy.url().should('include', 'admin');
       });
 

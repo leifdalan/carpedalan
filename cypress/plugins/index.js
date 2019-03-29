@@ -19,7 +19,7 @@ const aws = require('aws-sdk');
 
 const knexFile = require('../../db/knexfile');
 
-const config = knexFile.ci;
+const config = knexFile.e2e;
 const db = knex(config);
 
 const S3 = new aws.S3({ region: 'us-west-2' });

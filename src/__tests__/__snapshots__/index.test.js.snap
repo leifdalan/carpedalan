@@ -142,6 +142,7 @@ Array [
         >
           <a
             className="c5"
+            data-test="admin"
             href="/admin"
             onClick={[Function]}
           >
