@@ -12,9 +12,10 @@
 // -- This is a parent command --
 import { API_PATH } from '../../shared/constants';
 
+const whitelist = ['user_sid', 'CloudFront-Policy', 'CloudFront-Signature'];
 Cypress.Commands.add('loginAsAdmin', () => {
   Cypress.Cookies.defaults({
-    whitelist: ['user_sid', 'CloudFront-Policy'],
+    whitelist,
   });
 
   cy.server();
@@ -26,7 +27,7 @@ Cypress.Commands.add('loginAsAdmin', () => {
 });
 Cypress.Commands.add('login', () => {
   Cypress.Cookies.defaults({
-    whitelist: ['user_sid', 'CloudFront-Policy'],
+    whitelist,
   });
 
   cy.server();

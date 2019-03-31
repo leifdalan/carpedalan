@@ -15,7 +15,6 @@ if (!process.env.WALLABY) {
     ),
   });
 }
-console.error('knexfile', process.env.PG_HOST);
 module.exports = {
   development: {
     client: 'pg',

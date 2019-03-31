@@ -29,18 +29,41 @@ describe('Webapp Routes', () => {
     jest.clearAllMocks();
   });
 
-  it('should redirect the user to login', async () => {
+  it('should render a page', async () => {
     const { status } = await request.get('/');
     expect(status).toBe(200);
   });
 
-  it('it should redirect from admin', async () => {
+  it('should render a page for login', async () => {
+    const { status } = await request.get('/login');
+    expect(status).toBe(200);
+  });
+
+  it('should redirect from admin', async () => {
     const { status } = await readUserAgent.get('/admin/');
     expect(status).toBe(301);
   });
 
-  it('it should redirect from admin if not logged in', async () => {
+  it('should redirect from admin if not logged in', async () => {
     const { status } = await request.get('/admin/');
     expect(status).toBe(301);
   });
+
+  it('should provide a healthcheck', async () => {
+    const { status } = await request.get('/healthcheck/');
+    expect(status).toBe(200);
+  });
+
+  it('it should allow admin if logged in as write', async () => {
+    const { status } = await writeUserAgent.get('/admin/');
+    expect(status).toBe(200);
+  });
+
+  it('should serve a robots.txt', async () => {
+    const { status, text } = await request.get('/robots.txt');
+    expect(status).toBe(200);
+    expect(text).toBe('User-agent: *\nDisallow: /');
+  });
+
+  // it('should', async () => {});
 });

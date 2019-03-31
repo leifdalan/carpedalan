@@ -8,7 +8,7 @@ const AWS = require('aws-sdk'); // from AWS SDK
 
 // configuration
 const config = {
-  s3BucketName: 'carpe-assets',
+  s3BucketName: 'carpe-assets-prod',
   folderPath: '../reports', // path relative script's location
 };
 
@@ -102,4 +102,4 @@ const uploadDir = function(s3Path, bucketName, dir) {
     });
 };
 
-uploadDir(distFolderPath, 'carpe-assets')
+uploadDir(distFolderPath, 'carpe-assets-prod')

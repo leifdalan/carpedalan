@@ -1,4 +1,5 @@
 import { assets, cdnDomain, isProd, ci, nodeEnv, assetDomain } from './config';
+import db from './db';
 
 let clientAssets = false;
 if (isProd) {
@@ -57,7 +58,8 @@ export default (app, openApiDoc) => {
     }
   });
 
-  app.get('/healthcheck', (req, res) => {
+  app.get('/healthcheck', async (req, res) => {
+    await db.raw('select 1+1 as result');
     res.status(200).json({
       farts: 'for your health',
       clownpenis: 'dot fartzz',

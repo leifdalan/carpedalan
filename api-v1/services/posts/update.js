@@ -17,6 +17,7 @@ import log from '../../../src/utils/log';
 
 const s3 = new AWS.S3();
 
+// eslint-disable-next-line consistent-return
 const update = async (body, id) => {
   let photoResponse;
   let tags = [];

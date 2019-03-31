@@ -34,11 +34,14 @@ services:
       e2e_pg:
         condition: service_healthy
     image: $ECR_REPOSITORY:$CIRCLE_SHA1
-    # image: carpe:latest
 
     volumes: 
       - ./db:/app/db
       - ./package.json:/app/package.json
+      - ./.env.ci:/app/.env
+    logging: 
+      driver: "none"
+
 
     environment:
       NODE_ENV: ci
@@ -53,7 +56,7 @@ services:
       ADMIN_PASSWORD: testadmin
 
     healthcheck:
-      test: "curl -sS localhost:3001/login"
+      test: "curl -sS localhost:3001/healthcheck"
       interval: 1s
       timeout: 1s
       retries: 10
