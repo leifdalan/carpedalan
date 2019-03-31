@@ -21,6 +21,7 @@ const bulkPatch = async ({ ids, tags, description }) => {
             })
             .whereIn('id', ids);
         }
+        // eslint-disable-next-line eqeqeq
         if (ids.length != records) {
           throw new NotFoundError(JSON.stringify(ids));
         }

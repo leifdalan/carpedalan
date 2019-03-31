@@ -41,3 +41,4 @@ export const awsAccessKeyId = env.AWS_ACCESS_KEY_ID;
 export const awsSecretAccessKey = env.AWS_SECRET_ACCESS_KEY;
 export const cfKey = env.CLOUDFRONT_KEY_ID;
 export const secureCookie = isProd || isDev;
+console.error('pgHost in config', pgHost);

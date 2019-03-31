@@ -61,6 +61,8 @@ export const setup = () => {
     port: pgPort,
     ...(ssl ? { ssl: true } : {}),
   });
+  console.error('pgHost in setup', pgHost);
+
   const PgSession = connectPgSimple(session);
   const store = new PgSession({ pool });
   app.set('trust proxy', 1);
