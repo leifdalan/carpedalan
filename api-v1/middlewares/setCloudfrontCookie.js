@@ -10,7 +10,6 @@ export default function setSignedCloudfrontCookie(res) {
     expireTime: new Date().getTime() + CF_TIMEOUT,
   };
   const signedCookies = cf.getSignedCookies(`https://${cdnDomain}/*`, options);
-
   if (Object.keys(signedCookies).length) {
     Object.keys(signedCookies).forEach(key => {
       res.cookie(key, signedCookies[key], {

@@ -94,6 +94,7 @@ export default function initializeSwagger(app) {
         if (!req.session.user) {
           throw new UnauthenticatedError();
         }
+
         if (!scopes.includes(req.session.user)) {
           throw new UnauthorizedError();
         } else {

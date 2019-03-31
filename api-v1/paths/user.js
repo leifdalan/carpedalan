@@ -7,16 +7,21 @@ const post = (req, res, next) => {
     Object.keys(req.body || {}).forEach(key => {
       req.session[key] = req.body[key];
     });
-    res.status(status).json(req.session);
+    res.status(status).json({
+      ...req.session,
+      requests: parseInt(req.session.requests, 10),
+    });
   } catch (e) {
     next(e);
   }
 };
+
 post.apiDoc = {
   description: 'Setting a property on the user session cookie token',
   operationId: 'setUser',
   tags: ['_user'],
   requestBody: {
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -38,6 +43,26 @@ post.apiDoc = {
     ...commonErrors,
     [status]: {
       description: 'User successfully logged in',
+      content: {
+        'application/json': {
+          schema: {
+            description: 'Result of logging in',
+            type: 'object',
+            properties: {
+              user: {
+                description: 'Role of user',
+                type: 'string',
+              },
+              requests: {
+                description: 'Number of requests',
+                type: 'integer',
+                minimum: 1,
+                example: 1,
+              },
+            },
+          },
+        },
+      },
     },
   },
   security: [{ sessionAuthentication: ['write', 'read'] }],

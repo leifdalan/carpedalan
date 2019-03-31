@@ -4,6 +4,7 @@ const refresh = () => {
   const post = (req, res) => {
     res.status(200).send({ refreshed: true });
   };
+
   post.apiDoc = {
     description: 'User refreshed cookie',
     operationId: 'refresh',
@@ -32,7 +33,7 @@ const refresh = () => {
         content: {
           'application/json': {
             schema: {
-              $ref: '#components/schemas/Error',
+              $ref: '#/components/schemas/Error',
             },
           },
         },

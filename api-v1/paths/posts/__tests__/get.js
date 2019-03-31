@@ -94,6 +94,7 @@ describe('GET /posts', () => {
 
     expect(validation).toBeUndefined();
     expect(response.status).toBe(200);
+
     if (!response.body.data[0].timestamp) return true;
     expect(response.body.data[0].timestamp).toBeGreaterThan(
       response.body.data[1].timestamp,
