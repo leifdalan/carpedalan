@@ -18,19 +18,16 @@ import {
 const status = 200;
 
 export default function(posts) {
-  async function get(req, res, next) {
+  async function get(req, res) {
     const { order, page, isPending, fields } = req.query;
-    try {
-      const response = await posts.getAll({
-        order,
-        page,
-        isPending,
-        fields,
-      });
-      res.status(status).json(response);
-    } catch (e) {
-      next(e);
-    }
+
+    const response = await posts.getAll({
+      order,
+      page,
+      isPending,
+      fields,
+    });
+    res.status(status).json(response);
   }
 
   get.apiDoc = {

@@ -9,7 +9,8 @@ module.exports = {
   },
   collectCoverageFrom: [
     'api-v1/**/*',
-    'server/**/*',
+    'server/routes.js',
+    '!api-v1/**/index.js',
     '!server/config.js',
     '!server/constants.js',
     '!server/devMiddleware.config.js',
@@ -29,7 +30,7 @@ module.exports = {
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
 
   testEnvironment: 'node',
-  roots: ['api-v1'],
+  roots: ['api-v1', 'server'],
   setupFilesAfterEnv: ['./api/setup/setupTests.js'],
   globalSetup: './api/setup/globalSetup.js',
   globalTeardown: './api/setup/globalTeardown.js',

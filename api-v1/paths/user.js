@@ -2,18 +2,14 @@ import { commonErrors } from '../refs/error';
 
 const status = 200;
 
-const post = (req, res, next) => {
-  try {
-    Object.keys(req.body || {}).forEach(key => {
-      req.session[key] = req.body[key];
-    });
-    res.status(status).json({
-      ...req.session,
-      requests: parseInt(req.session.requests, 10),
-    });
-  } catch (e) {
-    next(e);
-  }
+const post = (req, res) => {
+  Object.keys(req.body).forEach(key => {
+    req.session[key] = req.body[key];
+  });
+  res.status(status).json({
+    ...req.session,
+    requests: parseInt(req.session.requests, 10),
+  });
 };
 
 post.apiDoc = {

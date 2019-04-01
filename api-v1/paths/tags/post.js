@@ -3,13 +3,9 @@ import { commonErrors } from '../../refs/error';
 const status = 201;
 
 export default function(tags) {
-  const post = async (req, res, next) => {
-    try {
-      const tagsWithCount = await tags.createTag(req.body.name);
-      res.status(status).json(tagsWithCount);
-    } catch (e) {
-      next(e);
-    }
+  const post = async (req, res) => {
+    const tagsWithCount = await tags.createTag(req.body.name);
+    res.status(status).json(tagsWithCount);
   };
 
   post.apiDoc = {

@@ -95,7 +95,7 @@ const uploadDir = function(s3Path, bucketName, dir) {
             } else {
               console.error('filePath', filePath);
               
-                console.log('Successfully uploaded '+ bucketPath +' to ' + bucketName);
+                console.log('Successfully uploaded: '+ bucketPath +' to ' + bucketName);
             }
         });
 

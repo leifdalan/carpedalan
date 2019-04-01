@@ -46,7 +46,7 @@ services:
       PORT: 80
     command: yarn migrateAndStart
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:80/healthcheck || exit 1"]
+      test: ["CMD-SHELL", "curl --silent --fail localhost:80/login || exit 1"]
       interval: 1s
       timeout: 1s
       retries: 40

@@ -3,14 +3,10 @@ import { commonErrors } from '../../../../refs/error';
 const status = 200;
 
 export default function(posts) {
-  const get = async (req, res, next) => {
-    try {
-      const { tagId } = req.params;
-      const postsWithCount = await posts.getAll({ tag: tagId });
-      res.status(status).json(postsWithCount);
-    } catch (e) {
-      next(e);
-    }
+  const get = async (req, res) => {
+    const { tagId } = req.params;
+    const postsWithCount = await posts.getAll({ tag: tagId });
+    res.status(status).json(postsWithCount);
   };
 
   get.apiDoc = {

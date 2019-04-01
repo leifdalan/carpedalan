@@ -3,15 +3,11 @@ import { commonErrors } from '../refs/error';
 const status = 201;
 
 export default function(aws) {
-  const get = (req, res, next) => {
+  const get = (req, res) => {
     const { name } = req.query;
-    try {
-      const result = aws.getS3Credentials(name);
+    const result = aws.getS3Credentials(name);
 
-      res.status(status).json(result);
-    } catch (e) {
-      next(e);
-    }
+    res.status(status).json(result);
   };
   get.apiDoc = {
     description: 'Get signed upload url',

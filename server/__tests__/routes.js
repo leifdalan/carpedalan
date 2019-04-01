@@ -65,5 +65,8 @@ describe('Webapp Routes', () => {
     expect(text).toBe('User-agent: *\nDisallow: /');
   });
 
-  // it('should', async () => {});
+  it('should send a 404 for other routes', async () => {
+    const { status } = await writeUserAgent.get('/foo/');
+    expect(status).toBe(404);
+  });
 });
