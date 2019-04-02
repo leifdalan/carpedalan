@@ -1,16 +1,19 @@
 import AWS from 'aws-sdk';
 
 import createTag from '../../../../services/tags/createTag';
+import getSetup from '../../../../testUtils';
 
-let request = require('supertest');
-const OpenApiResponseValidator = require('openapi-response-validator').default;
-
-const { setup } = require('../../../../../server/server');
-
-const { app, store, pool, openApiDoc } = setup();
-const readUserAgent = request.agent(app);
-const writeUserAgent = request.agent(app);
-request = request(app);
+const {
+  afterAllCallback,
+  beforeAllCallback,
+  writeUserAgent,
+  validate,
+  createPost,
+  testAdminRoute,
+} = getSetup({
+  path: '/posts/{id}',
+  method: 'patch',
+});
 
 jest.mock('aws-cloudfront-sign', () => ({
   getSignedCookies: jest.fn(() => ({})),
@@ -42,65 +45,19 @@ jest.mock('aws-sdk', () => {
   return mockAWS;
 });
 
-const path = '/posts/{id}';
-let responses;
 describe('PATCH /posts/{id}', () => {
-  const { components } = openApiDoc.args.apiDoc;
-  let id;
-  beforeAll(async () => {
-    await readUserAgent.post('/v1/login').send({ password: 'testpublic' });
-    await writeUserAgent.post('/v1/login').send({ password: 'testadmin' });
-    ({ responses } = openApiDoc.apiDoc.paths[path].patch);
-  });
-  afterAll(async () => {
-    await pool.end();
-    await store.close();
-    await app.close();
-    readUserAgent.app.close();
-    writeUserAgent.app.close();
-  });
-  it('should return a 401 with the right response', async () => {
-    const response = await request
-      .patch(`/v1/posts/${id}`)
-      .set('Content-Type', 'application/json');
+  beforeAll(beforeAllCallback);
 
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-    const validation = instance.validateResponse(401, response);
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(401);
-  });
-  it('should have the right response for read user agent', async () => {
-    const response = await readUserAgent
-      .patch(`/v1/posts/${id}`)
-      .set('Content-Type', 'application/json');
+  afterAll(afterAllCallback);
 
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-
-    const validation = instance.validateResponse(403, response.body);
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(403);
-  });
+  testAdminRoute();
 
   it('it should return a 400 the uuid is bad', async () => {
     const response = await writeUserAgent
       .patch(`/v1/posts/farts`)
       .set('Content-Type', 'application/json')
       .send({ key: 'something.jpg', etag: 'hallo' });
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-
-    const validation = instance.validateResponse(400, response.body);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(400);
+    validate(400, response);
     expect(response.body.errors[0]).toMatchObject({
       path: 'id',
       errorCode: 'format.openapi.validation',
@@ -114,59 +71,28 @@ describe('PATCH /posts/{id}', () => {
       .patch(`/v1/posts/f7bbd0d4-4508-11e9-b851-bf22de2ec42d`)
       .set('Content-Type', 'application/json')
       .send({ key: 'something.jpg', etag: 'hallo' });
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
 
-    const validation = instance.validateResponse(404, response.body);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(404);
+    validate(404, response);
   });
 
   it('should return a 200 if the post was patched', async () => {
-    const { body } = await writeUserAgent
-      .post('/v1/posts')
-      .set('Content-Type', 'application/json')
-      .send({ key: 'something.jpg' });
-
-    ({ id } = body);
+    const id = await createPost();
 
     const response = await writeUserAgent
       .patch(`/v1/posts/${id}`)
       .set('Content-Type', 'application/json')
       .send({ key: 'something.jpg', etag: 'hallo' });
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-
-    const validation = instance.validateResponse(200, response.body);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(200);
+    validate(200, response);
   });
 
   it('should call copy object if rotate is supplied', async () => {
-    const { body } = await writeUserAgent
-      .post('/v1/posts')
-      .set('Content-Type', 'application/json')
-      .send({ key: 'something.jpg' });
-
-    ({ id } = body);
-
+    const id = await createPost();
     const response = await writeUserAgent
       .patch(`/v1/posts/${id}`)
       .set('Content-Type', 'application/json')
       .send({ key: 'something.jpg', etag: 'hallo', rotate: 90 });
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
 
-    const validation = instance.validateResponse(200, response.body);
-
+    validate(200, response);
     expect(AWS.S3.prototype.copyObject).toHaveBeenCalledTimes(1);
     expect(AWS.S3.prototype.copyObject).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -176,30 +102,14 @@ describe('PATCH /posts/{id}', () => {
         },
       }),
     );
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(200);
   });
   it('should throw if the rotate angle is weird', async () => {
-    const { body } = await writeUserAgent
-      .post('/v1/posts')
-      .set('Content-Type', 'application/json')
-      .send({ key: 'something.jpg' });
-
-    ({ id } = body);
-
+    const id = await createPost();
     const response = await writeUserAgent
       .patch(`/v1/posts/${id}`)
       .set('Content-Type', 'application/json')
       .send({ key: 'something.jpg', etag: 'hallo', rotate: 91 });
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-
-    const validation = instance.validateResponse(400, response.body);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(400);
+    validate(400, response);
   });
 
   it('can update tags', async () => {
@@ -212,20 +122,13 @@ describe('PATCH /posts/{id}', () => {
       .set('Content-Type', 'application/json')
       .send({ key: 'something.jpg', tags: [tag1Id, tag2Id] });
 
-    ({ id } = body);
+    const { id } = body;
 
     const response = await writeUserAgent
       .patch(`/v1/posts/${id}`)
       .set('Content-Type', 'application/json')
       .send({ key: 'something.jpg', etag: 'hallo', tags: [tag3Id, tag4Id] });
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-    const validation = instance.validateResponse(200, response.body);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(200);
+    validate(200, response);
     expect(response.body.tags[0].id).toBe(tag3Id);
     expect(response.body.tags[1].id).toBe(tag4Id);
   });

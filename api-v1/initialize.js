@@ -18,54 +18,56 @@ import posts from './services/posts';
 import tags from './services/tags';
 import aws from './services/aws';
 
+export const paths = [
+  {
+    path: '/posts/',
+    module: Posts,
+  },
+  {
+    path: '/posts/{id}',
+    module: PostsId,
+  },
+  {
+    path: '/posts/bulk',
+    module: Bulk,
+  },
+  {
+    path: '/tags/',
+    module: Tags,
+  },
+  {
+    path: '/tags/{tagId}/posts',
+    module: TagPosts,
+  },
+  {
+    path: '/login/',
+    module: Login,
+  },
+  {
+    path: '/logout/',
+    module: Logout,
+  },
+  {
+    path: '/refresh/',
+    module: Refresh,
+  },
+  {
+    path: '/user/',
+    module: User,
+  },
+  {
+    path: '/upload/',
+    module: UploadUrl,
+  },
+];
+
 export default function initializeSwagger(app) {
   return initialize({
     app,
     // NOTE: If using yaml you can provide a path relative to process.cwd() e.g.
     // apiDoc: './api-v1/api-doc.yml',
     apiDoc: v1ApiDoc,
-    paths: [
-      {
-        path: '/posts/',
-        module: Posts,
-      },
-      {
-        path: '/posts/{id}',
-        module: PostsId,
-      },
-      {
-        path: '/posts/bulk',
-        module: Bulk,
-      },
-      {
-        path: '/tags/',
-        module: Tags,
-      },
-      {
-        path: '/tags/{tagId}/posts',
-        module: TagPosts,
-      },
-      {
-        path: '/login/',
-        module: Login,
-      },
-      {
-        path: '/logout/',
-        module: Logout,
-      },
-      {
-        path: '/refresh/',
-        module: Refresh,
-      },
-      {
-        path: '/user/',
-        module: User,
-      },
-      {
-        path: '/upload/',
-        module: UploadUrl,
-      },
-    ],
+    paths,
     dependencies: {
       db,
       posts,

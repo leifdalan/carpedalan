@@ -1,58 +1,30 @@
-let request = require('supertest');
-const OpenApiResponseValidator = require('openapi-response-validator').default;
+import getSetup from '../../../testUtils';
 
-const { setup } = require('../../../../server/server');
-
-const { app, store, pool, openApiDoc } = setup();
-const readUserAgent = request.agent(app);
-const writeUserAgent = request.agent(app);
-request = request(app);
+const {
+  afterAllCallback,
+  beforeAllCallback,
+  writeUserAgent,
+  validate,
+  testAdminRoute,
+} = getSetup({
+  path: '/posts/',
+  method: 'post',
+});
 
 jest.mock('aws-cloudfront-sign', () => ({
   getSignedCookies: jest.fn(() => ({})),
 }));
 
 describe('POST /posts', () => {
-  const { components } = openApiDoc.args.apiDoc;
-  const { responses } = openApiDoc.apiDoc.paths['/posts/'].post;
-  const responseValidator = { components, responses };
-  beforeAll(async () => {
-    await readUserAgent.post('/v1/login').send({ password: 'testpublic' });
-    await writeUserAgent.post('/v1/login').send({ password: 'testadmin' });
-  });
-  afterAll(async () => {
-    await pool.end();
-    await store.close();
-    await app.close();
-    readUserAgent.app.close();
-    writeUserAgent.app.close();
-  });
-  it('should return a 401 with the right response', async () => {
-    const response = await request.post('/v1/posts');
+  beforeAll(beforeAllCallback);
 
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(401, response);
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(401);
-  });
+  afterAll(afterAllCallback);
 
-  it('should return a 403 if the user is a read user', async () => {
-    const response = await readUserAgent.post('/v1/posts');
-
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(403, response);
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(403);
-  });
+  testAdminRoute();
 
   it("should return a 400 the content type isn't specified", async () => {
     const response = await writeUserAgent.post('/v1/posts');
-
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(400, response);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(400);
+    validate(400, response);
   });
 
   it("should return a return a 400 if the key insn't present", async () => {
@@ -60,12 +32,7 @@ describe('POST /posts', () => {
       .post('/v1/posts')
       .set('Content-Type', 'application/json');
 
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(400, response);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(400);
-
+    validate(400, response);
     expect(response.body.errors[0].message).toMatch(
       "should have required property 'key'",
     );
@@ -76,12 +43,7 @@ describe('POST /posts', () => {
       .post('/v1/posts')
       .set('Content-Type', 'application/json');
 
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(400, response);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(400);
-
+    validate(400, response);
     expect(response.body.errors[0].message).toMatch(
       "should have required property 'key'",
     );
@@ -93,12 +55,7 @@ describe('POST /posts', () => {
       .set('Content-Type', 'application/json')
       .send({ farts: 'foo', key: 'something' });
 
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(400, response);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(400);
-
+    validate(400, response);
     expect(response.body.errors[0].message).toMatch(
       'should NOT have additional properties',
     );
@@ -110,12 +67,7 @@ describe('POST /posts', () => {
       .set('Content-Type', 'application/json')
       .send({ key: 'something' });
 
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(400, response);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(400);
-
+    validate(400, response);
     expect(response.body.errors[0].message).toMatch('should match pattern');
   });
 
@@ -125,12 +77,7 @@ describe('POST /posts', () => {
       .set('Content-Type', 'application/json')
       .send({ key: 'something.jpg' });
 
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(201, response.body);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(201);
-
+    validate(201, response);
     // expect(response.body.errors[0].message).toMatch('should match pattern');
   });
 });

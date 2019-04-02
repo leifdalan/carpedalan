@@ -3,9 +3,15 @@ import { node } from 'prop-types';
 import { stringify } from 'qs';
 import { CellMeasurerCache } from 'react-virtualized/dist/es/CellMeasurer';
 
-import { API_PATH, DEFAULT_POSTS_PER_PAGE } from '../../shared/constants';
 import log from '../utils/log';
 import { performance, FormData } from '../utils/globals';
+import {
+  DATE,
+  DESCRIPTION,
+  KEY,
+  API_PATH,
+  DEFAULT_POSTS_PER_PAGE,
+} from '../../shared/constants';
 
 import { API } from './APIProvider';
 import { Window } from './WindowProvider';
@@ -118,6 +124,7 @@ const PostProvider = ({ children }) => {
     try {
       const pageQuery = {
         page,
+        fields: [DATE, DESCRIPTION, KEY],
       };
 
       // Some super basic caching - don't refetch if we have already.

@@ -1,32 +1,28 @@
 import createTag from '../../../../../services/tags/createTag';
+import getSetup from '../../../../../testUtils';
 
-let request = require('supertest');
-const OpenApiResponseValidator = require('openapi-response-validator').default;
-
-const { setup } = require('../../../../../../server/server');
-
-const { app, store, pool, openApiDoc } = setup();
-const readUserAgent = request.agent(app);
-const writeUserAgent = request.agent(app);
-request = request(app);
+const {
+  afterAllCallback,
+  beforeAllCallback,
+  readUserAgent,
+  writeUserAgent,
+  validate,
+  testReadRoute,
+} = getSetup({
+  path: '/tags/{tagId}/posts',
+  method: 'get',
+});
 
 jest.mock('aws-cloudfront-sign', () => ({
   getSignedCookies: jest.fn(() => ({})),
 }));
-const { responses } = openApiDoc.apiDoc.paths['/tags/{tagId}/posts'].get;
+
 describe('GET /tags/{tagId}/posts', () => {
-  const { components } = openApiDoc.args.apiDoc;
-  beforeAll(async () => {
-    await readUserAgent.post('/v1/login').send({ password: 'testpublic' });
-    await writeUserAgent.post('/v1/login').send({ password: 'testadmin' });
-  });
-  afterAll(async () => {
-    await pool.end();
-    await store.close();
-    await app.close();
-    readUserAgent.app.close();
-    writeUserAgent.app.close();
-  });
+  beforeAll(beforeAllCallback);
+
+  afterAll(afterAllCallback);
+
+  testReadRoute();
   let id;
   beforeEach(async () => {
     ({ id } = await createTag('myTag'));
@@ -45,28 +41,10 @@ describe('GET /tags/{tagId}/posts', () => {
         key: 'something.jpg',
       });
   });
-  it('should return a 401 with the right response', async () => {
-    const response = await request.get(`/v1/tags/${id}/posts`);
-
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-    const validation = instance.validateResponse(401, response);
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(401);
-  });
 
   it('should return one record and a 200', async () => {
     const response = await readUserAgent.get(`/v1/tags/${id}/posts`);
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-
-    const validation = instance.validateResponse(200, response.body);
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(200);
+    validate(200, response);
     expect(response.body.data.length).toBe(1);
     expect(response.body.data[0].tags.length).toBe(1);
     expect(response.body.data[0].tags[0].id).toBe(id);

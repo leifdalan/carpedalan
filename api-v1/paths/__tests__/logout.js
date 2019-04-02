@@ -1,13 +1,15 @@
-import isEmpty from 'lodash/isEmpty';
+import getSetup from '../../testUtils';
 
-let request = require('supertest');
-const OpenApiResponseValidator = require('openapi-response-validator').default;
-
-const { setup } = require('.../../../server/server');
-
-const { app, store, pool, openApiDoc } = setup();
-const readUserAgent = request.agent(app);
-request = request(app);
+const {
+  afterAllCallback,
+  beforeAllCallback,
+  validate,
+  request,
+  readUserAgent,
+} = getSetup({
+  path: '/logout/',
+  method: 'post',
+});
 
 jest.mock('aws-cloudfront-sign', () => ({
   getSignedCookies: jest.fn(() => ({})),
@@ -18,43 +20,18 @@ jest.mock('aws-cloudfront-sign', () => ({
  *
  */
 describe('POST /logout', () => {
-  const { components } = openApiDoc.args.apiDoc;
-  const { responses } = openApiDoc.apiDoc.paths['/logout/'].post;
-  const responseValidator = { components, responses };
-  beforeEach(async () => {
-    await readUserAgent.post('/v1/login').send({ password: 'testpublic' });
-    1;
-  });
+  beforeAll(beforeAllCallback);
 
-  afterAll(async () => {
-    await pool.end();
-    await store.close();
-    await app.close();
-    readUserAgent.app.close();
-  });
+  afterAll(afterAllCallback);
   it('should return a 200 with the right response', async () => {
     const response = await request.post('/v1/logout');
-
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(
-      200,
-      isEmpty(response.body) ? null : response.body,
-    );
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(200);
+    validate(200, response);
   });
 
   it('should logout successfully', async () => {
     const response = await readUserAgent.post('/v1/logout');
     const authRoute = await readUserAgent.get('/v1/posts');
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(
-      200,
-      isEmpty(response.body) ? null : response.body,
-    );
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(200);
+    validate(200, response);
     expect(authRoute.status).toBe(401);
   });
 });

@@ -1,25 +1,16 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "zonedevcarpedalancom": {
+    "zonecarpedalandev": {
       "Type": "AWS::Route53::HostedZone",
       "Properties": {
-        "Name": "dev.carpedalan.com."
+        "Name": "carpe.dalan.dev."
       }
     },
     "zonelocal": {
       "Type": "AWS::Route53::HostedZone",
       "Properties": {
         "Name": "local.",
-        "HostedZoneConfig": {
-          "Comment": "Created by Route 53 Auto Naming"
-        }
-      }
-    },
-    "zonecarpedalan": {
-      "Type": "AWS::Route53::HostedZone",
-      "Properties": {
-        "Name": "carpedalan.",
         "HostedZoneConfig": {
           "Comment": "Created by Route 53 Auto Naming"
         }
@@ -35,11 +26,11 @@
       "Type": "AWS::Route53::RecordSetGroup",
       "Properties": {
         "HostedZoneId": {
-          "Ref": "zonedevcarpedalancom"
+          "Ref": "zonecarpedalandev"
         },
         "RecordSets": [
           {
-            "Name": "dev.carpedalan.com.",
+            "Name": "carpe.dalan.dev.",
             "Type": "A",
             "AliasTarget": {
               "HostedZoneId": "Z1H1FL5HABSF5",
@@ -53,11 +44,11 @@
       "Type": "AWS::Route53::RecordSetGroup",
       "Properties": {
         "HostedZoneId": {
-          "Ref": "zonedevcarpedalancom"
+          "Ref": "zonecarpedalandev"
         },
         "RecordSets": [
           {
-            "Name": "_a06fef38dd7a1736b268b2bff0d2c140.dev.carpedalan.com.",
+            "Name": "_a06fef38dd7a1736b268b2bff0d2c140.carpe.dalan.dev.",
             "Type": "CNAME",
             "TTL": "300",
             "ResourceRecords": [
@@ -71,11 +62,11 @@
       "Type": "AWS::Route53::RecordSetGroup",
       "Properties": {
         "HostedZoneId": {
-          "Ref": "zonedevcarpedalancom"
+          "Ref": "zonecarpedalandev"
         },
         "RecordSets": [
           {
-            "Name": "cdn.dev.carpedalan.com.",
+            "Name": "cdn.carpe.dalan.dev.",
             "Type": "A",
             "AliasTarget": {
               "HostedZoneId": "Z2FDTNDATAQYW2",
@@ -89,11 +80,11 @@
       "Type": "AWS::Route53::RecordSetGroup",
       "Properties": {
         "HostedZoneId": {
-          "Ref": "zonedevcarpedalancom"
+          "Ref": "zonecarpedalandev"
         },
         "RecordSets": [
           {
-            "Name": "photos.dev.carpedalan.com.",
+            "Name": "photos.carpe.dalan.dev.",
             "Type": "A",
             "AliasTarget": {
               "HostedZoneId": "Z2FDTNDATAQYW2",
@@ -359,7 +350,7 @@
       "Properties": {
         "DistributionConfig": {
           "Aliases": [
-            "photos.dev.carpedalan.com"
+            "photos.carpe.dalan.dev"
           ],
           "Comment": "Private distrobution for carpedalan, needs signed URL or cookie",
           "Enabled": true,
@@ -414,7 +405,7 @@
       "Properties": {
         "DistributionConfig": {
           "Aliases": [
-            "cdn.dev.carpedalan.com"
+            "cdn.carpe.dalan.dev"
           ],
           "Comment": "Public CDN for carpedalan assets",
           "Enabled": true,

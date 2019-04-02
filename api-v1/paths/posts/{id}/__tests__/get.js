@@ -1,58 +1,31 @@
-import isEmpty from 'lodash/isEmpty';
+import getSetup from '../../../../testUtils';
 
-let request = require('supertest');
-const OpenApiResponseValidator = require('openapi-response-validator').default;
-
-const { setup } = require('../../../../../server/server');
-
-const { app, store, pool, openApiDoc } = setup();
-const readUserAgent = request.agent(app);
-const writeUserAgent = request.agent(app);
-request = request(app);
-
+const {
+  afterAllCallback,
+  beforeAllCallback,
+  writeUserAgent,
+  validate,
+  createActivePost,
+  testReadRoute,
+  validUuid,
+} = getSetup({
+  path: '/posts/{id}',
+  method: 'get',
+});
 jest.mock('aws-cloudfront-sign', () => ({
   getSignedCookies: jest.fn(() => ({})),
 }));
-const path = '/posts/{id}';
-let responses;
-describe('GET /posts/{id}', () => {
-  const { components } = openApiDoc.args.apiDoc;
-  let id;
-  beforeAll(async () => {
-    await readUserAgent.post('/v1/login').send({ password: 'testpublic' });
-    await writeUserAgent.post('/v1/login').send({ password: 'testadmin' });
-    ({ responses } = openApiDoc.apiDoc.paths[path].get);
-  });
-  afterAll(async () => {
-    await pool.end();
-    await store.close();
-    await app.close();
-    readUserAgent.app.close();
-    writeUserAgent.app.close();
-  });
-  it('should return a 401 with the right response', async () => {
-    const response = await request.get(`/v1/posts/${id}`);
 
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-    const validation = instance.validateResponse(401, response);
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(401);
-  });
+describe('GET /posts/{id}', () => {
+  beforeAll(beforeAllCallback);
+
+  afterAll(afterAllCallback);
+
+  testReadRoute();
 
   it('it should return a 400 the uuid is bad', async () => {
     const response = await writeUserAgent.get(`/v1/posts/farts`);
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-
-    const validation = instance.validateResponse(400, response.body);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(400);
+    validate(400, response);
     expect(response.body.errors[0]).toMatchObject({
       path: 'id',
       errorCode: 'format.openapi.validation',
@@ -62,43 +35,13 @@ describe('GET /posts/{id}', () => {
   });
 
   it('it should return a 404 if there is no record', async () => {
-    const response = await writeUserAgent.get(
-      `/v1/posts/f7bbd0d4-4508-11e9-b851-bf22de2ec42d`,
-    );
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-    const validation = instance.validateResponse(404, response.body);
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(404);
+    const response = await writeUserAgent.get(`/v1/posts/${validUuid}`);
+    validate(404, response);
   });
 
   it('should return a 200 with an empty body if successfully geteted', async () => {
-    const { body } = await writeUserAgent
-      .post('/v1/posts')
-      .set('Content-Type', 'application/json')
-      .send({ key: 'something.jpg', status: 'active' });
-
-    ({ id } = body);
-    await writeUserAgent
-      .patch(`/v1/posts/${id}`)
-      .set('Content-Type', 'application/json')
-      .send({ key: 'something.jpg', status: 'active' });
-
+    const id = await createActivePost();
     const response = await writeUserAgent.get(`/v1/posts/${id}`);
-    const instance = new OpenApiResponseValidator({
-      responses,
-      components,
-    });
-
-    const validation = instance.validateResponse(
-      200,
-      isEmpty(response.body) ? null : response.body,
-    );
-
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(200);
+    validate(200, response);
   });
 });

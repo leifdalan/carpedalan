@@ -1,34 +1,20 @@
-let request = require('supertest');
-const OpenApiResponseValidator = require('openapi-response-validator').default;
+import getSetup from '../../testUtils';
 
-const { setup } = require('.../../../server/server');
-
-const { app, store, pool, openApiDoc } = setup();
-const readUserAgent = request.agent(app);
-request = request(app);
+const { afterAllCallback, validate, request, readUserAgent } = getSetup({
+  path: '/login/',
+  method: 'post',
+});
 
 jest.mock('aws-cloudfront-sign', () => ({
   getSignedCookies: jest.fn(() => ({})),
 }));
 
 describe('POST /login', () => {
-  const { components } = openApiDoc.args.apiDoc;
-  const { responses } = openApiDoc.apiDoc.paths['/login/'].post;
-  const responseValidator = { components, responses };
+  afterAll(afterAllCallback);
 
-  afterAll(async () => {
-    await pool.end();
-    await store.close();
-    await app.close();
-    readUserAgent.app.close();
-  });
   it('should return a 400 with the right response', async () => {
     const response = await request.post('/v1/login');
-
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(400, response);
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(400);
+    validate(400, response);
   });
 
   it('should return a 401 for the inccorrect password', async () => {
@@ -36,9 +22,6 @@ describe('POST /login', () => {
       .post('/v1/login')
       .send({ password: 'asdf' });
 
-    const instance = new OpenApiResponseValidator(responseValidator);
-    const validation = instance.validateResponse(401, response);
-    expect(validation).toBeUndefined();
-    expect(response.status).toBe(401);
+    validate(401, response);
   });
 });

@@ -11,11 +11,13 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-const dotenv = require('dotenv-safe'); // eslint-disable-line
+const fs = require('fs');
 
+const dotenv = require('dotenv-safe'); // eslint-disable-line
 const env = dotenv.config();
 const knex = require('knex');
 const aws = require('aws-sdk');
+const autoRecord = require('cypress-autorecord/plugin');
 
 const knexFile = require('../../db/knexfile');
 
@@ -25,6 +27,7 @@ const db = knex(config);
 const S3 = new aws.S3({ region: 'us-west-2' });
 
 module.exports = (on, pluginConfig) => {
+  autoRecord(on, config, fs);
   on('task', {
     async cleanDb() {
       try {
