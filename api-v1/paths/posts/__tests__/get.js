@@ -22,6 +22,7 @@ describe('GET /posts', () => {
   afterAll(afterAllCallback);
 
   testReadRoute();
+
   it('should get the isPenbding posts', async () => {
     const response = await readUserAgent.get('/v1/posts?isPending=true');
     validate(200, response);
