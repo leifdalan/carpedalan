@@ -71,7 +71,7 @@ const checkGrid = () => {
 
         it('should get more posts when scrolling', () => {
           cy.server();
-          cy.route('GET', `${API_PATH}/posts?page=2`).as('page2');
+          cy.route('GET', `${API_PATH}/posts?*page=2*`).as('page2');
           cy.scrollTo('bottom');
           cy.wait(100);
           cy.scrollTo('bottom');

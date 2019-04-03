@@ -5,5 +5,6 @@ RUN yarn add dotenv-safe
 RUN yarn add aws-sdk
 RUN yarn add knex
 RUN yarn add pg
+RUN yarn add cypress-dark
 COPY cypress.json .
 

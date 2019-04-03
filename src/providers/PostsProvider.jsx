@@ -124,7 +124,7 @@ const PostProvider = ({ children }) => {
     try {
       const pageQuery = {
         page,
-        fields: [DATE, DESCRIPTION, KEY],
+        fields: [DATE, DESCRIPTION, KEY, 'imageHeight', 'imageWidth'],
       };
 
       // Some super basic caching - don't refetch if we have already.
