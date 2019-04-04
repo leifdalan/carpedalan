@@ -12,24 +12,43 @@
 // -- This is a parent command --
 import { API_PATH } from '../../shared/constants';
 
-const whitelist = ['user_sid', 'CloudFront-Policy', 'CloudFront-Signature'];
+const whitelist = [
+  'user_sid',
+  'CloudFront-Policy',
+  'CloudFront-Signature',
+  'CloudFront-Key-Pair-Id',
+];
 Cypress.Commands.add('loginAsAdmin', () => {
   Cypress.Cookies.defaults({
     whitelist,
   });
-
+  Cypress.log({
+    name: 'farts',
+    displayName: 'fuck yea',
+    message: 'command args?',
+    consoleProps: () => {
+      return {
+        obj: 'literal',
+      };
+    },
+  });
   cy.server();
   cy.request({
     url: `${API_PATH}/login`,
     method: 'POST',
     body: { password: Cypress.env('ADMIN_PASSWORD') },
+    log: false,
   });
 });
 Cypress.Commands.add('login', () => {
   Cypress.Cookies.defaults({
     whitelist,
   });
-
+  Cypress.log({
+    name: 'Login',
+    displayName: 'Login',
+    message: 'Loigging in',
+  });
   cy.server();
   cy.request({
     url: `${API_PATH}/login`,
@@ -41,9 +60,9 @@ Cypress.Commands.add('login', () => {
 
 Cypress.Commands.add('ensureLoggedIn', () => {
   Cypress.Cookies.defaults({
-    whitelist: ['user_sid', 'CloudFront-Policy'],
+    whitelist,
   });
-  cy.getCookie('user_sid').then(userCookie => {
+  cy.getCookie('user_sid', { log: false }).then(userCookie => {
     if (!userCookie) {
       cy.login();
     }
@@ -52,9 +71,9 @@ Cypress.Commands.add('ensureLoggedIn', () => {
 
 Cypress.Commands.add('ensureLoggedInAsAdmin', () => {
   Cypress.Cookies.defaults({
-    whitelist: ['user_sid', 'CloudFront-Policy'],
+    whitelist,
   });
-  cy.getCookie('user_sid').then(userCookie => {
+  cy.getCookie('user_sid', { log: false }).then(userCookie => {
     if (!userCookie) {
       cy.loginAsAdmin();
     }
@@ -63,19 +82,34 @@ Cypress.Commands.add('ensureLoggedInAsAdmin', () => {
 
 Cypress.Commands.add('goHome', () => {
   cy.url().then(url => {
-    cy.log('url');
-    cy.log(url);
     if (url === 'about:blank') {
-      cy.visit('/', { failOnStatusCode: false });
+      Cypress.log({
+        name: 'Hard Visiting',
+        displayName: 'Go home',
+        message: 'Hard refresh',
+      });
+
+      cy.visit('/', { failOnStatusCode: false, log: false });
     } else {
-      cy.get('[data-test=menu]').click();
-      cy.get('[data-test=home]').click();
+      Cypress.log({
+        name: 'Soft Visiting',
+        displayName: 'Go home',
+        message: 'No hard refresh, using UI',
+      });
+
+      cy.get('[data-test=menu]', { log: false }).click({ log: false });
+      cy.get('[data-test=home]', { log: false }).click({ log: false });
     }
   });
 });
 
 Cypress.Commands.add('closeModal', () => {
-  cy.get('[data-test="closeModal"]').click();
+  cy.get('[data-test="closeModal"]', { log: false }).click({ log: false });
+  Cypress.log({
+    name: 'Closing Modal by clicking data-test"closeModal"',
+    displayName: 'Modal close',
+    message: 'Closed modal in UI',
+  });
 });
 
 Cypress.Commands.add('logout', () => {
@@ -89,8 +123,20 @@ Cypress.Commands.add('cleanDb', () => {
 });
 
 Cypress.Commands.add('getTestId', testId => {
-  return cy.get(`[data-test="${testId}"]`);
+  const thing = cy.get(`[data-test="${testId}"]`, { log: false });
+  thing.then($el => {
+    Cypress.log({
+      // $el: thing,
+      name: 'Get Test Id',
+      displayName: 'TEST ID',
+      message: `Getting test element "${testId}"`,
+    });
+    return cy.wrap($el);
+  });
+  return thing;
 });
+
+// Cypress.Commands.add('');
 //
 //
 // -- This is a child command --

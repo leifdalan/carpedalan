@@ -3,16 +3,16 @@ import { API_PATH } from '../../shared/constants';
 const checkPosts = (description = false) => {
   if (description) {
     it('should have a description on posts', () => {
-      cy.get('[data-test="description"]');
+      cy.getTestId('description');
     });
   }
 
   it('should have a date on posts', () => {
-    cy.get('[data-test="date"]');
+    cy.getTestId('date');
   });
 
   it('should have a download link', () => {
-    cy.get('[data-test="download"]')
+    cy.getTestId('download')
       .first()
       .should($el => {
         expect($el.attr('href')).to.contain('photo');
@@ -45,12 +45,12 @@ const checkGallery = (beforeFun = () => {}) => {
 
 const checkGrid = () => {
   it('should show a grid and be able to switch back', () => {
-    cy.get('[data-test="Grid"').click();
+    cy.getTestId('Grid').click();
     cy.url().should('contain', 'grid');
     cy.get('picture')
       .its('length')
       .should('be.greaterThan', 50);
-    cy.get('[data-test="List"').click();
+    cy.getTestId('List').click();
     cy.url().should('not.contain', 'grid');
   });
 };
@@ -94,8 +94,8 @@ const checkGrid = () => {
           cy.route('GET', `${API_PATH}/tags/*/posts`).as('tagRoute');
           cy.ensureLoggedIn();
           cy.goHome();
-          cy.get('[data-test="menu"]').click();
-          cy.get('[data-test="tag"]')
+          cy.getTestId('menu').click();
+          cy.getTestId('tag')
             .eq(2)
             .click();
           cy.wait('@tagRoute')
@@ -104,7 +104,7 @@ const checkGrid = () => {
         });
 
         it('should have a tag title', () => {
-          cy.get('[data-test=title]').contains('#');
+          cy.getTestId('title').contains('#');
         });
 
         checkPosts();

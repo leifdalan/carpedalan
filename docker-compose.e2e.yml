@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   e2e: 
-    image: $CYPRESS_REPOSITORY:3.2.0
+    image: cypress/base:10
     links:
       - "e2e_app:local.carpedalan.com"
     environment:
@@ -11,10 +11,10 @@ services:
       NODE_ENV: ci
       PG_HOST: e2e_pg
       CYPRESS_BASE_URL: http://local.carpedalan.com:3001
-
-    depends_on:
-      e2e_app: 
-        condition: service_healthy
+    working_dir: /app
+    # depends_on:
+    #   e2e_app: 
+    #     condition: service_healthy
     volumes: 
       - ./cypress:/app/cypress/
       - ./db:/app/db/
@@ -23,8 +23,11 @@ services:
       - ./.env.ci:/app/.env
       - ./.env.example:/app/.env.example
       - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
+      ## leverage node module caching so that we don't have to download this huge image
+      - ./node_modules:/app/node_modules
 
-    command: bash -c "ls -al && ls cypress -al && pwd && yarn cypress run --env configFile=ci --reporter junit --reporter-options 'mochaFile=/app/cypress/test-output.xml'"  
+
+    command: bash -c "ls -al && ls cypress -al && pwd && ./node_modules/bin/cypress run --env configFile=ci --reporter junit --reporter-options 'mochaFile=/app/cypress/test-output.xml'"  
     networks:
       - backend
   e2e_app:
@@ -39,8 +42,8 @@ services:
       - ./db:/app/db
       - ./package.json:/app/package.json
       - ./.env.ci:/app/.env
-    logging: 
-      driver: "none"
+    # logging: 
+    #   driver: "none"
 
 
     environment:

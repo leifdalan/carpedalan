@@ -2836,6 +2836,11 @@ cypress-dark@^1.7.11:
     postcss "7.0.14"
     postcss-css-variables "0.12.0"
 
+cypress-file-upload@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/cypress-file-upload/-/cypress-file-upload-3.0.7.tgz#9cd772cb1d98b23b2c963856edfc6d74ad62793c"
+  integrity sha512-HbSV45GK8hEwsgEkywIQ6heX7BwV3tXJGIRF8oyWgGJ5BNRJoXVIT58GIdP8k8cz1WrP+6kndpkqCc3tUxq2Sg==
+
 cypress@3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-3.2.0.tgz#c2d5befd5077dab6fb52ad70721e0868ac057001"

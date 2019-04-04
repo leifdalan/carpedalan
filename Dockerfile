@@ -18,7 +18,7 @@ COPY scripts/ ./scripts
 COPY db/ ./db
 EXPOSE 3001
 
-FROM base AS prod
+FROM base as prod
 COPY .env .
 ENV NODE_ENV=production
 COPY webpack.prod.js .
@@ -39,3 +39,13 @@ COPY nodemon.json .
 # RUN NODE_ENV=production yarn build
 COPY webpack.config.js .
 EXPOSE 9229
+
+FROM gcr.io/distroless/nodejs as small
+COPY --from=prod /app /
+ENV NODE_ENV=production
+EXPOSE 80
+EXPOSE 514
+EXPOSE 6514
+
+
+CMD ["index.js"]

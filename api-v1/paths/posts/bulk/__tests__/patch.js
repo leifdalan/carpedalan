@@ -24,6 +24,7 @@ describe('PATCH /posts/bulk', () => {
   afterAll(afterAllCallback);
 
   testAdminRoute();
+
   it("should return a 400 if there's no body", async () => {
     const response = await writeUserAgent
       .patch(`/v1/posts/bulk`)
