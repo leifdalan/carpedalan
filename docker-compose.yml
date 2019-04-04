@@ -16,7 +16,6 @@ services:
       - 80:80
       - 443:443
 
-    
   app:
     container_name: app
     depends_on:
@@ -104,3 +103,4 @@ services:
       context: .
       target: dev
     command: yarn migrate
+
