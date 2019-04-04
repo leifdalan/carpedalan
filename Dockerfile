@@ -40,12 +40,12 @@ COPY nodemon.json .
 COPY webpack.config.js .
 EXPOSE 9229
 
-FROM gcr.io/distroless/nodejs as small
-COPY --from=prod /app /
-ENV NODE_ENV=production
-EXPOSE 80
-EXPOSE 514
-EXPOSE 6514
+# FROM gcr.io/distroless/nodejs as small
+# COPY --from=prod /app /
+# ENV NODE_ENV=production
+# EXPOSE 80
+# EXPOSE 514
+# EXPOSE 6514
 
 
-CMD ["index.js"]
+# CMD ["index.js"]

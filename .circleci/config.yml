@@ -141,7 +141,7 @@ jobs:
           name: Build application Docker image
           command: |
             docker build \
-            --target=small \
+            --target=prod \
             -t app \
             -t "${ECR_REPOSITORY}:${CIRCLE_SHA1}" .
 
