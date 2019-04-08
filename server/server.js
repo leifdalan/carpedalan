@@ -61,7 +61,6 @@ export const setup = () => {
     port: pgPort,
     ...(ssl ? { ssl: true } : {}),
   });
-
   const PgSession = connectPgSimple(session);
   const store = new PgSession({ pool });
   app.set('trust proxy', 1);
@@ -91,7 +90,6 @@ export const setup = () => {
   app.use(cors(corsOptions));
   // V important
   app.use(customHeader);
-
   // Set up session store
   app.use(
     session({
@@ -108,7 +106,6 @@ export const setup = () => {
       },
     }),
   );
-
   // Winston error logger
   app.use(
     expressWinston.errorLogger({
@@ -122,7 +119,6 @@ export const setup = () => {
   );
 
   const openApiDoc = initialize(app);
-
   app.use(
     '/docs',
     swaggerUi.serve,
@@ -198,7 +194,6 @@ export const setup = () => {
 };
 
 export const start = expressApp => {
-  console.log(`Listening on portz ${port} `); // eslint-disable-line no-console
   expressApp.listen(port);
 };
 
