@@ -31,7 +31,7 @@ module.exports = {
 
   testEnvironment: 'node',
   roots: ['api-v1', 'server'],
-  setupFilesAfterEnv: ['./api/setup/setupTests.js'],
-  globalSetup: './api/setup/globalSetup.js',
-  globalTeardown: './api/setup/globalTeardown.js',
+  setupFilesAfterEnv: ['./api-v1/setup/setupTests.js'],
+  globalSetup: './api-v1/setup/globalSetup.js',
+  globalTeardown: './api-v1/setup/globalTeardown.js',
 };

@@ -8,7 +8,7 @@ const AWS = require('aws-sdk'); // from AWS SDK
 
 // configuration
 const config = {
-  s3BucketName: 'carpe-assets-prod',
+  s3BucketName: process.env.ASSETS_BUCKET,
   folderPath: '../dist', // path relative script's location
 };
 

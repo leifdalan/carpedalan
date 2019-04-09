@@ -90,17 +90,20 @@ jobs:
           command: |
               pip install \
               awscli==1.15.82
+      - run: 
+          name: Set env
+          command: ./scripts/setenv.sh
   
       - run:
           name: Run app
           command: | 
             docker-compose --version
             cp .env.ci .env 
-            aws s3 cp s3://carpedalan-pipeline-prod/cfkeys/ ./server/cfkeys/ --recursive 
-            aws s3 cp s3://carpedalan-pipeline-prod/goodDataWithEtagAndKey.json .
+            aws s3 cp s3://${PIPELINE_BUCKET}/cfkeys/ ./server/cfkeys/ --recursive 
+            aws s3 cp s3://${PIPELINE_BUCKET}/goodDataWithEtagAndKey.json .
             eval $(aws ecr \
                 get-login \
-                --region us-west-2 \
+                --region ${AWS_DEFAULT_REGION} \
                 --no-include-email\
                 ) 
             docker-compose \
@@ -133,13 +136,21 @@ jobs:
               docker-compose==1.22.0 \
               awscli==1.15.82
       - run: 
+          name: Set env
+          command: ./scripts/setenv.sh
+      - run: 
           name: Get config
           command: |
-            aws s3 cp s3://carpedalan-pipeline-prod/.env . 
-            aws s3 cp s3://carpedalan-pipeline-prod/cfkeys/ ./server/cfkeys/ --recursive 
+            ./scripts/setenv.sh && echo ${PIPELINE_BUCKET} && aws s3 cp "s3://${PIPELINE_BUCKET}/.env" . 
+            ./scripts/setenv.sh && aws s3 cp "s3://${PIPELINE_BUCKET}/cfkeys/" ./server/cfkeys/ --recursive 
+            echo 'hello'
+            
+            
+            
       - run:
           name: Build application Docker image
           command: |
+            ./scripts/setenv.sh && \
             docker build \
             --target=prod \
             -t app \
@@ -149,9 +160,10 @@ jobs:
           name: Push image to ECR repository
           command: |
             # if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              eval $(aws ecr get-login --region us-west-2 --no-include-email) 
-              docker tag app "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
-              docker push "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
+              ./scripts/setenv.sh && \
+                eval $(aws ecr get-login --no-include-email) 
+              ./scripts/setenv.sh && docker tag app "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
+              ./scripts/setenv.sh && docker push "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
       # - run: 
       #     name: Push image to heroku
       #     command: | 
@@ -182,14 +194,14 @@ jobs:
       - run: 
           name: Install node dependencies
           command: yarn
-      - run: 
-          name: Upload S3 assets
-          command: |
-              yarn build
-              ls -al
-              pwd
-              ./scripts/uploadAssets.js
-              cat dist/manifest.json
+      # - run: 
+      #     name: Upload S3 assets
+      #     command: |
+      #         yarn build
+      #         ls -al
+      #         pwd
+      #         ./scripts/uploadAssets.js
+      #         cat dist/manifest.json
 
       - save_cache:
           paths:
@@ -247,16 +259,15 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
-    
       - run:
           name: "Jest FE"
           environment:
             JEST_JUNIT_OUTPUT: reports/junit/js-test-results.xml
           command: yarn test --ci --testResultsProcessor="jest-junit" --coverage --verbose
-      - run: 
-          name: Upload Coverage
-          command: |
-              ./scripts/uploadTests.js
+      # - run: 
+      #     name: Upload Coverage
+      #     command: |
+      #         ./scripts/uploadTests.js
 
       - store_test_results:
           path: reports/
