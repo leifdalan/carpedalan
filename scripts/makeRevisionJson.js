@@ -2,7 +2,20 @@
 
 const fs = require('fs');
 
-const { ECR_REPOSITORY, CIRCLE_SHA1 } = process.env;
+const {
+  CIRCLE_SHA1,
+  CIRCLE_BRANCH,
+  PROD_ECR_REPOSITORY,
+  STAGE_ECR_REPOSITORY,
+  STAGE_ECS_CLUSTER,
+  PROD_ECS_CLUSTER,
+} = process.env;
+let ECR_REPOSITORY = STAGE_ECR_REPOSITORY;
+let ECS_CLUSTER = STAGE_ECS_CLUSTER;
+if (CIRCLE_BRANCH === 'master') {
+  ECR_REPOSITORY = PROD_ECR_REPOSITORY;
+  ECS_CLUSTER = PROD_ECS_CLUSTER;
+}
 const json = {
   containerDefinitions: [
     {
@@ -15,7 +28,7 @@ const json = {
         },
       },
       image: `${ECR_REPOSITORY}:${CIRCLE_SHA1}`,
-      name: 'carpedalan',
+      name: ECS_CLUSTER,
       portMappings: [
         {
           hostPort: 80,
@@ -42,7 +55,7 @@ const json = {
   ],
   memory: '512',
   cpu: '1024',
-  family: 'carpedalan',
+  family: ECS_CLUSTER,
   networkMode: 'awsvpc',
   volumes: [],
   requiresCompatibilities: ['EC2'],

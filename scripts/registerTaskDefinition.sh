@@ -22,14 +22,7 @@ else
     export ECR_REPOSITORY=${STAGE_ECR_REPOSITORY}
     export CYPRESS_REPOSITORY=${STAGE_CYPRESS_REPOSITORY}
 fi
-echo 'All set!'
-echo 'keys'
-ls ./server/cfkeys/ -al
-docker build \
---target=prod \
--t app \
--t "${ECR_REPOSITORY}:${CIRCLE_SHA1}" .
 
-eval $(aws ecr get-login --no-include-email) 
-docker tag app "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
-docker push "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
+aws ecs register-task-definition \
+    --cli-input-json file://container-definition.json \
+    --family ${ECS_CLUSTER}

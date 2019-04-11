@@ -22,14 +22,33 @@ else
     export ECR_REPOSITORY=${STAGE_ECR_REPOSITORY}
     export CYPRESS_REPOSITORY=${STAGE_CYPRESS_REPOSITORY}
 fi
-echo 'All set!'
-echo 'keys'
-ls ./server/cfkeys/ -al
-docker build \
---target=prod \
--t app \
--t "${ECR_REPOSITORY}:${CIRCLE_SHA1}" .
 
-eval $(aws ecr get-login --no-include-email) 
-docker tag app "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
-docker push "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
+OLD_TASK_ID=`aws ecs list-tasks \
+--cluster ${ECS_CLUSTER} \
+--desired-status RUNNING \
+--family ${ECS_CLUSTER} | \
+    egrep "task" | tr "/" " " | tr "[" " " | awk '{print $3}' | sed 's/"$//' | sed -n 2p`
+
+TASK_REVISION=`aws ecs describe-task-definition \
+--task-definition ${ECS_TASK_DEFINITION} | \
+egrep "revision" | tr "/" " " | awk '{print $2}' | sed 's/"$//'`
+
+echo "Updating with task revision ${TASK_REVISION}";
+
+aws ecs update-service \
+--cluster ${ECS_CLUSTER} \
+--service ${ECS_SERVICE} \
+--task-definition ${ECS_TASK_DEFINITION}:${TASK_REVISION} \
+--desired-count 2
+
+echo "Stopping ${OLD_TASK_ID}"
+aws ecs stop-task \
+--task ${OLD_TASK_ID} \
+--cluster ${ECS_CLUSTER}
+
+echo "Updating to desired count=1"
+aws ecs update-service \
+--cluster ${ECS_CLUSTER} \
+--service ${ECS_SERVICE} \
+--task-definition ${ECS_TASK_DEFINITION}:${TASK_REVISION} \
+--desired-count 1

@@ -30,41 +30,10 @@ jobs:
               cat ./container-definition.json
 
               
-              aws ecs register-task-definition \
-                --cli-input-json file://container-definition.json \
-                --family carpedalan
+              ./scripts/registerTaskDefinition.sh
       - run: 
           name: Update ECS service
-          command: |
-              OLD_TASK_ID=`aws ecs list-tasks \
-                --cluster carpedalan \
-                --desired-status RUNNING \
-                --family carpedalan | \
-                  egrep "task" | tr "/" " " | tr "[" " " | awk '{print $3}' | sed 's/"$//' | sed -n 2p`
-
-              TASK_REVISION=`aws ecs describe-task-definition \
-                --task-definition carpedalan | \
-                egrep "revision" | tr "/" " " | awk '{print $2}' | sed 's/"$//'`
-
-              echo "Updating with task revision ${TASK_REVISION}";
-
-              aws ecs update-service \
-                --cluster carpedalan \
-                --service carpedalan-service \
-                --task-definition carpedalan:${TASK_REVISION} \
-                --desired-count 2
-
-              echo "Stopping ${OLD_TASK_ID}"
-              aws ecs stop-task \
-                --task ${OLD_TASK_ID} \
-                --cluster carpedalan
-
-              echo "Updating to desired count=1"
-              aws ecs update-service \
-                --cluster carpedalan \
-                --service carpedalan-service \
-                --task-definition carpedalan:${TASK_REVISION} \
-                --desired-count 1
+          command: ./scripts/updateECS.sh
       # - run:
       #     name: Deploy to heroku
       #     command: |
@@ -90,26 +59,13 @@ jobs:
           command: |
               pip install \
               awscli==1.15.82
-      - run: 
-          name: Set env
-          command: ./scripts/setenv.sh
-  
       - run:
           name: Run app
           command: | 
             docker-compose --version
             cp .env.ci .env 
-            aws s3 cp s3://${PIPELINE_BUCKET}/cfkeys/ ./server/cfkeys/ --recursive 
-            aws s3 cp s3://${PIPELINE_BUCKET}/goodDataWithEtagAndKey.json .
-            eval $(aws ecr \
-                get-login \
-                --region ${AWS_DEFAULT_REGION} \
-                --no-include-email\
-                ) 
-            docker-compose \
-                -f docker-compose.e2e.yml \
-                up --abort-on-container-exit
-  
+            ./scripts/getConfig.sh
+            ./scripts/rune2e.sh
       - store_test_results:
             path: cypress
       - store_artifacts:

@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   e2e: 
-    image: 404112572358.dkr.ecr.us-west-2.amazonaws.com/cypress:3.2.0
+    image: $CYPRESS_REPOSITORY:3.2.0
     links:
       - "e2e_app:local.carpedalan.com"
     environment:
