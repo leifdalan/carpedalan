@@ -140,30 +140,14 @@ jobs:
           command: ./scripts/setenv.sh
       - run: 
           name: Get config
-          command: |
-            ./scripts/setenv.sh && echo ${PIPELINE_BUCKET} && aws s3 cp "s3://${PIPELINE_BUCKET}/.env" . 
-            ./scripts/setenv.sh && aws s3 cp "s3://${PIPELINE_BUCKET}/cfkeys/" ./server/cfkeys/ --recursive 
-            echo 'hello'
+          command: ./scripts/getConfig.sh
             
             
             
       - run:
           name: Build application Docker image
-          command: |
-            ./scripts/setenv.sh && \
-            docker build \
-            --target=prod \
-            -t app \
-            -t "${ECR_REPOSITORY}:${CIRCLE_SHA1}" .
+          command: ./scripts/build.sh
 
-      - run:
-          name: Push image to ECR repository
-          command: |
-            # if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              ./scripts/setenv.sh && \
-                eval $(aws ecr get-login --no-include-email) 
-              ./scripts/setenv.sh && docker tag app "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
-              ./scripts/setenv.sh && docker push "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
       # - run: 
       #     name: Push image to heroku
       #     command: | 

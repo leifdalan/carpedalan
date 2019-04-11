@@ -1,4 +1,5 @@
 set -e
+set -e
 if [ "$CIRCLE_BRANCH" == "master" ]; then
     export AWS_ACCESS_KEY_ID=${PROD_AWS_ACCESS_KEY_ID}
     export AWS_SECRET_ACCESS_KEY=${PROD_AWS_SECRET_ACCESS_KEY}
@@ -23,3 +24,12 @@ else
     export CYPRESS_REPOSITORY=${STAGE_CYPRESS_REPOSITORY}
 fi
 echo 'All set!'
+
+docker build \
+--target=prod \
+-t app \
+-t "${ECR_REPOSITORY}:${CIRCLE_SHA1}" .
+
+eval $(aws ecr get-login --no-include-email) 
+docker tag app "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
+docker push "${ECR_REPOSITORY}:${CIRCLE_SHA1}"
