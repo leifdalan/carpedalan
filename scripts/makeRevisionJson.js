@@ -22,7 +22,7 @@ const json = {
       logConfiguration: {
         logDriver: 'awslogs',
         options: {
-          'awslogs-group': '/ecs/carpedalan',
+          'awslogs-group': `/ecs/${ECS_CLUSTER}`,
           'awslogs-region': 'us-west-2',
           'awslogs-stream-prefix': 'ecs',
         },
@@ -54,7 +54,7 @@ const json = {
     },
   ],
   memory: '512',
-  cpu: '1024',
+  cpu: '512',
   family: ECS_CLUSTER,
   networkMode: 'awsvpc',
   volumes: [],

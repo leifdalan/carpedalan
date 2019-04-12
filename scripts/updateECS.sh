@@ -29,6 +29,7 @@ OLD_TASK_ID=`aws ecs list-tasks \
 --family ${ECS_CLUSTER} | \
     egrep "task" | tr "/" " " | tr "[" " " | awk '{print $3}' | sed 's/"$//' | sed -n 2p`
 
+
 TASK_REVISION=`aws ecs describe-task-definition \
 --task-definition ${ECS_TASK_DEFINITION} | \
 egrep "revision" | tr "/" " " | awk '{print $2}' | sed 's/"$//'`
@@ -41,10 +42,15 @@ aws ecs update-service \
 --task-definition ${ECS_TASK_DEFINITION}:${TASK_REVISION} \
 --desired-count 2
 
-echo "Stopping ${OLD_TASK_ID}"
-aws ecs stop-task \
---task ${OLD_TASK_ID} \
---cluster ${ECS_CLUSTER}
+if [[ -z "${OLD_TASK_ID}" ]]; then
+    echo 'No task to stop!'
+else
+    echo "Stopping ${OLD_TASK_ID}"
+    aws ecs stop-task \
+    --task ${OLD_TASK_ID} \
+    --cluster ${ECS_CLUSTER}
+
+fi
 
 echo "Updating to desired count=1"
 aws ecs update-service \
