@@ -140,7 +140,9 @@ jobs:
 
       - run:
           name: API Integration tests
-          command: yarn integration:ci --coverage
+          command: |
+              yarn integration:ci --coverage
+              codecov
 
       - run: 
           name: Upload Coverage
