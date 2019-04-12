@@ -256,9 +256,9 @@ workflows:
       # - migrate:
       #     requires:
       #       - stage
-      # - e2e:
-      #     requires:
-      #       - build
+      - e2e:
+          requires:
+            - build
       # - stage: 
       #     requires: 
       #       - e2e
@@ -271,7 +271,7 @@ workflows:
       #           - master
       - deploy: 
           requires: 
-            # - e2e
+            - e2e
             - lint
             - integration
             - unit_test

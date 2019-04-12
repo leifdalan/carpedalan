@@ -7,7 +7,6 @@ import config from '../../db/knexfile';
 console.error('process.env.NODE_ENV', process.env.NODE_ENV);
 
 const main = async () => {
-  // docker.upAll({ config: 'api/setup/docker-compose.integration.yml' });
   const attempts = [1, 2, 3, 4, 5, 6, 8, 9, 10];
   let success = false;
   let setupConnection;
