@@ -22,4 +22,4 @@ else
     export ECR_REPOSITORY=${STAGE_ECR_REPOSITORY}
     export CYPRESS_REPOSITORY=${STAGE_CYPRESS_REPOSITORY}
 fi
-echo 'All set!'
+echo 'All set'

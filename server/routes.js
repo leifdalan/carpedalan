@@ -2,6 +2,8 @@ import { assets, cdnDomain, isProd, ci, nodeEnv, assetDomain } from './config';
 import db from './db';
 
 let clientAssets = false;
+
+/* istanbul ignore next */
 if (isProd) {
   const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
   clientAssets = assets.map(asset => manifest[asset]);

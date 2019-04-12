@@ -11,6 +11,7 @@ module.exports = {
     'api-v1/**/*',
     'server/routes.js',
     '!api-v1/**/index.js',
+    '!api-v1/setup/**/*',
     '!server/config.js',
     '!server/constants.js',
     '!server/devMiddleware.config.js',

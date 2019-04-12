@@ -29,14 +29,12 @@ services:
       - ./src:/app/src:delegated
       - ./nodemon.json:/app/nodemon.json:delegated
       - ./server:/app/server:delegated
-      - ./api:/app/api:delegated
       - ./scripts:/app/scripts:delegated
       - ./db:/app/db:delegated
       - ./shared:/app/shared:delegated
       - ./api-v1:/app/api-v1:delegated
       - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
       - ./.env-local:/app/.env
-      - ./public:/app/public
       - ./webpack.config.js:/app/webpack.config.js
     ports:
       - 3001:80
