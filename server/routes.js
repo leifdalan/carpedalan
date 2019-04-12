@@ -8,8 +8,6 @@ if (isProd) {
 }
 
 export default (app, openApiDoc) => {
-  // app.use('/api', api);
-
   app.get('/login', (req, res) => {
     res.render('index', {
       openApiDoc: JSON.stringify(openApiDoc),

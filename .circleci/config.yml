@@ -1,7 +1,3 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-# build job parameters as a template
 defaults: &defaults
   docker:
     - image: circleci/node:10
@@ -9,7 +5,192 @@ defaults: &defaults
   working_directory: ~/repo
 
 version: 2
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - dependencies
+      - unit_test:
+          requires:
+            - dependencies
+      - lint:
+          requires:
+            - dependencies
+      - integration:
+          requires:
+            - dependencies
+      - e2e:
+          requires:
+            - build
+      - deploy: 
+          requires: 
+            - e2e
+            - lint
+            - integration
+            - unit_test
+
+
 jobs:
+  dependencies:
+    docker:
+      - image: circleci/node:10
+    working_directory: ~/repo
+    steps:
+      - checkout
+
+      - run: 
+          name: Install node dependencies
+          command: yarn
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+
+  build:
+    machine: true
+    environment:
+      NODE_ENV: production
+      FARTS: stinky
+    steps:
+      - checkout
+
+      - run:
+          name: Install dependencies
+          command: |
+            apk update && \
+            apk upgrade && \
+            apk add --no-cache \
+              py-pip=9.0.0-r1 \
+              nodejs=6.9.5-r2 \
+              curl=7.61.1-r1
+            pip install \
+              docker-compose==1.22.0 \
+              awscli==1.15.82
+
+      - run: 
+          name: Set env
+          command: ./scripts/setenv.sh
+
+      - run: 
+          name: Get config
+          command: ./scripts/getConfig.sh
+
+      - run:
+          name: Build application Docker image
+          command: ./scripts/build.sh
+
+
+  lint:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - run:
+          name: "ESLint"
+          command: yarn lint --format junit -o reports/junit/js-lint-results.xml
+
+      - store_test_results:
+          path: reports/junit
+
+      - store_artifacts:
+          path: reports/junit
+
+
+  unit_test:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - run:
+          name: "Jest FE"
+          environment:
+            JEST_JUNIT_OUTPUT: reports/junit/js-test-results.xml
+          command: yarn test --ci --testResultsProcessor="jest-junit" --coverage --verbose
+
+      - store_test_results:
+          path: reports/
+
+      - store_artifacts:
+          path: reports/
+
+
+  integration:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - run:
+          name: API Integration tests
+          command: |
+              yarn integration:ci --coverage
+              yarn codecov
+
+      # - run: 
+      #     name: Upload Coverage
+      #     command: |
+      #         ./scripts/uploadTests.js
+
+      - store_test_results:
+          path: coverage
+
+      - store_artifacts:
+          path: coverage
+
+
+  e2e:  
+    machine: true
+    working_directory: ~/repo
+    parallelism: 1
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - run: 
+          name: Install AWS CLI
+          command: |
+              pip install \
+              awscli==1.15.82
+
+      - run:
+          name: Run app
+          command: | 
+            docker-compose --version
+            cp .env.ci .env 
+            ./scripts/getConfig.sh
+            ./scripts/rune2e.sh
+
+      - store_test_results:
+            path: cypress
+
+      - store_artifacts:
+            path: cypress/videos
+
+      - store_artifacts:
+            path: cypress/screenshots  
+
 
   deploy: 
     machine: true
@@ -27,145 +208,13 @@ jobs:
           name: Register task definition
           command: |
               ./scripts/makeRevisionJson.js 
-              cat ./container-definition.json
-
-              
+              cat ./container-definition.json              
               ./scripts/registerTaskDefinition.sh
+
       - run: 
           name: Update ECS service
           command: ./scripts/updateECS.sh
-      # - run:
-      #     name: Deploy to heroku
-      #     command: |
-      #         ls -al
-      #         ./scripts/releaseDocker.sh
 
-
-  e2e:  
-    machine: true
-    working_directory: ~/repo
-    parallelism: 1
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-
-      - run: 
-          name: Install AWS CLI
-          command: |
-              pip install \
-              awscli==1.15.82
-      - run:
-          name: Run app
-          command: | 
-            docker-compose --version
-            cp .env.ci .env 
-            ./scripts/getConfig.sh
-            ./scripts/rune2e.sh
-      - store_test_results:
-            path: cypress
-      - store_artifacts:
-            path: cypress/videos
-      - store_artifacts:
-            path: cypress/screenshots  
-  build:
-    machine: true
-    environment:
-      NODE_ENV: production
-      FARTS: stinky
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            apk update && \
-            apk upgrade && \
-            apk add --no-cache \
-              py-pip=9.0.0-r1 \
-              nodejs=6.9.5-r2 \
-              curl=7.61.1-r1
-            pip install \
-              docker-compose==1.22.0 \
-              awscli==1.15.82
-      - run: 
-          name: Set env
-          command: ./scripts/setenv.sh
-      - run: 
-          name: Get config
-          command: ./scripts/getConfig.sh
-            
-            
-            
-      - run:
-          name: Build application Docker image
-          command: ./scripts/build.sh
-
-      # - run: 
-      #     name: Push image to heroku
-      #     command: | 
-      #       docker login --username=_ --password=${HEROKU_PASSWORD} registry.heroku.com
-      #       docker tag app registry.heroku.com/carpedalan/web
-      #       docker push registry.heroku.com/carpedalan/web
-      #       WEB_DOCKER_IMAGE_ID=`\
-      #           docker inspect \
-      #           registry.heroku.com/carpedalan/web \
-      #           --format={{.Id}} | sed -n 1p`
-      #           echo $WEB_DOCKER_IMAGE_ID
-      #       touch heroku.sh
-      #       echo "WEB_DOCKER_IMAGE_ID=${WEB_DOCKER_IMAGE_ID}" >> heroku.sh
-      #       aws s3 cp heroku.sh s3://carpedalan-pipeline-prod/
-      # - run: 
-      #     name: Push image to Heroku registry
-      #     command: |
-      #         ./scripts/releaseDocker.sh
-  dependencies:
-    docker:
-      - image: circleci/node:10
-      
-    working_directory: ~/repo
-    
-
-    steps:
-      - checkout
-      - run: 
-          name: Install node dependencies
-          command: yarn
-      # - run: 
-      #     name: Upload S3 assets
-      #     command: |
-      #         yarn build
-      #         ls -al
-      #         pwd
-      #         ./scripts/uploadAssets.js
-      #         cat dist/manifest.json
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-        
-  lint:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run:
-          name: "ESLint"
-          command: yarn lint --format junit -o reports/junit/js-lint-results.xml
-
-      - store_test_results:
-          path: reports/junit
-      - store_artifacts:
-          path: reports/junit
 
   migrate:
     <<: *defaults
@@ -174,14 +223,12 @@ jobs:
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
       - run: 
           name: Get env file
           command: |
               ./scripts/getFromS3.js
-      
 
       - run:
           name: "Migrate"
@@ -190,92 +237,3 @@ jobs:
             NODE_ENV=production MIGRATING=true yarn knex migrate:latest --knexfile db/knexfile.js
 
 
-  unit_test:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      - run:
-          name: "Jest FE"
-          environment:
-            JEST_JUNIT_OUTPUT: reports/junit/js-test-results.xml
-          command: yarn test --ci --testResultsProcessor="jest-junit" --coverage --verbose
-      # - run: 
-      #     name: Upload Coverage
-      #     command: |
-      #         ./scripts/uploadTests.js
-
-      - store_test_results:
-          path: reports/
-      - store_artifacts:
-          path: reports/
-
-  integration:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run:
-          name: API Integration tests
-          command: yarn integration:ci --coverage
-      - run: 
-          name: Upload Coverage
-          command: |
-              ./scripts/uploadTests.js
-
-      - store_test_results:
-          path: reports/junit
-      - store_artifacts:
-          path: reports/junit
-
-
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build
-      - dependencies
-      - unit_test:
-          requires:
-            - dependencies
-      - lint:
-          requires:
-            - dependencies
-      - integration:
-          requires:
-            - dependencies
-      # - migrate:
-      #     requires:
-      #       - stage
-      - e2e:
-          requires:
-            - build
-      # - stage: 
-      #     requires: 
-      #       - e2e
-      #       - lint
-      #       - integration
-      #       - unit_test
-      #     filters: 
-      #       branches: 
-      #         ignore: 
-      #           - master
-      - deploy: 
-          requires: 
-            - e2e
-            - lint
-            - integration
-            - unit_test
-        #   filters: 
-        #     branches: 
-        #       only: 
-        #         - master
