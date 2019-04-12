@@ -26,7 +26,7 @@ module.exports = {
     'node_modules/(?!(react-virtualized|react-select|)/)',
   ],
 
-  coverageDirectory: 'reports/coverage',
+  coverageDirectory: 'coverage',
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
 
   testEnvironment: 'node',

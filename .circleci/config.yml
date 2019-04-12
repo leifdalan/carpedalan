@@ -140,18 +140,20 @@ jobs:
 
       - run:
           name: API Integration tests
-          command: yarn integration:ci --coverage
-
-      - run: 
-          name: Upload Coverage
           command: |
-              ./scripts/uploadTests.js
+              yarn integration:ci --coverage
+              yarn codecov
+
+      # - run: 
+      #     name: Upload Coverage
+      #     command: |
+      #         ./scripts/uploadTests.js
 
       - store_test_results:
-          path: reports/junit
+          path: coverage
 
       - store_artifacts:
-          path: reports/junit
+          path: coverage
 
 
   e2e:  

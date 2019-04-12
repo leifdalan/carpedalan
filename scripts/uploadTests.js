@@ -9,7 +9,7 @@ const AWS = require('aws-sdk'); // from AWS SDK
 // configuration
 const config = {
   s3BucketName: 'carpe-assets-prod',
-  folderPath: '../reports', // path relative script's location
+  folderPath: '../coverage', // path relative script's location
 };
 
 // initialize S3 client
