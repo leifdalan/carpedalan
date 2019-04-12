@@ -1,14 +1,13 @@
-FROM node:10-alpine AS base
+FROM node:11.13-alpine AS base
 WORKDIR /app
 COPY yarn.lock .
 
 COPY package.json .
-RUN apk add curl=7.61.1-r1 git=2.18.1-r0
+RUN apk add curl=7.64.0-r1 git=2.20.1-r0
 RUN yarn --production --ignore-optional
 COPY src/ ./src
 COPY server/ ./server
-COPY api/ ./api
-COPY public/ ./public
+COPY api-v1/ ./api-v1
 COPY shared/ ./shared
 COPY babel.config.js .
 COPY .env.example .
@@ -17,12 +16,15 @@ COPY scripts/ ./scripts
 COPY db/ ./db
 EXPOSE 3001
 
-FROM base AS prod
+FROM base as prod
 COPY .env .
-COPY pk-APKAIUIJTQRAIWFPJFEA.pem .
+ENV NODE_ENV=production
 COPY webpack.prod.js .
 RUN yarn build
 EXPOSE 80
+EXPOSE 514
+EXPOSE 6514
+
 
 CMD ["yarn", "start:prod"]
 
@@ -35,3 +37,13 @@ COPY nodemon.json .
 # RUN NODE_ENV=production yarn build
 COPY webpack.config.js .
 EXPOSE 9229
+
+# FROM gcr.io/distroless/nodejs as small
+# COPY --from=prod /app /
+# ENV NODE_ENV=production
+# EXPOSE 80
+# EXPOSE 514
+# EXPOSE 6514
+
+
+# CMD ["index.js"]

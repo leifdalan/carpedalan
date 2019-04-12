@@ -14,11 +14,10 @@ if (isProd) {
 export function setSignedCloudfrontCookie(res) {
   const options = {
     keypairId: cfKey,
-    privateKeyPath: `/app/pk-${cfKey}.pem`,
+    privateKeyPath: `/app/server/cfkeys/pk-${cfKey}.pem`,
     expireTime: new Date().getTime() + CF_TIMEOUT,
   };
   const signedCookies = cf.getSignedCookies(`https://${cdnDomain}/*`, options);
-
   if (Object.keys(signedCookies).length) {
     Object.keys(signedCookies).forEach(key => {
       res.cookie(key, signedCookies[key], {
@@ -26,22 +25,46 @@ export function setSignedCloudfrontCookie(res) {
         path: '/',
         // secure: true,
         http: true,
-        // maxAge: 1000 * 5,
+        maxAge: CF_TIMEOUT,
       });
     });
   }
 }
 
+/* eslint-disable import/no-extraneous-dependencies,global-require, import/prefer-default-export */
 export const applyWebpackMiddleware = app => {
-  /* eslint-disable import/no-extraneous-dependencies,global-require */
   const webpackConfig = require('../webpack.config');
   const devMiddleware = require('webpack-dev-middleware');
   const hotMiddleware = require('webpack-hot-middleware');
-  const devMiddlewareConfig = require('./devMiddleware.config');
   /* eslint-enable import/no-extraneous-dependencies,global-require */
+  function reporter(middlewareOptions, options) {
+    const { log, state, stats } = options;
+    if (state) {
+      const displayStats = middlewareOptions.stats !== false;
+      if (displayStats) {
+        if (stats.hasErrors()) {
+          log.error(stats.toString(middlewareOptions.stats));
+        } else if (stats.hasWarnings()) {
+          log.warn(stats.toString(middlewareOptions.stats));
+        } else {
+          log.info(stats.toString(middlewareOptions.stats));
+        }
+      }
+      const date = new Date();
+      let message = `Compiled ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+      if (stats.hasErrors()) {
+        message = 'Failed to compile.';
+      } else if (stats.hasWarnings()) {
+        message = `Compiled with warnings. ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+      }
+      log.info(message);
+    } else {
+      log.info('Compiling...');
+    }
+  }
   const compiler = webpack(webpackConfig);
-  app.use(devMiddleware(compiler, devMiddlewareConfig));
-  app.use(hotMiddleware(compiler));
+  app.use(devMiddleware(compiler, { reporter, stats: 'none' }));
+  app.use(hotMiddleware(compiler, { log: false }));
 };
 
 export const isAdmin = (req, res, next) => {

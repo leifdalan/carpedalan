@@ -44,7 +44,7 @@ export default function APIProvider({ children, user }) {
   // Function that calls the refresh endpoint with blunt error tolerance. This endpoing
   // refreshes the signed cookie for the private cloudfront distrobution
   const refresh = async () => {
-    await request.get(`${API_PATH}/refresh`);
+    await request.post(`${API_PATH}/refresh`);
   };
 
   // Each endpoint when hit already refreshes the cookie, so we can reset the timer

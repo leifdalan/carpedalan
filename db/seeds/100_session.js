@@ -1,5 +1,5 @@
 exports.seed = async knex => {
-  await knex('session').del();
+  // await knex('session').del();
   await knex('session').insert({
     sid: 'l13eX2h-tV9pGH5FHbbCG8AZvX3JZ-cu',
     sess:

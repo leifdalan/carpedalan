@@ -19,7 +19,8 @@ module.exports = {
   output: {
     path: path.resolve('dist'),
     filename: '[name].[contenthash].js',
-    publicPath: '/',
+    chunkFilename: '[name].[contenthash].js',
+    publicPath: `https://${process.env.ASSET_CDN_DOMAIN}/`,
   },
   resolve: {
     extensions: ['.js', '.jsx'],
@@ -70,7 +71,7 @@ module.exports = {
         region: 'us-west-2',
       },
       s3UploadOptions: {
-        Bucket: 'carpe-assets',
+        Bucket: process.env.S3_ASSETS_BUCKET,
         ContentEncoding: 'gzip',
       },
     }),
@@ -80,7 +81,7 @@ module.exports = {
     splitChunks: {
       cacheGroups: {
         vendor: {
-          test: /[\\/]node_modules[\\/]/,
+          test: /node_modules\/(?!(react-day-picker|ANOTHER-ONE)\/).*/,
           name: 'vendors',
           chunks: 'all',
         },

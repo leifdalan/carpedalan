@@ -9,6 +9,7 @@ module.exports = function(wallaby) {
       '!data.js',
       '!dist/**/*',
       '!coverage/**/*',
+      '!api/**/__tests__/*',
       '!scripts/**/*',
       '!**/cypress/**/*',
       'api/__mocks__/*.*',
@@ -16,7 +17,7 @@ module.exports = function(wallaby) {
     filesWithNoCoverageCalculated: [
       'db/**/*',
       '/*.*',
-      'api/setup/**/*',
+      'api/**/*',
       'webpack.prod.js',
       'jestrc.js',
       'vandelay-js.js',
@@ -28,7 +29,9 @@ module.exports = function(wallaby) {
     ],
     tests: [
       '**/__tests__/*.js?(x)',
+      '!api/**/__tests__/*',
       '!node_modules/**/*',
+      '!**/logout.js',
       '!**/node_modules/**/*',
     ],
 

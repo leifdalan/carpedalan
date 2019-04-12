@@ -2,37 +2,63 @@
 
 const fs = require('fs');
 
-const { ECR_ENDPOINT, CIRCLE_SHA1 } = process.env;
+const {
+  CIRCLE_SHA1,
+  CIRCLE_BRANCH,
+  PROD_ECR_REPOSITORY,
+  STAGE_ECR_REPOSITORY,
+  STAGE_ECS_CLUSTER,
+  PROD_ECS_CLUSTER,
+} = process.env;
+let ECR_REPOSITORY = STAGE_ECR_REPOSITORY;
+let ECS_CLUSTER = STAGE_ECS_CLUSTER;
+if (CIRCLE_BRANCH === 'master') {
+  ECR_REPOSITORY = PROD_ECR_REPOSITORY;
+  ECS_CLUSTER = PROD_ECS_CLUSTER;
+}
 const json = {
-  executionRoleArn: 'arn:aws:iam::771396871964:role/ecsTaskExecutionRole',
   containerDefinitions: [
     {
       logConfiguration: {
         logDriver: 'awslogs',
         options: {
-          'awslogs-group': '/ecs/carpedalan',
-          'awslogs-region': 'us-east-1',
+          'awslogs-group': `/ecs/${ECS_CLUSTER}`,
+          'awslogs-region': 'us-west-2',
           'awslogs-stream-prefix': 'ecs',
         },
       },
-      image: `${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}`,
-      name: 'carpedalan',
+      image: `${ECR_REPOSITORY}:${CIRCLE_SHA1}`,
+      name: ECS_CLUSTER,
       portMappings: [
         {
-          containerPort: 80,
           hostPort: 80,
           protocol: 'tcp',
+          containerPort: 80,
+        },
+        {
+          hostPort: 3000,
+          protocol: 'tcp',
+          containerPort: 3000,
+        },
+        {
+          hostPort: 514,
+          protocol: 'tcp',
+          containerPort: 514,
+        },
+        {
+          hostPort: 6514,
+          protocol: 'tcp',
+          containerPort: 6514,
         },
       ],
     },
   ],
   memory: '512',
-  cpu: '256',
-  taskRoleArn: 'arn:aws:iam::771396871964:role/ecsTaskExecutionRole',
-  family: 'carpedalan',
+  cpu: '512',
+  family: ECS_CLUSTER,
   networkMode: 'awsvpc',
   volumes: [],
-  requiresCompatibilities: ['FARGATE'],
+  requiresCompatibilities: ['EC2'],
 };
 
 fs.writeFileSync('container-definition.json', JSON.stringify(json), 'utf8');

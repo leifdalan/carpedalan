@@ -13,6 +13,7 @@ module.exports = {
     '@babel/react',
   ],
   plugins: [
+    'babel-plugin-dynamic-import-node',
     [
       'styled-components',
       {
@@ -31,18 +32,16 @@ module.exports = {
         },
         'react-virtualized': {
           // eslint-disable-next-line
-                transform: 'react-virtualized/dist/es/${member}',
-          preventFullImport: true,
-        },
-        'react-select': {
-          // eslint-disable-next-line
-                transform: 'react-select/lib/${member}',
+          transform: 'react-virtualized/dist/es/${member}',
           preventFullImport: true,
         },
       },
     ],
   ],
   env: {
+    test: {
+      plugins: ['babel-plugin-dynamic-import-node'],
+    },
     development: {
       plugins: ['react-hot-loader/babel'],
     },
@@ -60,11 +59,6 @@ module.exports = {
             'react-virtualized': {
               // eslint-disable-next-line
                     transform: 'react-virtualized/dist/es/${member}',
-              preventFullImport: true,
-            },
-            'react-select': {
-              // eslint-disable-next-line
-                    transform: 'react-virtualized/lib/${member}',
               preventFullImport: true,
             },
           },

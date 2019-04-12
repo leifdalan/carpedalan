@@ -15,7 +15,6 @@ if (!process.env.WALLABY) {
     ),
   });
 }
-
 module.exports = {
   development: {
     client: 'pg',
@@ -58,7 +57,30 @@ module.exports = {
       tableName: 'carpe_migrations',
     },
     seeds: {
-      directory: './api/setup/seeds',
+      directory: './api-v1/setup/seeds',
+    },
+    useNullAsDefault: true,
+  },
+
+  integration: {
+    client: 'pg',
+    connection: {
+      host: process.env.PG_HOST || 'localhost',
+      database: 'carpedalan',
+      user: 'postgres',
+      password: 'postgres',
+      port: process.env.PG_PORT || 5432,
+    },
+    pool: {
+      min: 2,
+      max: 10,
+    },
+    migrations: {
+      directory: path.resolve(__dirname, 'migrations', 'carpedalan'),
+      tableName: 'carpe_migrations',
+    },
+    seeds: {
+      directory: './api-v1/setup/seeds',
     },
     useNullAsDefault: true,
   },
@@ -81,7 +103,29 @@ module.exports = {
       tableName: 'carpe_migrations',
     },
     seeds: {
-      directory: './api/setup/seeds',
+      directory: './api-v1/setup/seeds',
+    },
+    useNullAsDefault: true,
+  },
+  e2e: {
+    client: 'pg',
+    connection: {
+      host: process.env.PG_HOST || 'localhost',
+      database: 'carpedalan',
+      user: 'postgres',
+      password: 'postgres',
+      port: process.env.PG_PORT || 5432,
+    },
+    pool: {
+      min: 2,
+      max: 10,
+    },
+    migrations: {
+      directory: path.resolve(__dirname, 'migrations', 'carpedalan'),
+      tableName: 'carpe_migrations',
+    },
+    seeds: {
+      directory: './db/seeds-e2e',
     },
     useNullAsDefault: true,
   },

@@ -1,5 +1,6 @@
 import path from 'path';
 
+import cors from 'cors';
 import express from 'express';
 import winston from 'winston';
 import expressWinston from 'express-winston';
@@ -9,32 +10,45 @@ import session from 'express-session';
 import expbhs from 'express-handlebars';
 import pg from 'pg';
 import connectPgSimple from 'connect-pg-simple';
+import swaggerUi from 'swagger-ui-express';
+
+import initialize from '../api-v1/initialize';
 
 import router from './routes';
 import {
   assets,
   cdnDomain,
-  isProd,
   ci,
-  nodeEnv,
-  pgHost,
-  pgUser,
-  pgPassword,
-  pgDatabase,
-  sessionSecret,
-  port,
-  pgPort,
   isDev,
+  isProd,
+  nodeEnv,
+  pgDatabase,
+  pgHost,
+  pgPassword,
+  pgPort,
+  pgUser,
+  port,
+  sessionSecret,
   ssl,
-  secureCookie,
+  assetDomain,
 } from './config';
 
 const app = express();
+let clientAssets = false;
+if (isProd) {
+  const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
+  clientAssets = assets.map(asset => manifest[asset]);
+}
 
 // V important
 const customHeader = (req, res, next) => {
   res.setHeader('x-powered-by', 'Carpe Dalan');
   next();
+};
+
+const corsOptions = {
+  origin: ['http://local.carpedalan.com', /\.local\.carpedalan\.com$/],
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
 export const setup = () => {
@@ -73,10 +87,9 @@ export const setup = () => {
   app.use(cookieParser());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-
+  app.use(cors(corsOptions));
   // V important
   app.use(customHeader);
-
   // Set up session store
   app.use(
     session({
@@ -88,52 +101,11 @@ export const setup = () => {
       rolling: true,
       cookie: {
         maxAge: 10000 * 60 * 60 * 24 * 30 * 6,
-        secure: secureCookie,
+        secure: false,
         http: true,
       },
     }),
   );
-  // Use dev and hot webpack middlewares
-  if (isDev) {
-    const { applyWebpackMiddleware } = require('./middlewares'); // eslint-disable-line global-require
-    applyWebpackMiddleware(app);
-  }
-
-  // express-winston logger BEFORE the router
-  if (isProd) {
-    const { Loggly } = require('winston-loggly-bulk'); // eslint-disable-line global-require
-    winston.add(
-      new Loggly({
-        token: '9841fd82-a324-49ab-8389-bacf0d73d9d9',
-        subdomain: 'leifdalan',
-        tags: ['Winston-NodeJS'],
-        json: true,
-      }),
-    );
-    winston.log('info', 'Logger starting');
-
-    app.use(
-      expressWinston.logger({
-        expressFormat: true,
-        transports: [new winston.transports.Console()],
-        format: winston.format.combine(
-          winston.format.prettyPrint(),
-          winston.format.colorize(),
-        ),
-      }),
-    );
-  }
-
-  // Define routes
-  router(app);
-
-  if (isProd) {
-    const Sentry = require('@sentry/node'); // eslint-disable-line
-    Sentry.init({
-      dsn: 'https://c5f5ee9e1c904e618af3e609d3fdd7d2@sentry.io/1380082',
-    });
-    app.use(Sentry.Handlers.errorHandler());
-  }
   // Winston error logger
   app.use(
     expressWinston.errorLogger({
@@ -145,14 +117,68 @@ export const setup = () => {
       ),
     }),
   );
-  app.use((req, res, next, err) => {
-    const manifest = require('../dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
-    const clientAssets = assets.map(asset => manifest[asset]);
+
+  const openApiDoc = initialize(app);
+  app.use(
+    '/docs',
+    swaggerUi.serve,
+    swaggerUi.setup(null, {
+      swaggerUrl: '/v1/api-docs',
+    }),
+  );
+
+  // Use dev and hot webpack middlewares
+  if (isDev) {
+    const { applyWebpackMiddleware } = require('./middlewares'); // eslint-disable-line global-require
+    applyWebpackMiddleware(app);
+  }
+
+  // express-winston logger BEFORE the router
+  if (isProd) {
+    const { Loggly } = require('winston-loggly-bulk'); // eslint-disable-line global-require
+    const loggly = new Loggly({
+      token: '49a65f8a-56e0-4025-818d-e3f064e6ef01',
+      subdomain: 'carpedalan',
+      tags: ['Winston-NodeJS'],
+      json: true,
+    });
+
+    winston.add(loggly);
+    winston.log('info', 'Logger starting');
+
+    app.use(
+      expressWinston.logger({
+        expressFormat: true,
+        transports: [
+          new winston.transports.Console(),
+          new winston.transports.Loggly({
+            token: '49a65f8a-56e0-4025-818d-e3f064e6ef01',
+            subdomain: 'carpedalan',
+            tags: ['Winston-NodeJS'],
+            json: true,
+          }),
+        ],
+      }),
+    );
+  }
+  // Define routes
+  router(app, openApiDoc);
+
+  if (isProd) {
+    const Sentry = require('@sentry/node'); // eslint-disable-line
+    Sentry.init({
+      dsn: 'https://c5f5ee9e1c904e618af3e609d3fdd7d2@sentry.io/1380082',
+    });
+    app.use(Sentry.Handlers.errorHandler());
+  }
+
+  app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars,prettier/prettier
 
     res.status(500).render('index', {
       layout: false,
       isProd,
-      session: JSON.stringify(req.session),
+      session: req.session ? JSON.stringify(req.session) : 'false',
+      assetDomain,
       meta: JSON.stringify({
         status: 500,
         cdn: cdnDomain,
@@ -163,12 +189,11 @@ export const setup = () => {
       clientAssets,
     });
   });
-  return { app, store, pool };
+  return { app, store, pool, openApiDoc };
   // return { app };
 };
 
 export const start = expressApp => {
-  console.log(`Listening on port ${port} `); // eslint-disable-line no-console
   expressApp.listen(port);
 };
 

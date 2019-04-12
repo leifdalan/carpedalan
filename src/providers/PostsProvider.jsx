@@ -3,9 +3,15 @@ import { node } from 'prop-types';
 import { stringify } from 'qs';
 import { CellMeasurerCache } from 'react-virtualized/dist/es/CellMeasurer';
 
-import { API_PATH, DEFAULT_POSTS_PER_PAGE } from '../../shared/constants';
 import log from '../utils/log';
 import { performance, FormData } from '../utils/globals';
+import {
+  DATE,
+  DESCRIPTION,
+  KEY,
+  API_PATH,
+  DEFAULT_POSTS_PER_PAGE,
+} from '../../shared/constants';
 
 import { API } from './APIProvider';
 import { Window } from './WindowProvider';
@@ -49,6 +55,7 @@ const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState({});
   const [postsWithFakes, setPostsWithFakes] = useState([]);
   const [meta, setMeta] = useState({ count: 0 });
+  const [pending, setPending] = useState([]);
   const [progressState, setProgressState] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -60,13 +67,23 @@ const PostProvider = ({ children }) => {
   const patchPost = id => async values => {
     try {
       const { body } = await patch(`${API_PATH}/posts/${id}`, values);
-      setPostsWithFakes(
-        postsWithFakes.map(data => (data.id === body.id ? body : data)),
-      );
+
+      const newPostsWithFakes = values.isPending
+        ? postsWithFakes.filter(data => data.id !== body.id)
+        : postsWithFakes.map(data =>
+            data.id === body.id ? addPlaceholderColor(body) : data,
+          );
+
+      setPostsWithFakes(newPostsWithFakes);
       cache.clearAll();
     } catch (e) {
       log.error(e);
     }
+  };
+
+  const getPending = async () => {
+    const { body } = await get(`${API_PATH}/posts/`, { isPending: true });
+    setPending(body.data);
   };
 
   const invalidateAll = () => {
@@ -107,6 +124,14 @@ const PostProvider = ({ children }) => {
     try {
       const pageQuery = {
         page,
+        fields: [
+          DATE,
+          DESCRIPTION,
+          KEY,
+          'imageHeight',
+          'imageWidth',
+          'orientation',
+        ],
       };
 
       // Some super basic caching - don't refetch if we have already.
@@ -137,7 +162,7 @@ const PostProvider = ({ children }) => {
   const createPost = async ({ description, tags, index = 0, file }) => {
     try {
       const { name, type } = file;
-      const res = await get('/api/posts/upload', { type, name });
+      const res = await get(`${API_PATH}/upload`, { type, name });
       const s3FormData = new FormData();
       Object.keys(res.body.params).forEach(key =>
         s3FormData.append(key, res.body.params[key]),
@@ -156,7 +181,11 @@ const PostProvider = ({ children }) => {
             }
           }
         });
-      const apiResponse = await post('/api/posts', { tags, description, name });
+      const apiResponse = await post(`${API_PATH}/posts`, {
+        tags,
+        description,
+        key: name,
+      });
       const timeEnd = performance.now();
       invalidateAll();
       const processTime = timeEnd - afterUploadStart;
@@ -182,6 +211,8 @@ const PostProvider = ({ children }) => {
         progressMap: progressState,
         bulkEdit,
         bulkDelete,
+        getPending,
+        pending,
       }}
     >
       {children}

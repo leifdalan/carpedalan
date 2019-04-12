@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { any, func, shape } from 'prop-types';
 import Select from 'react-select/lib/Creatable';
 import styled from 'styled-components';
+import { components } from 'react-select';
 
 import { Tag } from '../providers/TagProvider';
 
@@ -16,7 +17,7 @@ export default function Dropdown({ input: { onChange, value } = {}, ...etc }) {
     onChange([...value, { label: thing, value: response.id }]);
   };
   return (
-    <Wrapper>
+    <Wrapper data-test={etc['data-test']}>
       <Select
         onCreateOption={handleCreate}
         onChange={onChange}
@@ -25,6 +26,14 @@ export default function Dropdown({ input: { onChange, value } = {}, ...etc }) {
           value: tag.id,
           label: tag.name,
         }))}
+        components={{
+          Option: props => (
+            // eslint-disable-next-line
+            <div data-test={props.data.label}>
+              <components.Option {...props} />
+            </div>
+          ),
+        }}
         isLoading={creatingTag}
         {...etc}
       />

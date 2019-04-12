@@ -12,14 +12,13 @@
 // the project's config changing)
 
 const dotenv = require('dotenv-safe'); // eslint-disable-line
-
 const env = dotenv.config();
 const knex = require('knex');
 const aws = require('aws-sdk');
 
 const knexFile = require('../../db/knexfile');
 
-const config = knexFile.ci;
+const config = knexFile.e2e;
 const db = knex(config);
 
 const S3 = new aws.S3({ region: 'us-west-2' });
@@ -38,11 +37,11 @@ module.exports = (on, pluginConfig) => {
     async removeUpload() {
       try {
         await S3.deleteObject({
-          Bucket: 'carpedev-west',
+          Bucket: 'carpedalan-photos',
           Key: 'original/kitty2.jpg',
         }).promise();
         await S3.deleteObject({
-          Bucket: 'carpedev-west',
+          Bucket: 'carpedalan-photos',
           Key: 'original/kitty.jpg',
         }).promise();
       } catch (e) {

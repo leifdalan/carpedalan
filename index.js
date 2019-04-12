@@ -10,13 +10,18 @@ const path = require('path');
 
 const dotenv = require('dotenv-safe');
 
+console.log('dot envingzzz'); // eslint-disable-line
 dotenv.config({
   path:
     process.env.NODE_ENV === 'test'
       ? path.resolve(process.cwd(), '.env.test')
       : path.resolve(process.cwd(), '.env'),
 });
-const { setup, start } = require('./server/server');
 
-const { app } = setup();
-start(app);
+try {
+  const { setup, start } = require('./server/server');
+  const { app } = setup();
+  start(app);
+} catch (e) {
+  console.log('catching', e); // eslint-disable-line
+}

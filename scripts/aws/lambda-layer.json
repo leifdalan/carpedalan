@@ -1,0 +1,11 @@
+{
+  "LayerName": "image-processor-assets", 
+  "Description": "Node assets needed for image resizing.", 
+  "Content": {
+      "ZipFile": "fileb://../../layer.zip"
+  }, 
+  "CompatibleRuntimes": [
+      "nodejs8.10"
+  ], 
+  "LicenseInfo": ""
+}

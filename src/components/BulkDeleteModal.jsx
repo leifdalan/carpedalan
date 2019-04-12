@@ -25,7 +25,7 @@ export default function BulkEditModal({ ids, showBulkModal }) {
     <Dialog type="wide">
       <Title style={{ textAlign: 'center' }}>Are you sure? </Title>
       <FlexContainer justifyContent="space-between">
-        <Button type="danger" onClick={handleSubmit}>
+        <Button type="danger" data-test="confirm" onClick={handleSubmit}>
           {`Delete (${idArray.length})`}
         </Button>
         <Button type="neutral" onClick={() => showBulkModal(false)}>

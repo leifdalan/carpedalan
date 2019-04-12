@@ -25,9 +25,9 @@ const TagPostsProvider = ({ children }) => {
     setTagPosts([]);
     setMeta({ count: 0 });
   };
-  const getTagPosts = async tag => {
+  const getTagPosts = async tagId => {
     try {
-      const apiCall = request.get(`${API_PATH}/tags/${tag}`);
+      const apiCall = request.get(`${API_PATH}/tags/${tagId}/posts`);
       const response = await apiCall;
       setTagPosts(response.body.data.map(addPlaceholderColor));
       setMeta(response.body.meta);

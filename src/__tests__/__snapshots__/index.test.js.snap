@@ -142,6 +142,7 @@ Array [
         >
           <a
             className="c5"
+            data-test="admin"
             href="/admin"
             onClick={[Function]}
           >
@@ -153,6 +154,18 @@ Array [
         >
           <a
             className="c5"
+            href="/pending"
+            onClick={[Function]}
+          >
+            Pending
+          </a>
+        </li>
+        <li
+          className="c4"
+        >
+          <a
+            className="c5"
+            data-test="home"
             href="/"
             onClick={[Function]}
           >
@@ -250,6 +263,7 @@ Array [
     size="small"
   >
     <a
+      data-test="Grid"
       href="/#grid"
       onClick={[Function]}
     >
@@ -297,19 +311,5 @@ Array [
       </div>
     </div>
   </section>,
-  .c0 {
-  position: fixed;
-  bottom: 1em;
-  width: 95vw;
-  margin-left: 2.5vw;
-  padding: 2em;
-  background-color: rgb(222,50,82);
-}
-
-<div
-    className="c0"
-  >
-    Get failed
-  </div>,
 ]
 `;

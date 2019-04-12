@@ -8,7 +8,6 @@ module.exports = {
     // No need to include `node_modules`. Vandelay will exclude that automatically.
     '**/*.test.*',
     /.*\/flow-typed\/.*/,
-    /.*\/config\/.*/,
   ],
   importGroups: ['react', 'react-dom', 'redux', 'react-redux'],
   padCurlyBraces: true,

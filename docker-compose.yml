@@ -2,11 +2,10 @@ version: '2.3'
 
 services:
   alb:
-    container_name: alb
+    container_name: c_alb
     depends_on:
-      - app
-      # app: 
-      #   condition: service_healthy
+      carpe: 
+        condition: service_healthy
     image: ekino/nginx-brotli:latest-1.12.2-bfd2885
     restart: always
     volumes: 
@@ -17,9 +16,8 @@ services:
       - 80:80
       - 443:443
 
-    
-  app:
-    container_name: app
+  carpe:
+    container_name: carpe
     depends_on:
       pg:
         condition: service_healthy
@@ -29,24 +27,25 @@ services:
       target: dev
     volumes:
       - ./src:/app/src:delegated
+      - ./nodemon.json:/app/nodemon.json:delegated
       - ./server:/app/server:delegated
       - ./api:/app/api:delegated
       - ./scripts:/app/scripts:delegated
       - ./db:/app/db:delegated
       - ./shared:/app/shared:delegated
+      - ./api-v1:/app/api-v1:delegated
       - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
       - ./.env-local:/app/.env
       - ./public:/app/public
       - ./webpack.config.js:/app/webpack.config.js
-      - ./pk-APKAIUIJTQRAIWFPJFEA.pem:/app/pk-APKAIUIJTQRAIWFPJFEA.pem
     ports:
       - 3001:80
       - 9227:9229
     environment:
       PORT: 80
-    command: yarn start
+    command: yarn migrateAndStart
     healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:3001/healthcheck || exit 1"]
+      test: ["CMD-SHELL", "curl --silent --fail localhost:80/login || exit 1"]
       interval: 1s
       timeout: 1s
       retries: 40
@@ -65,7 +64,10 @@ services:
       interval: 1s
       timeout: 1s
       retries: 20
+
   pg_test:
+    # logging: 
+    #   driver: "none"
     image: postgres:10.0-alpine
     container_name: test
     environment:
@@ -82,6 +84,8 @@ services:
       retries: 20
 
   pg_migrate:
+    logging: 
+      driver: "none"
     container_name: migrate
     environment: 
       NODE_ENV: test
@@ -99,3 +103,4 @@ services:
       context: .
       target: dev
     command: yarn migrate
+

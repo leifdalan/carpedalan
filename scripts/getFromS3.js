@@ -7,7 +7,7 @@ const AWS = require('aws-sdk'); // from AWS SDK
 const s3 = new AWS.S3({ signatureVersion: 'v4' });
 
 const params = {
-  Bucket: 'configurations-pipeline',
+  Bucket: process.env.PIPELINE_BUCKET,
   Key: '.env',
 };
 const file = fs.createWriteStream('.env');
