@@ -26,17 +26,13 @@ services:
       context: .
       target: dev
     volumes:
-      - ./src:/app/src:delegated
-      - ./nodemon.json:/app/nodemon.json:delegated
-      - ./server:/app/server:delegated
-      - ./index.js:/app/index.js:delegated
-      - ./scripts:/app/scripts:delegated
-      - ./db:/app/db:delegated
-      - ./shared:/app/shared:delegated
-      - ./api-v1:/app/api-v1:delegated
-      - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
-      - ./.env-local:/app/.env
-      - ./webpack.config.js:/app/webpack.config.js
+      - './nodemon.json:/app/nodemon.json:delegated'
+      - './server:/app/server:delegated'
+      - './index.js:/app/index.js:delegated'
+      - './db:/app/db:delegated'
+      - './shared:/app/shared:delegated'
+      - './goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json'
+      - './.env-local:/app/.env'
     ports:
       - 3001:80
       - 9227:9229
