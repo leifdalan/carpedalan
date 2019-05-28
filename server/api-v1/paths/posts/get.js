@@ -1,6 +1,7 @@
 // Showing that you don't need to have apiDoc defined on methodHandlers.
 
 import { commonErrors } from '../../refs/error';
+import { BadRequestError } from '../../../errors';
 import {
   CREATEDAT,
   DATE,
@@ -18,16 +19,26 @@ import {
 const status = 200;
 
 export default function(posts) {
-  async function get(req, res) {
-    const { order, page, isPending, fields } = req.query;
-
+  async function get(req, res, next) {
+    const { order, page, isPending, fields, ...rest } = req.query;
+    if (Object.keys(rest).length > 0) {
+      return next(
+        new BadRequestError(
+          'You provided extra query params',
+          Object.keys(rest).map(param => ({
+            type: 'addtionalProperties',
+            message: `${param} is not a valid query param`,
+          })),
+        ),
+      );
+    }
     const response = await posts.getAll({
       order,
       page,
       isPending,
       fields,
     });
-    res.status(status).json(response);
+    return res.status(status).json(response);
   }
 
   get.apiDoc = {

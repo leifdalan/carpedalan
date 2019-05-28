@@ -294,23 +294,23 @@ declare namespace Components {
             /**
              * Array of posts
              */
-            data?: PostWithTags[];
+            data: PostWithTags[];
             /**
              * Meta data about list and collection
              */
-            meta?: {
+            meta: {
                 /**
                  * Total number in collection
                  */
-                count?: number;
+                count: number;
                 /**
                  * Current page
                  */
-                page?: number;
+                page: number;
                 /**
                  * Total number of pages
                  */
-                pages?: number;
+                pages: number;
             };
         }
         export interface PostPatch {

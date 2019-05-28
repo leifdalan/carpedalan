@@ -62,7 +62,7 @@ export const setup = () => {
   const PgSession = connectPgSimple(session);
   const store = new PgSession({ pool });
   app.set('trust proxy', 1);
-
+  app.enable('view cache');
   // Setup handlebar view engine
   const viewConfig = {
     extname: '.hbs',
@@ -162,6 +162,7 @@ export const setup = () => {
   }
   // Define routes
   router(app, openApiDoc);
+  // app.use((req, res) => res.send('hello'));
 
   if (isProd) {
     const Sentry = require('@sentry/node'); // eslint-disable-line
