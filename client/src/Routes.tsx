@@ -27,10 +27,6 @@ const Routes: React.FC = () => {
 
   return (
     <Suspense fallback={<Spinner />}>
-      <Link to="login">Login</Link>
-      <Link to="/">Slash</Link>
-      <Link to="/test">test page</Link>
-      <div onClick={logout}>logout</div>
       <Switch>
         <Route exact={true} path="/request" component={Request} />
 

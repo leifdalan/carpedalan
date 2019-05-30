@@ -42,7 +42,6 @@ describe('<Slash />', () => {
         <Slash />
       </BrowserRouter>,
     );
-    console.log(stuff.container);
     expect(mockedAxios.get).toHaveBeenCalledTimes(1);
   });
 });

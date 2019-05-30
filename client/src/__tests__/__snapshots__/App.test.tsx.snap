@@ -19,6 +19,18 @@ exports[`<App /> should match snapshot 1`] = `
           }
         }
       >
+        <styled.button
+          data-test="menu"
+          onClick={[Function]}
+          size="small"
+          type="button"
+        >
+          Menu
+        </styled.button>
+        <sidebar
+          isOpen={false}
+          toggleMenu={[Function]}
+        />
         <Routes />
         <GlobalStyleComponent />
       </ThemeProvider>

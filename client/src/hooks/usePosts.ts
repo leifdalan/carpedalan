@@ -8,6 +8,18 @@ import useApi from './useApi';
 const DEFAULT_PAGE_SIZE = 100;
 
 /**
+ * Get a random rgb color used for background of images before they load
+ *
+ * @returns {string}
+ */
+function getBg(): string {
+  const x = Math.floor(Math.random() * 256);
+  const y = Math.floor(Math.random() * 256);
+  const z = Math.floor(Math.random() * 256);
+  return `rgba(${x},${y},${z}, 0.4)`;
+}
+
+/**
  * Dictionary of api calls keyed by page number
  *
  * @interface PostsByPage
@@ -30,6 +42,7 @@ interface FakePost extends Components.Schemas.PostWithTags {
    * @memberof FakePost
    */
   fake: boolean;
+  placeholder: string;
 }
 
 /**
@@ -49,45 +62,23 @@ function makePostsListWithFakes(
 
     if (postsByPage[possiblePage]) {
       return {
+        ...post,
         ...postsByPage[possiblePage][
           idx - DEFAULT_PAGE_SIZE * (possiblePage - 1)
         ],
         fake: false,
       };
     }
+    // otherwise, return fake post
     return post;
   });
 }
 
 /**
- * Post getter API function.
+ *  Return value for custom hook UsePost
  *
- * @param {Paths.GetPosts.QueryParameters} {
- *   fields = ['key', 'imageHeight', 'imageWidth', 'status'],
- *   order = 'asc',
- *   page = 1,
- *   isPending = false,
- * }
- * @returns {Promise<Paths.GetPosts.Responses.$200>}
+ * @interface UsePost
  */
-const getPosts = async ({
-  fields = ['key', 'imageHeight', 'imageWidth', 'status'],
-  order = 'asc',
-  page = 1,
-  isPending = false,
-}: Paths.GetPosts.QueryParameters): Promise<Paths.GetPosts.Responses.$200> => {
-  try {
-    const response = await axios.get(
-      `/v1/posts?${stringify({ fields, page, order, isPending })}`,
-    );
-    const { data, status } = response;
-    return data as Paths.GetPosts.Responses.$200;
-  } catch (e) {
-    if (e.response) throw e.response.data as Components.Schemas.Error;
-    throw e as Components.Schemas.Error;
-  }
-};
-
 interface UsePost {
   loading: boolean;
   error: Components.Schemas.Error | null;
@@ -104,6 +95,37 @@ interface UsePost {
  */
 const usePosts = (): UsePost => {
   const { setData, data } = useContext(DataContext);
+  /**
+   * Post getter API function.
+   *
+   * @param {Paths.GetPosts.QueryParameters} {
+   *   fields = ['key', 'imageHeight', 'imageWidth', 'status'],
+   *   order = 'asc',
+   *   page = 1,
+   *   isPending = false,
+   * }
+   * @returns {Promise<Paths.GetPosts.Responses.$200>}
+   */
+  const getPosts = async ({
+    fields = ['key', 'imageHeight', 'imageWidth', 'status'],
+    order = 'asc',
+    page = 1,
+    isPending = false,
+  }: Paths.GetPosts.QueryParameters): Promise<
+    Paths.GetPosts.Responses.$200
+  > => {
+    try {
+      const response = await axios.get(
+        `/v1/posts?${stringify({ fields, page, order, isPending })}`,
+      );
+      const { data, status } = response;
+      return data as Paths.GetPosts.Responses.$200;
+    } catch (e) {
+      if (e.response) throw e.response.data as Components.Schemas.Error;
+      throw e as Components.Schemas.Error;
+    }
+  };
+
   const { request, response, loading, error } = useApi(getPosts);
   const [postsByPage, setPostsByPage] = useState<PostsByPage>({});
   const [total, setTotal] = useState<number>(0);
@@ -115,6 +137,7 @@ const usePosts = (): UsePost => {
           ...postsByPage,
           [response.meta.page]: response.data,
         };
+
         setPostsByPage(newPostsByPage);
         if (!total) {
           setTotal(response.meta.count);
@@ -124,6 +147,9 @@ const usePosts = (): UsePost => {
           newAllPosts = [...Array(response.meta.count).keys()].map(num => ({
             key: `${num}`,
             fake: true,
+            imageHeight: '100',
+            imageWidth: '100',
+            placeholder: getBg(),
           }));
           newAllPosts = makePostsListWithFakes(newAllPosts, newPostsByPage);
         } else {
@@ -140,7 +166,6 @@ const usePosts = (): UsePost => {
   useEffect(
     () => {
       if (total) {
-        console.log(postsByPage);
       }
     },
     [total],
