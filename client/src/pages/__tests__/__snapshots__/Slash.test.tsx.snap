@@ -1,15 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<Slash /> should match snapshot 1`] = `
-<styled.div
-  data-testid="home"
->
-  <InfiniteLoader
-    isItemLoaded={[Function]}
-    itemCount={0}
-    loadMoreItems={[Function]}
+<Fragment>
+  <styled.div>
+    <Link
+      to="#grid"
+    >
+      Grid
+    </Link>
+  </styled.div>
+  <styled.div
+    data-testid="home"
   >
-    <Component />
-  </InfiniteLoader>
-</styled.div>
+    <Feed
+      itemsWithTitle={Array []}
+    />
+  </styled.div>
+</Fragment>
 `;

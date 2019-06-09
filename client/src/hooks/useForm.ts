@@ -76,7 +76,9 @@ const input = useField({ handleChange, field: 'input' });
    * @returns The value that will be set on the field.
    *
    */
-  handleChange?: (...args: any) => string | number;
+  handleChange?: (
+    ...args: React.ChangeEvent<HTMLInputElement>[]
+  ) => string | number;
   /**
    * validate function.
    * @type {function}
@@ -140,6 +142,12 @@ export default function useForm(formName: string) {
     setForms(newFormState);
   }
 
+  /**
+   * Set error for the form namespace.
+   *
+   * @param {string} field
+   * @param {string} value
+   */
   function setError(field: string, value: string): void {
     const newFormState = {
       ...formStore,
@@ -155,6 +163,11 @@ export default function useForm(formName: string) {
     setForms(newFormState);
   }
 
+  /**
+   * Remove the error from the form store
+   *
+   * @param {string} field
+   */
   function removeError(field: string): void {
     delete formStore[formName].errors[field];
     setForms(formStore);
@@ -169,7 +182,7 @@ export default function useForm(formName: string) {
   function useField({ field, handleChange, validate = f => false }: UseField) {
     return {
       onChange: handleChange
-        ? (arg0: any) => {
+        ? (arg0: React.ChangeEvent<HTMLInputElement>) => {
             const value = handleChange(arg0);
             const isInvalid = validate(value);
             if (isInvalid) {
@@ -192,6 +205,7 @@ export default function useForm(formName: string) {
 
       value: formStore[formName].values[field] || '',
       error: formStore[formName].errors[field],
+      name: field,
     };
   }
   return { useField, setValue, form: formStore[formName] };

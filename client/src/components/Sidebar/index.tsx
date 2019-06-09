@@ -8,6 +8,7 @@ import { User } from 'User';
 
 const { useContext, useEffect } = React;
 interface StyledSidebarProps {
+  /* tslint:disable-next-line */
   theme: any;
   isOpen?: boolean;
 }

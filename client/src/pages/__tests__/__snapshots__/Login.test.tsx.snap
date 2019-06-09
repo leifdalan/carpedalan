@@ -15,6 +15,7 @@ exports[`<Login /> should match snapshot 1`] = `
     <styled.div>
       <input
         data-test="password"
+        name="password"
         onChange={[Function]}
         type="password"
         value=""

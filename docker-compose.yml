@@ -13,7 +13,6 @@ services:
       - ./nginx/local.carpedalan.com.pem:/etc/ssl/certs/local.carpedalan.com.pem
       - ./nginx/local.carpedalan.com-key.pem:/etc/ssl/private/local.carpedalan.com-key.pem
     ports:
-      - 80:80
       - 443:443
 
   api:

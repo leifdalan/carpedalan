@@ -16,6 +16,9 @@ declare global {
       user: User;
       requests: number;
     };
+    __META__: {
+      cdn: string;
+    };
   }
 }
 const App = hotEntry;

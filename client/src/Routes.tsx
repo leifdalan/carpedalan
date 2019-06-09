@@ -1,4 +1,5 @@
 import axios from 'axios';
+import SidebarAndMenu from 'components/SidebarAndMenu';
 import useUser from 'hooks/useUser';
 import Login from 'pages/Login';
 import Request from 'pages/Request';
@@ -27,6 +28,7 @@ const Routes: React.FC = () => {
 
   return (
     <Suspense fallback={<Spinner />}>
+      <SidebarAndMenu />
       <Switch>
         <Route exact={true} path="/request" component={Request} />
 

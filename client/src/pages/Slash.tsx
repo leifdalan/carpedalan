@@ -1,11 +1,25 @@
-import usePosts from 'hooks/usePosts';
-import debounce from 'lodash/debounce';
-import isString from 'lodash/isString';
+import Feed from 'components/Feed';
+import Grid from 'components/Grid';
+import Picture from 'components/Picture';
+import Post from 'components/Post';
+import debug from 'debug';
+import usePosts, { PostsWithTagsWithFakes } from 'hooks/usePosts';
+import useRouter from 'hooks/useRouter';
+import useWindow from 'hooks/useWindow';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { default as Autosizer } from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import { default as InfiniteLoader } from 'react-window-infinite-loader';
 import { default as styled } from 'styled-components';
+const log = debug('component:Slash');
+console.log = console.warn;
+const { useState, useLayoutEffect } = React;
+const InnerWrapper = styled.main`
+  max-width: 768px;
+  margin: auto;
+  height: 100%;
+`;
 
 const { useEffect, useRef } = React;
 const { VariableSizeList: List } = ReactWindow;
@@ -15,96 +29,81 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
+const PostWrapper = styled.article`
+  max-width: 620px;
+  width: 100%;
+  margin: 0 auto;
+`;
+
+const GridListSwitcher = styled.div`
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  right: 0;
+`;
+
+const RowWrapper = styled.div`
+  display: flex;
+`;
+
 interface RowRender {
   index: number;
-  style: any;
+  style: React.CSSProperties;
 }
-const Slash: React.FC = () => {
+
+const Slash: React.FC = (): React.ReactElement => {
   const { request, posts, loading } = usePosts();
-  const listRef = useRef();
+  const [postsWithTitle, setPostsWithTitle] = useState<
+    PostsWithTagsWithFakes[]
+  >(posts);
+  const wrapperRef = useRef<HTMLInputElement>(null);
+  const {
+    location: { hash, pathname },
+  } = useRouter();
+
+  function isGrid() {
+    return hash.includes('grid');
+  }
 
   useEffect(() => {
-    request({ page: 1 });
+    try {
+      const scroll = localStorage.getItem('scroll');
+      if (scroll) {
+        request({ page: 1 });
+      } else {
+        request({ page: 1 });
+      }
+    } catch (e) {
+      request({ page: 1 });
+    }
   }, []);
 
-  /**
-   * Triggered if isItemLoaded returns false
-   *
-   * @param {number} index
-   * @returns Promise<void>
-   */
-  function loadMoreItems(index: number) {
-    return request({ page: Math.floor(index / 100) + 1 });
-  }
-
-  const Row = ({ index, style }: RowRender) => (
-    <div
-      style={{ ...style, background: posts[index].placeholder }}
-      data-testid={index}
-    >
-      {index}
-    </div>
+  useEffect(
+    () => {
+      const newPosts = [...posts];
+      newPosts.unshift({ fake: true, placeholder: '', key: 'title' });
+      setPostsWithTitle(newPosts);
+      log('post dep changed');
+    },
+    [posts],
   );
 
-  /**
-   * Function for determining if item is "loaded", causes loadMoreItems
-   * if falsey
-   *
-   * @param {number} index
-   * @returns {boolean}
-   */
-  function isItemLoaded(index: number): boolean {
-    return !posts[index].fake;
-  }
-
-  /**
-   * Curried function that takes the container width and calculates
-   * the item width based on the image height/width ratio
-   *
-   * @param {number} containerWidth
-   * @returns {(index: number) => number}
-   */
-  function getItemSize(containerWidth: number): (index: number) => number {
-    return function(index: number) {
-      let height = 1;
-      let width = 1;
-      if (posts[index].imageHeight) {
-        height = Number(posts[index].imageHeight);
-      }
-      if (posts[index].imageWidth) {
-        width = Number(posts[index].imageWidth);
-      }
-
-      const ratio = height / width;
-      return ratio * containerWidth;
-    };
-  }
-
   return (
-    <Wrapper data-testid="home">
-      <InfiniteLoader
-        ref={listRef}
-        itemCount={posts.length}
-        isItemLoaded={isItemLoaded}
-        loadMoreItems={debounce(loadMoreItems, 100)}
-      >
-        {({ onItemsRendered, ref }: any) => (
-          <Autosizer ref={ref}>
-            {({ height, width }) => (
-              <List
-                height={height}
-                ref={ref}
-                onItemsRendered={onItemsRendered}
-                itemCount={posts.length}
-                itemSize={getItemSize(width)}
-                width={width}
-                children={Row}
-              />
-            )}
-          </Autosizer>
+    <>
+      <GridListSwitcher>
+        <Link to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
+          {hash.includes('grid') ? 'List' : 'Grid'}
+        </Link>
+      </GridListSwitcher>
+
+      <Wrapper data-testid="home" ref={wrapperRef}>
+        {isGrid() ? (
+          <Grid itemsWithTitle={postsWithTitle} />
+        ) : (
+          <Feed itemsWithTitle={postsWithTitle} />
         )}
-      </InfiniteLoader>
-    </Wrapper>
+      </Wrapper>
+    </>
   );
 };
 

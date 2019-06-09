@@ -1,7 +1,10 @@
+import axios from 'axios';
 import Menu from 'components/Menu';
 import Sidebar from 'components/Sidebar';
+import debug from 'debug';
 import useUser from 'hooks/useUser';
 import { DataProvider } from 'providers/Data';
+import RouterContext from 'providers/RouterContext';
 import { UserProvider } from 'providers/User';
 import * as React from 'react';
 import { BrowserRouter, Link, Redirect, Route, Switch } from 'react-router-dom';
@@ -10,39 +13,47 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyleComponent, themes } from 'styles/utils';
 import { User } from 'User';
 
-const { useState } = React;
+const appDebug = debug('App');
+
+const refreshCookie = async () => {
+  appDebug('Refreshing cookie', { an: 'object' });
+  const response = await axios.post('/v1/refresh');
+};
+
+const { useEffect } = React;
 const App: React.FC<{ user: User }> = () => {
-  const { user: userState, setUser } = useUser();
-  const [shouldShowSidebar, setShouldShowSidebar] = useState(false);
+  const { user: userState } = useUser();
 
-  const isLoggedIn = !!userState;
-
-  const toggleMenu = () => setShouldShowSidebar(!shouldShowSidebar);
+  /**
+   * Cloudfront cookie needs to be refreshed every 30s for
+   * the images to not 403. This effect well set the cookie at
+   * that interval if the user has been authenticated.
+   */
+  useEffect(
+    () => {
+      if (userState) {
+        const interval = setInterval(() => {
+          refreshCookie();
+        }, 1000 * 30);
+        return () => clearInterval(interval);
+      }
+      return () => {};
+    },
+    [userState],
+  );
 
   return (
     <UserProvider>
       <DataProvider>
         <BrowserRouter>
-          <ThemeProvider theme={themes.lite}>
-            <>
-              <Menu
-                data-test="menu"
-                size="small"
-                // @ts-ignore wtf
-                onClick={toggleMenu}
-                type="button"
-              >
-                Menu
-              </Menu>
-              <Sidebar
-                isOpen={shouldShowSidebar}
-                userState={userState}
-                toggleMenu={toggleMenu}
-              />
-              <Routes />
-              <GlobalStyleComponent />
-            </>
-          </ThemeProvider>
+          <RouterContext>
+            <ThemeProvider theme={themes.lite}>
+              <>
+                <Routes />
+                <GlobalStyleComponent />
+              </>
+            </ThemeProvider>
+          </RouterContext>
         </BrowserRouter>
       </DataProvider>
     </UserProvider>

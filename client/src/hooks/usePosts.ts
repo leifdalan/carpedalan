@@ -1,4 +1,5 @@
 import axios from 'axios';
+import debug from 'debug';
 import { DataContext } from 'providers/Data';
 import { stringify } from 'qs';
 import { useContext, useEffect, useState } from 'react';
@@ -6,6 +7,8 @@ import { useContext, useEffect, useState } from 'react';
 import useApi from './useApi';
 
 const DEFAULT_PAGE_SIZE = 100;
+
+const log = debug('hooks:usePosts');
 
 /**
  * Get a random rgb color used for background of images before they load
@@ -31,17 +34,25 @@ interface PostsByPage {
 /**
  * "Fake" post that hold the fake flag
  *
- * @interface FakePost
+ * @interface PostsWithTagsWithFakes
  * @extends {Components.Schemas.PostWithTags}
  */
-interface FakePost extends Components.Schemas.PostWithTags {
+export interface PostsWithTagsWithFakes
+  extends Components.Schemas.PostWithTags {
   /**
    * Whether or not this post object respresents a "fake" one
    *
    * @type {boolean}
-   * @memberof FakePost
+   * @memberof PostsWithTagsWithFakes
    */
   fake: boolean;
+  /**
+   * Placeholder background rgb value
+   *
+   * @example rgba(234, 123, 532, 0.4)
+   * @type {string}
+   * @memberof PostsWithTagsWithFakes
+   */
   placeholder: string;
 }
 
@@ -49,14 +60,14 @@ interface FakePost extends Components.Schemas.PostWithTags {
  * Converts existing post list by page into an array, assuming
  * the fake post array has been filled with all fakes.
  *
- * @param {FakePost[]} existingPostList
+ * @param {PostsWithTagsWithFakes[]} existingPostList
  * @param {PostsByPage} postsByPage
- * @returns {FakePost[]}
+ * @returns {PostsWithTagsWithFakes[]}
  */
 function makePostsListWithFakes(
-  existingPostList: FakePost[],
+  existingPostList: PostsWithTagsWithFakes[],
   postsByPage: PostsByPage,
-): FakePost[] {
+): PostsWithTagsWithFakes[] {
   return existingPostList.map((post, idx) => {
     const possiblePage = Math.floor(idx / DEFAULT_PAGE_SIZE) + 1;
 
@@ -83,7 +94,7 @@ interface UsePost {
   loading: boolean;
   error: Components.Schemas.Error | null;
   request: (arg: Paths.GetPosts.QueryParameters) => Promise<void>;
-  posts: FakePost[];
+  posts: PostsWithTagsWithFakes[];
 }
 
 /**
@@ -107,19 +118,24 @@ const usePosts = (): UsePost => {
    * @returns {Promise<Paths.GetPosts.Responses.$200>}
    */
   const getPosts = async ({
-    fields = ['key', 'imageHeight', 'imageWidth', 'status'],
-    order = 'asc',
+    fields = ['key', 'imageHeight', 'imageWidth', 'status', 'orientation'],
+    order = 'desc',
     page = 1,
     isPending = false,
   }: Paths.GetPosts.QueryParameters): Promise<
     Paths.GetPosts.Responses.$200
   > => {
     try {
-      const response = await axios.get(
-        `/v1/posts?${stringify({ fields, page, order, isPending })}`,
-      );
-      const { data, status } = response;
-      return data as Paths.GetPosts.Responses.$200;
+      log('Getting posts...');
+      const queryParams: Paths.GetPosts.QueryParameters = {
+        fields,
+        page,
+        order,
+        isPending,
+      };
+      const response = await axios.get(`/v1/posts?${stringify(queryParams)}`);
+      const { data } = response;
+      return data;
     } catch (e) {
       if (e.response) throw e.response.data as Components.Schemas.Error;
       throw e as Components.Schemas.Error;
@@ -129,7 +145,8 @@ const usePosts = (): UsePost => {
   const { request, response, loading, error } = useApi(getPosts);
   const [postsByPage, setPostsByPage] = useState<PostsByPage>({});
   const [total, setTotal] = useState<number>(0);
-  const [allPosts, setAllPosts] = useState<FakePost[]>([]);
+  const [allPosts, setAllPosts] = useState<PostsWithTagsWithFakes[]>([]);
+
   useEffect(
     () => {
       if (response) {
@@ -144,14 +161,23 @@ const usePosts = (): UsePost => {
         }
         let newAllPosts = [];
         if (!allPosts.length) {
-          newAllPosts = [...Array(response.meta.count).keys()].map(num => ({
+          /**
+           * If there are no posts, lets fill an array of length "count" with "fake"
+           * posts so that the list viewer can create a reasonably accurate scrollbar
+           */
+          const allPostsWithTagsWithFakess = [
+            ...Array(response.meta.count).keys(),
+          ].map((num): PostsWithTagsWithFakes => ({
             key: `${num}`,
             fake: true,
             imageHeight: '100',
             imageWidth: '100',
             placeholder: getBg(),
           }));
-          newAllPosts = makePostsListWithFakes(newAllPosts, newPostsByPage);
+          newAllPosts = makePostsListWithFakes(
+            allPostsWithTagsWithFakess,
+            newPostsByPage,
+          );
         } else {
           newAllPosts = makePostsListWithFakes(allPosts, newPostsByPage);
         }
