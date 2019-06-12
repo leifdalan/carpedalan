@@ -10,9 +10,11 @@ import { default as Autosizer } from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import { default as InfiniteLoader } from 'react-window-infinite-loader';
 import { default as styled } from 'styled-components';
+
 const log = debug('component:Feed');
-console.log = console.warn;
+
 const { useState, useLayoutEffect } = React;
+
 const InnerWrapper = styled.main`
   max-width: 768px;
   margin: auto;
