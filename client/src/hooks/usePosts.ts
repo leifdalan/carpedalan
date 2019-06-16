@@ -95,6 +95,7 @@ interface UsePost {
   error: Components.Schemas.Error | null;
   request: (arg: Paths.GetPosts.QueryParameters) => Promise<void>;
   posts: PostsWithTagsWithFakes[];
+  response: Components.Schemas.PostList | undefined;
 }
 
 /**
@@ -126,7 +127,7 @@ const usePosts = (): UsePost => {
     Paths.GetPosts.Responses.$200
   > => {
     try {
-      log('Getting posts...');
+      log('Getting posts...', { page });
       const queryParams: Paths.GetPosts.QueryParameters = {
         fields,
         page,
@@ -181,22 +182,17 @@ const usePosts = (): UsePost => {
         } else {
           newAllPosts = makePostsListWithFakes(allPosts, newPostsByPage);
         }
+        log('setting new posts');
         setAllPosts(newAllPosts);
         setData({
-          posts: response,
+          posts: newAllPosts,
         });
       }
     },
     [response],
   );
-  useEffect(
-    () => {
-      if (total) {
-      }
-    },
-    [total],
-  );
-  return { loading, error, request, posts: allPosts };
+
+  return { response, loading, error, request, posts: data.posts };
 };
 
 export default usePosts;

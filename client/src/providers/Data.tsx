@@ -1,10 +1,13 @@
+import { PostsWithTagsWithFakes } from 'hooks/usePosts';
 import * as React from 'react';
 
 const { createContext, Children, useState } = React;
 export interface Data {
-  posts?: Components.Schemas.PostList;
+  posts: PostsWithTagsWithFakes[];
 }
-const data: Data = {};
+const data: Data = {
+  posts: [],
+};
 type SetData = (u: Data) => void;
 export interface DataContext {
   data: Data;

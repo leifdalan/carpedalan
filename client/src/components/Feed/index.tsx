@@ -5,7 +5,6 @@ import usePosts, { PostsWithTagsWithFakes } from 'hooks/usePosts';
 import useRouter from 'hooks/useRouter';
 import useWindow from 'hooks/useWindow';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { default as Autosizer } from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import { default as InfiniteLoader } from 'react-window-infinite-loader';

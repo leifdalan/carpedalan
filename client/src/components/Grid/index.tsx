@@ -8,7 +8,7 @@ import * as ReactWindow from 'react-window';
 import { default as InfiniteLoader } from 'react-window-infinite-loader';
 import { default as styled } from 'styled-components';
 const log = debug('component:Grid');
-console.log = console.warn;
+
 const { useState } = React;
 const InnerWrapper = styled.main`
   max-width: 768px;
@@ -38,7 +38,7 @@ const Grid = ({
 }: {
   itemsWithTitle: PostsWithTagsWithFakes[];
 }): React.ReactElement => {
-  const { request, loading } = usePosts();
+  const { request, loading, posts } = usePosts();
   const [refWidth, setRefWidth] = useState<number>(0);
   const { width } = useWindow();
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -64,6 +64,7 @@ const Grid = ({
    */
   function loadMoreItems(index: number) {
     const realIndex = index * postsPerRow;
+    log('%c Load more items', 'color: red;', { realIndex, index, postsPerRow });
     return request({ page: Math.floor(realIndex / 100) + 1 });
   }
 
@@ -100,6 +101,10 @@ const Grid = ({
    * @returns {boolean}
    */
   function isItemLoaded(index: number): boolean {
+    if (!itemsWithTitle[index * postsPerRow]) {
+      log('%c Overflow', 'background: red; color: black', index * postsPerRow);
+      return true;
+    }
     return !itemsWithTitle[index * postsPerRow].fake;
   }
 
