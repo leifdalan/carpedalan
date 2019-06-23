@@ -2,6 +2,7 @@ module.exports = {
   globals: {
     'ts-jest': {
       babelConfig: true,
+      tsConfig: 'tsconfig.test.json',
     },
   },
   verbose: false,

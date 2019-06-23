@@ -9,7 +9,7 @@ module.exports = function(wallaby) {
       '!dist/**/*',
       '!coverage/**/*',
       '!scripts/**/*',
-      'tsconfig.json',
+      'tsconfig.test.json',
       'jest.config.js',
       'package.json',
     ],
@@ -44,7 +44,10 @@ module.exports = function(wallaby) {
     compilers: {
       // '**/*.js?(x)': wallaby.compilers.babel(),
 
-      '**/*.ts?(x)': wallaby.compilers.typeScript({ isolatedModules: true }),
+      '**/*.ts?(x)': wallaby.compilers.typeScript({
+        isolatedModules: true,
+        module: 'commonjs',
+      }),
     },
     preprocessors: {
       /* eslint-disable */

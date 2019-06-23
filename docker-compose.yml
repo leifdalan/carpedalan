@@ -4,7 +4,7 @@ services:
   alb:
     container_name: alb
     depends_on:
-      api: 
+      carpe_api: 
         condition: service_healthy
     image: ekino/nginx-brotli:latest-1.12.2-bfd2885
     restart: always
@@ -13,11 +13,10 @@ services:
       - ./nginx/local.carpedalan.com.pem:/etc/ssl/certs/local.carpedalan.com.pem
       - ./nginx/local.carpedalan.com-key.pem:/etc/ssl/private/local.carpedalan.com-key.pem
     ports:
-      - 80:80
       - 443:443
 
-  api:
-    container_name: api
+  carpe_api:
+    container_name: c_api
     depends_on:
       pg:
         condition: service_healthy

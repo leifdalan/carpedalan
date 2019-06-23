@@ -16,8 +16,14 @@ declare global {
       user: User;
       requests: number;
     };
+    __META__: {
+      cdn: string;
+    };
   }
 }
+// Doing this so that theres a trace on Chrome Debugger since
+// we are using the debug module (you lose line numbers)
+console.log = console.warn;
 const App = hotEntry;
 ReactDOM.render(
   <App {...window.__SESSION__} />,

@@ -1,11 +1,9 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import useApi from 'hooks/useApi';
 import useForm from 'hooks/useForm';
 import useUser from 'hooks/useUser';
-import { IUserContext, UserContext } from 'providers/User';
 import * as React from 'react';
-import { Redirect } from 'react-router';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { default as styled } from 'styled-components';
 import Button from 'styles/Button';
 import Input from 'styles/Input';
@@ -31,25 +29,29 @@ const postLogin = async (
     throw e as Components.Schemas.Error;
   }
 };
+
 /**
- * Login route component. Includes form and api effects
+ * Login component. Return markup for page level component
+ *
+ * @returns {React.ReactElement}
  */
-function login({ history }: any) {
+const Login: React.FC<{}> = (): React.ReactElement => {
   const { setUser, user } = useUser();
   const [showError, shouldShowError] = useState(true);
+
   /**
    * Change handler passed intended for passage to `useField`. Has
    * state side effect of setting error showing to false
    *
    * @param {React.ChangeEvent<HTMLInputElement>} e
-   * @returns
+   * @returns {string}
    */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): string => {
     shouldShowError(false);
     return e.target.value;
   };
 
-  const { useField, setValue, form } = useForm('myForm');
+  const { useField } = useForm('myForm');
 
   const passwordInput = useField({ handleChange, field: 'password' });
 
@@ -105,6 +107,6 @@ function login({ history }: any) {
       </InputForm>
     </InputWrapper>
   );
-}
+};
 
-export default login;
+export default Login;

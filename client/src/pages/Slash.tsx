@@ -1,43 +1,103 @@
-import useUser from 'hooks/useUser';
+import Feed from 'components/Feed';
+import Grid from 'components/Grid';
+import debug from 'debug';
+import usePosts, { PostsWithTagsWithFakes } from 'hooks/usePosts';
+import useRouter from 'hooks/useRouter';
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { default as styled } from 'styled-components';
-import { User } from 'User';
+const log = debug('component:Slash');
 
-const { useState } = React;
-const something = '12px';
-
-interface InputProps {
-  readonly width?: number;
-}
-const InputForm =
-  styled.form <
-  InputProps >
-  `
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  flex-direction: column;
-  max-width: ${({ width }) => width}px;
-  max-height: 25em;
-  width: 80vw;
-  height: 80vh;
-  input {
-    text-align: center;
-  }
+const { useState, useLayoutEffect } = React;
+const InnerWrapper = styled.main`
+  max-width: 768px;
+  margin: auto;
+  height: 100%;
 `;
 
-const Login: React.FC<RouteComponentProps> = ({ history }) => {
-  const [count, setCount] = useState(0);
-  const incrementCount = (): void => setCount(count + 1);
-  const { setUser, user } = useUser();
+const { useEffect, useRef } = React;
+
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
+const PostWrapper = styled.article`
+  max-width: 620px;
+  width: 100%;
+  margin: 0 auto;
+`;
+
+const GridListSwitcher = styled.div`
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  right: 0;
+`;
+
+const RowWrapper = styled.div`
+  display: flex;
+`;
+
+interface RowRender {
+  index: number;
+  style: React.CSSProperties;
+}
+
+const Slash: React.FC = (): React.ReactElement => {
+  const { request, posts, loading, response } = usePosts();
+  const [postsWithTitle, setPostsWithTitle] = useState<
+    PostsWithTagsWithFakes[]
+  >(posts);
+  const wrapperRef = useRef<HTMLInputElement>(null);
+  const {
+    location: { hash, pathname },
+  } = useRouter();
+
+  function isGrid() {
+    return hash.includes('grid');
+  }
+
+  useEffect(
+    () => {
+      log('%c post dep changed', 'background: blue;');
+      const newPosts = [...posts];
+      newPosts.unshift({ fake: true, placeholder: '', key: 'title' });
+      setPostsWithTitle(newPosts);
+    },
+    [posts],
+  );
+
+  useEffect(() => {
+    try {
+      const scroll = localStorage.getItem('scroll');
+      if (scroll) {
+        request({ page: 1 });
+      } else {
+        request({ page: 1 });
+      }
+    } catch (e) {
+      request({ page: 1 });
+    }
+  }, []);
+
   return (
-    <div data-testid="home" onClick={incrementCount}>
-      <InputForm width={200}>{user}</InputForm>
-      {history.location.pathname}
-      {count}
-    </div>
+    <>
+      <GridListSwitcher>
+        <Link to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
+          {hash.includes('grid') ? 'List' : 'Grid'}
+        </Link>
+      </GridListSwitcher>
+
+      <Wrapper data-testid="home" ref={wrapperRef}>
+        {isGrid() ? (
+          <Grid itemsWithTitle={postsWithTitle} />
+        ) : (
+          <Feed itemsWithTitle={postsWithTitle} />
+        )}
+      </Wrapper>
+    </>
   );
 };
 
-export default Login;
+export default Slash;

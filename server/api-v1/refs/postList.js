@@ -1,5 +1,6 @@
 export default {
   type: 'object',
+  required: ['data', 'meta'],
   properties: {
     data: {
       type: 'array',
@@ -9,6 +10,7 @@ export default {
       },
     },
     meta: {
+      required: ['count', 'page', 'pages'],
       type: 'object',
       description: 'Meta data about list and collection',
       properties: {

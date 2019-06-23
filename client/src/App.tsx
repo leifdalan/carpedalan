@@ -1,23 +1,59 @@
+import axios from 'axios';
+import debug from 'debug';
+import useUser from 'hooks/useUser';
+import { DataProvider } from 'providers/Data';
+import RouterContext from 'providers/RouterContext';
 import { UserProvider } from 'providers/User';
 import * as React from 'react';
-import { BrowserRouter, Link, Redirect, Route, Switch } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import Routes from 'Routes';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyleComponent, themes } from 'styles/utils';
+import { User } from 'User';
 
-import Routes from './Routes';
-import { User } from './User';
+const appDebug = debug('App');
 
-const App: React.FC<{ user: User }> = ({ user }) => {
+const refreshCookie = async () => {
+  appDebug('Refreshing cookie', { an: 'object' });
+  const response = await axios.post('/v1/refresh');
+};
+
+const { useEffect } = React;
+const App: React.FC<{ user: User }> = () => {
+  const { user: userState } = useUser();
+
+  /**
+   * Cloudfront cookie needs to be refreshed every 30s for
+   * the images to not 403. This effect well set the cookie at
+   * that interval if the user has been authenticated.
+   */
+  useEffect(
+    () => {
+      if (userState) {
+        const interval = setInterval(() => {
+          refreshCookie();
+        }, 1000 * 30);
+        return () => clearInterval(interval);
+      }
+      return () => {};
+    },
+    [userState],
+  );
+
   return (
     <UserProvider>
-      <BrowserRouter>
-        <ThemeProvider theme={themes.lite}>
-          <>
-            <Routes />
-            <GlobalStyleComponent />
-          </>
-        </ThemeProvider>
-      </BrowserRouter>
+      <DataProvider>
+        <BrowserRouter>
+          <RouterContext>
+            <ThemeProvider theme={themes.lite}>
+              <>
+                <Routes />
+                <GlobalStyleComponent />
+              </>
+            </ThemeProvider>
+          </RouterContext>
+        </BrowserRouter>
+      </DataProvider>
     </UserProvider>
   );
 };
