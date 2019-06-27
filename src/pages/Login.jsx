@@ -9,6 +9,7 @@ import InputField from '../fields/InputField';
 import Field from '../form/Field';
 import Form from '../form/Form';
 import Submit from '../form/Submit';
+import { API_PATH } from '../../shared/constants';
 
 import { User } from '..';
 
@@ -58,26 +59,25 @@ const StyledButton = styled.button`
 
 export default function Login({ location: { pathname }, status }) {
   const { setUser } = useContext(User);
-  const [hasLoggedIn, setHasLoggedIn] = useState(false);
   const [error, setError] = useState(null);
   const [requestAccess, setRequestAccess] = useState(false);
   const [accessRequested, setAccessRequested] = useState(false);
 
   const submitLogin = async ({ password }) => {
     try {
-      const response = await request.post('/api/login', { password });
-      setUser(response.body.user);
-      setHasLoggedIn(true);
-      // Force recaching for service worker
+      const response = await request.post(`${API_PATH}/login`, { password });
+
       await request.get('/');
+      setUser(response.body.user);
     } catch (e) {
       setError(e);
+      throw e;
     }
   };
 
   const submitRequestAccess = async ({ email, firstName, lastName }) => {
     try {
-      await request.post('/api/request', {
+      await request.post(`${API_PATH}/request`, {
         email,
         firstName,
         lastName,
@@ -138,16 +138,23 @@ export default function Login({ location: { pathname }, status }) {
               {status ? <StyledTitle center>{status}</StyledTitle> : null}
               <StyledTitle center>Login</StyledTitle>
               <Form onSubmit={submitLogin}>
-                <Field
-                  name="password"
-                  component={InputField}
-                  placeholder="Password, please"
-                  type="password"
-                />
-                {error ? (
-                  <DangerText>Oops! That didn&apos;t work</DangerText>
-                ) : null}
-                <Submit text="Login" />
+                {({ meta }) => {
+                  return (
+                    <>
+                      {meta.submitSucceeded ? <Redirect to={redirect} /> : null}
+                      <Field
+                        name="password"
+                        component={InputField}
+                        placeholder="Password, please"
+                        type="password"
+                      />
+                      {error ? (
+                        <DangerText>Oops! That didn&apos;t work</DangerText>
+                      ) : null}
+                      <Submit text="Login" />
+                    </>
+                  );
+                }}
               </Form>
             </>
           )}
@@ -157,8 +164,6 @@ export default function Login({ location: { pathname }, status }) {
             </StyledButton>
           ) : null}
         </InputForm>
-
-        {hasLoggedIn ? <Redirect to={redirect} /> : null}
       </InputWrapper>
     </>
   );

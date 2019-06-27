@@ -42,7 +42,7 @@ api.post('/user', (req, res) => {
   Object.keys(req.body || {}).forEach(key => {
     req.session[key] = req.body[key];
   });
-  res.status(200).end();
+  res.status(200).json(req.session);
 });
 
 api.post('/logout', (req, res) => {

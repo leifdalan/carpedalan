@@ -78,7 +78,7 @@ const RenderRow = props => {
       }
       return () => window.removeEventListener('contextmenu', stopContext);
     }
-    return null;
+    return () => {};
   }, [mouseDown]);
 
   const handleSelect = selectedIndex => e => {

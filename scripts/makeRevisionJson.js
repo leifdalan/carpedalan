@@ -2,37 +2,50 @@
 
 const fs = require('fs');
 
-const { ECR_ENDPOINT, CIRCLE_SHA1 } = process.env;
+const { ECR_REPOSITORY, CIRCLE_SHA1 } = process.env;
 const json = {
-  executionRoleArn: 'arn:aws:iam::771396871964:role/ecsTaskExecutionRole',
   containerDefinitions: [
     {
       logConfiguration: {
         logDriver: 'awslogs',
         options: {
           'awslogs-group': '/ecs/carpedalan',
-          'awslogs-region': 'us-east-1',
+          'awslogs-region': 'us-west-2',
           'awslogs-stream-prefix': 'ecs',
         },
       },
-      image: `${ECR_ENDPOINT}/carpedev:${CIRCLE_SHA1}`,
+      image: `${ECR_REPOSITORY}:${CIRCLE_SHA1}`,
       name: 'carpedalan',
       portMappings: [
         {
-          containerPort: 80,
           hostPort: 80,
           protocol: 'tcp',
+          containerPort: 80,
+        },
+        {
+          hostPort: 3000,
+          protocol: 'tcp',
+          containerPort: 3000,
+        },
+        {
+          hostPort: 514,
+          protocol: 'tcp',
+          containerPort: 514,
+        },
+        {
+          hostPort: 6514,
+          protocol: 'tcp',
+          containerPort: 6514,
         },
       ],
     },
   ],
   memory: '512',
-  cpu: '256',
-  taskRoleArn: 'arn:aws:iam::771396871964:role/ecsTaskExecutionRole',
+  cpu: '1024',
   family: 'carpedalan',
   networkMode: 'awsvpc',
   volumes: [],
-  requiresCompatibilities: ['FARGATE'],
+  requiresCompatibilities: ['EC2'],
 };
 
 fs.writeFileSync('container-definition.json', JSON.stringify(json), 'utf8');

@@ -73,7 +73,6 @@ export default function Sidebar({
 
   useEffect(() => {
     if (user) loadTags();
-    return null;
   }, [user]);
 
   return userState ? (
@@ -84,13 +83,22 @@ export default function Sidebar({
         </Close>
         <List>
           {userState === 'write' ? (
-            <ListItem>
-              <StyledLink to="/admin">ADMIN</StyledLink>
-            </ListItem>
+            <>
+              <ListItem>
+                <StyledLink data-test="admin" to="/admin">
+                  ADMIN
+                </StyledLink>
+              </ListItem>
+              <ListItem>
+                <StyledLink to="/pending">Pending</StyledLink>
+              </ListItem>
+            </>
           ) : null}
 
           <ListItem>
-            <StyledLink to="/">HOME</StyledLink>
+            <StyledLink data-test="home" to="/">
+              HOME
+            </StyledLink>
           </ListItem>
 
           <ListItem>
@@ -101,7 +109,14 @@ export default function Sidebar({
             .sort((a, b) => b.count - a.count)
             .map(({ name, id, count }) => (
               <ListItem key={id}>
-                <StyledLink to={`/tag/${name}`}>
+                <StyledLink
+                  data-test="tag"
+                  to={{
+                    pathname: `/tag/${name}`,
+                    state: { tagId: id },
+                  }}
+                  state={{ tagId: id }}
+                >
                   {`#${name} (${count || 0})`}
                 </StyledLink>
               </ListItem>

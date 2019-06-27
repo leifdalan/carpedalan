@@ -5,7 +5,9 @@ import { ThemeProvider } from 'styled-components';
 import request from 'superagent';
 
 import { READ_USER, WRITE_USER } from '../server/constants';
+import { API_PATH } from '../shared/constants';
 
+import SplitRoute from './components/SplitRoute';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
@@ -29,7 +31,8 @@ export const User = createContext({
   isLoading: false,
 });
 
-function Root({ user, defaultTheme, status, requests }) {
+// eslint-disable-next-line
+function Root({ user, defaultTheme, status, requests, api }) {
   const [userState, setUser] = useState(user);
   const [theme, setTheme] = useState(defaultTheme);
   const [shouldShowSidebar, setShouldShowSidebar] = useState(false);
@@ -38,11 +41,13 @@ function Root({ user, defaultTheme, status, requests }) {
     const newTheme = theme === 'dark' ? 'lite' : 'dark';
     if (theme === 'dark') setTheme('lite');
     else setTheme('dark');
-    await request.post('/api/user', {
+    await request.post(`${API_PATH}/user`, {
       defaultTheme: newTheme,
     });
   };
   const isLoggedIn = [WRITE_USER, READ_USER].includes(userState);
+
+  const isAdmin = WRITE_USER === userState;
 
   const toggleMenu = () => setShouldShowSidebar(!shouldShowSidebar);
 
@@ -77,9 +82,23 @@ function Root({ user, defaultTheme, status, requests }) {
 
                         <Switch>
                           <Route exact path="/login" component={Login} />
-                          {userState === WRITE_USER ? (
+                          {isAdmin ? (
                             <Route exact path="/admin" component={Admin} />
                           ) : null}
+
+                          {isAdmin && (
+                            <Route
+                              exact
+                              path="/pending"
+                              render={() => (
+                                <SplitRoute
+                                  load={() =>
+                                    import(/* webpackChunkName "panding" */ './components/Pending/PendingTest')
+                                  }
+                                />
+                              )}
+                            />
+                          )}
 
                           {isLoggedIn && (
                             <Route exact path="/" component={Slash} />
@@ -94,7 +113,7 @@ function Root({ user, defaultTheme, status, requests }) {
                             <Route exact path="/archive" component={Archive} />
                           )}
                           {isLoggedIn && (
-                            <Route path="/tag/:tag" component={Tag} />
+                            <Route path="/tag/:tagName" component={Tag} />
                           )}
                           {isLoggedIn && <Route component={NotFound} />}
                           {!isLoggedIn && (

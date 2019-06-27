@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { arrayOf, func, number, shape } from 'prop-types';
+import { arrayOf, bool, func, number, oneOfType, shape } from 'prop-types';
 import AutoSizer from 'react-virtualized/dist/es/AutoSizer';
 import InfiniteLoader from 'react-virtualized/dist/es/InfiniteLoader';
 import List from 'react-virtualized/dist/es/List';
@@ -139,7 +139,11 @@ export default function Feed({
                 Are you sure?
               </Title>
               <FlexContainer justifyContent="space-between">
-                <Button type="danger" onClick={handleConfirmDelete(showModal)}>
+                <Button
+                  type="danger"
+                  data-test="confirm"
+                  onClick={handleConfirmDelete(showModal)}
+                >
                   Yup
                 </Button>
                 <Button type="neutral" onClick={() => setShouldShowModal(null)}>
@@ -164,7 +168,7 @@ Feed.propTypes = {
   meta: shape({
     count: number,
   }).isRequired,
-  isEditing: number,
+  isEditing: oneOfType([number, bool]),
   setEditing: func.isRequired,
   match: shape({}).isRequired,
   location: shape({}).isRequired,

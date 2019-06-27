@@ -55,10 +55,13 @@ export default function Post({
   return (
     <PostContainer width={width} ref={safeRef}>
       <Header justifyContent="space-between">
-        <Download as="div">{formatDate(post.timestamp)}</Download>
+        <Download data-test="date" as="div">
+          {formatDate(post.timestamp)}
+        </Download>
         <Download
           onClick={e => e.stopPropagation()}
           href={getOriginalImagePath({ post })}
+          data-test="download"
         >
           Download
         </Download>
@@ -75,7 +78,7 @@ export default function Post({
       {post.description || (post.tags && post.tags.length) ? (
         <Description>
           {post.description ? (
-            <figcaption>{post.description}</figcaption>
+            <figcaption data-test="description">{post.description}</figcaption>
           ) : null}
           {post.tags && post.tags.length ? (
             <ul>

@@ -1,6 +1,5 @@
-import api from '../api/router';
-
-import { assets, cdnDomain, isProd, ci, nodeEnv } from './config';
+import { assets, cdnDomain, isProd, ci, nodeEnv, assetDomain } from './config';
+import db from './db';
 
 let clientAssets = false;
 if (isProd) {
@@ -8,15 +7,17 @@ if (isProd) {
   clientAssets = assets.map(asset => manifest[asset]);
 }
 
-export default app => {
-  app.use('/api', api);
+export default (app, openApiDoc) => {
+  // app.use('/api', api);
 
   app.get('/login', (req, res) => {
     res.render('index', {
+      openApiDoc: JSON.stringify(openApiDoc),
       layout: false,
       session: JSON.stringify(req.session),
       clientAssets,
       isProd,
+      assetDomain,
       meta: JSON.stringify({
         cdn: cdnDomain,
         ci,
@@ -28,9 +29,11 @@ export default app => {
   app.get('/', (req, res) => {
     res.render('index', {
       layout: false,
+      openApiDoc: JSON.stringify(openApiDoc),
       session: JSON.stringify(req.session),
       isProd,
       clientAssets,
+      assetDomain,
       meta: JSON.stringify({
         cdn: cdnDomain,
         ci,
@@ -45,15 +48,18 @@ export default app => {
     } else {
       res.render('index', {
         layout: false,
+        openApiDoc: JSON.stringify(openApiDoc),
         isProd,
         session: JSON.stringify(req.session),
         clientAssets,
+        assetDomain,
         meta: JSON.stringify({ cdn: cdnDomain, ci, nodeEnv }),
       });
     }
   });
 
-  app.get('/healthcheck', (req, res) => {
+  app.get('/healthcheck', async (req, res) => {
+    await db.raw('select 1+1 as result');
     res.status(200).json({
       farts: 'for your health',
       clownpenis: 'dot fartzz',
@@ -61,9 +67,11 @@ export default app => {
   });
 
   app.use('*', (req, res) => {
-    res.status(200).render('index', {
+    res.status(404).render('index', {
       layout: false,
       isProd,
+      openApiDoc: JSON.stringify(openApiDoc),
+      assetDomain,
       session: JSON.stringify(req.session),
       meta: JSON.stringify({
         status: 404,
@@ -73,10 +81,5 @@ export default app => {
       }),
       clientAssets,
     });
-
-    // if (!['read', 'write'].includes(req.session.user) || !req.session.user) {
-    //   res.redirect(301, '/login');
-    // } else if (['read', 'write'].includes(req.session.user)) {
-    // }
   });
 };

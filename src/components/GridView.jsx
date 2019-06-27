@@ -154,6 +154,7 @@ export default function Grid({
                         />
                         {isSelecting ? (
                           <EditButton
+                            data-test="bulkEdit"
                             onClick={() => setShowBulkEditModal(true)}
                           >
                             {`Bulk Edit`}
@@ -164,6 +165,7 @@ export default function Grid({
                             left
                             onClick={() => setShowBulkDeleteModal(true)}
                             type="danger"
+                            data-test="bulkDelete"
                           >
                             {`Bulk Delete`}
                           </EditButton>

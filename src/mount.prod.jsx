@@ -23,20 +23,27 @@ if (!isCi) {
     });
   });
 
-  /* eslint-disable no-console */
+  /* eslint-disable no-console,no-restricted-syntax */
   if ('serviceWorker' in navigator) {
-    console.log('CLIENT: service worker registration in progress.');
-    navigator.serviceWorker.register('/sw.js').then(
-      () => {
-        // registration.unregister();
-        console.log('CLIENT: service worker registration complete.');
-      },
-      () => {
-        console.log('CLIENT: service worker registration failure.');
-      },
-    );
-  } else {
-    console.log('CLIENT: service worker is not supported.');
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      for (const registration of registrations) {
+        registration.unregister();
+      }
+    });
+
+    //   console.log('CLIENT: service worker registration in progress.');
+    //   navigator.serviceWorker.register('/sw.js').then(
+    //     () => {
+    //       // registration.unregister();
+    //       console.log('CLIENT: service worker registration complete.');
+    //     },
+    //     () => {
+    //       console.log('CLIENT: service worker registration failure.');
+    //     },
+    //   );
+    // } else {
+    //   console.log('CLIENT: service worker is not supported.');
+    // }
   }
 }
 

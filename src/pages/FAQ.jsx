@@ -67,14 +67,15 @@ export default function FAQ({ history }) {
         copy of that image to your device. If you want to print physical copies
         of images, we highly recommend using{' '}
         <a href="https://www.mpix.com/products/prints">MPIX</a>.
-        <p>
-          This service is popular with professional photographers for everything
-          from school portraits to wedding photography. In our experience, print
-          services with quick turnarounds such as Walgreens, Costco and
-          Shutterfly produce significantly lower quality images regardless of
-          the resolution of the digital file.
-        </p>
       </p>
+      <p>
+        This service is popular with professional photographers for everything
+        from school portraits to wedding photography. In our experience, print
+        services with quick turnarounds such as Walgreens, Costco and Shutterfly
+        produce significantly lower quality images regardless of the resolution
+        of the digital file.
+      </p>
+
       <StyledTitle as="h3" size="small">
         Sharing
       </StyledTitle>

@@ -1,6 +1,8 @@
+import AWS from 'aws-sdk';
 import express from 'express';
 import omit from 'lodash/omit';
 
+import { bucket } from '../../server/config';
 import db from '../../server/db';
 import { isLoggedIn, isAdmin } from '../../server/middlewares';
 import {
@@ -25,6 +27,7 @@ import log from '../../src/utils/log';
 import upload from './upload';
 
 const posts = express.Router();
+const s3 = new AWS.S3();
 
 posts.use('/upload', upload);
 
@@ -93,7 +96,26 @@ posts.delete('/:id', isAdmin, async (req, res) => {
 posts.patch('/:id', isAdmin, async (req, res) => {
   let photoResponse;
   let tags = [];
-  const body = omit(req.body, 'tags');
+  const body = omit(req.body, ['tags', 'rotate', 'key']);
+
+  if (req.body.rotate) {
+    try {
+      await s3
+        .copyObject({
+          Bucket: bucket,
+          Key: `raw/${req.body.key.split('/')[1]}`,
+          CopySource: `${bucket}/raw/${req.body.key.split('/')[1]}`,
+          Metadata: {
+            rotate: `${req.body.rotate}`,
+          },
+          MetadataDirective: 'REPLACE',
+        })
+        .promise();
+    } catch (e) {
+      log.error(e);
+    }
+  }
+
   try {
     await db.transaction(trx =>
       trx(PHOTOS)
@@ -111,7 +133,6 @@ posts.patch('/:id', isAdmin, async (req, res) => {
             });
 
           if (req.body.tags && req.body.tags.length) {
-            log.info('doing it');
             const tagsInsert = req.body.tags.map(tag => ({
               photoId: photo.id,
               tagId: tag,
@@ -174,7 +195,6 @@ posts.post('', isAdmin, async (req, res) => {
           pgResponse = photo;
 
           if (tags.length) {
-            log.info('doing it');
             const tagsInsert = tags.map(tag => ({
               photoId: photo[0].id,
               tagId: tag,
@@ -200,21 +220,32 @@ posts.post('', isAdmin, async (req, res) => {
 // Get all
 posts.get('', isLoggedIn, async (req, res) => {
   // Create sub-select statement
-  const order = req.query.order || 'desc';
   const as = 'photoz';
+  const order = req.query.order || 'desc';
+
   const tagName = 'tagName';
   const tagId = 'tagId';
   const page = req.query.page || 1;
   const limit = DEFAULT_POSTS_PER_PAGE;
   const offset = (page - 1) * limit;
-  const selectStatement = db(PHOTOS)
-    .select()
-    .orderBy(TIMESTAMP, order)
-    .limit(limit)
-    .offset(offset)
-    .where({ [STATUS]: ACTIVE })
-    .andWhere({ [IS_PENDING]: false })
-    .as(as);
+
+  let selectStatement;
+  if (req.query.isPending) {
+    selectStatement = db(PHOTOS)
+      .select()
+      .orderBy(TIMESTAMP)
+      .where({ [IS_PENDING]: true })
+      .as(as);
+  } else {
+    selectStatement = db(PHOTOS)
+      .select()
+      .orderBy(TIMESTAMP, order)
+      .limit(limit)
+      .offset(offset)
+      .where({ [STATUS]: ACTIVE })
+      .andWhere({ [IS_PENDING]: false })
+      .as(as);
+  }
 
   // Join with many-to-many tables
   const photos = await db

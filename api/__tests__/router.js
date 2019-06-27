@@ -13,8 +13,8 @@ jest.mock('aws-cloudfront-sign', () => ({
 
 describe('Basic routes webapp routes', () => {
   beforeAll(async () => {
-    await readUserAgent.post('/api/login').send({ password: 'testpublic' });
-    await writeUserAgent.post('/api/login').send({ password: 'testadmin' });
+    await readUserAgent.post('/v1/login').send({ password: 'testpublic' });
+    await writeUserAgent.post('/v1/login').send({ password: 'testadmin' });
   });
   afterAll(async () => {
     await pool.end();
@@ -30,14 +30,14 @@ describe('Basic routes webapp routes', () => {
 
   it('should return a 401 for a bad login', async () => {
     const { status } = await request
-      .post('/api/login')
+      .post('/v1/login')
       .send({ password: 'farts' });
     expect(status).toBe(401);
   });
 
   it('should return a set-cookie header', async () => {
     const { header, status, body } = await request
-      .post('/api/login')
+      .post('/v1/login')
       .send({ password: 'testpublic' });
     expect(header['set-cookie']).toBeTruthy();
     expect(status).toBe(200);
@@ -45,31 +45,26 @@ describe('Basic routes webapp routes', () => {
   });
 
   it('should be able to make an authenticated request', async () => {
-    const { status } = await readUserAgent.get('/api/posts');
+    const { status } = await readUserAgent.get('/v1/posts');
     expect(status).toBe(200);
   });
 
   it('should not be able to make a post to posts', async () => {
     const { status } = await readUserAgent
-      .post('/api/posts')
+      .post('/v1/posts')
       .send({ some: 'body' });
-    expect(status).toBe(401);
+    expect(status).toBe(403);
   });
 
   it('should redirect when logging out', async () => {
-    const { status, header } = await readUserAgent.post('/api/logout');
+    const { status, header } = await readUserAgent.post('/v1/logout');
     expect(header.connection).toBe('close');
-    expect(status).toBe(302);
+    expect(status).toBe(200);
   });
 
   it('should be unauthenticated after logout', async () => {
-    await readUserAgent.post('/api/logout');
-    const { status } = await readUserAgent.get('/api/posts');
+    await readUserAgent.post('/v1/logout');
+    const { status } = await readUserAgent.get('/v1/posts');
     expect(status).toBe(401);
-  });
-
-  it('should redirect to login when logging out', async () => {
-    const { header } = await readUserAgent.post('/api/logout').redirects(0);
-    expect(header.location).toBe('/login');
   });
 });

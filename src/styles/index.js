@@ -78,7 +78,7 @@ export const GlobalStyleComponent = createGlobalStyle`
 `;
 
 const dark = {
-  [BODY_FONT]: `SourceSans, Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
+  [BODY_FONT]: `Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
   [MAIN]: 'black',
   [TEXT]: 'white',
   [SIDEBAR_COLOR]: 'rgba(247, 205, 219, 0.8)',
@@ -88,7 +88,7 @@ const dark = {
 };
 
 const lite = {
-  [BODY_FONT]: `SourceSans, Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
+  [BODY_FONT]: `Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
   [MAIN]: 'white',
   [TEXT]: '#444',
   [SIDEBAR_COLOR]: 'rgba(247, 205, 219, 0.8)',

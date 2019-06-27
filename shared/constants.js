@@ -1,4 +1,4 @@
-const API_PATH = '/api';
+const API_PATH = '/v1';
 const IMAGES_PATH = '/images';
 const API_IMAGES_PATH = `${API_PATH}${IMAGES_PATH}`;
 const DEFAULT_POSTS_PER_PAGE = 100;
