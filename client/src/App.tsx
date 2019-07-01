@@ -11,10 +11,10 @@ import { ThemeProvider } from 'styled-components';
 import { GlobalStyleComponent, themes } from 'styles/utils';
 import { User } from 'User';
 
-const appDebug = debug('App');
+const log = debug('App');
 
 const refreshCookie = async () => {
-  appDebug('Refreshing cookie', { an: 'object' });
+  log('Refreshing cookie');
   const response = await axios.post('/v1/refresh');
 };
 
@@ -27,18 +27,15 @@ const App: React.FC<{ user: User }> = () => {
    * the images to not 403. This effect well set the cookie at
    * that interval if the user has been authenticated.
    */
-  useEffect(
-    () => {
-      if (userState) {
-        const interval = setInterval(() => {
-          refreshCookie();
-        }, 1000 * 30);
-        return () => clearInterval(interval);
-      }
-      return () => {};
-    },
-    [userState],
-  );
+  useEffect(() => {
+    if (userState) {
+      const interval = setInterval(() => {
+        refreshCookie();
+      }, 1000 * 30);
+      return () => clearInterval(interval);
+    }
+    return () => {};
+  }, [userState]);
 
   return (
     <UserProvider>

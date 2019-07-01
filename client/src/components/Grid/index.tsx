@@ -45,15 +45,12 @@ const Grid = ({
 
   const postsPerRow = Math.floor(refWidth / 150);
 
-  useEffect(
-    () => {
-      if (wrapperRef.current !== null) {
-        const { width } = wrapperRef.current.getBoundingClientRect();
-        setRefWidth(width);
-      }
-    },
-    [wrapperRef.current, width],
-  );
+  useEffect(() => {
+    if (wrapperRef.current !== null) {
+      const { width } = wrapperRef.current.getBoundingClientRect();
+      setRefWidth(width);
+    }
+  }, [wrapperRef.current, width]);
 
   /**
    * Triggered if isItemLoaded returns false
@@ -61,7 +58,7 @@ const Grid = ({
    * @param {number} index
    * @returns Promise<void>
    */
-  function loadMoreItems(index: number) {
+  function loadMoreItems(index: number): Promise<void> {
     const realIndex = index * postsPerRow;
     log('%c Load more items', 'color: red;', { realIndex, index, postsPerRow });
     return request({ page: Math.floor(realIndex / 100) + 1 });
@@ -70,8 +67,8 @@ const Grid = ({
   const Row = ({ index, style }: RowRender) => {
     const postsPerRow = Math.floor(refWidth / 150);
 
-    if (index === 0) {
-      return <div style={style}>Title</div>;
+    if (index === 0 && itemsWithTitle[0]) {
+      return <div style={style}>{itemsWithTitle[0].key}</div>;
     }
 
     return (
@@ -79,7 +76,7 @@ const Grid = ({
         {[...Array(postsPerRow).fill(0)].map((num, arrayIndex) => (
           <Picture
             key={arrayIndex}
-            width={`${refWidth / postsPerRow * 100}%`}
+            width={`${(refWidth / postsPerRow) * 100}%`}
             ratio={1}
             post={itemsWithTitle[index * postsPerRow + arrayIndex]}
             shouldShowImage={true}

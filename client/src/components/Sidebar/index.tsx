@@ -5,6 +5,11 @@ import { default as styled } from 'styled-components';
 import Title from 'styles/Title';
 import { getThemeValue, SIDEBAR_COLOR, TEXT } from 'styles/utils';
 import { User } from 'User';
+import useTags from 'hooks/useTags';
+import debug from 'debug';
+import useRouter from 'hooks/useRouter';
+
+const log = debug('components:Sidebar');
 
 const { useContext, useEffect } = React;
 interface StyledSidebarProps {
@@ -12,10 +17,7 @@ interface StyledSidebarProps {
   theme: any;
   isOpen?: boolean;
 }
-const StyledSidebar =
-  styled.div <
-  StyledSidebarProps >
-  `
+const StyledSidebar = styled.div<StyledSidebarProps>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -78,8 +80,19 @@ export default function sidebar({
   userState,
   isOpen,
 }: SidebarProps) {
+  const { tags } = useTags();
+  const {
+    location: { hash, pathname },
+  } = useRouter();
+
+  log('tags', tags);
   return userState ? (
     <StyledSidebar isOpen={isOpen} onClick={toggleMenu}>
+      {tags.map(tag => (
+        <li key={tag.id}>
+          <Link to={`/tag/${tag.name}${hash}`}>{tag.name}</Link>
+        </li>
+      ))}
       <div>
         <Close type="button" onClick={toggleMenu}>
           Close ✖

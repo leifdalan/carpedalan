@@ -57,14 +57,11 @@ const Login: React.FC<{}> = (): React.ReactElement => {
 
   const { request, error, response, loading } = useApi(postLogin);
 
-  useEffect(
-    () => {
-      if (response) {
-        setUser(response && response.user);
-      }
-    },
-    [response],
-  );
+  useEffect(() => {
+    if (response) {
+      setUser(response && response.user);
+    }
+  }, [response]);
 
   /**
    * Submit hanlder. Calls the login API.
@@ -86,7 +83,7 @@ const Login: React.FC<{}> = (): React.ReactElement => {
         data-testid="submit"
         onSubmit={handleSubmit}
       >
-        <StyledTitle center={true}>Login</StyledTitle>
+        <StyledTitle center={true}>Logizn</StyledTitle>
         {user}
         <Input>
           <input data-test="password" type="password" {...passwordInput} />

@@ -50,6 +50,7 @@ const Slash: React.FC = (): React.ReactElement => {
     PostsWithTagsWithFakes[]
   >(posts);
   const wrapperRef = useRef<HTMLInputElement>(null);
+
   const {
     location: { hash, pathname },
   } = useRouter();
@@ -58,28 +59,12 @@ const Slash: React.FC = (): React.ReactElement => {
     return hash.includes('grid');
   }
 
-  useEffect(
-    () => {
-      log('%c post dep changed', 'background: blue;');
-      const newPosts = [...posts];
-      newPosts.unshift({ fake: true, placeholder: '', key: 'title' });
-      setPostsWithTitle(newPosts);
-    },
-    [posts],
-  );
-
   useEffect(() => {
-    try {
-      const scroll = localStorage.getItem('scroll');
-      if (scroll) {
-        request({ page: 1 });
-      } else {
-        request({ page: 1 });
-      }
-    } catch (e) {
-      request({ page: 1 });
-    }
-  }, []);
+    log('%c post dep changed', 'background: blue;');
+    const newPosts = [...posts];
+    newPosts.unshift({ fake: true, placeholder: '', key: 'title' });
+    setPostsWithTitle(newPosts);
+  }, [posts]);
 
   return (
     <>
