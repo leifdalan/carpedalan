@@ -9,6 +9,7 @@ import {
   nodeEnv,
   sha1,
 } from './config';
+import { setSignedCloudfrontCookie } from './middlewares';
 import db from './db';
 
 let clientAssets = false;
@@ -56,6 +57,24 @@ export default (app, openApiDoc) => {
         cdn: cdnDomain,
         ci,
         nodeEnv,
+      }),
+    });
+  });
+
+  app.get('/baby', (req, res) => {
+    setSignedCloudfrontCookie(res);
+    res.render('index', {
+      layout: false,
+      openApiDoc: JSON.stringify(openApiDoc),
+      session: JSON.stringify(req.session),
+      isProd,
+      clientAssets,
+      assetDomain,
+      meta: JSON.stringify({
+        cdn: cdnDomain,
+        ci,
+        nodeEnv,
+        assetDomain,
       }),
     });
   });

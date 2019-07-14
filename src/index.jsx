@@ -79,7 +79,6 @@ function Root({ user, defaultTheme, status, requests, api }) {
                           handleChangeTheme={handleChangeTheme}
                           toggleMenu={toggleMenu}
                         />
-
                         <Switch>
                           <Route exact path="/login" component={Login} />
                           {isAdmin ? (
@@ -107,6 +106,9 @@ function Root({ user, defaultTheme, status, requests, api }) {
                             <Route exact path="/faq" component={Slash} />
                           )}
                           {isLoggedIn && (
+                            <Route exact path="/baby" component={Slash} />
+                          )}
+                          {isLoggedIn && (
                             <Route path="/gallery" component={Slash} />
                           )}
                           {isLoggedIn && (
@@ -123,6 +125,7 @@ function Root({ user, defaultTheme, status, requests, api }) {
                               )}
                             />
                           )}
+                          <Route exact path="/baby" component={Login} />
                         </Switch>
                         {!requests && isLoggedIn && userState !== WRITE_USER ? (
                           <Redirect to="/faq" />
