@@ -1,3 +1,4 @@
+import { setSignedCloudfrontCookie } from './middlewares';
 import { assets, cdnDomain, isProd, ci, nodeEnv, assetDomain } from './config';
 import db from './db';
 
@@ -38,6 +39,24 @@ export default (app, openApiDoc) => {
         cdn: cdnDomain,
         ci,
         nodeEnv,
+      }),
+    });
+  });
+
+  app.get('/baby', (req, res) => {
+    setSignedCloudfrontCookie(res);
+    res.render('index', {
+      layout: false,
+      openApiDoc: JSON.stringify(openApiDoc),
+      session: JSON.stringify(req.session),
+      isProd,
+      clientAssets,
+      assetDomain,
+      meta: JSON.stringify({
+        cdn: cdnDomain,
+        ci,
+        nodeEnv,
+        assetDomain,
       }),
     });
   });
