@@ -1,15 +1,18 @@
 import SES from 'aws-sdk/clients/ses';
-import { AWSError } from 'aws-sdk';
 
+import { AWSError } from '../../server/errors';
 import { commonErrors } from '../refs/error';
+// import { awsRegion } from '../../server/config';
 
-const ses = new SES();
+const ses = new SES({
+  region: 'us-west-2',
+});
 
 const status = 200;
 
 const invitation = () => {
   const post = async (req, res) => {
-    const { email, name } = req.body;
+    const { email, firstName, lastName } = req.body;
     const params = {
       Destination: {
         ToAddresses: [
@@ -21,7 +24,7 @@ const invitation = () => {
         Body: {
           Html: {
             Charset: 'UTF-8',
-            Data: `${name} with email: ${email} requested access.`,
+            Data: `${firstName} ${lastName} with email: ${email} requested access.`,
           },
           Text: {
             Charset: 'UTF-8',
@@ -33,7 +36,7 @@ const invitation = () => {
           Data: 'Request to carpedalan.com',
         },
       },
-      Source: '4dMiN@carpe.dalan.dev' /* required */,
+      Source: 'leifdalan@gmail.com' /* required */,
       ReplyToAddresses: [
         'no-reply@farts.com',
         /* more items */
@@ -43,6 +46,7 @@ const invitation = () => {
       const receipt = await ses.sendEmail(params).promise();
       res.status(200).json(receipt);
     } catch (e) {
+      res.status(500).send();
       throw new AWSError(e);
     }
   };
