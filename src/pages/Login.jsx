@@ -79,7 +79,7 @@ export default function Login({ location: { pathname }, status }) {
 
   const submitRequestAccess = async ({ email, firstName, lastName }) => {
     try {
-      await request.post(`${API_PATH}/request`, {
+      await request.post(`${API_PATH}/invitation`, {
         email,
         firstName,
         lastName,
