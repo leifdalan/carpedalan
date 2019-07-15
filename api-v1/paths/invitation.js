@@ -42,10 +42,13 @@ const invitation = () => {
         /* more items */
       ],
     };
+    console.log(params, 'params'); // eslint-disable-line
     try {
       const receipt = await ses.sendEmail(params).promise();
+      console.log('receipt', receipt); // eslint-disable-line
       res.status(200).json(receipt);
     } catch (e) {
+      console.log('error', e); // eslint-disable-line
       res.status(500).send();
       throw new AWSError(e);
     }
