@@ -23,8 +23,7 @@
     "e2e:ci": "MIGRATING=true NODE_ENV=ci yarn migrate NODE_ENV=ci yarn knex seed:run --knexfile db/knexfile.js && yarn start:prod",
     "test-junit": "cypress run --reporter junit --reporter-options 'mochaFile=junit-results/my-test-output.xml'",
     "test-multiple": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=config.json",
-    "updateConfig": "aws s3 cp .env-prod s3://configurations-pipeline/.env --profile carpedev",
-    "generateCerts": "sudo openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout ./nginx/nginx-selfsigned.key -out ./nginx/nginx-selfsigned.crt -config ./nginx/req.cnf -sha256"
+    "updateConfig": "aws s3 cp .env-prod s3://configurations-pipeline/.env --profile carpedev"
   },
   "author": "",
   "license": "ISC",
@@ -72,7 +71,7 @@
   "dependencies": {
     "@sentry/node": "^4.5.3",
     "aws-cloudfront-sign": "^2.2.0",
-    "aws-sdk": "^2.397.0",
+    "aws-sdk": "^2.493.0",
     "body-parser": "^1.18.3",
     "connect-pg-simple": "^5.0.0",
     "cookie-parser": "^1.4.3",
@@ -87,7 +86,9 @@
     "express-winston": "^3.1.0",
     "knex": "^0.16.3",
     "lodash": "^4.17.11",
-    "logrocket": "^0.6.19",
+    "logrocket": "^1.0.3",
+    "moment": "^2.24.0",
+    "nodemon": "^1.18.9",
     "pg": "^7.8.0",
     "qs": "^6.6.0",
     "swagger-ui-express": "^4.0.2",

@@ -1,9 +1,10 @@
 import Picture from 'components/Picture';
 import { PostsWithTagsWithFakes } from 'hooks/usePosts';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, LinkProps } from 'react-router-dom';
 import { default as styled } from 'styled-components';
 import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
+import usePostLink from 'hooks/usePostLink';
 import {
   BRAND_COLOR,
   formatDate,
@@ -11,6 +12,7 @@ import {
   TITLE_FONT,
 } from 'styles/utils';
 import { getImageRatio, getOriginalImagePath } from 'utils';
+import useRouter from 'hooks/useRouter';
 
 const Description = styled.div`
   padding: 1em 1em 0;
@@ -56,12 +58,17 @@ const Header = styled(FlexContainer)`
 const Row = ({
   post,
   isSquare = false,
+  width = '100%',
+  safeRef,
 }: {
   post: PostsWithTagsWithFakes;
   isSquare?: boolean;
+  width?: string;
+  safeRef?: React.MutableRefObject<HTMLElement | null>;
 }) => {
+  const { Element, props } = usePostLink(post);
   return (
-    <article>
+    <article ref={safeRef}>
       <Header justifyContent={FlexEnums.spaceBetween}>
         <Download data-test="date" as="div">
           {post.timestamp ? formatDate(post.timestamp) : null}
@@ -70,16 +77,17 @@ const Row = ({
           Download
         </Download>
       </Header>
-
-      <Picture
-        width="100%"
-        ratio={isSquare ? 1 : getImageRatio(post)}
-        post={post}
-        shouldShowImage={true}
-        placeholderColor={post.placeholder}
-        alt={post.description}
-        type={isSquare ? 'square' : 'original'}
-      />
+      <Element {...props}>
+        <Picture
+          width={width}
+          ratio={isSquare ? 1 : getImageRatio(post)}
+          post={post}
+          shouldShowImage={true}
+          placeholderColor={post.placeholder}
+          alt={post.description}
+          type={isSquare ? 'square' : 'original'}
+        />
+      </Element>
       <Description>
         {post.description ? (
           <figcaption data-test="description">{post.description}</figcaption>

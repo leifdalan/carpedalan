@@ -7,6 +7,8 @@ import { default as Autosizer } from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import { default as InfiniteLoader } from 'react-window-infinite-loader';
 import { default as styled } from 'styled-components';
+import useRouter from 'hooks/useRouter';
+import { Link } from 'react-router-dom';
 const log = debug('component:Grid');
 
 const { useState } = React;
@@ -28,6 +30,11 @@ const RowWrapper = styled.div`
   display: flex;
 `;
 
+const StyledLink = styled(Link)`
+  display: block;
+  width: 100%;
+`;
+
 interface RowRender {
   index: number;
   style: React.CSSProperties;
@@ -42,6 +49,11 @@ const Grid = ({
   const [refWidth, setRefWidth] = useState<number>(0);
   const { width } = useWindow();
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const { location } = useRouter();
+  const galleryLinkPrefix = location.pathname.endsWith('/')
+    ? location.pathname
+    : `${location.pathname}/`;
 
   const postsPerRow = Math.floor(refWidth / 150);
 
@@ -60,7 +72,6 @@ const Grid = ({
    */
   function loadMoreItems(index: number): Promise<void> {
     const realIndex = index * postsPerRow;
-    log('%c Load more items', 'color: red;', { realIndex, index, postsPerRow });
     return request({ page: Math.floor(realIndex / 100) + 1 });
   }
 
@@ -73,18 +84,38 @@ const Grid = ({
 
     return (
       <RowWrapper style={style} data-testid={index}>
-        {[...Array(postsPerRow).fill(0)].map((num, arrayIndex) => (
-          <Picture
-            key={arrayIndex}
-            width={`${(refWidth / postsPerRow) * 100}%`}
-            ratio={1}
-            post={itemsWithTitle[index * postsPerRow + arrayIndex]}
-            shouldShowImage={true}
-            placeholderColor={itemsWithTitle[index].placeholder}
-            alt={itemsWithTitle[index].description}
-            type="square"
-          />
-        ))}
+        {[...Array(postsPerRow).fill(0)].map((num, arrayIndex) => {
+          const post = itemsWithTitle[index * postsPerRow + arrayIndex];
+          const galleryLink = `${galleryLinkPrefix}gallery/${
+            post.id ? post.id.split('-')[0] : ''
+          }#grid`;
+
+          const isGallery = location.pathname.includes('gallery');
+          /* tslint:disable-next-line no-any */
+          let Element = React.Fragment as any;
+          let props = {};
+
+          if (!isGallery) {
+            Element = StyledLink;
+            props = {
+              to: galleryLink,
+            };
+          }
+
+          return (
+            <Element {...props} key={arrayIndex}>
+              <Picture
+                width={'100%'}
+                ratio={1}
+                post={post}
+                shouldShowImage={true}
+                placeholderColor={itemsWithTitle[index].placeholder}
+                alt={itemsWithTitle[index].description}
+                type="square"
+              />
+            </Element>
+          );
+        })}
       </RowWrapper>
     );
   };
@@ -121,34 +152,37 @@ const Grid = ({
 
   return (
     <Wrapper ref={wrapperRef}>
-      <InfiniteLoader
-        itemCount={itemsWithTitle.length}
-        isItemLoaded={isItemLoaded}
-        loadMoreItems={loadMoreItems}
-      >
-        {({
-          onItemsRendered,
-          ref,
-        }: {
-          onItemsRendered: () => void;
-          ref: React.MutableRefObject<null>;
-        }) => (
-          <Autosizer ref={ref}>
-            {({ height, width }) => (
+      <Autosizer>
+        {({ height, width }) => (
+          <InfiniteLoader
+            itemCount={itemsWithTitle.length}
+            isItemLoaded={isItemLoaded}
+            loadMoreItems={loadMoreItems}
+          >
+            {({
+              onItemsRendered,
+              ref,
+            }: {
+              onItemsRendered: () => void;
+              ref: React.MutableRefObject<null>;
+            }) => (
               <InnerWrapper>
                 <List
+                  ref={ref}
                   height={height}
                   onItemsRendered={onItemsRendered}
-                  itemCount={Math.floor(itemsWithTitle.length / postsPerRow)}
+                  itemCount={
+                    Math.floor(itemsWithTitle.length / postsPerRow) || 1
+                  }
                   itemSize={getItemSize(width)}
                   width={width}
                   children={Row}
                 />
               </InnerWrapper>
             )}
-          </Autosizer>
+          </InfiniteLoader>
         )}
-      </InfiniteLoader>
+      </Autosizer>
     </Wrapper>
   );
 };

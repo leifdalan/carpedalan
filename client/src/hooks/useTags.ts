@@ -29,7 +29,7 @@ const getTags = async (): Promise<Paths.GetTags.Responses.$200> => {
  *
  * @interface UseTags
  */
-interface UseTags {
+export interface UseTags {
   /**
    * Actual tags returned from global data store
    *
@@ -42,7 +42,8 @@ interface UseTags {
    *
    * @memberof UseTags
    */
-  fetchTags: (arg?: unknown) => Promise<void>;
+  /* tslint:disable-next-line no-any */
+  fetchTags: (arg?: any) => Promise<void>;
 }
 
 export default function useTags(): UseTags {
@@ -50,7 +51,6 @@ export default function useTags(): UseTags {
   const { setTags, data } = useContext(DataContext);
   useEffect(() => {
     if (response) {
-      log('response for set tags, setting', setTags);
       setTags(response);
     }
   }, [response]);
