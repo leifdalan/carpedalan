@@ -45,3 +45,4 @@ export const awsRegion = env.AWS_DEFAULT_REGION;
 export const awsSecretAccessKey = env.AWS_SECRET_ACCESS_KEY;
 export const cfKey = env.CLOUDFRONT_KEY_ID;
 export const secureCookie = isProd || isDev;
+export const privateKey = env.PRIVATE_KEY;
