@@ -193,8 +193,19 @@ export function getPolicies({ secrets, privateBucket }: PolicyI) {
               'logs:CreateLogGroup',
               'logs:CreateLogStream',
               'logs:PutLogEvents',
+              'ec2:*',
             ],
             Resource: 'arn:aws:logs:*:*:*',
+          },
+          {
+            Effect: 'Allow',
+            Action: [
+              'ec2:CreateNetworkInterface',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+            ],
+
+            Resource: '*',
           },
           {
             Effect: 'Allow',
