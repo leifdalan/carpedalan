@@ -9,6 +9,7 @@ if (env.NODE_ENV === 'test' && !env.WALLABY) {
     example: '.env.example',
   }).parsed;
 }
+
 if (env.NODE_ENV === 'ci') {
   env = dotenv.config({ path: path.resolve(process.cwd(), '.env.ci') }).parsed;
 }

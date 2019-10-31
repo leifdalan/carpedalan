@@ -96,7 +96,7 @@ export function getBuckets({
         pathPattern: '/*',
         targetOriginId: s3OriginId,
         viewerProtocolPolicy: 'redirect-to-https',
-        trustedSigners: ['self'],
+        trustedSigners: ['self'], // parameterize this
       },
     ],
     origins: [
@@ -143,7 +143,7 @@ export function getBuckets({
 
   const aRecord = createAliasRecord(targetDomain, s3Distribution);
   return {
-    // aRecord,
+    aRecord,
     privateBucket,
   };
 }

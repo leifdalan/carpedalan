@@ -12,11 +12,16 @@ interface CreateI {
   config: pulumi.Config;
   taskRole: aws.iam.Role;
   executionRole: aws.iam.Role;
+  targetDomain: string;
   secrets: {
     pgUserSecret: aws.secretsmanager.Secret;
     pgPasswordSecret: aws.secretsmanager.Secret;
     privateKeySecret: aws.secretsmanager.Secret;
+    adminPassword: aws.secretsmanager.Secret;
+    publicPassword: aws.secretsmanager.Secret;
+    sessionSecret: aws.secretsmanager.Secret;
   };
+  aRecord: aws.route53.Record;
 }
 
 export function createECSResources({
@@ -29,6 +34,8 @@ export function createECSResources({
   taskRole,
   executionRole,
   secrets,
+  aRecord,
+  targetDomain,
 }: CreateI) {
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
     vpc,
@@ -75,12 +82,29 @@ export function createECSResources({
 
   const env = [
     {
-      name: 'POSTGRES_HOST',
-      value: pulumi.interpolate`${rds.address}:${rds.port}/${rds.name}`,
+      name: 'PG_HOST',
+      value: pulumi.interpolate`${rds.address}`,
     },
     {
-      name: 'SOME',
-      value: 'else',
+      name: 'PG_PORT',
+      value: pulumi.interpolate`${rds.port}`,
+    },
+    {
+      name: 'PG_DATABASE',
+      value: pulumi.interpolate`${rds.name}`,
+    },
+
+    {
+      name: 'ASSET_CDN_DOMAIN',
+      value: pulumi.interpolate`${aRecord.name}`,
+    },
+    {
+      name: 'CDN_DOMAIN',
+      value: pulumi.interpolate`${aRecord.name}`,
+    },
+    {
+      name: 'DOMAIN',
+      value: pulumi.interpolate`${targetDomain}`,
     },
   ];
 
@@ -93,8 +117,9 @@ export function createECSResources({
     containers: {
       web: {
         image: awsx.ecs.Image.fromDockerBuild(repository, {
-          context: './',
-          dockerfile: './Dockerfile.nginx',
+          context: '../',
+          dockerfile: '../Dockerfile',
+          extraOptions: ['--target', 'prod'],
         }),
         memory: 256,
         portMappings: [listener],
@@ -119,6 +144,24 @@ export function createECSResources({
             // @ts-ignore
             valueFrom: pulumi.interpolate`${secrets.pgPasswordSecret.arn}`,
           },
+          {
+            // @ts-ignore
+            name: 'ADMIN_PASSWORD',
+            // @ts-ignore
+            valueFrom: pulumi.interpolate`${secrets.adminPassword.arn}`,
+          },
+          {
+            // @ts-ignore
+            name: 'PUBLIC_PASSWORD',
+            // @ts-ignore
+            valueFrom: pulumi.interpolate`${secrets.publicPassword.arn}`,
+          },
+          {
+            // @ts-ignore
+            name: 'SESSION_SECRET',
+            // @ts-ignore
+            valueFrom: pulumi.interpolate`${secrets.sessionSecret.arn}`,
+          },
         ],
       },
     },
@@ -132,5 +175,5 @@ export function createECSResources({
     tags: t(),
   });
 
-  return { alb };
+  return { alb, taskDefinition };
 }

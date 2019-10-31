@@ -30,7 +30,7 @@ export function makeDB({ vpc, postgresSg, config }: MakeDBI) {
     engine: 'postgres',
     name: 'carpedalan',
     port: 5432,
-    publiclyAccessible: false,
+    publiclyAccessible: true,
     allocatedStorage: 20,
     skipFinalSnapshot: true,
     tags: t(),

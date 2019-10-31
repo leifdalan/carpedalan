@@ -11,9 +11,27 @@ export function getSecrets({ config }: SecretsI) {
   const username = config.getSecret('pg_user');
   const password = config.getSecret('pg_password');
   const privateKey = config.getSecret('privateKey');
+  const adminPass = config.getSecret('adminPassword');
+  const publicPass = config.getSecret('publicPassword');
+  const session = config.getSecret('sessionSecret');
 
   const privateKeySecret = new aws.secretsmanager.Secret(n('private-key'), {
     name: n('private-key'),
+    tags: t(),
+  });
+
+  const adminPassword = new aws.secretsmanager.Secret(n('adminPassword'), {
+    name: n('adminPassword'),
+    tags: t(),
+  });
+
+  const publicPassword = new aws.secretsmanager.Secret(n('publicPassword'), {
+    name: n('publicPassword'),
+    tags: t(),
+  });
+
+  const sessionSecret = new aws.secretsmanager.Secret(n('sessionSecret'), {
+    name: n('sessionSecret'),
     tags: t(),
   });
 
@@ -40,7 +58,28 @@ export function getSecrets({ config }: SecretsI) {
       secretId: pgPasswordSecret.id,
       secretString: password,
     });
+    new aws.secretsmanager.SecretVersion(n('adminPassword'), {
+      secretId: adminPassword.id,
+      secretString: adminPass,
+    });
+    new aws.secretsmanager.SecretVersion(n('publicPassword'), {
+      secretId: publicPassword.id,
+      secretString: publicPass,
+    });
+    new aws.secretsmanager.SecretVersion(n('sessionSecret'), {
+      secretId: sessionSecret.id,
+      secretString: session,
+    });
   }
 
-  return { secrets: { pgPasswordSecret, pgUserSecret, privateKeySecret } };
+  return {
+    secrets: {
+      pgPasswordSecret,
+      pgUserSecret,
+      privateKeySecret,
+      adminPassword,
+      publicPassword,
+      sessionSecret,
+    },
+  };
 }

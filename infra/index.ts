@@ -2,15 +2,15 @@ import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
 
-import { makeCerts, getDomainAndSubdomain } from './infra/certs';
-import { makeVpc } from './infra/vpc';
-import { getBuckets } from './infra/buckets';
-import { createECSResources } from './infra/ecs';
-import { makeDB } from './infra/rds';
-import { getSecrets } from './infra/secrets';
-import { getPolicies } from './infra/policies';
-import { getLambdas } from './infra/lambdas';
-import { getResourceName as n } from './infra/utils';
+import { makeCerts, getDomainAndSubdomain } from './certs';
+import { makeVpc } from './vpc';
+import { getBuckets } from './buckets';
+import { createECSResources } from './ecs';
+import { makeDB } from './rds';
+import { getSecrets } from './secrets';
+import { getPolicies } from './policies';
+import { getLambdas } from './lambdas';
+import { getResourceName as n } from './utils';
 async function main() {
   const accountNameSpace = 'dalan';
 
@@ -29,7 +29,7 @@ async function main() {
 
   const { rds } = makeDB({ vpc, postgresSg, config });
 
-  const { privateBucket } = getBuckets({
+  const { privateBucket, aRecord } = getBuckets({
     targetDomain,
     accountNameSpace,
     certificateArn,
@@ -38,6 +38,7 @@ async function main() {
   const { taskRole, executionRole, lambdaRole } = getPolicies({
     secrets,
     privateBucket,
+    rds,
   });
 
   const { layer } = getLambdas({
@@ -48,7 +49,7 @@ async function main() {
     postgresSg,
   });
 
-  const { alb } = createECSResources({
+  const { alb, taskDefinition } = createECSResources({
     vpc,
     albCertificateArn,
     sg,
@@ -58,6 +59,8 @@ async function main() {
     taskRole,
     executionRole,
     secrets,
+    aRecord,
+    targetDomain,
   });
 
   const domainParts = getDomainAndSubdomain(targetDomain);
@@ -77,6 +80,7 @@ async function main() {
   return {
     secrets: secrets.pgUserSecret,
     layerArn: layer.arn,
+    containers: taskDefinition.containers.web.image.imageResult,
   };
 }
 module.exports = main();

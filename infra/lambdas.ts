@@ -19,7 +19,7 @@ export function getLambdas({
   privateBucket,
   postgresSg,
 }: LambdaI) {
-  const layerArchive = new pulumi.asset.FileArchive('./imageResizer/layer/');
+  const layerArchive = new pulumi.asset.FileArchive('../imageResizer/layer/');
 
   const depLayer = new aws.lambda.LayerVersion(n('dep-layer'), {
     compatibleRuntimes: ['nodejs8.10'],
@@ -28,7 +28,7 @@ export function getLambdas({
     // sourceCodeHash: layerHash,
   });
 
-  const code = new pulumi.asset.FileArchive('./imageResizer/src/');
+  const code = new pulumi.asset.FileArchive('../imageResizer/src/');
 
   const photoLambda = new aws.lambda.Function(n('photo-lambda'), {
     code,
