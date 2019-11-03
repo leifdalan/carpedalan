@@ -1,6 +1,6 @@
 import SES from 'aws-sdk/clients/ses';
 
-import { AWSError } from '../../errors';
+import { AWSError } from '../../server/errors';
 import { commonErrors } from '../refs/error';
 // import { awsRegion } from '../../server/config';
 
@@ -42,11 +42,15 @@ const invitation = () => {
         /* more items */
       ],
     };
+    console.log(params, 'params'); // eslint-disable-line
     try {
       const promise = ses.sendEmail(params).promise();
+      console.log('promise', promise); // eslint-disable-line
       const receipt = await promise;
+      console.log('receipt', receipt); // eslint-disable-line
       res.status(200).json(receipt);
     } catch (e) {
+      console.log('error', e); // eslint-disable-line
       res.status(500).send();
       throw new AWSError(e);
     }
