@@ -1,21 +1,28 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
 
-import { getResourceName as n, getTags as t } from './utils';
+import { getResourceName as name, getTags as t } from './utils';
 
 import { getDomainAndSubdomain } from './certs';
 
 interface GetBucketsI {
-  targetDomain: string;
-  accountNameSpace: string;
+  domain: string;
+  namespace: string;
   certificateArn: pulumi.OutputInstance<string>;
+  isPrivate: boolean;
 }
 
-export function getBuckets({
-  targetDomain,
-  accountNameSpace,
+export function createBucket({
+  isPrivate = false,
+  domain,
+  namespace,
   certificateArn,
 }: GetBucketsI) {
+  /* tslint:disable-next-line */
+  function n(resource: string) {
+    return name(`${namespace}-${resource}`);
+  }
+
   const originAccessIdentity = new aws.cloudfront.OriginAccessIdentity(
     n('origin-access'),
     {
@@ -50,7 +57,7 @@ export function getBuckets({
 
   const s3OriginId = 'S3PhotoOrigin';
   const s3Distribution = new aws.cloudfront.Distribution(n('private-distro'), {
-    aliases: [`photos.${targetDomain}`],
+    aliases: [domain],
     comment: 'Some comment',
     tags: t(),
     defaultCacheBehavior: {
@@ -96,7 +103,7 @@ export function getBuckets({
         pathPattern: '/*',
         targetOriginId: s3OriginId,
         viewerProtocolPolicy: 'redirect-to-https',
-        trustedSigners: ['self'], // parameterize this
+        ...(isPrivate ? { trustedSigners: ['self'] } : {}),
       },
     ],
     origins: [
@@ -122,13 +129,14 @@ export function getBuckets({
   });
   // Creates a new Route53 DNS record pointing the domain to the CloudFront distribution.
   function createAliasRecord(
-    targetDomain: string,
+    domain: string,
     distribution: aws.cloudfront.Distribution,
   ): aws.route53.Record {
-    const domainParts = getDomainAndSubdomain(targetDomain);
+    const domainParts = getDomainAndSubdomain('pulumi.dalan.dev');
+    pulumi.log.debug(JSON.stringify(domainParts));
     const hostedZone = aws.route53.getZone({ name: domainParts.parentDomain });
-    return new aws.route53.Record(`photos.${targetDomain}`, {
-      name: `photos.${targetDomain}`,
+    return new aws.route53.Record(domain, {
+      name: domain,
       zoneId: hostedZone.zoneId,
       type: 'A',
       aliases: [
@@ -141,9 +149,9 @@ export function getBuckets({
     });
   }
 
-  const aRecord = createAliasRecord(targetDomain, s3Distribution);
+  const aRecord = createAliasRecord(domain, s3Distribution);
   return {
     aRecord,
-    privateBucket,
+    bucket: privateBucket,
   };
 }

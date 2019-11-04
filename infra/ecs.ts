@@ -13,6 +13,8 @@ interface CreateI {
   taskRole: aws.iam.Role;
   executionRole: aws.iam.Role;
   targetDomain: string;
+  publicDistroDomain: string;
+  privateDistroDomain: string;
   secrets: {
     pgUserSecret: aws.secretsmanager.Secret;
     pgPasswordSecret: aws.secretsmanager.Secret;
@@ -36,6 +38,8 @@ export function createECSResources({
   secrets,
   aRecord,
   targetDomain,
+  publicDistroDomain,
+  privateDistroDomain,
 }: CreateI) {
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
     vpc,
@@ -96,11 +100,11 @@ export function createECSResources({
 
     {
       name: 'ASSET_CDN_DOMAIN',
-      value: pulumi.interpolate`${aRecord.name}`,
+      value: publicDistroDomain,
     },
     {
       name: 'CDN_DOMAIN',
-      value: pulumi.interpolate`${aRecord.name}`,
+      value: privateDistroDomain,
     },
     {
       name: 'DOMAIN',

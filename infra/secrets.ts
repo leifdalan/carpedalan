@@ -16,31 +16,25 @@ export function getSecrets({ config }: SecretsI) {
   const session = config.getSecret('sessionSecret');
 
   const privateKeySecret = new aws.secretsmanager.Secret(n('private-key'), {
-    name: n('private-key'),
     tags: t(),
   });
 
   const adminPassword = new aws.secretsmanager.Secret(n('adminPassword'), {
-    name: n('adminPassword'),
     tags: t(),
   });
 
   const publicPassword = new aws.secretsmanager.Secret(n('publicPassword'), {
-    name: n('publicPassword'),
     tags: t(),
   });
 
   const sessionSecret = new aws.secretsmanager.Secret(n('sessionSecret'), {
-    name: n('sessionSecret'),
     tags: t(),
   });
 
   const pgUserSecret = new aws.secretsmanager.Secret(n('pg-user'), {
-    name: n('pg-user'),
     tags: t(),
   });
   const pgPasswordSecret = new aws.secretsmanager.Secret(n('pg-password'), {
-    name: n('pg-assword'),
     tags: t(),
   });
   let secretVersion;
