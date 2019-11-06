@@ -7,6 +7,7 @@ import { getDomainAndSubdomain } from './certs';
 
 interface GetBucketsI {
   domain: string;
+  mainDomain: string;
   namespace: string;
   certificateArn: pulumi.OutputInstance<string>;
   isPrivate: boolean;
@@ -17,6 +18,7 @@ export function createBucket({
   domain,
   namespace,
   certificateArn,
+  mainDomain,
 }: GetBucketsI) {
   /* tslint:disable-next-line */
   function n(resource: string) {
@@ -132,8 +134,7 @@ export function createBucket({
     domain: string,
     distribution: aws.cloudfront.Distribution,
   ): aws.route53.Record {
-    const domainParts = getDomainAndSubdomain('pulumi.dalan.dev');
-    pulumi.log.debug(JSON.stringify(domainParts));
+    const domainParts = getDomainAndSubdomain(mainDomain);
     const hostedZone = aws.route53.getZone({ name: domainParts.parentDomain });
     return new aws.route53.Record(domain, {
       name: domain,

@@ -3,6 +3,13 @@ import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
 import { getResourceName as n, getTags as t } from './utils';
 
+const {
+  AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY,
+  S3_ASSETS_BUCKET,
+  CIRCLE_SHA1,
+  ASSET_CDN_DOMAIN,
+} = process.env;
 interface CreateI {
   vpc: awsx.ec2.Vpc;
   albCertificateArn: pulumi.OutputInstance<string>;
@@ -24,6 +31,7 @@ interface CreateI {
     sessionSecret: aws.secretsmanager.Secret;
   };
   aRecord: aws.route53.Record;
+  publicBucket: aws.s3.Bucket;
 }
 
 export function createECSResources({
@@ -32,14 +40,13 @@ export function createECSResources({
   sg,
   postgresSg,
   rds,
-  config,
   taskRole,
   executionRole,
   secrets,
-  aRecord,
   targetDomain,
   publicDistroDomain,
   privateDistroDomain,
+  publicBucket,
 }: CreateI) {
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
     vpc,
@@ -123,7 +130,20 @@ export function createECSResources({
         image: awsx.ecs.Image.fromDockerBuild(repository, {
           context: '../',
           dockerfile: '../Dockerfile',
-          extraOptions: ['--target', 'prod'],
+          extraOptions: [
+            '--target',
+            'prod',
+            '--build-arg',
+            `CIRCLE_SHA1=${CIRCLE_SHA1}`,
+            '--build-arg',
+            `AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}`,
+            '--build-arg',
+            `AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}`,
+            '--build-arg',
+            pulumi.interpolate`S3_ASSETS_BUCKET=${publicBucket.bucket}`,
+            '--build-arg',
+            `ASSET_CDN_DOMAIN=${publicDistroDomain}`,
+          ],
         }),
         memory: 256,
         portMappings: [listener],

@@ -41,12 +41,6 @@ export function getLambdas({
     handler: 'image.imageResizer',
     role: lambdaRole.arn,
     runtime: 'nodejs8.10',
-    // environment: {
-    //   variables: {
-    //     NODE_PATH: './:/opt/node_modules',
-    //   },
-    // },
-    // sourceCodeHash: sourceHash,
     layers: [depLayer.arn],
     description:
       'A process to create thumbnails, upload them to s3, and update the database',

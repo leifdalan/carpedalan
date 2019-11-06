@@ -50,18 +50,20 @@ async function main() {
 
   const { rds } = makeDB({ vpc, postgresSg, config });
 
-  const privateDistroDomain = 'photos.pulumi.dalan.dev';
+  const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({
+    mainDomain: targetDomain,
     certificateArn: privateBucketCert,
-    domain: 'photos.pulumi.dalan.dev',
+    domain: privateDistroDomain,
     namespace: 'private-photos',
     isPrivate: true,
   });
 
-  const publicDistroDomain = 'cdn.pulumi.dalan.dev';
+  const publicDistroDomain = `cdn.${targetDomain}`;
   const { bucket: publicBucket } = createBucket({
+    mainDomain: targetDomain,
     certificateArn: publicBucketCert,
-    domain: 'cdn.pulumi.dalan.dev',
+    domain: publicDistroDomain,
     namespace: 'public-cdn',
     isPrivate: false,
   });
@@ -107,6 +109,7 @@ async function main() {
     targetDomain,
     privateDistroDomain,
     publicDistroDomain,
+    publicBucket,
     albCertificateArn: newCert,
   });
 
@@ -128,6 +131,8 @@ async function main() {
     secrets: secrets.pgUserSecret,
     layerArn: layer.arn,
     containers: taskDefinition.containers.web.image.imageResult,
+    assetBucket: publicBucket.bucket,
+    cdnDomain: publicDistroDomain,
   };
 }
 module.exports = main();

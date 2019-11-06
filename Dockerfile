@@ -1,3 +1,30 @@
+FROM node:12-alpine AS client
+WORKDIR /client
+
+RUN apk add git=2.20.1-r0
+
+COPY client/yarn.lock .
+COPY client/package.json .
+RUN yarn
+
+COPY client/src ./src
+COPY client/tsconfig.json .
+COPY client/webpack.config.prod.js .
+
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG S3_ASSETS_BUCKET
+ARG CIRCLE_SHA1
+ARG ASSET_CDN_DOMAIN
+ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+ENV S3_ASSETS_BUCKET=$S3_ASSETS_BUCKET
+ENV CIRCLE_SHA1=$CIRCLE_SHA1
+ENV ASSET_CDN_DOMAIN=$ASSET_CDN_DOMAIN
+
+RUN yarn build:prod
+
+
 FROM node:12-alpine AS base
 WORKDIR /app
 COPY yarn.lock .
@@ -14,7 +41,10 @@ COPY db/ ./db
 EXPOSE 3001
 
 FROM base as prod
+
 COPY .env .
+COPY --from=client /client/dist/ /app/server/dist/
+
 ARG CRICLE_SHA1
 ARG CIRCLE_BUILD_NUM
 ARG CIRCLE_BRANCH
@@ -22,10 +52,6 @@ ENV CIRCLE_SHA1=$CIRCLE_SHA1
 ENV CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM
 ENV CIRCLE_BRANCH=$CIRCLE_BRANCH
 ENV NODE_ENV=production
-EXPOSE 80
-EXPOSE 514
-EXPOSE 6514
-
 
 CMD ["yarn", "start:prod"]
 

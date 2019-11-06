@@ -1,7 +1,7 @@
 .git
 .DS_Store
 .gitignore
-/client
+/client/node_modules
 /src
 node_modules
 /photos

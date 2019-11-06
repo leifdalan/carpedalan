@@ -72,17 +72,17 @@ module.exports = {
     }),
 
     new Stylish(),
-    // new S3Plugin({
-    //   // s3Options are required
-    //   s3Options: {
-    //     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    //     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    //     region: 'us-west-2',
-    //   },
-    //   s3UploadOptions: {
-    //     Bucket: process.env.S3_ASSETS_BUCKET,
-    //     ContentEncoding: 'gzip',
-    //   },
-    // }),
+    new S3Plugin({
+      // s3Options are required
+      s3Options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: 'us-west-2',
+      },
+      s3UploadOptions: {
+        Bucket: process.env.S3_ASSETS_BUCKET,
+        ContentEncoding: 'gzip',
+      },
+    }),
   ],
 };
