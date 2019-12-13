@@ -114,3 +114,19 @@ services:
       target: dev
     command: yarn migrate
 
+  aws:
+    container_name: aws
+    healthcheck: 
+      test: "bash -c 'AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake aws --endpoint-url=http://localhost:4572 s3 ls'"    
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    image: localstack/localstack:0.10.5
+    environment:
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - PORT_WEB_UI=8081
+    ports:
+      - "4567-4595:4567-4595"
+      - "${PORT_WEB_UI-8081}:${PORT_WEB_UI-8081}"    
+

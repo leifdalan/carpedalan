@@ -65,6 +65,7 @@ export function makeCerts({
     { provider: providerRegion },
   );
   const config = new pulumi.Config();
+
   const domainParts = getDomainAndSubdomain(config.get('domain'));
   const hostedZoneId = aws.route53.getZone({ name: domainParts.parentDomain })
     .id;
