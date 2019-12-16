@@ -3,7 +3,7 @@
       "allowSyntheticDefaultImports": true,
       "allowJs": true,
       "baseUrl": "src",
-      "checkJs": false,
+      // "checkJs": true,
       "downlevelIteration": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
