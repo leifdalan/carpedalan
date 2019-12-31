@@ -1,13 +1,12 @@
-import { bool, func, string } from 'prop-types';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { default as styled } from 'styled-components';
 import Title from 'styles/Title';
 import { getThemeValue, SIDEBAR_COLOR, TEXT } from 'styles/utils';
 import { User } from 'User';
 import useTags from 'hooks/useTags';
 import debug from 'debug';
-import useRouter from 'hooks/useRouter';
+import useUser from 'hooks/useUser';
 
 const log = debug('components:Sidebar');
 
@@ -81,9 +80,7 @@ export default function sidebar({
   isOpen,
 }: SidebarProps) {
   const { tags } = useTags();
-  const {
-    location: { hash, pathname },
-  } = useRouter();
+  const { hash, pathname } = useLocation();
 
   log('tags', tags);
   return userState ? (

@@ -41,17 +41,17 @@ module.exports = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'happypack/loader?id=ts',
+        loaders: ['babel-loader', 'ts-loader'],
       },
     ],
   },
 
   plugins: [
-    new ForkTsCheckerWebpackPlugin({ checkSyntacticErrors: true }),
-    new HappyPack({
-      id: 'ts',
-      loaders: ['babel-loader', 'ts-loader?happyPackMode=true'],
-    }),
+    new ForkTsCheckerWebpackPlugin(),
+    // new HappyPack({
+    //   id: 'ts',
+    //   loaders: ['babel-loader', 'ts-loader?happyPackMode=true'],
+    // }),
 
     new webpack.DefinePlugin({
       PRODUCTION: JSON.stringify(true),

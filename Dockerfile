@@ -26,7 +26,6 @@ EXPOSE 9229
 FROM base as prod
 
 COPY .env .
-COPY --from=client /client/dist/ /app/server/dist/
 
 ARG CRICLE_SHA1
 ARG CIRCLE_BUILD_NUM

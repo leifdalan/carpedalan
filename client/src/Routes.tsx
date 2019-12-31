@@ -3,29 +3,24 @@ import SidebarAndMenu from 'components/SidebarAndMenu';
 import useUser from 'hooks/useUser';
 import Login from 'pages/Login';
 import Request from 'pages/Request';
-import { UserContext } from 'providers/User';
 import * as React from 'react';
 import { Link, Redirect, Route, Switch } from 'react-router-dom';
 import useTags from 'hooks/useTags';
 import debug from 'debug';
 import { onClose } from 'components/Modal';
 
-import Slash from 'pages/Slash';
 const log = debug('components:Routes');
 
 const RedirectToLogin = () => <Redirect to="/" />;
 
 const { lazy, Suspense, useEffect } = React;
 
-// const LazySlash = lazy(() =>
-//   import(/* webpackChunkName: "loggedin" */ 'pages/Slash'),
-// );
-const LazyTag = lazy(() => import(/* webpackChunkName: "tag" */ 'pages/Tag'));
-const LazyGallery = lazy(() =>
-  import(/* webpackChunkName: "gallery" */ 'components/Gallery'),
+const LazySlash = lazy(() =>
+  import(/* webpackChunkName: "loggedin" */ 'pages/Slash'),
 );
+const LazyTag = lazy(() => import(/* webpackChunkName: "tag" */ 'pages/Tag'));
 
-const Spinner = () => <div>Spinner</div>;
+const Spinner = () => <div>12341234i1234124oij</div>;
 
 const { useState, useContext } = React;
 const Routes: React.FC = () => {
@@ -39,7 +34,7 @@ const Routes: React.FC = () => {
   }, []);
 
   async function logout() {
-    await axios.post('/v1/logout');
+    const res = await axios.post('/v1/logout');
     setUser(undefined);
   }
 
@@ -47,18 +42,18 @@ const Routes: React.FC = () => {
     log('close');
   };
   return (
-    <>
+    <Suspense fallback={<Spinner />}>
       <SidebarAndMenu />
       <Switch>
         <Route exact={true} path="/request" component={Request} />
 
         {globalUser ? (
-          <Route exact={true} path="/" component={Slash} />
+          <Route exact={true} path="/" component={LazySlash} />
         ) : (
           <Route exact={true} path="/" component={Login} />
         )}
         {globalUser ? (
-          <Route path="/gallery" component={Slash} />
+          <Route path="/gallery" component={LazySlash} />
         ) : (
           <Route exact={true} path="/" component={Login} />
         )}
@@ -70,7 +65,7 @@ const Routes: React.FC = () => {
         ) : null}
         <Route component={RedirectToLogin} />
       </Switch>
-    </>
+    </Suspense>
   );
 };
 

@@ -1,9 +1,7 @@
 import axios from 'axios';
 import debug from 'debug';
-import useUser from 'hooks/useUser';
+import { default as useUser } from 'hooks/useUser';
 import { DataProvider } from 'providers/Data';
-import RouterContext from 'providers/RouterContext';
-import { UserProvider } from 'providers/User';
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import Routes from 'Routes';
@@ -38,20 +36,16 @@ const App: React.FC<{ user: User }> = () => {
   }, [userState]);
 
   return (
-    <UserProvider>
-      <DataProvider>
-        <BrowserRouter>
-          <RouterContext>
-            <ThemeProvider theme={themes.lite}>
-              <>
-                <Routes />
-                <GlobalStyleComponent />
-              </>
-            </ThemeProvider>
-          </RouterContext>
-        </BrowserRouter>
-      </DataProvider>
-    </UserProvider>
+    <DataProvider>
+      <BrowserRouter>
+        <ThemeProvider theme={themes.lite}>
+          <>
+            <Routes />
+            <GlobalStyleComponent />
+          </>
+        </ThemeProvider>
+      </BrowserRouter>
+    </DataProvider>
   );
 };
 

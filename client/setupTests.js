@@ -1,7 +1,7 @@
 /* eslint-disable */
 const path = require('path');
 
-require('jest-dom/extend-expect');
+require('@testing-library/jest-dom/extend-expect');
 
 const { configure } = require('enzyme');
 const EnzymeAdapter = require('enzyme-adapter-react-16');

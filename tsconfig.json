@@ -12,8 +12,5 @@
         "noImplicitReturns": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true
-    },
-    "files": [
-        "index.ts"
-    ]
+    }
 }

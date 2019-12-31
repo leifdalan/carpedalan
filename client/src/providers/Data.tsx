@@ -2,7 +2,6 @@ import { PostsWithTagsWithFakes } from 'hooks/usePosts';
 import * as React from 'react';
 import keyBy from 'lodash/keyBy';
 import debug from 'debug';
-
 const log = debug('providers:Data');
 
 const { createContext, Children, useState, useReducer } = React;
@@ -47,7 +46,7 @@ function reducer(state: Data, action: Action): Data {
     `%c ${action.type}`,
     'background: green; color: white;',
   );
-  log(`%c Action: "${action.type}"`, 'background: green;', action);
+  console.log(`%c Action: "${action.type}"`, 'background: green;', action);
   let newState = state;
   switch (action.type) {
     case 'set posts':
@@ -78,7 +77,7 @@ function reducer(state: Data, action: Action): Data {
       break;
     }
   }
-  log('%c New State', 'background: green', newState);
+  console.log('%c New State', 'background: green', newState);
   console.groupEnd();
   return newState;
 }

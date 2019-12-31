@@ -12,7 +12,6 @@ import {
   TITLE_FONT,
 } from 'styles/utils';
 import { getImageRatio, getOriginalImagePath } from 'utils';
-import useRouter from 'hooks/useRouter';
 
 const Description = styled.div`
   padding: 1em 1em 0;

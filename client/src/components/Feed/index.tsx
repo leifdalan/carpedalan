@@ -2,7 +2,6 @@ import Picture from 'components/Picture';
 import Post from 'components/Post';
 import debug from 'debug';
 import usePosts, { PostsWithTagsWithFakes } from 'hooks/usePosts';
-import useRouter from 'hooks/useRouter';
 import useWindow from 'hooks/useWindow';
 import * as React from 'react';
 import { default as Autosizer } from 'react-virtualized-auto-sizer';
@@ -59,9 +58,6 @@ const Feed = ({
   const [refWidth, setRefWidth] = useState<number>(0);
   const wrapperRef = useRef<HTMLInputElement>(null);
   const { width } = useWindow();
-  const {
-    location: { hash, pathname },
-  } = useRouter();
 
   /**
    * Triggered if isItemLoaded returns false

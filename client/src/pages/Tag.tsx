@@ -3,9 +3,13 @@ import Feed from 'components/Feed';
 import Grid from 'components/Grid';
 import debug from 'debug';
 import usePosts, { PostsWithTagsWithFakes, getBg } from 'hooks/usePosts';
-import useRouter from 'hooks/useRouter';
 import * as React from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import {
+  Link,
+  RouteComponentProps,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
 import { default as styled } from 'styled-components';
 import useApi from 'hooks/useApi';
 import useTags from 'hooks/useTags';
@@ -84,10 +88,8 @@ const Tag = (
 
   const gridRef = useRef(0);
 
-  const {
-    match: { params },
-    location: { hash, pathname },
-  } = useRouter();
+  const { hash, pathname } = useLocation();
+  const params = useParams();
 
   function isGrid() {
     return hash.includes('grid');

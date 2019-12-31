@@ -1,6 +1,5 @@
-import useRouter from 'hooks/useRouter';
 import * as React from 'react';
-import { Link, LinkProps } from 'react-router-dom';
+import { Link, LinkProps, useLocation } from 'react-router-dom';
 import { PostsWithTagsWithFakes } from 'hooks/usePosts';
 
 interface UsePostLink {
@@ -14,7 +13,7 @@ interface UsePostLink {
 }
 
 const usePostLink = (post: PostsWithTagsWithFakes): UsePostLink => {
-  const { location } = useRouter();
+  const location = useLocation();
   const galleryLinkPrefix = location.pathname.endsWith('/')
     ? location.pathname
     : `${location.pathname}/`;

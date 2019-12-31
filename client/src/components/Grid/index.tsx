@@ -7,8 +7,8 @@ import { default as Autosizer } from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import { default as InfiniteLoader } from 'react-window-infinite-loader';
 import { default as styled } from 'styled-components';
-import useRouter from 'hooks/useRouter';
-import { Link } from 'react-router-dom';
+
+import { Link, useLocation } from 'react-router-dom';
 const log = debug('component:Grid');
 
 const { useState } = React;
@@ -50,7 +50,7 @@ const Grid = ({
   const { width } = useWindow();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const { location } = useRouter();
+  const location = useLocation();
   const galleryLinkPrefix = location.pathname.endsWith('/')
     ? location.pathname
     : `${location.pathname}/`;

@@ -2,9 +2,8 @@ import Feed from 'components/Feed';
 import Grid from 'components/Grid';
 import debug from 'debug';
 import usePosts, { PostsWithTagsWithFakes } from 'hooks/usePosts';
-import useRouter from 'hooks/useRouter';
 import * as React from 'react';
-import { Link, Route } from 'react-router-dom';
+import { Link, Route, useLocation } from 'react-router-dom';
 import { default as styled } from 'styled-components';
 import Gallery from 'components/Gallery';
 const log = debug('component:Slash');
@@ -56,9 +55,7 @@ const Slash: React.FC = (): React.ReactElement => {
     PostsWithTagsWithFakes[]
   >(posts);
 
-  const {
-    location: { hash, pathname },
-  } = useRouter();
+  const { hash, pathname } = useLocation();
 
   function isGrid() {
     return hash.includes('grid');
