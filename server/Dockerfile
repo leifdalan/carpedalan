@@ -2,7 +2,7 @@ FROM node:12-alpine AS base
 WORKDIR /app
 COPY yarn.lock .
 
-COPY package.json .
+COPY server/package.json .
 RUN apk add curl git
 RUN yarn --production --ignore-optional
 COPY server/ ./server
@@ -12,18 +12,27 @@ COPY index.js .
 COPY scripts/ ./scripts
 COPY db/ ./db
 EXPOSE 3001
+RUN apk add postgresql
 
 FROM base AS dev
-RUN apk add postgresql
 RUN yarn --ignore-optional
-COPY .env .
-COPY nodemon.json .
+COPY server/nodemon.json .
 # COPY webpack.prod.js .
 # RUN NODE_ENV=production yarn build
-COPY webpack.config.js .
 EXPOSE 9229
 
+
 FROM base as prod
+RUN mkdir /app/client
+COPY client/yarn.lock ./client
+COPY client/package.json ./client
+RUN cd /app/client && yarn --production
+COPY client/src ./client/src
+COPY client/tsconfig.json ./client
+COPY client/webpack.config.prod.js ./client
+COPY client/babel.config.js ./client
+COPY client/devServer.js ./client
+RUN cd /app/client && yarn build:prod
 
 COPY .env .
 

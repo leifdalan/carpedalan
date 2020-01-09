@@ -18,7 +18,13 @@
       "localRoot": "${workspaceFolder}",
       "remoteRoot": "/app",
       "port": 9227,
-      "sourceMaps": true
+      "sourceMaps": true,
+      "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
+        "${workspaceFolder}/server/node_modules/**/*.js",
+        "<node_internals>/**/*.js"
+      ]
+    
     },
     {
       "type": "node",
@@ -26,19 +32,29 @@
       "name": "Lambda",
       "restart": true,
       "protocol": "inspector",
-      "localRoot": "${workspaceFolder}/imageResizer/src",
+      "localRoot": "${workspaceFolder}/imageresizer/src",
       "remoteRoot": "/var/task",
-      "port": 5858,
-      "sourceMaps": true
+      "port": 5959,
+      "sourceMaps": true,
+      "stopOnEntry": false
     },
     {
       "name": "Client",
       "type": "chrome",
       "request": "attach",
       "port": 9222,
-      "url": "http://*carpe*",
+      "url": "https://*carpe*",
       "webRoot": "${workspaceFolder}/client",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
+        "${workspaceFolder}/client/node_modules/**/*.js",
+        "app/node_modules/**/*.js",
+        "app/src/SPA/node_modules/**/*.js",
+        "react-dom.development.js"
+  
+      ]
+  
     }
   ],
   "compounds": [

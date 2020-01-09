@@ -12,7 +12,7 @@ import { User } from 'User';
 const log = debug('App');
 
 const refreshCookie = async () => {
-  log('Refreshing cookie');
+  log('Refreshing cookiaxdae');
   const response = await axios.post('/v1/refresh');
 };
 
@@ -29,7 +29,7 @@ const App: React.FC<{ user: User }> = () => {
     if (userState) {
       const interval = setInterval(() => {
         refreshCookie();
-      }, 1000 * 30);
+      }, 1000 * 31);
       return () => clearInterval(interval);
     }
     return () => {};

@@ -10,6 +10,7 @@ const S3Plugin = require('webpack-s3-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
+const isProdBuildForLocal = process.env.PROD_BUILD === 'true';
 module.exports = {
   context: path.resolve(__dirname),
   mode: 'production',
@@ -21,7 +22,7 @@ module.exports = {
     path: path.resolve('dist'),
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',
-    publicPath: `/`,
+    publicPath: `//${process.env.ASSET_CDN_DOMAIN}/`,
   },
   resolve: {
     /** Base directories that Webpack will look to resolve absolutely imported modules */
@@ -57,7 +58,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        NODE_ENV: JSON.stringify('production'),
         LOG_LEVEL: JSON.stringify(process.env.LOG_LEVEL),
         CDN_DOMAIN: JSON.stringify(process.env.CDN_DOMAIN),
       },
@@ -72,17 +73,21 @@ module.exports = {
     }),
 
     new Stylish(),
-    new S3Plugin({
-      // s3Options are required
-      s3Options: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        region: 'us-west-2',
-      },
-      s3UploadOptions: {
-        Bucket: process.env.S3_ASSETS_BUCKET,
-        ContentEncoding: 'gzip',
-      },
-    }),
+    ...(isProdBuildForLocal
+      ? []
+      : [
+          new S3Plugin({
+            // s3Options are required
+            s3Options: {
+              accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+              region: 'us-west-2',
+            },
+            s3UploadOptions: {
+              Bucket: process.env.S3_ASSETS_BUCKET,
+              ContentEncoding: 'gzip',
+            },
+          }),
+        ]),
   ],
 };

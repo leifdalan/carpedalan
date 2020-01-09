@@ -11,14 +11,30 @@ Globals:
     Timeout: 3
 
 Resources:
+  # ImageLayer:
+  #   Type: AWS::Serverless::LayerVersion
+  #   Properties:
+  #     LayerName: ImageLayer
+  #     ContentUri: /app/layer
+  #     RetentionPolicy: Retain      
+  #     CompatibleRuntimes: 
+  #       - nodejs8.10
+
   ImageResizer:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: src/
+      Environment: 
+        Variables:
+          FARTS: 'stinky'
+          AWS_ACCESS_KEY_ID: 'fake'
+          AWS_SECRET_ACCESS_KEY: 'fake'
+          PG_URI: 'postgres://postgres:postgres@pg:5432/carpedalan'
+          IS_LOCAL: true
+      CodeUri: ./src/
       Handler: image.imageResizer
-      Runtime: nodejs8.10
-      Layers: 
-        - arn:aws:lambda:us-west-2:574173441346:layer:carpedalan-dev-dep-layer:11
+      Runtime: nodejs12.x
+      # Layers: 
+      #   - Ref: ImageLayer
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api

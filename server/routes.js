@@ -8,6 +8,7 @@ import {
   isProd,
   nodeEnv,
   sha1,
+  useProdAssets,
 } from './config';
 import { setSignedCloudfrontCookie } from './middlewares';
 import db from './db';
@@ -15,9 +16,9 @@ import db from './db';
 let clientAssets = false;
 
 /* istanbul ignore next */
-if (isProd) {
+if (useProdAssets) {
   const manifest = require('./dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
-  clientAssets = assets.map(asset => `${assetDomain}${manifest[asset]}`);
+  clientAssets = assets.map(asset => `${manifest[asset]}`);
 }
 
 const buildInfo = {
@@ -34,6 +35,8 @@ export default (app, openApiDoc) => {
       session: JSON.stringify(req.session),
       clientAssets,
       isProd,
+      useProdAssets,
+
       assetDomain,
       ...buildInfo,
       meta: JSON.stringify({
@@ -50,6 +53,7 @@ export default (app, openApiDoc) => {
       openApiDoc: JSON.stringify(openApiDoc),
       session: JSON.stringify(req.session),
       isProd,
+      useProdAssets,
       clientAssets,
       assetDomain,
       ...buildInfo,
@@ -68,6 +72,7 @@ export default (app, openApiDoc) => {
       openApiDoc: JSON.stringify(openApiDoc),
       session: JSON.stringify(req.session),
       isProd,
+      useProdAssets,
       clientAssets,
       assetDomain,
       meta: JSON.stringify({
@@ -87,6 +92,7 @@ export default (app, openApiDoc) => {
         layout: false,
         openApiDoc: JSON.stringify(openApiDoc),
         isProd,
+        useProdAssets,
         session: JSON.stringify(req.session),
         clientAssets,
         assetDomain,
@@ -108,6 +114,7 @@ export default (app, openApiDoc) => {
     res.status(404).render('index', {
       layout: false,
       isProd,
+      useProdAssets,
       openApiDoc: JSON.stringify(openApiDoc),
       assetDomain,
       ...buildInfo,

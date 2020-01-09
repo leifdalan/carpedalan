@@ -2,10 +2,17 @@ import cf from 'aws-cloudfront-sign';
 
 import { CF_TIMEOUT } from '../shared/constants';
 
-import { assets, isProd, cdnDomain, domain, cfKey } from './config';
+import {
+  assets,
+  useProdAssets,
+  isProd,
+  cdnDomain,
+  domain,
+  cfKey,
+} from './config';
 
 let clientAssets = false;
-if (isProd) {
+if (useProdAssets) {
   const manifest = require('./dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
   clientAssets = assets.map(asset => manifest[asset]);
 }

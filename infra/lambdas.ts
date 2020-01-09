@@ -10,6 +10,7 @@ interface LambdaI {
   sg: awsx.ec2.SecurityGroup;
   postgresSg: awsx.ec2.SecurityGroup;
   privateBucket: aws.s3.Bucket;
+  rds: aws.rds.Instance;
 }
 
 export function getLambdas({
@@ -18,11 +19,12 @@ export function getLambdas({
   sg,
   privateBucket,
   postgresSg,
+  rds,
 }: LambdaI) {
   const layerArchive = new pulumi.asset.FileArchive('../imageResizer/layer/');
 
   const depLayer = new aws.lambda.LayerVersion(n('dep-layer'), {
-    compatibleRuntimes: ['nodejs8.10'],
+    compatibleRuntimes: ['nodejs12.x'],
     code: layerArchive,
     layerName: n('dep-layer'),
     // sourceCodeHash: layerHash,
@@ -40,8 +42,13 @@ export function getLambdas({
     timeout: 45,
     handler: 'image.imageResizer',
     role: lambdaRole.arn,
-    runtime: 'nodejs8.10',
+    runtime: 'nodejs12.x',
     layers: [depLayer.arn],
+    environment: {
+      variables: {
+        PG_URI: rds.endpoint,
+      },
+    },
     description:
       'A process to create thumbnails, upload them to s3, and update the database',
   });

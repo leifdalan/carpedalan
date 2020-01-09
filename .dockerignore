@@ -6,7 +6,7 @@
 node_modules
 /photos
 /nginx
-/imageResizer
 /cypress
 /coverage
 /.vscode
+/server/node_modules

@@ -1,25 +1,17 @@
 /* eslint-disable import/no-extraneous-dependencies,prefer-destructuring,no-console,import/no-unresolved */
 
-const sharp = require('sharp');
-const aws = require('aws-sdk');
+const sharp = require('./node_modules/sharp/lib');
+const aws = require('./node_modules/aws-sdk');
 // const sqip = require('sqip');
-const knex = require('knex');
-const exif = require('exif-parser');
+const knex = require('./node_modules/knex/types/knex');
+const exif = require('./node_modules/exif-parser');
 // const pg = require('pg');
 
 const { SIZES, EXIFPROPS } = require('./constants');
-const extraBucketParams = process.env.IS_LOCAL
-? {
-    endpoint: `http://aws:4572`,
-    s3ForcePathStyle: true,
-  }
-: {};
 
-const ACL = process.env.IS_LOCAL ? 'public-read' : 'private';
+const s3 = new aws.S3();
 
-const s3 = new aws.S3(extraBucketParams);
-
-exports.imageResizer = async (event, context, ...otherThingz) => {
+exports.handler = async (event, context, ...otherThingz) => {
   context.callbackWaitsForEmptyEventLoop = false; // eslint-disable-line
   console.time('fire');
   console.log('EVENT=============');
@@ -115,7 +107,6 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
           Bucket: bucket,
           Body: resize,
           ContentType: contentType,
-          ACL,
         })
         .promise();
     });
@@ -126,7 +117,6 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
         Bucket: bucket,
         Body: rotated,
         ContentType: 'image/jpeg',
-        ACL,
       })
       .promise();
     await Promise.all([...putPromises, rotatedOriginalPromise]);
