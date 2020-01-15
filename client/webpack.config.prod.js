@@ -68,7 +68,7 @@ module.exports = {
     }),
     new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false }),
     new CompressionPlugin({
-      exclude: `manifest.json`,
+      exclude: [`manifest.json`, 'report.html'],
       filename: '[path]',
     }),
 

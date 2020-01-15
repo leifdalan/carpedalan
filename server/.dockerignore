@@ -1,5 +1,7 @@
-.git
-.DS_Store
-.gitignore
-
-/node_modules
+*
+!server
+!shared
+!index.js
+!scripts
+!db
+server/node_modules

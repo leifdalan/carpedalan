@@ -5,4 +5,4 @@ function down() {
   docker-compose down
 }
 trap down EXIT
-docker-compose up --build
+docker-compose logs -f api client alb

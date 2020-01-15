@@ -6,6 +6,6 @@ BASEDIR="$1"
   --template template.yaml \
   --host 0.0.0.0 \
   --docker-volume-basedir "${BASEDIR}/imageresizer/" \
-  --docker-network carpedalan_default \
+  --docker-network cd_default \
   --skip-pull-image \
   -d 5959

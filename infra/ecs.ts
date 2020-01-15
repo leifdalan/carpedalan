@@ -125,17 +125,19 @@ export function createECSResources({
     executionRole,
     taskRole,
     tags: t(),
+    // @ts-ignore
     containers: {
       web: {
         image: awsx.ecs.Image.fromDockerBuild(repository, {
           context: '../',
-          dockerfile: '../Dockerfile',
+          dockerfile: '../server/Dockerfile',
           extraOptions: [
             '--target',
             'prod',
             '--build-arg',
             `CIRCLE_SHA1=${CIRCLE_SHA1}`,
             '--build-arg',
+            // @TODO create user and secret instead of env vars
             `AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}`,
             '--build-arg',
             `AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}`,
@@ -169,9 +171,7 @@ export function createECSResources({
             valueFrom: pulumi.interpolate`${secrets.pgPasswordSecret.arn}`,
           },
           {
-            // @ts-ignore
             name: 'ADMIN_PASSWORD',
-            // @ts-ignore
             valueFrom: pulumi.interpolate`${secrets.adminPassword.arn}`,
           },
           {

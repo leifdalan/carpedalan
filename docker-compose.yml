@@ -2,149 +2,51 @@ version: '2.3'
 
 services:
   alb:
-    container_name: alb
+    extends:
+      file: docker-compose.base.yml
+      service: alb
     depends_on:
-      carpe_api: 
+      api: 
         condition: service_healthy
-    image: nginx
-    restart: always
-    volumes: 
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/local.carpedalan.com.pem:/etc/ssl/certs/local.carpedalan.com.pem
-      - ./nginx/local.carpedalan.com-key.pem:/etc/ssl/private/local.carpedalan.com-key.pem
-      - ./client/dist:/assets/
-    ports:
-      - 443:443
 
-  carpe_api:
-    container_name: c_api
+  api:
+    extends:
+      file: docker-compose.base.yml
+      service: api
     depends_on:
       pg:
         condition: service_healthy
-    tty: true
-    build:
-      context: .
-      dockerfile: ./server/Dockerfile
-      target: dev
-    volumes:
-      - './server:/app/server:delegated'
-      - './client/dist:/app/server/dist'
-      - './scripts:/app/scripts:delegated'
-      - './index.js:/app/index.js:delegated'
-      - './db:/app/db:delegated'
-      - './shared:/app/shared:delegated'
-      - './.env-local:/app/.env'
-      - './dev-dump.sql:/app/dev-dump.sql'
-    ports:
-      - 9227:9229
-    environment:
-      PORT: 8001
-      PROD_BUILD: "${PROD_BUILD-false}"
-      ASSET_CDN_DOMAIN: cdn.local.carpedalan.com
-    command: yarn migrateAndStart
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail localhost:8001/healthcheck || exit 1"]
-      interval: 1s
-      timeout: 1s
-      retries: 40
 
   client: 
-    tty: true
-    container_name: client
-    build:
-      context: ./client
-      target: dev
-    environment:
-      NODE_ENV: "${NODE_ENV-development}"
-      PROD_BUILD: "${PROD_BUILD-false}"
-    volumes: 
-      - ./client/src:/app/src
-      - ./client/docs:/app/docs
-      - ./client/dist:/app/dist
-      - ./client/webpack.config.js:/app/webpack.config.js
-      - ./client/webpack.config.prod.js:/app/webpack.config.prod.js
-      - ./client/devServer.js:/app/devServer.js
-      - ./client/docker-entry.sh:/app/docker-entry.sh
-    command: ['./docker-entry.sh']
+    extends:
+      file: docker-compose.base.yml
+      service: client
 
   pg:
-    image: postgres:10.0-alpine
-    container_name: pg
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    ports:
-      - "5433:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 1s
-      timeout: 1s
-      retries: 20
+    extends:
+      file: docker-compose.base.yml
+      service: pg
 
   pg_test:
-    image: postgres:10.0-alpine
-    container_name: test
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    ports:
-      - "5555:5432"
-    # command: '-p 5555'
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 1s
-      timeout: 1s
-      retries: 20
+    extends:
+      file: docker-compose.base.yml
+      service: pg_test
 
   pg_migrate:
-    container_name: migrate
-    environment: 
-      NODE_ENV: test
-      MIGRATING: 'true'
-      PG_HOST: pg_test
-      PG_PORT: 5432
+    extends:
+      file: docker-compose.base.yml
+      service: pg_migrate
     depends_on:
       pg_test:
         condition: service_healthy
-    tty: true
-    volumes:
-      - ./db:/app/db:delegated
-      - ./shared:/app/shared:delegated
-    build:
-      context: .
-      dockerfile: ./server/Dockerfile
-      target: dev
-    command: yarn migrate
+
   sam:
-    build: 
-      context: ./imageresizer
-      dockerfile: Dockerfile
-    command: ["$PWD"]
-    ports:
-      - "3001:3001"
-      - "5858:5858"
-    volumes:
-      - ./imageresizer:/app
-      - /var/run/docker.sock:/var/run/docker.sock
+    extends:
+      file: docker-compose.base.yml
+      service: sam
+
   aws:
-    container_name: aws
-    # healthcheck: 
-    #   test: "bash -c 'AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake aws --endpoint-url=http://localhost:4572 s3 ls'"    
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 30
-    image: localstack/localstack:0.10.5
-    volumes:
-      - './.localstack:/tmp/localstack'
-      - '/var/run/docker.sock:/var/run/docker.sock'    
-    environment:
-      - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
-      - PORT_WEB_UI=8081
-      - SERVICES=s3
-    ports:
-      - "4567-4595:4567-4595"
-      - "${PORT_WEB_UI-8081}:${PORT_WEB_UI-8081}"    
+    extends:
+      file: docker-compose.base.yml
+      service: aws
 

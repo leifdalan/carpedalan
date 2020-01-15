@@ -1,9 +1,8 @@
 FROM node:12-alpine AS base
 WORKDIR /app
-COPY yarn.lock .
+COPY server/yarn.lock .
 
 COPY server/package.json .
-RUN apk add curl git
 RUN yarn --production --ignore-optional
 COPY server/ ./server
 COPY shared/ ./shared
@@ -14,29 +13,31 @@ COPY db/ ./db
 EXPOSE 3001
 RUN apk add postgresql
 
+
 FROM base AS dev
 RUN yarn --ignore-optional
 COPY server/nodemon.json .
-# COPY webpack.prod.js .
-# RUN NODE_ENV=production yarn build
 EXPOSE 9229
 
 
+FROM node:12-alpine as client-build
+WORKDIR /client
+COPY client/yarn.lock .
+COPY client/package.json .
+RUN yarn
+COPY client/src ./src
+COPY client/tsconfig.json .
+COPY client/webpack.config.prod.js .
+ENV PROD_BUILD=true
+RUN ls -al
+RUN yarn build:prod
+
 FROM base as prod
-RUN mkdir /app/client
-COPY client/yarn.lock ./client
-COPY client/package.json ./client
-RUN cd /app/client && yarn --production
-COPY client/src ./client/src
-COPY client/tsconfig.json ./client
-COPY client/webpack.config.prod.js ./client
-COPY client/babel.config.js ./client
-COPY client/devServer.js ./client
-RUN cd /app/client && yarn build:prod
+COPY --from=client-build /client/dist/ /app/server/dist
 
 COPY .env .
 
-ARG CRICLE_SHA1
+ARG CIRCLE_SHA1
 ARG CIRCLE_BUILD_NUM
 ARG CIRCLE_BRANCH
 ENV CIRCLE_SHA1=$CIRCLE_SHA1

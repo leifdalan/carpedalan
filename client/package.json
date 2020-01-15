@@ -1,27 +1,12 @@
 {
+  "private": true,
   "name": "carpedalan-client-app",
   "version": "1.0.0",
   "scripts": {
     "build:prod": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' NODE_ENV=production webpack --config webpack.config.prod.js --mode=production",
     "build": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' webpack --config webpack.config.js --mode=development",
     "clean": "rm -rf dist",
-    "lint": "tslint --project .",
-    "mockApi": "node ./mockApi",
-    "prebuild": "yarn run clean",
-    "precommit": "lint-staged",
-    "start": "node -r dotenv/config index.js",
-    "tdd": "yarn run test --watch --verbose false",
-    "test": "NODE_ENV=test jest --config=jest.config.js"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "tslint --fix",
-      "git add"
-    ],
-    "*.{js,json,scss}": [
-      "prettier --write",
-      "git add"
-    ]
+    "lint": "tslint --project ."
   },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -35,7 +20,7 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "react-window-infinite-loader": "^1.0.5",
-    "styled-components": "^5.0.0-beta.5",
+    "styled-components": "^5.0.0",
     "tslib": "^1.10.0",
     "typescript": "^3.7.4",
     "webpack": "^4.41.5",
@@ -49,12 +34,12 @@
     "webpack-stats-plugin": "^0.3.1",
     "webpack-stylish": "^0.1.8",
     "ts-loader": "^6.2.1",
-    "compression-webpack-plugin": "^3.0.1"
+    "compression-webpack-plugin": "^3.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.7",
-    "@babel/plugin-syntax-dynamic-import": "^7.7.4",
-    "@babel/preset-env": "^7.7.7",
+    "@babel/core": "^7.8.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
     "@hot-loader/react-dom": "^16.11.0",
     "@testing-library/react": "^9.4.0",
     "@types/debug": "^4.1.5",
@@ -84,7 +69,7 @@
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.6",
     "babel-preset-jest": "^24.9.0",
-    "compression-webpack-plugin": "^3.0.1",
+    "compression-webpack-plugin": "^3.1.0",
     "debug": "^4.1.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
@@ -104,7 +89,7 @@
     "tslint-plugin-prettier": "^2.1.0",
     "tslint-react": "^4.1.0",
     "tslint-react-hooks": "^2.2.1",
-    "typedoc": "^0.15.6",
+    "typedoc": "^0.16.2",
     "typescript-styled-plugin": "^0.15.0"
 
   }

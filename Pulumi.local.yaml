@@ -1,5 +1,0 @@
-secretsprovider: awskms://alias/carpedalan?region=us-west-2
-encryptedkey: AQICAHgKSKLIdw49bLNb4fzlj4e7YkKyAiBsPKeG+JKMuOttAwFhRlxxDbX0IRZkg8XFQZR2AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMU5Bp63EGqzt/oYsdAgEQgDt2cqu920kskyf1bJ4z1r7GEbu69yyDNbb0LMevnonQLDfhgIYUXHb0pZ5jfSrFt/oGx+Uhadc8qqFAwg==
-encryptionsalt: v1:mm2AroUXdTM=:v1:Ct/l6s1UPwbTWw/h:vzW9qOC1uKfJuA5N/PaYgKeJbEq/vw==
-config:
-  carpedalan:domain: pulumi.dalan.dev
