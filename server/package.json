@@ -8,7 +8,7 @@
   "scripts": {
     "setup": "./scripts/setup.sh",
     "lint": "eslint db imageResizer scripts server shared  --ext .js,.jsx",
-    "integration": "NODE_ENV=test PG_HOST=localhost PG_PORT=5555 jest -c jestrc.js --runInBand",
+    "integration": "NODE_ENV=test PG_HOST=pg_test PG_PORT=5432 jest -c jestrc.js --runInBand",
     "integration:ci": "PG_HOST=localhost NODE_ENV=ci jest -c jestrc.js --runInBand --verbose",
     "build": "BABEL_ENV=production NODE_ENV=production yarn webpack --mode production --config webpack.prod.js",
     "migrateAndSeed": "MIGRATING=true ./scripts/migrateAndSeed.sh",
@@ -61,6 +61,11 @@
     "codecov": "^3.3.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^14.0.0",
+    "babel-plugin-dynamic-import-node": "^2.3.0",
+    "babel-preset-jest": "^24.9.0",
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+
     "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-import": "^2.17.1",
     "eslint-plugin-jest": "^22.11.1",

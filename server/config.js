@@ -3,12 +3,6 @@ import path from 'path';
 import dotenv from 'dotenv-safe';
 
 let { env } = process;
-if (env.NODE_ENV === 'test' && !env.WALLABY) {
-  env = dotenv.config({
-    path: '.env.test',
-    example: '.env.example',
-  }).parsed;
-}
 
 if (env.NODE_ENV === 'ci') {
   env = dotenv.config({ path: path.resolve(process.cwd(), '.env.ci') }).parsed;

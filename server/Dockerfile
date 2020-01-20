@@ -11,7 +11,7 @@ COPY index.js .
 COPY scripts/ ./scripts
 COPY db/ ./db
 EXPOSE 3001
-RUN apk add postgresql
+RUN apk add postgresql git
 
 
 FROM base AS dev

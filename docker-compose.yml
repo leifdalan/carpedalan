@@ -27,19 +27,6 @@ services:
       file: docker-compose.base.yml
       service: pg
 
-  pg_test:
-    extends:
-      file: docker-compose.base.yml
-      service: pg_test
-
-  pg_migrate:
-    extends:
-      file: docker-compose.base.yml
-      service: pg_migrate
-    depends_on:
-      pg_test:
-        condition: service_healthy
-
   sam:
     extends:
       file: docker-compose.base.yml

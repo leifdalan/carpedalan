@@ -8,10 +8,10 @@ module.exports = {
     },
   },
   collectCoverageFrom: [
-    'api-v1/**/*',
+    'server/api-v1/**/*',
     'server/routes.js',
-    '!api-v1/**/index.js',
-    '!api-v1/setup/**/*',
+    '!server/api-v1/**/index.js',
+    '!server/api-v1/setup/**/*',
     '!server/config.js',
     '!server/constants.js',
     '!server/devMiddleware.config.js',
