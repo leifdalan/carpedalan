@@ -21,15 +21,6 @@ services:
       context: .
       dockerfile: ./server/Dockerfile
       target: dev
-    volumes:
-      - './server:/app/server:delegated'
-      - './client/dist:/app/server/dist'
-      - './scripts:/app/scripts:delegated'
-      - './index.js:/app/index.js:delegated'
-      - './db:/app/db:delegated'
-      - './shared:/app/shared:delegated'
-      - './.env-local:/app/.env'
-      - './dev-dump.sql:/app/dev-dump.sql'
     environment:
       PORT: 8001
       PROD_BUILD: "${PROD_BUILD-false}"

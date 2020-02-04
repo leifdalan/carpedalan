@@ -10,5 +10,6 @@
 !e2e
 client/node_modules
 e2e/node_modules
+cypress/node_modules
 server/node_modules
 server/Dockerfile

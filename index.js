@@ -17,7 +17,7 @@ dotenv.config({
       ? path.resolve(process.cwd(), '.env.test')
       : path.resolve(process.cwd(), '.env'),
 });
-
+console.log(process.env.PUBLIC_PASSWORD);
 const thing = require('./server/server.js');
 
 try {

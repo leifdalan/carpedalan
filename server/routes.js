@@ -10,7 +10,7 @@ import {
   sha1,
   useProdAssets,
 } from './config';
-import { setSignedCloudfrontCookie } from './middlewares';
+import setSignedCloudfrontCookie from './api-v1/middlewares/setCloudfrontCookie';
 import db from './db';
 
 let clientAssets = false;
