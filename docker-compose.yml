@@ -1,4 +1,4 @@
-version: '2.3'
+version: '2.4'
 
 services:
   alb:
@@ -8,11 +8,19 @@ services:
     depends_on:
       api: 
         condition: service_healthy
+      client: 
+        condition: service_healthy
+    ports:
+      - 443:443
+
 
   api:
     extends:
       file: docker-compose.base.yml
       service: api
+    ports:
+      - 9227:9229
+
     depends_on:
       pg:
         condition: service_healthy
@@ -21,6 +29,9 @@ services:
     extends:
       file: docker-compose.base.yml
       service: client
+    ports:
+      - 4000:4000
+
 
   pg:
     extends:
@@ -31,9 +42,13 @@ services:
     extends:
       file: docker-compose.base.yml
       service: sam
+      
 
   aws:
     extends:
       file: docker-compose.base.yml
       service: aws
+    ports:
+      - "4567-4595:4567-4595"
+      - "${PORT_WEB_UI-8081}:${PORT_WEB_UI-8081}"    
 

@@ -35,18 +35,14 @@ module.exports = (on, pluginConfig) => {
       return null;
     },
     async removeUpload() {
-      try {
-        await S3.deleteObject({
-          Bucket: 'carpedalan-photos',
-          Key: 'original/kitty2.jpg',
-        }).promise();
-        await S3.deleteObject({
-          Bucket: 'carpedalan-photos',
-          Key: 'original/kitty.jpg',
-        }).promise();
-      } catch (e) {
-        throw e;
-      }
+      await S3.deleteObject({
+        Bucket: 'carpedalan-photos',
+        Key: 'original/kitty2.jpg',
+      }).promise();
+      await S3.deleteObject({
+        Bucket: 'carpedalan-photos',
+        Key: 'original/kitty.jpg',
+      }).promise();
       return null;
     },
   });

@@ -7,5 +7,5 @@ BASEDIR="$1"
   --host 0.0.0.0 \
   --docker-volume-basedir "${BASEDIR}/imageresizer/" \
   --docker-network cd_default \
-  --skip-pull-image \
-  -d 5959
+  --skip-pull-image
+  # -d 5959

@@ -30,6 +30,7 @@ export const assets = ['runtime.js', 'vendors.js', 'client.js'];
 export const bucket = env.S3_BUCKET;
 export const ssl = env.PGSSLMODE === 'require';
 export const ci = env.CI === 'true';
+export const skipCf = env.SKIP_CF === 'true';
 // Optional
 export const logLevel = env.LOG_LEVEL === 'info';
 export const cdnDomain = env.CDN_DOMAIN;

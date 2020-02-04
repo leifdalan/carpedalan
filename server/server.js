@@ -196,6 +196,7 @@ export const setup = () => {
 };
 
 export const start = expressApp => {
+  console.log(`Listening on port ${port}`); // eslint-disable-line no-console
   expressApp.listen(port);
 };
 

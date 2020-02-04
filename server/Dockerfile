@@ -4,6 +4,7 @@ COPY server/yarn.lock .
 
 COPY server/package.json .
 RUN yarn --production --ignore-optional
+RUN apk add postgresql git
 COPY server/ ./server
 COPY shared/ ./shared
 COPY .env.example .
@@ -11,7 +12,7 @@ COPY index.js .
 COPY scripts/ ./scripts
 COPY db/ ./db
 EXPOSE 3001
-RUN apk add postgresql git
+
 
 
 FROM base AS dev

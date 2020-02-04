@@ -28,7 +28,8 @@
     }, {
       "files": "cypress/**/*",
       "rules": {
-        "jest/valid-expect": "off"
+        "jest/valid-expect": "off",
+        "jest/expect-expect": "off"
       } 
     }
   ]

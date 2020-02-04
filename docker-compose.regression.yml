@@ -2,34 +2,7 @@ version: '2.4'
 
 
 services:
-  # e2e:
-  #   tty: true
-  #   links:
-  #     - "alb:local.carpedalan.com"
-  #     - "alb:photos.local.carpedalan.com"
-  #     - "alb:cdn.local.carpedalan.com"
-  #   environment:
-  #     CYPRESS_BASE_URL: https://local.carpedalan.com
-  #   env_file: 
-  #     - .env.ci
-
-  #   build:
-  #     context: .
-  #     dockerfile: e2e/Dockerfile
-  #   depends_on:
-  #     api: 
-  #       condition: service_healthy
-  #     alb: 
-  #       condition: service_started
-  #   command: yarn test
-  #   volumes: 
-  #     - ./e2e/screenshots:/e2e/screenshots
-  #     - ./e2e/src:/e2e/src
-  #     # - ./.env.example:/cy/.env.example
-  #     # - ./.env.ci:/cy/.env
-  #     # - ./db/:/cy/db/
-  #     # - ./shared/:/cy/shared/
-  cypress:
+  e2e:
     tty: true
     links:
       - "alb:local.carpedalan.com"
@@ -41,19 +14,22 @@ services:
       - .env.ci
 
     build:
-      context: ./cypress
+      context: .
+      dockerfile: e2e/Dockerfile
     depends_on:
       api: 
         condition: service_healthy
-      alb: 
-        condition: service_started
+      client: 
+        condition: service_healthy
     command: yarn test
     volumes: 
-      - ./cypress:/cy/cypress
-      - ./.env.example:/cy/.env.example
-      - ./.env.ci:/cy/.env
-      - ./db/:/cy/db/
-      - ./shared/:/cy/shared/
+      - ./e2e/screenshots:/e2e/screenshots
+      - ./e2e/src:/e2e/src
+      - ./e2e/jest.config.js:/e2e/jest.config.js
+      # - ./.env.example:/cy/.env.example
+      # - ./.env.ci:/cy/.env
+      # - ./db/:/cy/db/
+      # - ./shared/:/cy/shared/
 
   alb:
     extends:
@@ -78,10 +54,6 @@ services:
     extends:
       file: docker-compose.base.yml
       service: client
-    volumes:
-      - ./client/jest.config.js:/app/jest.config.js
-      - ./client/setupTests.js:/app/setupTests.js
-      - ./client/tsconfig.test.json:/app/tsconfig.test.json
     env_file: 
       - .env.ci
     environment: 

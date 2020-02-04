@@ -1,16 +1,19 @@
-version: '2.3'
+version: '2.4'
 
 services:
   alb:
-    image: nginx
+    image: nginx:alpine
     restart: always
     volumes: 
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/local.carpedalan.com.pem:/etc/ssl/certs/local.carpedalan.com.pem
       - ./nginx/local.carpedalan.com-key.pem:/etc/ssl/private/local.carpedalan.com-key.pem
       - ./client/dist:/assets/
-    ports:
-      - 443:443
+    healthcheck: 
+      test: wget http://localhost/healthcheck -q -O - > /dev/null 2>&1
+      interval: 1s
+      timeout: 5s
+      retries: 30
 
   api:
     tty: true
@@ -27,8 +30,6 @@ services:
       - './shared:/app/shared:delegated'
       - './.env-local:/app/.env'
       - './dev-dump.sql:/app/dev-dump.sql'
-    ports:
-      - 9227:9229
     environment:
       PORT: 8001
       PROD_BUILD: "${PROD_BUILD-false}"
@@ -47,14 +48,22 @@ services:
     environment:
       NODE_ENV: "${NODE_ENV-development}"
       PROD_BUILD: "${PROD_BUILD-false}"
+      PORT: "${CLIENT_PORT-4000}"
     volumes: 
       - ./client/src:/app/src
       - ./client/docs:/app/docs
       - ./client/dist:/app/dist
+      - ./scripts:/app/scripts
       - ./client/webpack.config.js:/app/webpack.config.js
       - ./client/webpack.config.prod.js:/app/webpack.config.prod.js
       - ./client/devServer.js:/app/devServer.js
       - ./client/docker-entry.sh:/app/docker-entry.sh
+    healthcheck: 
+      test: ["CMD-SHELL", "node ./scripts/clientHealthcheck"]
+      interval: 1s
+      timeout: 1s
+      retries: 40
+
     command: ['./docker-entry.sh']
 
   pg:
@@ -63,8 +72,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    ports:
-      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 1s
@@ -73,10 +80,6 @@ services:
 
   pg_test:
     image: postgres:10.0-alpine
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
     ports:
       - "5555:5432"
     # command: '-p 5555'
@@ -106,12 +109,10 @@ services:
       context: ./imageresizer
       dockerfile: Dockerfile
     command: ["$PWD"]
-    ports:
-      - "3001:3001"
-      - "5858:5858"
     volumes:
       - ./imageresizer:/app
       - /var/run/docker.sock:/var/run/docker.sock
+
   aws:
     image: localstack/localstack:0.10.5
     volumes:
@@ -122,7 +123,12 @@ services:
       - DATA_DIR=/tmp/localstack/data
       - PORT_WEB_UI=8081
       - SERVICES=s3
-    ports:
-      - "4567-4595:4567-4595"
-      - "${PORT_WEB_UI-8081}:${PORT_WEB_UI-8081}"    
+
+  pw:
+    build:
+      context: .
+      dockerfile: ./e2e/Dockerfile
+    volumes:
+      - './e2e/src:/e2e/src/'
+      - './e2e/screenshots:/e2e/screenshots/'
 

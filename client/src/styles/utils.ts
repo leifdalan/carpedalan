@@ -27,6 +27,8 @@ export const getThemeValue = (value: string) => ({
   theme: StyledProp;
 }) => theme[value];
 
+export const cdn = process.env.CDN_DOMAIN;
+
 // tslint:disable-next-line
 export function prop<T>(value: keyof T): (props: T) => any {
   return props => props[value];
@@ -42,8 +44,8 @@ export const GlobalStyleComponent = createGlobalStyle`
   
   @font-face {
     font-family: 'lobster';
-    src: url('https://cdn.carpedalan.com/lobster.woff2') format('woff2'),
-         url('https://cdn.carpedalan.com/lobster.woff') format('woff');
+    src: url('//${cdn}/lobster.woff2') format('woff2'),
+         url('//${cdn}/lobster.woff') format('woff');
     font-weight: normal;
     font-style: normal;
   }
@@ -51,14 +53,14 @@ export const GlobalStyleComponent = createGlobalStyle`
   
   @font-face {
     font-family: 'montserratregular';
-    src: url('https://cdn.carpedalan.com/montserrat-regular-webfont.woff2') format('woff2'),
-         url('https://cdn.carpedalan.com/montserrat-regular-webfont.woff') format('woff');
+    src: url('//${cdn}/montserrat-regular-webfont.woff2') format('woff2'),
+         url('//${cdn}/montserrat-regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
   }
   @font-face {
     font-family: 'SourceSans';
-    src: url('https://cdn.carpedalan.com/source-sans-variable.woff2') format('woff2-variations');
+    src: url('//${cdn}/source-sans-variable.woff2') format('woff2-variations');
   }
 
   html {

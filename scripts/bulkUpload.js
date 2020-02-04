@@ -3,7 +3,10 @@ const path = require('path');
 const fs = require('fs');
 const { performance } = require('perf_hooks');
 const { spawnSync } = require('child_process');
+const https = require('https');
 
+https.globalAgent.options.secureProtocol = 'SSLv3_method';
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const request = require('superagent');
 const aws = require('aws-sdk');
 
@@ -19,8 +22,9 @@ const errors = [];
 async function main() {
   try {
     const response = await writeUserAgent
-      .post('https://carpedalan.com/v1/login')
-      .send({ password: '411EThomas!' });
+      .post('https://local.carpedalan.com/v1/login')
+      .send({ password: 'asd' });
+    console.error('response', response);
 
     const dataFiles = fs.readdirSync(
       path.join(os.homedir(), 'Downloads', folder),
@@ -33,7 +37,7 @@ async function main() {
         console.log('file', file);
         try {
           const response2 = await writeUserAgent
-            .post('https://carpedalan.com/v1/posts')
+            .post('https://local.carpedalan.com/v1/posts')
             .send({
               description: '',
               key: file,
@@ -44,28 +48,28 @@ async function main() {
         }
       }),
     );
-    try {
-      const response = spawnSync(
-        'aws',
-        [
-          's3',
-          'cp',
-          `~/Downloads/${folder}/`,
-          's3://carpedalan-photos/raw/',
-          '--recursive',
-        ],
-        { stdio: 'inherit' },
-      );
-    } catch (e) {
-      console.error('spawn e', e);
-      errors.push(e);
-    }
+    // try {
+    //   const response = spawnSync(
+    //     'aws',
+    //     [
+    //       's3',
+    //       'cp',
+    //       `~/Downloads/${folder}/`,
+    //       's3://carpedalan-photos/raw/',
+    //       '--recursive',
+    //     ],
+    //     { stdio: 'inherit' },
+    //   );
+    // } catch (e) {
+    //   console.error('spawn e', e);
+    //   errors.push(e);
+    // }
 
     const hardEnd = performance.now();
     console.log('finished in ', (hardEnd - hardBeginning) / 1000);
     console.error(JSON.stringify(errors, null, 2));
   } catch (e) {
-    console.error('e', e.response);
+    console.error('e', e);
   }
 }
 
