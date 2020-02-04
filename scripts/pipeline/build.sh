@@ -1,7 +1,7 @@
 set -e
 docker build -t $ECR:$CI_COMMIT_SHA \
   -t app:latest \
-  -f Dockerfile.prod \
+  -f server/Dockerfile \
   --target prod \
   --build-arg CIRCLE_SHA1=$CI_COMMIT_SHA \
   --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \

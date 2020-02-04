@@ -20,10 +20,22 @@ services:
       service: api
     ports:
       - 9227:9229
+    volumes:
+      - './server:/app/server:delegated'
+      - './client/dist:/app/server/dist'
+      - './scripts:/app/scripts:delegated'
+      - './index.js:/app/index.js:delegated'
+      - './db:/app/db:delegated'
+      - './shared:/app/shared:delegated'
+      - './.env-local:/app/.env'
+      - './dev-dump.sql:/app/dev-dump.sql'
 
     depends_on:
       pg:
         condition: service_healthy
+    env_file: 
+      - .env-local
+
 
   client: 
     extends:

@@ -62,25 +62,27 @@ services:
     depends_on:
       api: 
         condition: service_healthy
-      client: 
-        condition: service_healthy
+      # client: 
+      #   condition: service_healthy
       aws: 
         condition: service_started
 
-    # ports:
-    #   - "80:80"
-    #   - "443:443"
+    ports:
+      - "80:80"
+      - "443:443"
 
 
   client:
     stdin_open: true
     tty: true
+    image: client:latest
     extends:
       file: docker-compose.base.yml
       service: client
     volumes:
       - ./client/jest.config.js:/app/jest.config.js
       - ./client/setupTests.js:/app/setupTests.js
+      - ./client/dist:/app/dist
       - ./client/tsconfig.test.json:/app/tsconfig.test.json
     env_file: 
       - .env.ci
@@ -94,20 +96,26 @@ services:
     extends:
       file: docker-compose.base.yml
       service: api
+    volumes:
+      - './server:/app/server:delegated'
+      - './scripts:/app/scripts:delegated'
+      - './client/dist:/app/server/dist'
+      - './index.js:/app/index.js:delegated'
+      - './db:/app/db:delegated'
+      - './shared:/app/shared:delegated'
+      - './.env.ci:/app/.env'
     depends_on:
       pg:
         condition: service_healthy
       client:
         condition: service_healthy
-    env_file: 
-      - .env.ci
 
     environment:
       PORT: 8001
       PROD_BUILD: 'true'
       ASSET_CDN_DOMAIN: cdn.local.carpedalan.com
-    # ports: 
-    #   - '8001:8001'
+    ports: 
+      - '8001:8001'
   pg:
     extends:
       file: docker-compose.base.yml

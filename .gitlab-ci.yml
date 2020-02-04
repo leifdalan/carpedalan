@@ -6,57 +6,67 @@ variables:
   DOCKER_DRIVER: overlay2
 
 stages:
-  - build
+  # - build
   - test
-  - deploy
+  # - deploy
 
 default:
   before_script:
     - pulumi login s3://carpedalan-pulumi
     - pulumi stack select dev
 
-dependencies:
+# dependencies:
+#   before_script:
+#     - echo 'Skipping login'
+#   stage: build
+#   artifacts:
+#     expire_in: 1 week
+#     paths:
+#       - node_modules/
+#       - client/node_modules
+#       - server/node_modules
+#   script:
+#     - yarn
+
+# build production:
+#   services:
+#     - docker:18.06.3-dind
+#   script:
+#     - ./scripts/pipeline/build.sh
+#     - docker save $ECR:$CI_COMMIT_SHA > app.tar
+#   stage: build
+#   artifacts:
+#     expire_in: 30 days
+#     paths:
+#       - app.tar
+
+# build layer deps:
+#   stage: build
+#   services:
+#     - docker:18.06.3-dind
+#   script:
+#     - cd imageResizer/layer
+#     - yarn build
+#   artifacts:
+#     expire_in: 30 days
+#     paths:
+#       - imageResizer/layer/
+  
+test:
+  stage: test
   before_script:
     - echo 'Skipping login'
-  stage: build
-  artifacts:
-    expire_in: 1 week
-    paths:
-      - node_modules/
-      - client/node_modules
-      - server/node_modules
-  script:
-    - yarn
-
-build production:
   services:
     - docker:18.06.3-dind
-  script:
-    - ./scripts/pipeline/build.sh
-    - docker save $ECR:$CI_COMMIT_SHA > app.tar
-  stage: build
-  artifacts:
-    expire_in: 30 days
-    paths:
-      - app.tar
 
-build layer deps:
-  stage: build
-  services:
-    - docker:18.06.3-dind
-  script:
-    - cd imageResizer/layer
-    - yarn build
-  artifacts:
-    expire_in: 30 days
-    paths:
-      - imageResizer/layer/
-  
-
-deploy:
-  stage: deploy
-  script:
-    - pulumi login s3://carpedalan-pulumi
-    - pulumi up --yes --no-interactive
-  dependencies:
-    - build layer deps
+  script: 
+    # - yarn unit
+    # - yarn integration
+    - yarn e2e
+# deploy:
+#   stage: deploy
+#   script:
+#     - pulumi login s3://carpedalan-pulumi
+#     - pulumi up --yes --no-interactive
+#   dependencies:
+#     - build layer deps
