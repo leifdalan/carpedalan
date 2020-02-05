@@ -36,7 +36,7 @@ services:
       - "alb:photos.local.carpedalan.com"
       - "alb:cdn.local.carpedalan.com"
     environment:
-      CYPRESS_BASE_URL: https://local.carpedalan.com
+      CYPRESS_BASE_URL: http://local.carpedalan.com
     env_file: 
       - .env.ci
     image: registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
