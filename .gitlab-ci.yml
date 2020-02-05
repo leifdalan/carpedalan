@@ -62,7 +62,8 @@ test:
   script: 
     # - yarn unit
     # - yarn integration
-    - yarn e2e
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker-compose -f docker-compose.e2e.yml up
 # deploy:
 #   stage: deploy
 #   script:
