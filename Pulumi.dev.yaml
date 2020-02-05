@@ -4,7 +4,7 @@ config:
   aws:profile: carpedev
   carpedalan:adminPassword:
     secure: v1:CIphjwZklNx19A97:vTXlDXXsd0xPuyA9qz8gSdNFtLj3HtwBwAUq
-  carpedalan:domain: pulumi.dalan.dev
+  carpedalan:domain: carpe.dalan.dev
   carpedalan:pg_password:
     secure: v1:nFxZz8IQg8n1GfSd:iX6U6oamic7u8lmibsJeiM4XukvB/QT47Xy8zr6gDOrwiUwjDtdHTHjzN5stoXPBXk3coBbcA89NpqSbeKv3+3R0rvA=
   carpedalan:pg_user:
