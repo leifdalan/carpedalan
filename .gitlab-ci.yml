@@ -15,12 +15,6 @@ default:
     - pulumi login s3://carpedalan-pulumi
     - pulumi stack select dev
 
-cache:
-  key: docker-cache
-  paths:
-    - api.tar
-    - client.tar
-
 build client:
   image: docker:18.06.3
   before_script:

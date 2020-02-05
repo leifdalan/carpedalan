@@ -18,7 +18,7 @@
     "start": "yarn && docker-compose up --build -d && ./scripts/development/start.sh",
     "stop": "docker stop $(docker ps -a -q)",
     "e2e": "COMPOSE_PROJECT_NAME=cd_e2e docker-compose -f docker-compose.e2e.yml run --rm cypress yarn cypress run",
-    "test": "yarn build && yarn unit && yarn integration && yarn e2e && yarn regression && stop"
+    "test": "yarn build && yarn unit && yarn integration && yarn e2e && yarn regression && yarn stop"
   },
   "author": "",
   "license": "ISC",
