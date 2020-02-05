@@ -26,16 +26,13 @@ build client:
     key: client-cache
     paths:
       - client.tar
-      - node12slim.tar
   artifacts: 
     expire_in: 1 week
     paths: 
       - client.tar
   script: 
     - ls -al
-    - '[ ! -f ./node12slim.tar ] && docker pull node:12-slim && docker save node:12-slim > node12slim.tar'
     - '[ -f ./client.tar ] && docker load --input client.tar'
-    - '[ -f ./node12slim.tar ] && docker load --input node12slim.tar'
     - docker build -t client:latest -f client/Dockerfile --cache-from client:latest --cache-from node:12-slim ./client
     - docker save client:latest > client.tar
 
@@ -50,16 +47,13 @@ build api:
     key: api-cache
     paths:
       - api.tar
-      - node12alpine.tar
   artifacts: 
     expire_in: 1 week
     paths: 
       - api.tar
   script: 
     - ls -al
-    - '[ ! -f ./node12alpine.tar ] && docker pull node:12-alpine && docker save node:12-alpine > node12alpine.tar'
     - '[ -f ./api.tar ] && docker load --input api.tar'
-    - '[ -f ./node12alpine.tar ] && docker load --input node12alpine.tar'
     - docker build -t api:latest -f server/Dockerfile --cache-from api:latest --cache-from node:12-alpine . --target=dev
     - docker save api:latest > api.tar
 
@@ -74,18 +68,16 @@ build cypress:
     key: cypress-cache
     paths:
       - cypress.tar
-      - cypressBase.tar
   artifacts: 
     expire_in: 1 week
     paths: 
       - cypress.tar
   script: 
     - ls -al
-    - '[ -f ./cypress.tar ] && docker load --input cypress.tar'
-    - '[ -f ./cypressBase.tar ] && docker load --input cypressBase.tar'
-    - '[ ! -f ./cypressBase.tar ] && docker pull cypress/base:10 && docker save cypress/base:10 > cypressBase.tar'
-    - docker build -t cypress:latest -f cypress/Dockerfile --cache-from cypress:latest ./cypress
-    - docker save cypress:latest > cypress.tar
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
+    - docker build -t registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest -f cypress/Dockerfile --cache-from cypress:latest ./cypress
+    - docker pull registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
 
 # dependencies:
 #   before_script:
