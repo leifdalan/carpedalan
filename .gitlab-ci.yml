@@ -15,6 +15,12 @@ default:
     - pulumi login s3://carpedalan-pulumi
     - pulumi stack select dev
 
+cache:
+  key: docker-cache
+  paths:
+    - api.tar
+    - client.tar
+
 build client:
   before_script:
     - echo 'Skipping login'
@@ -27,7 +33,9 @@ build client:
     paths: 
       - client.tar
   script: 
-    - docker build -t client:latest -f client/Dockerfile ./client
+    - ls -al
+    - '[ -f ./client.tar ] && docker load --input client.tar'
+    - docker build -t client:latest -f client/Dockerfile --cache-from client:latest ./client
     - docker save client:latest > client.tar
 build api:
   before_script:
@@ -41,7 +49,9 @@ build api:
     paths: 
       - api.tar
   script: 
-    - docker build -t api:latest -f server/Dockerfile . --target=dev
+    - ls -al
+    - '[ -f ./api.tar ] && docker load --input api.tar'
+    - docker build -t api:latest -f server/Dockerfile --cache-from api:latest . --target=dev
     - docker save api:latest > api.tar
 
 # dependencies:
@@ -94,8 +104,8 @@ test:
     # - yarn unit
     # - yarn integration
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker load api.tar
-    - docker load client.tar
+    - docker load --input api.tar
+    - docker load --input client.tar
     - docker-compose -f docker-compose.e2e.yml up
 # deploy:
 #   stage: deploy
