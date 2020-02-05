@@ -4,6 +4,7 @@ services:
 
   client:
     stdin_open: true
+    image: client:latest
     tty: true
     extends:
       file: docker-compose.base.yml

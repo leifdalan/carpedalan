@@ -5,6 +5,7 @@ services:
   api:
     stdin_open: true
     tty: true
+    image: api:latest
     extends:
       file: docker-compose.base.yml
       service: api
