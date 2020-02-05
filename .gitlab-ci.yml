@@ -34,7 +34,7 @@ build client:
   script: 
     - ls -al
     - '[ ! -f ./node12slim.tar ] && docker pull node:12-slim && docker save node:12-slim > node12slim.tar'
-    - '[ -f ./api.tar ] && docker load --input api.tar'
+    - '[ -f ./client.tar ] && docker load --input client.tar'
     - '[ -f ./node12slim.tar ] && docker load --input node12slim.tar'
     - docker build -t client:latest -f client/Dockerfile --cache-from client:latest --cache-from node:12-slim ./client
     - docker save client:latest > client.tar
