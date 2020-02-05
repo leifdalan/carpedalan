@@ -64,19 +64,11 @@ build cypress:
   stage: build
   services:
   - docker:18.06.3-dind
-  cache:
-    key: cypress-cache
-    paths:
-      - cypress.tar
-  artifacts: 
-    expire_in: 1 week
-    paths: 
-      - cypress.tar
   script: 
     - ls -al
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
-    - docker build -t registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest -f cypress/Dockerfile --cache-from cypress:latest ./cypress
+    - docker build -t registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest --cache-from registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest -f cypress/Dockerfile --cache-from cypress:latest ./cypress
     - docker pull registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
 
 # dependencies:
