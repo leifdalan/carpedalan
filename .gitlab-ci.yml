@@ -26,8 +26,11 @@ build client:
     - echo 'Skipping login'
   stage: build
   services:
-  - docker:18.06.3-dind
-
+    - docker:18.06.3-dind
+  cache:
+    key: client-cache
+    paths:
+      - client.tar
   artifacts: 
     expire_in: 1 week
     paths: 
@@ -43,6 +46,10 @@ build api:
   stage: build
   services:
   - docker:18.06.3-dind
+  cache:
+    key: client-cache
+    paths:
+      - api.tar
 
   artifacts: 
     expire_in: 1 week
