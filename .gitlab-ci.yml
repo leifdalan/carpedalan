@@ -41,6 +41,7 @@ build client:
     - '[ -f ./client.tar ] && docker load --input client.tar'
     - docker build -t client:latest -f client/Dockerfile --cache-from client:latest --cache-from node:12-slim ./client
     - docker save client:latest > client.tar
+
 build api:
   image: docker:18.06.3
   before_script:
@@ -61,6 +62,27 @@ build api:
     - '[ -f ./api.tar ] && docker load --input api.tar'
     - docker build -t api:latest -f server/Dockerfile --cache-from api:latest --cache-from node:12-alpine . --target=dev
     - docker save api:latest > api.tar
+
+build cypress:
+  image: docker:18.06.3
+  before_script:
+    - echo 'Skipping login'
+  stage: build
+  services:
+  - docker:18.06.3-dind
+  cache:
+    key: cypress-cache
+    paths:
+      - cypress.tar
+  artifacts: 
+    expire_in: 1 week
+    paths: 
+      - cypress.tar
+  script: 
+    - ls -al
+    - '[ -f ./cypress.tar ] && docker load --input cypress.tar'
+    - docker build -t cypress:latest -f cypress/Dockerfile --cache-from cypress:latest ./cypress
+    - docker save cypress:latest > cypress.tar
 
 # dependencies:
 #   before_script:
@@ -108,12 +130,14 @@ e2e:
   dependencies:
     - build client
     - build api
+    - build cypress
   script: 
     # - yarn unit
     # - yarn integration
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker load --input api.tar
     - docker load --input client.tar
+    - docker load --input cypress.tar
     - yarn e2e
 integration:
   stage: test

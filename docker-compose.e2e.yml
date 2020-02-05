@@ -57,6 +57,10 @@ services:
     extends:
       file: docker-compose.base.yml
       service: alb
+    volumes: 
+      - ./nginx/nginx-e2e.conf:/etc/nginx/nginx.conf
+      - ./client/dist:/assets/
+
     depends_on:
       api: 
         condition: service_healthy
