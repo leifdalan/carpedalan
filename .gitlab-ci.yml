@@ -109,7 +109,6 @@ e2e:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker load --input api.tar
     - docker load --input client.tar
-    - docker load --input cypress.tar
     - yarn e2e
 integration:
   stage: test
