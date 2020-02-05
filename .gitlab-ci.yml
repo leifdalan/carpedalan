@@ -57,20 +57,6 @@ build api:
     - docker build -t api:latest -f server/Dockerfile --cache-from api:latest --cache-from node:12-alpine . --target=dev
     - docker save api:latest > api.tar
 
-build cypress:
-  image: docker:18.06.3
-  before_script:
-    - echo 'Skipping login'
-  stage: build
-  services:
-  - docker:18.06.3-dind
-  script: 
-    - ls -al
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
-    - docker build -t registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest --cache-from registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest -f cypress/Dockerfile --cache-from cypress:latest ./cypress
-    - docker pull registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
-
 # dependencies:
 #   before_script:
 #     - echo 'Skipping login'
@@ -117,7 +103,6 @@ e2e:
   dependencies:
     - build client
     - build api
-    - build cypress
   script: 
     # - yarn unit
     # - yarn integration
