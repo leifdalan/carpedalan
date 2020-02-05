@@ -39,7 +39,7 @@ services:
       CYPRESS_BASE_URL: https://local.carpedalan.com
     env_file: 
       - .env.ci
-    image: registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
+    image: cypress:latest
     depends_on:
       api: 
         condition: service_healthy
