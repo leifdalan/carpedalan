@@ -6,7 +6,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
 stages:
-  # - build
+  - build
   - test
   # - deploy
 
@@ -14,6 +14,33 @@ default:
   before_script:
     - pulumi login s3://carpedalan-pulumi
     - pulumi stack select dev
+
+build client:
+  before_script:
+    - echo 'Skipping login'
+  stage: build
+  services:
+  - docker:18.06.3-dind
+
+  artifacts: 
+    expire_in: 1 week
+    paths: 
+      - client.tar
+  script: 
+    - docker build -t client:latest -f client/Dockerfile ./client
+build api:
+  before_script:
+    - echo 'Skipping login'
+  stage: build
+  services:
+  - docker:18.06.3-dind
+
+  artifacts: 
+    expire_in: 1 week
+    paths: 
+      - api.tar
+  script: 
+    - docker build -t api:latest -f server/Dockerfile .
 
 # dependencies:
 #   before_script:
@@ -58,7 +85,9 @@ test:
     - echo 'Skipping login'
   services:
     - docker:18.06.3-dind
-
+  dependencies:
+    - build client
+    - build api
   script: 
     # - yarn unit
     # - yarn integration
