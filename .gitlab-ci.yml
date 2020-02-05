@@ -1,4 +1,4 @@
-image: docker:18.06.3
+image: registry.gitlab.com/carpedalan/carpedalan-web/runner:latest
 
 
 variables:
@@ -22,6 +22,7 @@ cache:
     - client.tar
 
 build client:
+  image: docker:18.06.3
   before_script:
     - echo 'Skipping login'
   stage: build
@@ -41,6 +42,7 @@ build client:
     - docker build -t client:latest -f client/Dockerfile --cache-from client:latest --cache-from node:12-slim ./client
     - docker save client:latest > client.tar
 build api:
+  image: docker:18.06.3
   before_script:
     - echo 'Skipping login'
   stage: build
@@ -97,7 +99,7 @@ build api:
 #     paths:
 #       - imageResizer/layer/
   
-test:
+e2e:
   stage: test
   before_script:
     - echo 'Skipping login'
@@ -112,7 +114,33 @@ test:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker load --input api.tar
     - docker load --input client.tar
-    - docker-compose -f docker-compose.e2e.yml up
+    - yarn e2e
+integration:
+  stage: test
+  before_script:
+    - echo 'Skipping login'
+  services:
+    - docker:18.06.3-dind
+  dependencies:
+    - build api
+  script: 
+    # - yarn unit
+    # - yarn integration
+    - docker load --input api.tar
+    - yarn integration
+unit:
+  stage: test
+  before_script:
+    - echo 'Skipping login'
+  services:
+    - docker:18.06.3-dind
+  dependencies:
+    - build client
+  script: 
+    # - yarn unit
+    # - yarn integration
+    - docker load --input client.tar
+    - yarn unit
 # deploy:
 #   stage: deploy
 #   script:
