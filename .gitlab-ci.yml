@@ -8,7 +8,7 @@ variables:
 stages:
   - build
   - test
-  # - deploy
+  - deploy
 
 default:
   before_script:
@@ -57,18 +57,18 @@ build api:
     - docker build -t api:latest -f server/Dockerfile --cache-from api:latest --cache-from node:12-alpine . --target=dev
     - docker save api:latest > api.tar
 
-# dependencies:
-#   before_script:
-#     - echo 'Skipping login'
-#   stage: build
-#   artifacts:
-#     expire_in: 1 week
-#     paths:
-#       - node_modules/
-#       - client/node_modules
-#       - server/node_modules
-#   script:
-#     - yarn
+dependencies:
+  before_script:
+    - echo 'Skipping login'
+  stage: build
+  cache:
+    key: npm
+    paths:
+      - node_modules/
+      - client/node_modules
+      - server/node_modules
+  script:
+    - yarn
 
 # build production:
 #   services:
@@ -78,21 +78,26 @@ build api:
 #     - docker save $ECR:$CI_COMMIT_SHA > app.tar
 #   stage: build
 #   artifacts:
-#     expire_in: 30 days
+#     expire_in: 30 daysx
 #     paths:
 #       - app.tar
 
-# build layer deps:
-#   stage: build
-#   services:
-#     - docker:18.06.3-dind
-#   script:
-#     - cd imageResizer/layer
-#     - yarn build
-#   artifacts:
-#     expire_in: 30 days
-#     paths:
-#       - imageResizer/layer/
+build layer deps:
+  stage: build
+  services:
+    - docker:18.06.3-dind
+  script:
+    - cd imageResizer/layer/nodejs
+    - yarn build
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - imageResizer/layer/
+
+  cache:
+    key: layer-dep
+    paths:
+      - imageResizer/layer/
   
 e2e:
   stage: test
@@ -136,10 +141,15 @@ unit:
     # - yarn integration
     - docker load --input client.tar
     - yarn unit
-# deploy:
-#   stage: deploy
-#   script:
-#     - pulumi login s3://carpedalan-pulumi
-#     - pulumi up --yes --no-interactive
-#   dependencies:
-#     - build layer deps
+deploy:
+  stage: deploy
+  cache:
+    key: npm
+    policy: pull
+    paths: 
+      - node_modules
+  script:
+    - pulumi login s3://carpedalan-pulumi
+    - pulumi up --yes --non-interactive
+  dependencies:
+    - build layer deps
