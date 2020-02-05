@@ -39,9 +39,7 @@ services:
       CYPRESS_BASE_URL: https://local.carpedalan.com
     env_file: 
       - .env.ci
-
-    build:
-      context: ./cypress
+    image: registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
     depends_on:
       api: 
         condition: service_healthy
@@ -107,8 +105,8 @@ services:
     depends_on:
       pg:
         condition: service_healthy
-      client:
-        condition: service_healthy
+      # client:
+      #   condition: service_healthy
 
     environment:
       PORT: 8001
