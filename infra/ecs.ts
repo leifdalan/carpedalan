@@ -29,7 +29,7 @@ interface CreateI {
     adminPassword: aws.secretsmanager.Secret;
     publicPassword: aws.secretsmanager.Secret;
     sessionSecret: aws.secretsmanager.Secret;
-    cfKey: aws.secretsmanager.Secret;
+    cfKeySecret: aws.secretsmanager.Secret;
   };
   aRecord: aws.route53.Record;
   publicBucket: aws.s3.Bucket;
@@ -179,7 +179,7 @@ export function createECSResources({
             // @ts-ignore
             name: 'CLOUDFRONT_KEY_ID',
             // @ts-ignore
-            valueFrom: pulumi.interpolate`${secrets.cfKey.arn}`,
+            valueFrom: pulumi.interpolate`${secrets.cfKeySecret.arn}`,
           },
         ],
       },

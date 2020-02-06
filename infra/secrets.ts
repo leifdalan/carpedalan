@@ -68,7 +68,7 @@ export function getSecrets({ config }: SecretsI) {
       secretId: sessionSecret.id,
       secretString: session,
     });
-    new aws.secretsmanager.SecretVersion(n('sessionSecret'), {
+    new aws.secretsmanager.SecretVersion(n('cfKeySecret'), {
       secretId: cfKeySecret.id,
       secretString: cfKey,
     });
