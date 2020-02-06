@@ -29,6 +29,7 @@ interface CreateI {
     adminPassword: aws.secretsmanager.Secret;
     publicPassword: aws.secretsmanager.Secret;
     sessionSecret: aws.secretsmanager.Secret;
+    cfKey: aws.secretsmanager.Secret;
   };
   aRecord: aws.route53.Record;
   publicBucket: aws.s3.Bucket;
@@ -108,7 +109,6 @@ export function createECSResources({
       name: 'PG_DATABASE',
       value: pulumi.interpolate`${rds.name}`,
     },
-
     {
       name: 'ASSET_CDN_DOMAIN',
       value: publicDistroDomain,
@@ -144,18 +144,13 @@ export function createECSResources({
         memory: 256,
         portMappings: [listener],
         environment: env,
-        // @ts-ignore
         secrets: [
           {
-            // @ts-ignore
             name: 'PRIVATE_KEY',
-            // @ts-ignore
             valueFrom: pulumi.interpolate`${secrets.privateKeySecret.arn}`,
           },
           {
-            // @ts-ignore
             name: 'PG_USER',
-            // @ts-ignore
             valueFrom: pulumi.interpolate`${secrets.pgUserSecret.arn}`,
           },
           {
@@ -179,6 +174,12 @@ export function createECSResources({
             name: 'SESSION_SECRET',
             // @ts-ignore
             valueFrom: pulumi.interpolate`${secrets.sessionSecret.arn}`,
+          },
+          {
+            // @ts-ignore
+            name: 'CLOUDFRONT_KEY_ID',
+            // @ts-ignore
+            valueFrom: pulumi.interpolate`${secrets.cfKey.arn}`,
           },
         ],
       },

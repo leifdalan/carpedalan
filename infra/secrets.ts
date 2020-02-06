@@ -14,6 +14,7 @@ export function getSecrets({ config }: SecretsI) {
   const adminPass = config.getSecret('adminPassword');
   const publicPass = config.getSecret('publicPassword');
   const session = config.getSecret('sessionSecret');
+  const cfKey = config.getSecret('cfKey');
 
   const privateKeySecret = new aws.secretsmanager.Secret(n('private-key'), {
     tags: t(),
@@ -35,6 +36,9 @@ export function getSecrets({ config }: SecretsI) {
     tags: t(),
   });
   const pgPasswordSecret = new aws.secretsmanager.Secret(n('pg-password'), {
+    tags: t(),
+  });
+  const cfKeySecret = new aws.secretsmanager.Secret(n('cfKey'), {
     tags: t(),
   });
   let secretVersion;
@@ -64,6 +68,10 @@ export function getSecrets({ config }: SecretsI) {
       secretId: sessionSecret.id,
       secretString: session,
     });
+    new aws.secretsmanager.SecretVersion(n('sessionSecret'), {
+      secretId: cfKeySecret.id,
+      secretString: cfKey,
+    });
   }
 
   return {
@@ -74,6 +82,7 @@ export function getSecrets({ config }: SecretsI) {
       adminPassword,
       publicPassword,
       sessionSecret,
+      cfKeySecret,
     },
   };
 }
