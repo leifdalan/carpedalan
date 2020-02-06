@@ -64,8 +64,6 @@ export function createECSResources({
     healthCheck: {
       path: '/healthcheck',
       timeout: 5,
-      interval: 5,
-      healthyThreshold: 3,
     },
     tags: t(),
   });
