@@ -1,5 +1,6 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
+import * as fs from 'fs';
 import * as awsx from '@pulumi/awsx';
 
 import { makeCerts, getDomainAndSubdomain } from './certs';
@@ -63,16 +64,23 @@ async function main() {
   });
 
   // For each file in the directory, create an S3 object stored in `siteBucket`
-  const siteDir = './dist';
-  for (const item of require('fs').readdirSync(
-    path.join(__dirname, '..', 'dist'),
-  )) {
+  for (const item of fs.readdirSync(path.join(__dirname, '..', 'dist'))) {
     const filePath = path.join(__dirname, '..', 'dist', item);
     const object = new aws.s3.BucketObject(item, {
       bucket: publicBucket,
       source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
       contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
       contentEncoding: 'gzip',
+    });
+  }
+
+  // For each file in the directory, create an S3 object stored in `siteBucket`
+  for (const item of fs.readdirSync(path.join(__dirname, '..', 'public'))) {
+    const filePath = path.join(__dirname, '..', 'public', item);
+    const object = new aws.s3.BucketObject(item, {
+      bucket: publicBucket,
+      source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
+      contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
     });
   }
 
