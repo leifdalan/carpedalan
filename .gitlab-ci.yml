@@ -30,7 +30,7 @@ build client:
     expire_in: 1 week
     paths: 
       - client.tar
-      - dist/
+      - dist
   script: 
     - ls -al
     - '[ -f ./client.tar ] && docker load --input client.tar'
@@ -155,8 +155,10 @@ deploy:
     paths: 
       - node_modules
   script:
-    - pulumi login s3://carpedalan-pulumi
+    - ls -al
+    - docker load --input api.tar
     - pulumi up --yes --non-interactive
   dependencies:
     - build layer deps
     - build client
+    - build api

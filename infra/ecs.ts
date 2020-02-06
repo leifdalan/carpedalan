@@ -131,7 +131,7 @@ export function createECSResources({
         image: awsx.ecs.Image.fromDockerBuild(repository, {
           context: '../',
           dockerfile: '../server/Dockerfile',
-          extraOptions: ['--target', 'prod'],
+          extraOptions: ['--target', 'prod', '--cache-from', 'api:latest'],
         }),
         memory: 256,
         portMappings: [listener],
