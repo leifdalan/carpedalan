@@ -58,6 +58,10 @@ export function createECSResources({
   const targetGroup = alb.createTargetGroup(n('webapp'), {
     vpc,
     port: 80,
+    healthCheck: {
+      path: '/healthcheck',
+      timeout: 5,
+    },
     tags: t(),
   });
 
@@ -116,6 +120,10 @@ export function createECSResources({
     {
       name: 'DOMAIN',
       value: pulumi.interpolate`${targetDomain}`,
+    },
+    {
+      name: 'PORT',
+      value: pulumi.interpolate`${targetGroup.targetGroup.port}`,
     },
   ];
 
