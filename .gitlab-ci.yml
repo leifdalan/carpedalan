@@ -62,7 +62,7 @@ dependencies:
     - echo 'Skipping login'
   stage: build
   cache:
-    key: npm
+    key: npm-1
     paths:
       - node_modules/
       - client/node_modules
@@ -144,7 +144,7 @@ unit:
 deploy:
   stage: deploy
   cache:
-    key: npm
+    key: npm-1
     policy: pull
     paths: 
       - node_modules

@@ -1,4 +1,4 @@
-FROM node:12-slim
+FROM node:10-slim
 WORKDIR /pipeline
 # Install jq
 RUN apt-get update && apt-get -y install jq gettext zip unzip
@@ -64,7 +64,7 @@ RUN curl -L https://git.io/get_helm.sh | bash
 # Passing --build-arg PULUMI_VERSION=vX.Y.Z will use that version
 # of the SDK. Otherwise, we use whatever get.pulumi.com thinks is
 # the latest
-ARG PULUMI_VERSION=latest
+ARG PULUMI_VERSION=v1.10.0
 
 # Install the Pulumi SDK, including the CLI and language runtimes.
 RUN if [ "$PULUMI_VERSION" = "latest" ]; then \
