@@ -21,22 +21,20 @@ COPY server/nodemon.json .
 EXPOSE 9229
 
 
-FROM node:12-alpine as client-build
-WORKDIR /client
-COPY client/yarn.lock .
-COPY client/package.json .
-RUN yarn
-COPY client/src ./src
-COPY client/tsconfig.json .
-COPY client/webpack.config.prod.js .
-ENV PROD_BUILD=true
-RUN ls -al
-RUN yarn build:prod
+# FROM node:12-alpine as client-build
+# WORKDIR /client
+# COPY client/yarn.lock .
+# COPY client/package.json .
+# RUN yarn
+# COPY client/src ./src
+# COPY client/tsconfig.json .
+# COPY client/webpack.config.prod.js .
+# ENV PROD_BUILD=true
+# RUN ls -al
+# RUN yarn build:prod
 
-FROM base as prod
-COPY --from=client-build /client/dist/ /app/server/dist
-
-COPY .env .
+# FROM base as prod
+# COPY --from=client-build /client/dist/ /app/server/dist
 
 ARG CIRCLE_SHA1
 ARG CIRCLE_BUILD_NUM

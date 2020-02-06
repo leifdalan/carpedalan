@@ -30,10 +30,12 @@ build client:
     expire_in: 1 week
     paths: 
       - client.tar
+      - dist/
   script: 
     - ls -al
     - '[ -f ./client.tar ] && docker load --input client.tar'
     - docker build -t client:latest -f client/Dockerfile --cache-from client:latest --cache-from node:12-slim ./client
+    - 'docker run -v "$PWD":/app/server/dist client:latest yarn build:prod'
     - docker save client:latest > client.tar
 
 build api:
@@ -156,3 +158,4 @@ deploy:
     - pulumi up --yes --non-interactive
   dependencies:
     - build layer deps
+    - build client

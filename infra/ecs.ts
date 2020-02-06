@@ -132,6 +132,8 @@ export function createECSResources({
           context: '../',
           dockerfile: '../server/Dockerfile',
           extraOptions: [
+            '-v',
+            '../dist:/app/server/dist',
             '--target',
             'prod',
             '--build-arg',
