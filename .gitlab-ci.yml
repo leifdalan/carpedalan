@@ -7,7 +7,7 @@ variables:
 
 stages:
   - build
-  - test
+  # - test
   - deploy
 
 default:
@@ -99,50 +99,53 @@ build layer deps:
     paths:
       - imageResizer/layer/
   
-e2e:
-  stage: test
-  before_script:
-    - echo 'Skipping login'
-  services:
-    - docker:18.06.3-dind
-  dependencies:
-    - build client
-    - build api
-  script: 
-    # - yarn unit
-    # - yarn integration
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker load --input api.tar
-    - docker load --input client.tar
-    - yarn e2e
-integration:
-  stage: test
-  before_script:
-    - echo 'Skipping login'
-  services:
-    - docker:18.06.3-dind
-  dependencies:
-    - build api
-  script: 
-    # - yarn unit
-    # - yarn integration
-    - docker load --input api.tar
-    - yarn integration
-unit:
-  stage: test
-  before_script:
-    - echo 'Skipping login'
-  services:
-    - docker:18.06.3-dind
-  dependencies:
-    - build client
-  script: 
-    # - yarn unit
-    # - yarn integration
-    - docker load --input client.tar
-    - yarn unit
+# e2e:
+#   stage: test
+#   before_script:
+#     - echo 'Skipping login'
+#   services:
+#     - docker:18.06.3-dind
+#   dependencies:
+#     - build client
+#     - build api
+#   script: 
+#     # - yarn unit
+#     # - yarn integration
+#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#     - docker load --input api.tar
+#     - docker load --input client.tar
+#     - yarn e2e
+# integration:
+#   stage: test
+#   before_script:
+#     - echo 'Skipping login'
+#   services:
+#     - docker:18.06.3-dind
+#   dependencies:
+#     - build api
+#   script: 
+#     # - yarn unit
+#     # - yarn integration
+#     - docker load --input api.tar
+#     - yarn integration
+# unit:
+#   stage: test
+#   before_script:
+#     - echo 'Skipping login'
+#   services:
+#     - docker:18.06.3-dind
+#   dependencies:
+#     - build client
+#   script: 
+#     # - yarn unit
+#     # - yarn integration
+#     - docker load --input client.tar
+#     - yarn unit
 deploy:
   stage: deploy
+  services:
+  - docker:18.06.3-dind
+
   cache:
     key: npm-1
     policy: pull
