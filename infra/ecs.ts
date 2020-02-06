@@ -33,6 +33,7 @@ interface CreateI {
   };
   aRecord: aws.route53.Record;
   publicBucket: aws.s3.Bucket;
+  bucketUserCreds: aws.iam.AccessKey;
 }
 
 export function createECSResources({
@@ -48,6 +49,7 @@ export function createECSResources({
   publicDistroDomain,
   privateDistroDomain,
   publicBucket,
+  bucketUserCreds,
 }: CreateI) {
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
     vpc,
@@ -62,6 +64,8 @@ export function createECSResources({
     healthCheck: {
       path: '/healthcheck',
       timeout: 5,
+      interval: 5,
+      healthyThreshold: 3,
     },
     tags: t(),
   });
@@ -124,6 +128,14 @@ export function createECSResources({
     {
       name: 'PORT',
       value: pulumi.interpolate`${targetGroup.targetGroup.port}`,
+    },
+    {
+      name: 'AWS_ACCESS_KEY_ID',
+      value: pulumi.interpolate`${bucketUserCreds.id}`,
+    },
+    {
+      name: 'AWS_SECRET_ACCESS_KEY',
+      value: pulumi.interpolate`${bucketUserCreds.secret}`,
     },
   ];
 

@@ -15,6 +15,32 @@ interface PolicyI {
   privateBucket: aws.s3.Bucket;
 }
 export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
+  const bucketUser = new aws.iam.User(n('private-bucket-user'), {
+    tags: t(),
+  });
+
+  const bucketUserCreds = new aws.iam.AccessKey(n('bucket-access-key'), {
+    user: bucketUser.name,
+  });
+
+  const policy = new aws.iam.Policy('allow-s3-management-policy', {
+    policy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: '*',
+          Resource: pulumi.interpolate`${privateBucket.arn}/*`,
+        },
+      ],
+    },
+  });
+
+  new aws.iam.UserPolicy(n('verdaccio-user-policy'), {
+    user: verdaccioUser.name,
+    policy: policy.policy,
+  });
+
   const taskRole = new aws.iam.Role(n('task-role'), {
     assumeRolePolicy: JSON.stringify(
       awsx.ecs.TaskDefinition.defaultRoleAssumeRolePolicy(),
@@ -267,5 +293,5 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
       }),
     ),
   });
-  return { taskRole, executionRole, lambdaRole };
+  return { taskRole, executionRole, lambdaRole, bucketUserCreds };
 }
