@@ -37,7 +37,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
   });
 
   new aws.iam.UserPolicy(n('verdaccio-user-policy'), {
-    user: verdaccioUser.name,
+    user: bucketUser.name,
     policy: policy.policy,
   });
 

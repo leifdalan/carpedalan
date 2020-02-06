@@ -76,7 +76,7 @@ async function main() {
     });
   }
 
-  const { taskRole, executionRole, lambdaRole } = getPolicies({
+  const { taskRole, executionRole, lambdaRole, bucketUserCreds } = getPolicies({
     secrets,
     privateBucket,
     rds,
@@ -105,6 +105,7 @@ async function main() {
     privateDistroDomain,
     publicDistroDomain,
     publicBucket,
+    bucketUserCreds,
     albCertificateArn: newCert,
   });
 
