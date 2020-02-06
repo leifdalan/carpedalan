@@ -37,12 +37,6 @@ FROM base as prod
 # COPY --from=client-build /client/dist/ /app/server/dist
 COPY dist server/dist
 
-ARG CIRCLE_SHA1
-ARG CIRCLE_BUILD_NUM
-ARG CIRCLE_BRANCH
-ENV CIRCLE_SHA1=$CIRCLE_SHA1
-ENV CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM
-ENV CIRCLE_BRANCH=$CIRCLE_BRANCH
 ENV NODE_ENV=production
 
 CMD ["yarn", "start:prod"]
