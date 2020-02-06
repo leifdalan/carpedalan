@@ -14,6 +14,8 @@ dotenv.config({
   ),
 });
 
+console.log('ENV!', process.env.PG_HOST);
+
 module.exports = {
   development: {
     client: 'pg',
