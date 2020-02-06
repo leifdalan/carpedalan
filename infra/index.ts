@@ -34,12 +34,6 @@ async function main() {
     namespace: 'assets',
   });
 
-  const albCert = makeCerts({
-    region: 'us-east-1',
-    domain: targetDomain,
-    namespace: 'main',
-  });
-
   const newCert = makeCerts({
     region: 'us-west-2',
     domain: targetDomain,
