@@ -69,18 +69,18 @@ async function main() {
   });
 
   // For each file in the directory, create an S3 object stored in `siteBucket`
-  const siteDir = './server/dist';
-  for (const item of require('fs').readdirSync(
-    path.join(__dirname, '..', 'server', 'dist'),
-  )) {
-    const filePath = path.join(__dirname, '..', 'server', 'dist', item);
-    const object = new aws.s3.BucketObject(item, {
-      bucket: publicBucket,
-      source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
-      contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
-      contentEncoding: 'gzip',
-    });
-  }
+  // const siteDir = './server/dist';
+  // for (const item of require('fs').readdirSync(
+  //   path.join(__dirname, '..', 'server', 'dist'),
+  // )) {
+  //   const filePath = path.join(__dirname, '..', 'server', 'dist', item);
+  //   const object = new aws.s3.BucketObject(item, {
+  //     bucket: publicBucket,
+  //     source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
+  //     contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
+  //     contentEncoding: 'gzip',
+  //   });
+  // }
 
   const { taskRole, executionRole, lambdaRole } = getPolicies({
     secrets,

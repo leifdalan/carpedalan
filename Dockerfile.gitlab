@@ -73,3 +73,5 @@ RUN if [ "$PULUMI_VERSION" = "latest" ]; then \
     curl -fsSL https://get.pulumi.com/ | bash -s -- --version $(echo $PULUMI_VERSION | cut -c 2-); \
   fi && \
   mv ~/.pulumi/bin/* /usr/bin
+RUN pulumi plugin install resource aws v1.18.0
+RUN pulumi plugin install resource aws v1.5.0
