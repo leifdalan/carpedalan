@@ -35,7 +35,7 @@ EXPOSE 9229
 
 FROM base as prod
 # COPY --from=client-build /client/dist/ /app/server/dist
-COPY ./dist server/dist
+COPY dist server/dist
 
 ARG CIRCLE_SHA1
 ARG CIRCLE_BUILD_NUM
