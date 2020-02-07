@@ -60,7 +60,7 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify('production'),
         LOG_LEVEL: JSON.stringify(process.env.LOG_LEVEL),
-        CDN_DOMAIN: JSON.stringify(process.env.CDN_DOMAIN),
+        ASSET_CDN_DOMAIN: JSON.stringify(process.env.ASSET_CDN_DOMAIN),
       },
     }),
     new Manifest({
