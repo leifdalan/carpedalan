@@ -10,6 +10,7 @@ interface PolicyI {
     adminPassword: aws.secretsmanager.Secret;
     publicPassword: aws.secretsmanager.Secret;
     sessionSecret: aws.secretsmanager.Secret;
+    cfKeySecret: aws.secretsmanager.Secret;
   };
   rds: aws.rds.Instance;
   privateBucket: aws.s3.Bucket;
@@ -67,6 +68,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
           secrets.adminPassword.arn,
           secrets.publicPassword.arn,
           secrets.sessionSecret.arn,
+          secrets.cfKeySecret.arn,
           rds.arn,
         ])
         .apply(
@@ -77,6 +79,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
             admin,
             publicPass,
             session,
+            cfKey,
             rdsArn,
           ]) =>
             JSON.stringify({
@@ -96,6 +99,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
                     admin,
                     publicPass,
                     session,
+                    cfKey,
                     // key id?
                   ],
                 },
