@@ -8,9 +8,9 @@ if (env.NODE_ENV === 'ci') {
   env = dotenv.config({ path: path.resolve(process.cwd(), '.env.ci') }).parsed;
 }
 
-export const branch = env.CIRCLE_BRANCH;
-export const buildNum = env.CIRCLE_BUILD_NUM;
-export const sha1 = env.CIRCLE_SHA1;
+export const branch = env.CI_COMMIT_REF_NAME;
+export const buildNum = env.CI_JOB_ID;
+export const sha1 = env.CI_COMMIT_SHA;
 export const publicPassword = env.PUBLIC_PASSWORD;
 export const adminPassword = env.ADMIN_PASSWORD;
 export const sessionSecret = env.SESSION_SECRET;

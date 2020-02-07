@@ -9,6 +9,9 @@ const {
   S3_ASSETS_BUCKET,
   CIRCLE_SHA1,
   ASSET_CDN_DOMAIN,
+  CI_JOB_ID,
+  CI_COMMIT_SHA,
+  CI_COMMIT_REF_NAME,
 } = process.env;
 interface CreateI {
   vpc: awsx.ec2.Vpc;
@@ -134,6 +137,18 @@ export function createECSResources({
     {
       name: 'AWS_SECRET_ACCESS_KEY',
       value: pulumi.interpolate`${bucketUserCreds.secret}`,
+    },
+    {
+      name: 'CI_JOB_ID',
+      value: CI_JOB_ID,
+    },
+    {
+      name: 'CI_COMMIT_SHA',
+      value: CI_COMMIT_SHA,
+    },
+    {
+      name: 'CI_COMMIT_REF_NAME',
+      value: CI_COMMIT_REF_NAME,
     },
   ];
 

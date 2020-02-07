@@ -78,7 +78,7 @@ export const setup = () => {
     res.type('text/plain');
     res.send('User-agent: *\nDisallow: /');
   });
-  app.use('/dist', express.static('dist'));
+  app.use('/dist', express.static('server/dist'));
   app.use('/public', express.static('public'));
   app.use('/sw.js', express.static('server/sw.js'));
 
