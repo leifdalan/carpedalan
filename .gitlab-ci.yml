@@ -157,6 +157,7 @@ deploy:
   script:
     - ls -al
     - ls -al dist
+    = cat dist/manifest.json
     - docker load --input api.tar
     - pulumi up --yes --non-interactive
   dependencies:
