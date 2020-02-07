@@ -44,7 +44,7 @@ export function createBucket({
   const privateBucket = new aws.s3.Bucket(n('private-bucket'), {
     acl: 'private',
     forceDestroy: true,
-    ...(allowCors ? corsRules(mainDomain) : {}),
+    ...(allowCors ? { corsRules: corsRules(mainDomain) } : {}),
     tags: t(),
   });
 
