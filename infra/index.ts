@@ -61,6 +61,7 @@ async function main() {
     domain: publicDistroDomain,
     namespace: 'public-cdn',
     isPrivate: false,
+    allowCors: true,
   });
 
   // For each file in the directory, create an S3 object stored in `siteBucket`

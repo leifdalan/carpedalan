@@ -11,7 +11,15 @@ interface GetBucketsI {
   namespace: string;
   certificateArn: pulumi.OutputInstance<string>;
   isPrivate: boolean;
+  allowCors?: boolean;
 }
+const corsRules = (domain: string) => [
+  {
+    allowedHeaders: ['*'],
+    allowedMethods: ['PUT', 'POST', 'GET', 'HEAD', 'DELETE'],
+    allowedOrigins: [`https://${domain}`],
+  },
+];
 
 export function createBucket({
   isPrivate = false,
@@ -19,6 +27,7 @@ export function createBucket({
   namespace,
   certificateArn,
   mainDomain,
+  allowCors = false,
 }: GetBucketsI) {
   /* tslint:disable-next-line */
   function n(resource: string) {
@@ -35,6 +44,7 @@ export function createBucket({
   const privateBucket = new aws.s3.Bucket(n('private-bucket'), {
     acl: 'private',
     forceDestroy: true,
+    ...(allowCors ? corsRules(mainDomain) : {}),
     tags: t(),
   });
 
