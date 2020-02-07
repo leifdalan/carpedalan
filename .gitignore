@@ -98,3 +98,9 @@ dist
 *.zip
 .sql
 .localstack
+imageResizer/layer/nodejs/false
+imageResizer/layer/nodejs/include
+imageResizer/layer/nodejs/
+imageResizer/layer/nodejs/platform.json
+imageResizer/layer/nodejs/versions.json
+
