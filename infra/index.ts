@@ -132,6 +132,7 @@ async function main() {
     ],
   });
   return {
+    revisionNumber: taskDefinition.taskDefinition.revision,
     secrets: secrets.pgUserSecret,
     layerArn: layer.arn,
     containers: taskDefinition.containers.web.image.imageResult,
