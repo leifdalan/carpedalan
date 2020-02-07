@@ -156,6 +156,7 @@ deploy:
       - node_modules
   script:
     - ls -al
+    - ls -al dist
     - docker load --input api.tar
     - pulumi up --yes --non-interactive
   dependencies:
