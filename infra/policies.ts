@@ -185,6 +185,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
           secrets.adminPassword.arn,
           secrets.publicPassword.arn,
           secrets.sessionSecret.arn,
+          secrets.cfKeySecret.arn,
           rds.arn,
         ])
         .apply(
@@ -195,6 +196,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
             admin,
             publicPass,
             session,
+            cfKey,
             rdsArn,
           ]) =>
             JSON.stringify({
@@ -214,6 +216,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
                     admin,
                     publicPass,
                     session,
+                    cfKey,
                     // key id?
                   ],
                 },
