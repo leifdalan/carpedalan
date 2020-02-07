@@ -96,11 +96,6 @@ build layer deps:
     expire_in: 30 days
     paths:
       - imageResizer/layer/
-
-  cache:
-    key: layer-dep
-    paths:
-      - imageResizer/layer/
   
 # e2e:
 #   stage: test
