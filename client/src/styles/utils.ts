@@ -27,7 +27,7 @@ export const getThemeValue = (value: string) => ({
   theme: StyledProp;
 }) => theme[value];
 
-export const cdn = process.env.CDN_DOMAIN;
+export const cdn = process.env.ASSET_CDN_DOMAIN;
 
 // tslint:disable-next-line
 export function prop<T>(value: keyof T): (props: T) => any {
