@@ -6,11 +6,12 @@
     "build:prod": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' NODE_ENV=production webpack --config webpack.config.prod.js --mode=production",
     "build": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' webpack --config webpack.config.js --mode=development",
     "clean": "rm -rf dist",
-    "lint": "tslint --project .",
+    "lint": "eslint .",
     "test": "jest"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^5.1.1",
+    "compression-webpack-plugin": "^3.1.0",
     "date-fns": "2.9.0",
     "lodash": "^4.17.15",
     "react": "^16.12.0",
@@ -22,6 +23,7 @@
     "react-window": "^1.8.5",
     "react-window-infinite-loader": "^1.0.5",
     "styled-components": "^5.0.0",
+    "ts-loader": "^6.2.1",
     "tslib": "^1.10.0",
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",
@@ -33,9 +35,7 @@
     "webpack-manifest-plugin": "^2.2.0",
     "webpack-s3-plugin": "^1.0.3",
     "webpack-stats-plugin": "^0.3.1",
-    "webpack-stylish": "^0.1.8",
-    "ts-loader": "^6.2.1",
-    "compression-webpack-plugin": "^3.1.0"
+    "webpack-stylish": "^0.1.8"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
@@ -66,6 +66,8 @@
     "@types/webpack-dev-middleware": "^2.0.3",
     "@types/webpack-env": "^1.15.1",
     "@types/webpack-hot-middleware": "^2.25.0",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
     "axios": "^0.19.2",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
@@ -76,6 +78,8 @@
     "enzyme-adapter-react-16": "^1.15.2",
     "enzyme-to-json": "^3.4.4",
     "eslint": "^6.8.0",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.20.1",
     "express": "^4.17.1",
     "fork-ts-checker-webpack-plugin": "^4.0.3",
     "happypack": "^5.0.1",
@@ -83,15 +87,7 @@
     "prettier": "1.19.1",
     "react-hot-loader": "^4.12.19",
     "ts-jest": "^25.2.0",
-    
-    "tslint": "^6.0.0",
-    "tslint-config-airbnb": "^5.11.2",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.1.0",
-    "tslint-react": "^4.2.0",
-    "tslint-react-hooks": "^2.2.1",
     "typedoc": "^0.16.9",
     "typescript-styled-plugin": "^0.15.0"
-
   }
 }

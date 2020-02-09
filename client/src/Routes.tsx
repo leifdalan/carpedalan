@@ -4,7 +4,7 @@ import useUser from 'hooks/useUser';
 import Login from 'pages/Login';
 import Request from 'pages/Request';
 import * as React from 'react';
-import { Link, Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import useTags from 'hooks/useTags';
 import debug from 'debug';
 import { onClose } from 'components/Modal';
@@ -45,17 +45,17 @@ const Routes: React.FC = () => {
     <Suspense fallback={<Spinner />}>
       <SidebarAndMenu />
       <Switch>
-        <Route exact={true} path="/request" component={Request} />
+        <Route exact path="/request" component={Request} />
 
         {globalUser ? (
-          <Route exact={true} path="/" component={LazySlash} />
+          <Route exact path="/" component={LazySlash} />
         ) : (
-          <Route exact={true} path="/" component={Login} />
+          <Route exact path="/" component={Login} />
         )}
         {globalUser ? (
           <Route path="/gallery" component={LazySlash} />
         ) : (
-          <Route exact={true} path="/" component={Login} />
+          <Route exact path="/" component={Login} />
         )}
         {globalUser ? (
           <Route
