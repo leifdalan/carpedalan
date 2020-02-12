@@ -34,7 +34,7 @@ build client:
   script: 
     - ls -al
     - '[ -f ./client.tar ] && docker load --input client.tar'
-    - docker build -t client:latest -f client/Dockerfile --cache-from client:latest --cache-from node:12-slim ./client
+    - docker build -t client:latest -f client/Dockerfile --cache-from client:latest --cache-from node:12-slim .
     - docker run -v "$PWD/dist":/app/dist -e "ASSET_CDN_DOMAIN=cdn.carpe.dalan.dev" client:latest yarn build:prod
     - ls -al
     - docker save client:latest > client.tar
@@ -107,8 +107,6 @@ e2e:
     - build client
     - build api
   script: 
-    # - yarn unit
-    # - yarn integration
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker load --input api.tar
     - docker load --input client.tar

@@ -84,7 +84,7 @@ const Login: React.FC<{}> = (): React.ReactElement => {
         data-testid="submit"
         onSubmit={handleSubmit}
       >
-        <StyledTitle center>Loginss</StyledTitle>
+        <StyledTitle center>Login</StyledTitle>
         {user}
         <Input>
           <input data-test="password" type="password" {...passwordInput} />
