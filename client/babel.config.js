@@ -9,4 +9,9 @@ module.exports = {
     '@babel/proposal-class-properties',
     '@babel/proposal-object-rest-spread',
   ],
+  env: {
+    test: {
+      plugins: [],
+    },
+  }
 };

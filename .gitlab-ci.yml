@@ -57,7 +57,7 @@ build api:
   script: 
     - ls -al
     - '[ -f ./api.tar ] && docker load --input api.tar'
-    - docker build -t api:latest -f server/Dockerfile --cache-from api:latest --cache-from node:12-alpine .
+    - docker build -t api:latest -f server/Dockerfile --cache-from api:latest --cache-from node:12-alpine . --target=dev
     - docker save api:latest > api.tar
 
 dependencies:
