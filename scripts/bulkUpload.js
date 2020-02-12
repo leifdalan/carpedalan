@@ -2,17 +2,13 @@ const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const { performance } = require('perf_hooks');
-const { spawnSync } = require('child_process');
 const https = require('https');
 
 https.globalAgent.options.secureProtocol = 'SSLv3_method';
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const request = require('superagent');
-const aws = require('aws-sdk');
 
 const writeUserAgent = request.agent();
-
-const s3 = new aws.S3();
 
 // check this first
 const folder = process.argv[2];
@@ -33,10 +29,9 @@ async function main() {
     const hardBeginning = performance.now();
     await Promise.all(
       dataFiles.map(async file => {
-        const startTime = performance.now();
         console.log('file', file);
         try {
-          const response2 = await writeUserAgent
+          await writeUserAgent
             .post('https://local.carpedalan.com/v1/posts')
             .send({
               description: '',

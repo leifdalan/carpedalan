@@ -1,18 +1,10 @@
-import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
+import * as pulumi from '@pulumi/pulumi';
+
 import { getResourceName as n, getTags as t } from './utils';
 
-const {
-  AWS_ACCESS_KEY_ID,
-  AWS_SECRET_ACCESS_KEY,
-  S3_ASSETS_BUCKET,
-  CIRCLE_SHA1,
-  ASSET_CDN_DOMAIN,
-  CI_JOB_ID,
-  CI_COMMIT_SHA,
-  CI_COMMIT_REF_NAME,
-} = process.env;
+const { CI_JOB_ID, CI_COMMIT_SHA, CI_COMMIT_REF_NAME } = process.env;
 interface CreateI {
   vpc: awsx.ec2.Vpc;
   albCertificateArn: pulumi.OutputInstance<string>;
@@ -51,7 +43,6 @@ export function createECSResources({
   targetDomain,
   publicDistroDomain,
   privateDistroDomain,
-  publicBucket,
   bucketUserCreds,
 }: CreateI) {
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
@@ -211,7 +202,7 @@ export function createECSResources({
     },
   });
 
-  const service = new awsx.ecs.EC2Service(n('service'), {
+  new awsx.ecs.EC2Service(n('service'), {
     cluster,
     taskDefinition,
     desiredCount: 1,

@@ -2,11 +2,8 @@
 
 const sharp = require('./node_modules/sharp/lib');
 const aws = require('./node_modules/aws-sdk');
-// const sqip = require('sqip');
 const knex = require('./node_modules/knex/types/knex');
 const exif = require('./node_modules/exif-parser');
-// const pg = require('pg');
-
 const { SIZES, EXIFPROPS } = require('./constants');
 
 const s3 = new aws.S3();

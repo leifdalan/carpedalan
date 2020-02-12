@@ -1,11 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies,prefer-destructuring,no-console,import/no-unresolved */
 
-const sharp = require('./node_modules/sharp/lib');
-const aws = require('./node_modules/aws-sdk');
-// const sqip = require('sqip');
-const knex = require('./node_modules/knex/types/knex');
-const exif = require('./node_modules/exif-parser');
-// const pg = require('pg');
+const sharp = require('sharp');
+const aws = require('aws-sdk');
+const knex = require('knex');
+const exif = require('exif-parser');
 
 const { SIZES, EXIFPROPS } = require('./constants');
 

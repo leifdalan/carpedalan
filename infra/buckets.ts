@@ -1,9 +1,8 @@
-import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
-
-import { getResourceName as name, getTags as t } from './utils';
+import * as pulumi from '@pulumi/pulumi';
 
 import { getDomainAndSubdomain } from './certs';
+import { getResourceName as name, getTags as t } from './utils';
 
 interface GetBucketsI {
   domain: string;

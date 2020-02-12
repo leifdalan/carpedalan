@@ -1,6 +1,6 @@
-import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
-import * as awsx from '@pulumi/awsx';
+import * as pulumi from '@pulumi/pulumi';
+
 import { getResourceName as n, getTags as t } from './utils';
 
 interface SecretsI {
@@ -41,10 +41,9 @@ export function getSecrets({ config }: SecretsI) {
   const cfKeySecret = new aws.secretsmanager.Secret(n('cfKey'), {
     tags: t(),
   });
-  let secretVersion;
 
   if (privateKey) {
-    secretVersion = new aws.secretsmanager.SecretVersion(n('private-key'), {
+    new aws.secretsmanager.SecretVersion(n('private-key'), {
       secretId: privateKeySecret.id,
       secretString: privateKey,
     });

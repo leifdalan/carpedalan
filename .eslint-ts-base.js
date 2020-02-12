@@ -107,7 +107,12 @@ module.exports = {
         "import/no-extraneous-dependencies": "off",
         "@typescript-eslint/no-unused-vars": "off"
       }
+    },
+    {
+      "files": ["infra/**/*"],
+      "rules": {
+        "no-new": "off"
+      }
     }
   ]
-
 }

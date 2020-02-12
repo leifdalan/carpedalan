@@ -1,22 +1,20 @@
-import * as pulumi from '@pulumi/pulumi';
-import * as aws from '@pulumi/aws';
 import * as fs from 'fs';
-
-import * as mime from 'mime';
 import * as path from 'path';
-import { makeCerts, getDomainAndSubdomain } from './certs';
-import { makeVpc } from './vpc';
+
+import * as aws from '@pulumi/aws';
+import * as pulumi from '@pulumi/pulumi';
+import * as mime from 'mime';
+
 import { createBucket } from './buckets';
+import { makeCerts, getDomainAndSubdomain } from './certs';
 import { createECSResources } from './ecs';
+import { getLambdas } from './lambdas';
+import { getPolicies } from './policies';
 import { makeDB } from './rds';
 import { getSecrets } from './secrets';
-import { getPolicies } from './policies';
-import { getLambdas } from './lambdas';
-import { getResourceName as n } from './utils';
+import { makeVpc } from './vpc';
 
 async function main() {
-  const accountNameSpace = 'dalan';
-
   const config = new pulumi.Config();
 
   const { secrets } = getSecrets({ config });
@@ -41,7 +39,7 @@ async function main() {
     namespace: 'main-domain',
   });
 
-  const { postgresSg, sg, vpc } = makeVpc(targetDomain, accountNameSpace);
+  const { postgresSg, sg, vpc } = makeVpc();
 
   const { rds } = makeDB({ vpc, postgresSg, config });
 
@@ -67,7 +65,7 @@ async function main() {
   // For each file in the directory, create an S3 object stored in `siteBucket`
   for (const item of fs.readdirSync(path.join(__dirname, '..', 'dist'))) {
     const filePath = path.join(__dirname, '..', 'dist', item);
-    const object = new aws.s3.BucketObject(item, {
+    new aws.s3.BucketObject(item, {
       bucket: publicBucket,
       source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
       contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
@@ -78,7 +76,7 @@ async function main() {
   // For each file in the directory, create an S3 object stored in `siteBucket`
   for (const item of fs.readdirSync(path.join(__dirname, '..', 'public'))) {
     const filePath = path.join(__dirname, '..', 'public', item);
-    const object = new aws.s3.BucketObject(item, {
+    new aws.s3.BucketObject(item, {
       bucket: publicBucket,
       source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
       contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
@@ -120,7 +118,7 @@ async function main() {
 
   const domainParts = getDomainAndSubdomain(targetDomain);
   const hostedZone = aws.route53.getZone({ name: domainParts.parentDomain });
-  const aliasRecord = new aws.route53.Record(targetDomain, {
+  new aws.route53.Record(targetDomain, {
     name: targetDomain,
     zoneId: hostedZone.zoneId,
     type: 'A',

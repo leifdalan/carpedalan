@@ -1,4 +1,4 @@
-{
+module.exports = {
   "parser": "babel-eslint",
   "extends": ["airbnb-base", "prettier", "plugin:jest/recommended"],
   "plugins": ["prettier", "jest"],
@@ -32,6 +32,13 @@
       "rules": {
         "jest/valid-expect": "off",
         "jest/expect-expect": "off"
+      } 
+
+    }, {
+      "files": ["scripts/**/*", "db/**/*"],
+      "rules": {
+        "no-console": "off",
+        "import/no-extraneous-dependencies": "off"
       } 
     }
   ]

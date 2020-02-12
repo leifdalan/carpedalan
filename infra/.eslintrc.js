@@ -1,5 +1,7 @@
+const base = require('../.eslint-ts-base');
+
 const config = {
-    ...require('../.eslint-ts-base'),
+    ...base,
     "parserOptions": {
       "project": "./infra/tsconfig.json",
       "tsconfigRootDir": "./"
@@ -14,7 +16,12 @@ const config = {
   
       },
     },
-  
+    rules: {
+      ...base.rules,
+      "no-new": "off",
+      "@typescript-eslint/ban-ts-ignore": "warn",
+      "import/no-extraneous-dependencies": "off"
+    }
   
   }
   

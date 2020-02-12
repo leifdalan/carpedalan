@@ -1,5 +1,5 @@
-import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
+import * as pulumi from '@pulumi/pulumi';
 
 export function getResourceName(name: string) {
   return `${pulumi.getProject()}-${pulumi.getStack()}-${name}`;

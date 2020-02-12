@@ -1,21 +1,18 @@
-const crypto = require('crypto');
-
 const AWS = require('aws-sdk');
-const express = require('express');
 
-const bucket = 'something';
-const accessKeyId = 'AAAAAAAAAAAAAAAA'; // Generated on step 1
-const secretAccessKey = 'farts'; // Generated on step 1
+// const bucket = 'something';
+// const accessKeyId = 'AAAAAAAAAAAAAAAA'; // Generated on step 1
+// const secretAccessKey = 'farts'; // Generated on step 1
 
-const awsS3Config = {
-  bucket,
-  access_key: accessKeyId,
-  secret_key: secretAccessKey,
-  region: 'us-west-2',
-  acl: 'public-read', // to allow the uploaded file to be publicly accessible
-  'x-amz-algorithm': 'AWS4-HMAC-SHA256', // algorithm used for signing the policy document
-  success_action_status: '201', // to return an XML object to the browser detailing the file state
-};
+// const awsS3Config = {
+//   bucket,
+//   access_key: accessKeyId,
+//   secret_key: secretAccessKey,
+//   region: 'us-west-2',
+//   acl: 'public-read', // to allow the uploaded file to be publicly accessible
+//   'x-amz-algorithm': 'AWS4-HMAC-SHA256', // algorithm used for signing the policy document
+//   success_action_status: '201', // to return an XML object to the browser detailing the file state
+// };
 
 const main = async () => {
   const Bucket = 'something';
@@ -62,12 +59,12 @@ const main = async () => {
   return signedURL;
 };
 
-const params = getS3Parameters(awsS3Config, 'test.jpg');
-const result = {
-  upload_url: `http://hello.localhost:4572`,
-  params,
-};
+// const params = getS3Parameters(awsS3Config, 'test.jpg');
+// const result = {
+//   upload_url: `http://hello.localhost:4572`,
+//   params,
+// };
 
-console.log(JSON.stringify(result, null, 2));
+// console.log(JSON.stringify(result, null, 2));
 
 main();

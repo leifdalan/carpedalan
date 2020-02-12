@@ -1,6 +1,7 @@
-import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
+import * as pulumi from '@pulumi/pulumi';
+
 import { getResourceName as n, getTags as t } from './utils';
 
 interface LambdaI {
@@ -48,16 +49,13 @@ export function getLambdas({
         PG_URI: rds.endpoint,
       },
     },
+    tags: t(),
     description:
       'A process to create thumbnails, upload them to s3, and update the database',
   });
 
-  const something = privateBucket.onObjectCreated(
-    n('bucket-handler'),
-    photoLambda,
-    {
-      filterPrefix: 'raw/',
-    },
-  );
+  privateBucket.onObjectCreated(n('bucket-handler'), photoLambda, {
+    filterPrefix: 'raw/',
+  });
   return { layer: depLayer };
 }

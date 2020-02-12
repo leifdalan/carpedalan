@@ -4,12 +4,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 
-const webpack = require('webpack');
-const Stylish = require('webpack-stylish');
-const Manifest = require('webpack-manifest-plugin');
-// const S3Plugin = require('webpack-s3-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const Manifest = require('webpack-manifest-plugin');
+const Stylish = require('webpack-stylish');
+// const S3Plugin = require('webpack-s3-plugin');
 
 const isProdBuildForLocal = process.env.PROD_BUILD === 'true';
 module.exports = {
