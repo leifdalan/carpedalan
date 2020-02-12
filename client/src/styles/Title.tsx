@@ -32,5 +32,5 @@ export default styled.h1<TitleProps>`
       ? css`
           text-align: center;
         `
-      : null};
+      : null}
 `;

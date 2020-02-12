@@ -7,7 +7,8 @@
     "build": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' webpack --config webpack.config.js --mode=development",
     "clean": "rm -rf dist",
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "lint:css":"stylelint './src/**/*.tsx'"
   },
   "dependencies": {
     "@babel/polyfill": "^7.8.3",
@@ -102,6 +103,10 @@
     "prettier": "^1.19.1",
     "prettier-eslint": "^9.0.1",
     "react-hot-loader": "^4.12.19",
+    "stylelint": "^13.1.0",
+    "stylelint-config-recommended": "^3.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.9.0",
     "ts-jest": "^25.2.0",
     "typedoc": "^0.16.9",
     "typescript-styled-plugin": "^0.15.0"

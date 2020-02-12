@@ -12,10 +12,8 @@ interface MenuProps {
 }
 
 const Menu = styled(Title)<MenuProps>`
-  background: none;
   color: inherit;
   border: none;
-  padding: 0;
   cursor: pointer;
   outline: inherit;
   position: fixed;
