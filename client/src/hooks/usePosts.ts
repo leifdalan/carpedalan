@@ -170,7 +170,7 @@ const usePosts = (): UsePost => {
       setAllPosts(newAllPosts);
       setPosts(newAllPosts);
     }
-  }, [response]);
+  }, [allPosts, postsByPage, response, setPosts, total]);
 
   return { response, loading, error, request, posts: data.posts };
 };

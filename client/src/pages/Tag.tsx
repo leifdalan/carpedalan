@@ -73,20 +73,20 @@ const Tag = (
 
   const { hash, pathname } = useLocation();
 
-  const { match } = props;
-
   function isGrid() {
     return hash.includes('grid');
   }
 
+  const { match } = props;
   /**
    * Add Title to posts list
    */
   useEffect(() => {
     log('%c post dep changed', 'background: blue;');
+
     if (response) {
       const newPosts = [...response.data];
-      newPosts.unshift({ key: props.match.params.tagName });
+      newPosts.unshift({ key: match.params.tagName });
       const newPostsWithFake = newPosts.map(post => ({
         ...post,
         fake: false,
@@ -96,7 +96,7 @@ const Tag = (
       setPostsWithTitle(newPostsWithFake);
       addPosts(newPostsWithFake);
     }
-  }, [response]);
+  }, [addPosts, match.params.tagName, response]);
 
   /**
    * Fetch posts by tag when the tags change, or the tagName (route)
@@ -104,13 +104,13 @@ const Tag = (
    */
   useEffect(() => {
     if (tags.length) {
-      const tag = tags.find(tag => tag.name === props.match.params.tagName);
+      const tag = tags.find(tag => tag.name === match.params.tagName);
       if (tag && tag.id) {
         request(tag.id);
         gridRef.current += 1;
       }
     }
-  }, [tags, match.params.tagName]);
+  }, [tags, match.params.tagName, request]);
 
   log('loading', loading);
 

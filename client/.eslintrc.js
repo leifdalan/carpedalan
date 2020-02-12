@@ -67,6 +67,7 @@ module.exports = {
      * @description rules of eslint-plugin-react-hooks
      */
     "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error",
     "react/jsx-props-no-spreading": "off",
     "jsx-a11y/label-has-associated-control": "off",
     "no-restricted-syntax": "off",

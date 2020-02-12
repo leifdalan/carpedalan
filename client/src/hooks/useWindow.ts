@@ -21,7 +21,7 @@ const useWindow = () => {
   useEffect(() => {
     window.addEventListener('resize', throttledSetWindow);
     return () => window.removeEventListener('resize', throttledSetWindow);
-  }, []);
+  }, [throttledSetWindow]);
   return { width, height };
 };
 

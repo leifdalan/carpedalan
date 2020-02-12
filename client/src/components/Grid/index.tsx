@@ -64,7 +64,7 @@ const Grid = ({
       const { width } = wrapperRef.current.getBoundingClientRect();
       setRefWidth(width);
     }
-  }, [wrapperRef.current, width]);
+  }, [width]);
 
   /**
    * Triggered if isItemLoaded returns false

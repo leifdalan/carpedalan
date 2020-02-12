@@ -69,10 +69,6 @@ services:
       aws: 
         condition: service_started
 
-    ports:
-      - "80:80"
-      - "443:443"
-
 
   client:
     stdin_open: true

@@ -54,7 +54,7 @@ export default function useTags(): UseTags {
     if (response) {
       setTags(response);
     }
-  }, [response]);
+  }, [response, setTags]);
 
   return {
     tags: data.tags,

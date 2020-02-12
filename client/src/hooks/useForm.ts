@@ -118,7 +118,7 @@ export default function useForm(formName: string) {
 
   useEffect(() => {
     formStore = forms;
-  }, []);
+  }, [forms]);
 
   /**
    * Function used for setting a value on a given field for the form

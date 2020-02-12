@@ -111,6 +111,7 @@ e2e:
     - docker load --input api.tar
     - docker load --input client.tar
     - yarn e2e
+
 integration:
   stage: test
   before_script:
@@ -120,10 +121,9 @@ integration:
   dependencies:
     - build api
   script: 
-    # - yarn unit
-    # - yarn integration
     - docker load --input api.tar
     - yarn integration
+
 unit:
   stage: test
   before_script:
@@ -133,10 +133,9 @@ unit:
   dependencies:
     - build client
   script: 
-    # - yarn unit
-    # - yarn integration
     - docker load --input client.tar
     - yarn unit
+
 lint:
   stage: test
   image: node:12-slim
