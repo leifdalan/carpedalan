@@ -82,10 +82,10 @@ services:
       file: docker-compose.base.yml
       service: client
     volumes:
-      - ./client/jest.config.js:/app/jest.config.js
-      - ./client/setupTests.js:/app/setupTests.js
-      - ./client/dist:/app/dist
-      - ./client/tsconfig.test.json:/app/tsconfig.test.json
+      - ./client/jest.config.js:/app/client/jest.config.js
+      - ./client/setupTests.js:/app/client/setupTests.js
+      - ./client/dist:/app/client/dist
+      - ./client/tsconfig.test.json:/app/client/tsconfig.test.json
     env_file: 
       - .env.ci
     environment: 

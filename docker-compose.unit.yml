@@ -11,9 +11,9 @@ services:
       service: client
     command: ['yarn', 'test']
     volumes:
-      - ./client/jest.config.js:/app/jest.config.js
-      - ./client/setupTests.js:/app/setupTests.js
-      - ./client/tsconfig.test.json:/app/tsconfig.test.json
+      - ./client/jest.config.js:/app/client/jest.config.js
+      - ./client/setupTests.js:/app/client/setupTests.js
+      - ./client/tsconfig.test.json:/app/client/tsconfig.test.json
     env_file: 
       - .env.ci
 

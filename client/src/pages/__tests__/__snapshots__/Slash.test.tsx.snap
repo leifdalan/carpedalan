@@ -6,7 +6,7 @@ Object {
   "baseElement": <body>
     <div>
       <div
-        class="sc-fzXfMv kAzWrd"
+        class="sc-fzoyAV EPdHC"
       >
         <a
           href="/#grid"
@@ -15,7 +15,7 @@ Object {
         </a>
       </div>
       <div
-        class="sc-fzXfLX hTIbaO"
+        class="sc-fzqNJr cemWGa"
         data-testid="home"
       >
         <div
@@ -40,7 +40,7 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="sc-fzXfMv kAzWrd"
+      class="sc-fzoyAV EPdHC"
     >
       <a
         href="/#grid"
@@ -49,7 +49,7 @@ Object {
       </a>
     </div>
     <div
-      class="sc-fzXfLX hTIbaO"
+      class="sc-fzqNJr cemWGa"
       data-testid="home"
     >
       <div
