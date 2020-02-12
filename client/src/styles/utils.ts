@@ -17,16 +17,52 @@ export const BODY_FONT = 'bodyFont';
 export const TITLE_FONT = 'titleFont';
 export const DANGER_COLOR = 'dangerColor';
 export const NEUTRAL_COLOR = 'neutralColor';
-export const getThemeValue = (value: keyof DefaultTheme) => ({
-  theme,
-}: {
-  theme: DefaultTheme;
-}) => theme[value];
-
 export const cdn = process.env.ASSET_CDN_DOMAIN;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function prop<T>(value: keyof T): (props: T) => any {
-  return props => props[value];
+
+/**
+ * Utility to be used in styled component interpolations to grab a specific
+ * theme value
+ * @example
+ * ```
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: ${getThemeValue('neutralColor')};
+`;
+```
+ *
+ * @export
+ * @param {keyof DefaultTheme} value
+ */
+export function getThemeValue(value: keyof DefaultTheme) {
+  return function({ theme }: { theme: DefaultTheme }) {
+    return theme[value];
+  };
+}
+
+/**
+ * Function to be used in styled-component interpolations. 
+ * @example
+ * ```
+interface IStyled {
+  width?: {
+    something: number;
+  };
+}
+
+const Styledz = styled.div<IStyled>`
+  width: ${`${prop('width')}as`}px;
+`;
+```
+ *
+ * @export
+ * @template T
+ * @param {keyof T} value
+ * @returns
+ */
+export function prop<T>(value: keyof T) {
+  return function(props: T) {
+    return props[value];
+  };
 }
 
 export const propTrueFalse = (

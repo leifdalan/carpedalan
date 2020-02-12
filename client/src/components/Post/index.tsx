@@ -14,6 +14,9 @@ import {
 } from 'styles/utils';
 import { getImageRatio, getOriginalImagePath } from 'utils';
 
+// Which works! and has type safety and autocomplete. Can you think of a way to do
+// type it without "any"?
+
 const Description = styled.div`
   padding: 1em 1em 0;
   li {
