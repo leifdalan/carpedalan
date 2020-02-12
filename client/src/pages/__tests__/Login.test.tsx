@@ -98,6 +98,5 @@ describe('<Login />', () => {
     );
     fireEvent.click(getByTestId('login-link'));
     const errorText = await waitForElement(() => getByTestId('submit'));
-
   });
 });
