@@ -23,8 +23,8 @@
   "author": "",
   "license": "ISC",
   "lint-staged": {
-    "*.{js,jsx}": [
-      "yarn lint --fix"
+    "*.{j|t}s?(x)": [
+      "eslint --fix"
     ]
   },
   "devDependencies": {
