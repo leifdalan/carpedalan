@@ -1,8 +1,10 @@
 import axios from 'axios';
 import debug from 'debug';
-import useApi from './useApi';
 import { useContext, useEffect } from 'react';
+
 import { DataContext, Data } from 'providers/Data';
+
+import useApi from './useApi';
 
 const log = debug('hooks:useTags');
 
@@ -42,8 +44,7 @@ export interface UseTags {
    *
    * @memberof UseTags
    */
-  /* tslint:disable-next-line no-any */
-  fetchTags: (arg?: any) => Promise<void>;
+  fetchTags: (arg?: unknown) => Promise<void>;
 }
 
 export default function useTags(): UseTags {

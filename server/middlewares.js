@@ -1,15 +1,4 @@
-import cf from 'aws-cloudfront-sign';
-
-import { CF_TIMEOUT } from '../shared/constants';
-
-import {
-  assets,
-  useProdAssets,
-  isProd,
-  cdnDomain,
-  domain,
-  cfKey,
-} from './config';
+import { assets, useProdAssets, isProd } from './config';
 import setSignedCloudfrontCookie from './api-v1/middlewares/setCloudfrontCookie';
 
 let clientAssets = false;

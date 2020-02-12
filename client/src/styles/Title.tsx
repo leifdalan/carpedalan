@@ -1,4 +1,4 @@
-import { css, default as styled } from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { getThemeValue, TITLE_FONT } from './utils';
 

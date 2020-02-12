@@ -10,7 +10,7 @@
   "main": "index.js",
   "scripts": {
     "setup": "./scripts/setup.sh",
-    "lint": "eslint db imageResizer scripts server shared  --ext .js,.jsx",
+    "lint": "eslint db imageResizer scripts server shared client infra cypress --ext .js,.jsx,.ts,.tsx",
     "integration": "COMPOSE_PROJECT_NAME=cd_test docker-compose -f docker-compose.integration.yml run api yarn integration",
     "regression": "COMPOSE_PROJECT_NAME=regression docker-compose -f docker-compose.regression.yml run --rm e2e yarn test",
     "unit": "COMPOSE_PROJECT_NAME=cd_unit docker-compose -f docker-compose.unit.yml run client yarn test",
@@ -54,10 +54,6 @@
     "prettier-eslint": "^9.0.1",
     "superagent": "^5.2.1",
     "supertest": "^4.0.2",
-    "tslint": "^5.20.1",
-    "tslint-config-airbnb": "^5.11.2",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.1.0",
     "typescript": "^3.7.4"
   },
   "dependencies": {

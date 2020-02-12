@@ -1,7 +1,8 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
-import * as awsx from '@pulumi/awsx';
+
 import { getResourceName as name, getTags as t } from './utils';
+
 const tenMinutes = 60 * 10;
 
 let certificateArn: pulumi.Input<string>;

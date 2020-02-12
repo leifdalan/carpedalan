@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import hotEntry from './hotEntry';
 import { User } from './User';
+import hotEntry from './hotEntry';
 
 // export default function App() {
 //   return <div>hello</div>

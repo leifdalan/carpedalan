@@ -14,3 +14,4 @@ e2e/node_modules
 cypress/node_modules
 server/node_modules
 server/Dockerfile
+!.eslint-ts-base.js

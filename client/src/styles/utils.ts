@@ -1,16 +1,12 @@
-import format from 'date-fns/format';
-import fromUnixTime from 'date-fns/fromUnixTime';
-import { createGlobalStyle } from 'styled-components';
+import { format, fromUnixTime } from 'date-fns';
+import { createGlobalStyle, DefaultTheme } from 'styled-components';
 
 interface StyledProp {
   [index: string]: string;
 }
 
 export const formatDate = (timestamp: number): string =>
-  format(fromUnixTime(timestamp), 'MMM d yyyy', {
-    awareOfUnicodeTokens: true,
-    /* tslint:disable-next-line */
-  } as any); 
+  format(fromUnixTime(timestamp), 'MMM d yyyy');
 
 export const MAIN = 'main';
 export const TEXT = 'text';
@@ -21,15 +17,14 @@ export const BODY_FONT = 'bodyFont';
 export const TITLE_FONT = 'titleFont';
 export const DANGER_COLOR = 'dangerColor';
 export const NEUTRAL_COLOR = 'neutralColor';
-export const getThemeValue = (value: string) => ({
+export const getThemeValue = (value: keyof DefaultTheme) => ({
   theme,
 }: {
-  theme: StyledProp;
+  theme: DefaultTheme;
 }) => theme[value];
 
 export const cdn = process.env.ASSET_CDN_DOMAIN;
-
-// tslint:disable-next-line
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function prop<T>(value: keyof T): (props: T) => any {
   return props => props[value];
 }
@@ -113,7 +108,7 @@ const dark = {
 const lite = {
   [BODY_FONT]: `Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
   [MAIN]: 'white',
-  [TEXT]: '#444',
+  [TEXT]: '#443',
   [SIDEBAR_COLOR]: 'rgba(247, 205, 219, 0.8)',
   [BRAND_COLOR]: 'rgb(0, 72, 206)',
   [SECONDARY_COLOR]: '#ff8c0e',

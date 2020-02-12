@@ -1,19 +1,20 @@
 import axios from 'axios';
 import debug from 'debug';
-import { default as useUser } from 'hooks/useUser';
-import { DataProvider } from 'providers/Data';
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import Routes from 'Routes';
 import { ThemeProvider } from 'styled-components';
-import { GlobalStyleComponent, themes } from 'styles/utils';
+
+import Routes from 'Routes';
 import { User } from 'User';
+import useUser from 'hooks/useUser';
+import { DataProvider } from 'providers/Data';
+import { GlobalStyleComponent, themes } from 'styles/utils';
 
 const log = debug('App');
 
 const refreshCookie = async () => {
   log('Refreshing cookiaxdae');
-  const response = await axios.post('/v1/refresh');
+  await axios.post('/v1/refresh');
 };
 
 const { useEffect } = React;

@@ -1,36 +1,27 @@
-import Feed from 'components/Feed';
-import Grid from 'components/Grid';
 import debug from 'debug';
-import usePosts, { PostsWithTagsWithFakes } from 'hooks/usePosts';
 import * as React from 'react';
 import { Link, Route, useLocation } from 'react-router-dom';
-import { default as styled } from 'styled-components';
+import styled from 'styled-components';
+
+import Feed from 'components/Feed';
 import Gallery from 'components/Gallery';
+import Grid from 'components/Grid';
+import { PostsWithTagsWithFakes } from 'hooks/types';
+import usePosts from 'hooks/usePosts';
+
 const log = debug('component:Slash');
 
-const { useState, useLayoutEffect, lazy, Fragment } = React;
+const { useState } = React;
 
 // const LazyGallery = lazy(() =>
 //   import(/* webpackChunkName: "gallery" */ 'components/Gallery'),
 // );
 
-const InnerWrapper = styled.main`
-  max-width: 768px;
-  margin: auto;
-  height: 100%;
-`;
-
-const { useEffect, useRef } = React;
+const { useEffect } = React;
 
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-`;
-
-const PostWrapper = styled.article`
-  max-width: 620px;
-  width: 100%;
-  margin: 0 auto;
 `;
 
 const GridListSwitcher = styled.div`
@@ -40,17 +31,13 @@ const GridListSwitcher = styled.div`
   right: 0;
 `;
 
-const RowWrapper = styled.div`
-  display: flex;
-`;
-
 interface RowRender {
   index: number;
   style: React.CSSProperties;
 }
 
 const Slash: React.FC = (): React.ReactElement => {
-  const { request, posts, loading, response } = usePosts();
+  const { posts } = usePosts();
   const [postsWithTitle, setPostsWithTitle] = useState<
     PostsWithTagsWithFakes[]
   >(posts);
@@ -69,7 +56,7 @@ const Slash: React.FC = (): React.ReactElement => {
   }, [posts]);
 
   return (
-    <Fragment>
+    <>
       <GridListSwitcher>
         <Link to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
           {hash.includes('grid') ? 'List' : 'Grid'}
@@ -83,8 +70,8 @@ const Slash: React.FC = (): React.ReactElement => {
           <Feed itemsWithTitle={postsWithTitle} />
         )}
       </Wrapper>
-      <Route exact={true} path="**/gallery/:postId" component={Gallery} />
-    </Fragment>
+      <Route exact path="**/gallery/:postId" component={Gallery} />
+    </>
   );
 };
 

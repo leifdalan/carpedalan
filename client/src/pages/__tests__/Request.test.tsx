@@ -1,22 +1,16 @@
-import axios, { AxiosResponse, AxiosStatic } from 'axios';
+import axios from 'axios';
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import { MemoryRouter, Redirect, Route } from 'react-router';
-import { BrowserRouter, Link } from 'react-router-dom';
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  waitForElement,
-} from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+
+import { fireEvent, render, waitForElement } from '@testing-library/react';
 
 import Request from '../Request';
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 jest.mock('axios');
-
+/* eslint-disable prefer-promise-reject-errors */
 describe('<Request />', () => {
   beforeEach(jest.resetAllMocks);
   it('should match snapshot', () => {

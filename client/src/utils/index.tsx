@@ -1,7 +1,8 @@
 // import format from 'date-fns/format';
 // import fromUnixTime from 'date-fns/fromUnixTime';
-import { PostsWithTagsWithFakes } from 'hooks/usePosts';
 import * as React from 'react';
+
+import { PostsWithTagsWithFakes } from 'hooks/types';
 
 import {
   HIRES,

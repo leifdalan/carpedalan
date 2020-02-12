@@ -1,14 +1,8 @@
-import axios, { AxiosPromise, AxiosResponse, AxiosStatic } from 'axios';
+import axios from 'axios';
 import * as React from 'react';
-import { MemoryRouter, Redirect, Route } from 'react-router';
-import { BrowserRouter, Link } from 'react-router-dom';
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  waitForElement,
-} from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
+
+import { render } from '@testing-library/react';
 
 import Slash from '../Slash';
 
@@ -26,5 +20,4 @@ describe('<Slash />', () => {
     );
     expect(app).toMatchSnapshot();
   });
-  // it('should')
 });

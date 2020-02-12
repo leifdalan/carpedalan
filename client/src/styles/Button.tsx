@@ -1,12 +1,6 @@
-import { default as styled } from 'styled-components';
+import styled from 'styled-components';
 
-import {
-  BRAND_COLOR,
-  DANGER_COLOR,
-  getThemeValue,
-  NEUTRAL_COLOR,
-  TITLE_FONT,
-} from './utils';
+import { getThemeValue, TITLE_FONT } from './utils';
 
 export enum ButtonType {
   danger,
@@ -14,8 +8,7 @@ export enum ButtonType {
 }
 
 interface ButtonProps {
-  /* tslint:disable-next-line no-any */
-  theme: any;
+  theme: string;
   variant?: ButtonType;
 }
 
@@ -23,11 +16,11 @@ export default styled.button<ButtonProps>`
   background: ${({ theme, variant }) => {
     switch (variant) {
       case ButtonType.danger:
-        return theme[DANGER_COLOR];
+        return theme.dangerColor;
       case ButtonType.neutral:
-        return theme[NEUTRAL_COLOR];
+        return theme.neutralColor;
       default:
-        return theme[BRAND_COLOR];
+        return theme.brandColor;
     }
   }};
   font-family: ${getThemeValue(TITLE_FONT)};

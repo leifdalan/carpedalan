@@ -1,21 +1,17 @@
-import * as React from 'react';
-import { arrayOf, func, shape } from 'prop-types';
-import { default as styled } from 'styled-components';
+import debug from 'debug';
+import React, { useRef, useContext, MouseEvent } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import styled from 'styled-components';
 
 import useWindow from 'hooks/useWindow';
-import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
-import { getImageRatio } from '../../utils';
-
-import Modal, { onClose } from '../Modal';
-import Post from '../Post';
-import { RouteComponentProps } from 'react-router-dom';
-import usePosts from 'hooks/usePosts';
-import debug from 'debug';
 import { DataContext } from 'providers/Data';
+import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
+
+import { getImageRatio } from '../../utils';
+import Modal from '../Modal';
+import Post from '../Post';
 
 const log = debug('components:Gallery');
-
-const { useRef, useContext } = React;
 
 const { center } = FlexEnums;
 
@@ -24,7 +20,7 @@ const Container = styled(FlexContainer)`
   height: 100%;
 `;
 
-interface GalleryI extends RouteComponentProps<{ postId: string }> {}
+type GalleryI = RouteComponentProps<{ postId: string }>;
 
 const Gallery: React.FC<GalleryI> = ({ match, history, location }) => {
   const { width, height } = useWindow();
@@ -55,10 +51,9 @@ const Gallery: React.FC<GalleryI> = ({ match, history, location }) => {
       ? `${height / photoAspectRatio - 100}px`
       : '100%';
 
-  const onClose: onClose = e => {
+  const onClose = (e: MouseEvent<HTMLElement>) => {
     e.preventDefault();
 
-    // Remove /gallery and /:postId
     const routeWithoutGallery = location.pathname
       .replace(`/${match.params.postId}`, '')
       .replace('/gallery', '');

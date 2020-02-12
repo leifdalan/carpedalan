@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { Link, LinkProps, useLocation } from 'react-router-dom';
-import { PostsWithTagsWithFakes } from 'hooks/usePosts';
+import { Fragment, ElementType } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+
+import { PostsWithTagsWithFakes } from 'hooks/types';
 
 interface UsePostLink {
-  /* tslint:disable-next-line no-any */
-  Element: any;
+  Element: ElementType;
   props:
     | {
         to: string;
@@ -23,12 +23,10 @@ const usePostLink = (post: PostsWithTagsWithFakes): UsePostLink => {
   }`;
 
   const isGallery = location.pathname.includes('gallery');
-  /* tslint:disable-next-line no-any */
-  let Element = React.Fragment as any;
+  const Element = isGallery ? Fragment : Link;
   let props = {};
 
   if (!isGallery) {
-    Element = Link as typeof Link;
     props = {
       to: galleryLink,
     };

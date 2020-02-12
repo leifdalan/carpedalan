@@ -14,7 +14,6 @@ module.exports = {
     '!server/api-v1/setup/**/*',
     '!server/config.js',
     '!server/constants.js',
-    '!server/devMiddleware.config.js',
     '!server/db.js',
     '!api/setup/**/*',
   ],

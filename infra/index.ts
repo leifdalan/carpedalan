@@ -1,8 +1,9 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as aws from '@pulumi/aws';
 import * as fs from 'fs';
-import * as awsx from '@pulumi/awsx';
 
+import * as mime from 'mime';
+import * as path from 'path';
 import { makeCerts, getDomainAndSubdomain } from './certs';
 import { makeVpc } from './vpc';
 import { createBucket } from './buckets';
@@ -12,8 +13,7 @@ import { getSecrets } from './secrets';
 import { getPolicies } from './policies';
 import { getLambdas } from './lambdas';
 import { getResourceName as n } from './utils';
-import * as mime from 'mime';
-import * as path from 'path';
+
 async function main() {
   const accountNameSpace = 'dalan';
 

@@ -1,7 +1,6 @@
-import { default as styled } from 'styled-components';
+import styled from 'styled-components';
 
 import Title from './Title';
-import { prop } from './utils';
 
 export enum Side {
   right = 'right',

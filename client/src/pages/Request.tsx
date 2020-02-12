@@ -1,13 +1,14 @@
 import axios from 'axios';
+import * as React from 'react';
+
 import useApi from 'hooks/useApi';
 import useForm from 'hooks/useForm';
 import useUser from 'hooks/useUser';
-import * as React from 'react';
 import Button from 'styles/Button';
 import DangerText from 'styles/DangerText';
 import Input from 'styles/Input';
 
-import { InputForm, InputWrapper, StyledButton, StyledTitle } from './styles';
+import { InputForm, InputWrapper, StyledTitle } from './styles';
 
 const { useState } = React;
 
@@ -21,7 +22,7 @@ const requestInvitation = async (
   reqBody: Paths.Invitation.RequestBody,
 ): Promise<void> => {
   try {
-    const { data, status } = await axios.post('/v1/invitation', reqBody);
+    await axios.post('/v1/invitation', reqBody);
   } catch (e) {
     if (e.response) throw e.response.data as Components.Schemas.Error;
     throw e as Components.Schemas.Error;
@@ -31,7 +32,7 @@ const requestInvitation = async (
  * Request route component. Includes form and api effects
  */
 const Invitation: React.FC = () => {
-  const { setUser, user } = useUser();
+  const { user } = useUser();
   const [showError, shouldShowError] = useState(true);
   /**
    * Change handler passed intended for passage to `useField`. Has
@@ -45,16 +46,14 @@ const Invitation: React.FC = () => {
     return e.target.value;
   };
 
-  const { useField, setValue, form } = useForm('request');
+  const { useField } = useForm('request');
   const nameInput = useField({
     handleChange,
     field: 'name',
     validate: v => (!v ? 'Is required' : false),
   });
   const emailInput = useField({ handleChange, field: 'email' });
-  const { request, error, response, loading, retry } = useApi(
-    requestInvitation,
-  );
+  const { request, error } = useApi(requestInvitation);
 
   /**
    * Submit hanlder. Calls the Invitation API.
@@ -72,7 +71,7 @@ const Invitation: React.FC = () => {
   return (
     <InputWrapper>
       <InputForm data-test="submit" onSubmit={handleSubmit}>
-        <StyledTitle center={true}>Requestz</StyledTitle>
+        <StyledTitle center>Requestz</StyledTitle>
         {user}
         <Input>
           <label htmlFor="name">Name</label>
@@ -102,11 +101,12 @@ const Invitation: React.FC = () => {
         >
           Request invite
         </Button>
+        {/* eslint-disable */}
         {error && showError && !user && error.errors
           ? error.errors.map(({ message, path }) => (
-              <DangerText key="path" data-test="error" data-testid="error">
-                {path}: {message}
-              </DangerText>
+            <DangerText key="path" data-test="error" data-testid="error">
+              {path}:{message}
+            </DangerText>
             ))
           : null}
       </InputForm>

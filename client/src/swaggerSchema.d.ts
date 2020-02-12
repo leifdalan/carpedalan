@@ -968,7 +968,8 @@ declare namespace Paths {
         | 'whiteBalance'
         | 'xResolution'
         | 'yCbCrPositioning'
-        | 'yResolution')[];
+        | 'yResolution'
+      )[];
       export type IsPending = boolean;
       /**
        * Order of query of posts

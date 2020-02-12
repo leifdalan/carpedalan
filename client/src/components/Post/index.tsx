@@ -1,10 +1,11 @@
-import Picture from 'components/Picture';
-import { PostsWithTagsWithFakes } from 'hooks/usePosts';
 import * as React from 'react';
-import { Link, LinkProps } from 'react-router-dom';
-import { default as styled } from 'styled-components';
-import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+
+import Picture from 'components/Picture';
+import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePostLink from 'hooks/usePostLink';
+import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
 import {
   BRAND_COLOR,
   formatDate,
@@ -29,7 +30,7 @@ const Description = styled.div`
 
 const StyledLink = styled(Link)`
   text-decoration: none;
-  color: ${getThemeValue(BRAND_COLOR)};
+  color: ${getThemeValue('neutralColor')};
 `;
 
 const HR = styled.div`
@@ -81,7 +82,7 @@ const Row = ({
           width={width}
           ratio={isSquare ? 1 : getImageRatio(post)}
           post={post}
-          shouldShowImage={true}
+          shouldShowImage
           placeholderColor={post.placeholder}
           alt={post.description}
           type={isSquare ? 'square' : 'original'}
@@ -93,8 +94,8 @@ const Row = ({
         ) : null}
         {post.tags && post.tags.length ? (
           <ul>
-            {post.tags.map(({ name }, tagIndex) => (
-              <li data-test="tags" key={tagIndex}>
+            {post.tags.map(({ name }) => (
+              <li data-test="tags" key={name}>
                 <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
               </li>
             ))}

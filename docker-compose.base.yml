@@ -35,20 +35,22 @@ services:
   client: 
     tty: true
     build:
-      context: ./client
+      context: .
+      dockerfile: client/Dockerfile
     environment:
       NODE_ENV: "${NODE_ENV-development}"
       PROD_BUILD: "${PROD_BUILD-false}"
       PORT: "${CLIENT_PORT-4000}"
     volumes: 
-      - ./client/src:/app/src
-      - ./client/docs:/app/docs
-      - ./client/dist:/app/dist
-      - ./scripts:/app/scripts
-      - ./client/webpack.config.js:/app/webpack.config.js
-      - ./client/webpack.config.prod.js:/app/webpack.config.prod.js
-      - ./client/devServer.js:/app/devServer.js
-      - ./client/docker-entry.sh:/app/docker-entry.sh
+      - ./client/src:/app/client/src
+      - ./client/docs:/app/client/docs
+      - ./client/dist:/app/client/dist
+      - ./scripts:/app/client/scripts
+      - ./client/webpack.config.js:/app/client/webpack.config.js
+      - ./client/webpack.config.prod.js:/app/client/webpack.config.prod.js
+      - ./client/devServer.js:/app/client/devServer.js
+      - ./client/docker-entry.sh:/app/client/docker-entry.sh
+      - ./.eslint-ts-base.js:/app/.eslint-ts-base.js
     healthcheck: 
       test: ["CMD-SHELL", "node ./scripts/clientHealthcheck"]
       interval: 1s

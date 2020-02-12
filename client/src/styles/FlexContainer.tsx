@@ -1,6 +1,4 @@
-import { default as styled } from 'styled-components';
-
-import { prop } from './utils';
+import styled from 'styled-components';
 
 export enum FlexEnums {
   center = 'center',

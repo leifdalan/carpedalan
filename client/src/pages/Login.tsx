@@ -1,29 +1,30 @@
 import axios from 'axios';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
+
 import useApi from 'hooks/useApi';
 import useForm from 'hooks/useForm';
 import useUser from 'hooks/useUser';
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-import { default as styled } from 'styled-components';
 import Button from 'styles/Button';
 import Input from 'styles/Input';
 
-import { InputForm, InputWrapper, StyledButton, StyledTitle } from './styles';
+import { InputForm, InputWrapper, StyledTitle } from './styles';
 
-const { useEffect, useState, useContext } = React;
+const { useEffect, useState } = React;
 /**
  * Post Login api caller
  *
  * @param {Paths.Login.RequestBody} reqBody
  * @returns {Promise<Paths.Login.Responses.$200>}
  */
-const postLogin = async (
-  reqBody: Paths.Login.RequestBody,
-): Promise<Paths.Login.Responses.$200> => {
+const postLogin = async (reqBody: Paths.Login.RequestBody) => {
   try {
-    const response = await axios.post('/v1/login', reqBody);
-    const { data, status } = response;
-    return data as Paths.Login.Responses.$200;
+    const response = await axios.post<Paths.Login.Responses.$200>(
+      '/v1/login',
+      reqBody,
+    );
+    const { data } = response;
+    return data;
   } catch (e) {
     if (e.response) throw e.response.data as Components.Schemas.Error;
     throw e as Components.Schemas.Error;
@@ -55,7 +56,7 @@ const Login: React.FC<{}> = (): React.ReactElement => {
 
   const passwordInput = useField({ handleChange, field: 'password' });
 
-  const { request, error, response, loading } = useApi(postLogin);
+  const { request, error, response } = useApi(postLogin);
 
   useEffect(() => {
     if (response) {
@@ -83,7 +84,7 @@ const Login: React.FC<{}> = (): React.ReactElement => {
         data-testid="submit"
         onSubmit={handleSubmit}
       >
-        <StyledTitle center={true}>Login</StyledTitle>
+        <StyledTitle center>Loginss</StyledTitle>
         {user}
         <Input>
           <input data-test="password" type="password" {...passwordInput} />

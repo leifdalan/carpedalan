@@ -1,13 +1,12 @@
-import axios from 'axios';
+import debug from 'debug';
+import * as React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
+
 import SidebarAndMenu from 'components/SidebarAndMenu';
+import useTags from 'hooks/useTags';
 import useUser from 'hooks/useUser';
 import Login from 'pages/Login';
 import Request from 'pages/Request';
-import * as React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import useTags from 'hooks/useTags';
-import debug from 'debug';
-import { onClose } from 'components/Modal';
 
 const log = debug('components:Routes');
 
@@ -22,10 +21,9 @@ const LazyTag = lazy(() => import(/* webpackChunkName: "tag" */ 'pages/Tag'));
 
 const Spinner = () => <div>12341234i1234124oij</div>;
 
-const { useState, useContext } = React;
 const Routes: React.FC = () => {
   const { fetchTags } = useTags();
-  const { setUser, user: globalUser } = useUser();
+  const { user: globalUser } = useUser();
   useEffect(() => {
     log('route is mounting');
     if (globalUser) {
@@ -33,14 +31,6 @@ const Routes: React.FC = () => {
     }
   }, []);
 
-  async function logout() {
-    const res = await axios.post('/v1/logout');
-    setUser(undefined);
-  }
-
-  const handleClose: onClose = e => {
-    log('close');
-  };
   return (
     <Suspense fallback={<Spinner />}>
       <SidebarAndMenu />

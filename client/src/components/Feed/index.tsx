@@ -1,17 +1,15 @@
-import Picture from 'components/Picture';
-import Post from 'components/Post';
 import debug from 'debug';
-import usePosts, { PostsWithTagsWithFakes } from 'hooks/usePosts';
-import useWindow from 'hooks/useWindow';
 import * as React from 'react';
-import { default as Autosizer } from 'react-virtualized-auto-sizer';
+import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
-import { default as InfiniteLoader } from 'react-window-infinite-loader';
-import { default as styled } from 'styled-components';
+import InfiniteLoader from 'react-window-infinite-loader';
+import styled from 'styled-components';
+
+import Post from 'components/Post';
+import { PostsWithTagsWithFakes } from 'hooks/types';
+import usePosts from 'hooks/usePosts';
 
 const log = debug('component:Feed');
-
-const { useState, useLayoutEffect } = React;
 
 const InnerWrapper = styled.main`
   max-width: 768px;
@@ -19,25 +17,12 @@ const InnerWrapper = styled.main`
   height: 100%;
 `;
 
-const { useEffect, useRef } = React;
 const { VariableSizeList: List } = ReactWindow;
-
-const Wrapper = styled.div`
-  width: 100%;
-  height: 100%;
-`;
 
 const PostWrapper = styled.article`
   max-width: 620px;
   width: 100%;
   margin: 0 auto;
-`;
-
-const GridListSwitcher = styled.div`
-  position: fixed;
-  z-index: 2;
-  top: 0;
-  right: 0;
 `;
 
 const RowWrapper = styled.div`
@@ -54,10 +39,7 @@ const Feed = ({
 }: {
   itemsWithTitle: PostsWithTagsWithFakes[];
 }): React.ReactElement => {
-  const { request, posts, loading } = usePosts();
-  const [refWidth, setRefWidth] = useState<number>(0);
-  const wrapperRef = useRef<HTMLInputElement>(null);
-  const { width } = useWindow();
+  const { request } = usePosts();
 
   /**
    * Triggered if isItemLoaded returns false
@@ -136,8 +118,9 @@ const Feed = ({
                 itemCount={itemsWithTitle.length}
                 itemSize={calculateSize}
                 width={width}
-                children={Row}
-              />
+              >
+                {Row}
+              </List>
             </InnerWrapper>
           )}
         </InfiniteLoader>

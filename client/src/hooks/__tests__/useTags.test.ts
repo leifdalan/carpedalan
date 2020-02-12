@@ -1,7 +1,9 @@
+import axios from 'axios';
+
 import { act } from '@testing-library/react';
+
 import { testHook, tick } from '../../testutils';
 import useTags, { UseTags } from '../useTags';
-import axios from 'axios';
 
 let tagReturn: UseTags;
 beforeEach(() => {
@@ -29,7 +31,7 @@ describe('useTags', () => {
     );
 
     await act(async () => {
-      await tagReturn.fetchTags();
+      await tagReturn.fetchTags(undefined);
     });
 
     expect(mockedAxios.get).toHaveBeenCalledTimes(1);

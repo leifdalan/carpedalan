@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-extraneous-dependencies,@typescript-eslint/no-var-requires */
 process.env.NODE_ENV = 'development';
 const express = require('express');
 // eslint-disable-next-line no-console

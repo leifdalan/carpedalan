@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-extraneous-dependencies,jest/no-export */
 let request = require('supertest');
 const OpenApiResponseValidator = require('openapi-response-validator').default;
 

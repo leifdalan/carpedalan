@@ -8,12 +8,13 @@ const exif = require('exif-parser');
 // const pg = require('pg');
 
 const { SIZES, EXIFPROPS } = require('./constants');
+
 const extraBucketParams = process.env.IS_LOCAL
-? {
-    endpoint: `http://aws:4572`,
-    s3ForcePathStyle: true,
-  }
-: {};
+  ? {
+      endpoint: `http://aws:4572`,
+      s3ForcePathStyle: true,
+    }
+  : {};
 
 const ACL = process.env.IS_LOCAL ? 'public-read' : 'private';
 
