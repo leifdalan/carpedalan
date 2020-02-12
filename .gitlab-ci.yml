@@ -147,6 +147,7 @@ lint:
     policy: pull
     paths: 
       - node_modules
+  dependencies: []
   script: 
     - yarn lint
 
