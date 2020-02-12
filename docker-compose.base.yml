@@ -30,7 +30,7 @@ services:
       test: ["CMD-SHELL", "node ./scripts/healthcheck"]
       interval: 1s
       timeout: 1s
-      retries: 40
+      retries: 120
 
   client: 
     tty: true
@@ -55,7 +55,7 @@ services:
       test: ["CMD-SHELL", "node ./scripts/clientHealthcheck"]
       interval: 1s
       timeout: 1s
-      retries: 90
+      retries: 120
 
     command: ['./docker-entry.sh']
 
