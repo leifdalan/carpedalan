@@ -62,7 +62,7 @@ const Login: React.FC<{}> = (): React.ReactElement => {
     if (response) {
       setUser(response && response.user);
     }
-  }, [response]);
+  }, []);
 
   /**
    * Submit hanlder. Calls the login API.
