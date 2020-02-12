@@ -51,7 +51,7 @@ describe('<Request />', () => {
 
     await new Promise(resolve => setTimeout(resolve, 0));
 
-    expect(app.find('[data-test="error"]').text()).toBe('error: an error');
+    expect(app.find('[data-test="error"]').text()).toBe('error:an error');
   });
 
   it('should not show the error after typing after an error', async () => {
@@ -67,7 +67,7 @@ describe('<Request />', () => {
     app.find('[data-test="submit"]').simulate('submit', new Event('submit'));
 
     await new Promise(resolve => setTimeout(resolve, 0));
-    expect(app.find('[data-test="error"]').text()).toBe('error: an error');
+    expect(app.find('[data-test="error"]').text()).toBe('error:an error');
     app
       .find('[data-test="name"]')
       .simulate('change', { target: { value: 'something' } });

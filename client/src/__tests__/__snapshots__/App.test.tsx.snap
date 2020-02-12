@@ -13,7 +13,7 @@ exports[`<App /> should match snapshot 1`] = `
           "neutralColor": "rgb(100, 100, 100)",
           "secondaryColor": "#ff8c0e",
           "sidebarColor": "rgba(247, 205, 219, 0.8)",
-          "text": "#444",
+          "text": "#443",
           "titleFont": "montserratregular, Helvetica, sans-serif",
         }
       }
