@@ -50,8 +50,8 @@ export function getLambdas({
     environment: {
       variables: {
         PG_HOST: rds.endpoint,
-        PG_USER_SECRET_ID: pgUserSecret.id,
-        PG_PASSWORD_SECRET_ID: pgPasswordSecret.id,
+        PG_USER_SECRET_ID: pgUserSecret.name,
+        PG_PASSWORD_SECRET_ID: pgPasswordSecret.name,
       },
     },
     tags: t(),

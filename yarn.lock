@@ -1684,10 +1684,10 @@
     read-package-tree "^5.2.1"
     resolve "^1.7.1"
 
-"@pulumi/aws@^1.18.0":
-  version "1.18.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-1.18.0.tgz#126fa82babb8e6752696575991f3cdd0f8d51eb1"
-  integrity sha512-dcS6h3lJhoa01gnONPkROvWnqAd5YFItEw4xr3CgHbVO6rMhfGDumq76B7E+QPObLq5Ip6sL7rcb82g8UF1R8g==
+"@pulumi/aws@^1.21.0":
+  version "1.21.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-1.21.0.tgz#d7f7f6b56eff21b27b4ae653a884a6cf3a31e835"
+  integrity sha512-yoRGV5xufGJSwIOBF+vEB9j01VI+8LPOhozoeCL72kwLrv+iuiOo6UyqEHaNSpqcB2l6o2b3erm6Z8VDiBFwew==
   dependencies:
     "@pulumi/pulumi" "^1.0.0"
     aws-sdk "^2.0.0"
@@ -1696,22 +1696,21 @@
     read-package-tree "^5.2.1"
     resolve "^1.7.1"
 
-"@pulumi/awsx@^0.18.14":
-  version "0.18.14"
-  resolved "https://registry.yarnpkg.com/@pulumi/awsx/-/awsx-0.18.14.tgz#798f02648971e533936637427387a723de733767"
-  integrity sha512-2etPn1fCPSk+xpIow9vqS398SVmNZlmJe3gP7icWSZeaON8ActfYE/89JEWLSSkWkzc7h8P+LavkLg2sYWmGnw==
+"@pulumi/awsx@^0.19.2":
+  version "0.19.2"
+  resolved "https://registry.yarnpkg.com/@pulumi/awsx/-/awsx-0.19.2.tgz#30da28563c197056ba3148043a67cea03bb4bf9c"
+  integrity sha512-dljfY5i9GIOKzSwOKgaoDnXSoOEtigrKqKipv+vFPvl0gT+IvkZX7NT3K0rrG+CMvufb5zsWXVFSn/kUJjrp5w==
   dependencies:
     "@pulumi/aws" "^1.0.0"
-    "@pulumi/docker" "^0.17.3"
-    "@pulumi/pulumi" "^1.0.0"
+    "@pulumi/docker" "^1.0.0"
+    "@pulumi/pulumi" "^1.9.1"
     "@types/aws-lambda" "^8.10.23"
-    deasync "^0.1.15"
     mime "^2.0.0"
 
-"@pulumi/docker@^0.17.3":
-  version "0.17.4"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-0.17.4.tgz#5891eeaefe7711f04c9e29c9aaf62c8b264c3de7"
-  integrity sha512-uGnt9VEGXxCFTpIkCrULP2XTbSEJMH3vQrOq9Q+ATTnIxswlG0z/LkpuktEB6YmvnQqEUtTPPEM+p/RmLkqLrA==
+"@pulumi/docker@^1.0.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-1.2.0.tgz#bd04fb84bb6a8fd68ec0cdfcf742e6ccbd914af6"
+  integrity sha512-OJ4un0XC/VkPimtD7tDnnChWQ162tgiZ100C4Etga1GVFoxm6U1Zhqjq0ENi8llNA0B9Kz41GIUfRF8XdXEV9Q==
   dependencies:
     "@pulumi/pulumi" "^1.0.0"
     semver "^5.4.0"
@@ -1736,10 +1735,10 @@
     typescript "^3.0.0"
     upath "^1.1.0"
 
-"@pulumi/pulumi@^1.8.1":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-1.8.1.tgz#02d1a2b98e1c873792868d378360a569454b6c01"
-  integrity sha512-YECXh3TRCl21QYpvUrzGDGBVqZBr3V053x1chXnt/7+FgwxM5M1cpH3T7kQX44+z7crvIqvQ7FbngNpgCHKa1Q==
+"@pulumi/pulumi@^1.10.1", "@pulumi/pulumi@^1.9.1":
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-1.10.1.tgz#d2834b02ed8aaf0ecdb1106608fbab1130aad3e0"
+  integrity sha512-3jMVRHvg4Ip44wGmRGHjz5c3Bjkew4tJB2PMsCVK3pfNgyQYLT6iUGOjnccnFui4bjKUq3hRrABlyCouKecpAQ==
   dependencies:
     "@pulumi/query" "^0.3.0"
     deasync "^0.1.15"
@@ -1752,7 +1751,7 @@
     require-from-string "^2.0.1"
     semver "^6.1.0"
     source-map-support "^0.4.16"
-    ts-node "^8.5.4"
+    ts-node "8.5.4"
     typescript "~3.7.3"
     upath "^1.1.0"
 
@@ -14214,6 +14213,17 @@ ts-log@^2.1.4:
   resolved "https://registry.yarnpkg.com/ts-log/-/ts-log-2.1.4.tgz#063c5ad1cbab5d49d258d18015963489fb6fb59a"
   integrity sha512-P1EJSoyV+N3bR/IWFeAqXzKPZwHpnLY6j7j58mAvewHRipo+BQM2Y1f9Y9BjEQznKwgqqZm7H8iuixmssU7tYQ==
 
+ts-node@8.5.4:
+  version "8.5.4"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.5.4.tgz#a152add11fa19c221d0b48962c210cf467262ab2"
+  integrity sha512-izbVCRV68EasEPQ8MSIGBNK9dc/4sYJJKYA+IarMQct1RtEot6Xp0bXuClsbUSnKpg50ho+aOAx8en5c+y4OFw==
+  dependencies:
+    arg "^4.1.0"
+    diff "^4.0.1"
+    make-error "^1.1.1"
+    source-map-support "^0.5.6"
+    yn "^3.0.0"
+
 ts-node@^7.0.0:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-7.0.1.tgz#9562dc2d1e6d248d24bc55f773e3f614337d9baf"
@@ -14227,17 +14237,6 @@ ts-node@^7.0.0:
     mkdirp "^0.5.1"
     source-map-support "^0.5.6"
     yn "^2.0.0"
-
-ts-node@^8.5.4:
-  version "8.6.2"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.6.2.tgz#7419a01391a818fbafa6f826a33c1a13e9464e35"
-  integrity sha512-4mZEbofxGqLL2RImpe3zMJukvEvcO1XP8bj8ozBPySdCUXEcU5cIRwR0aM3R+VoZq7iXc8N86NC0FspGRqP4gg==
-  dependencies:
-    arg "^4.1.0"
-    diff "^4.0.1"
-    make-error "^1.1.1"
-    source-map-support "^0.5.6"
-    yn "3.1.1"
 
 tsconfig-paths@^3.9.0:
   version "3.9.0"
@@ -15457,12 +15456,12 @@ yauzl@2.4.1:
   dependencies:
     fd-slicer "~1.0.1"
 
-yn@3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
-  integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
-
 yn@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/yn/-/yn-2.0.0.tgz#e5adabc8acf408f6385fc76495684c88e6af689a"
   integrity sha1-5a2ryKz0CPY4X8dklWhMiOavaJo=
+
+yn@^3.0.0:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
+  integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==

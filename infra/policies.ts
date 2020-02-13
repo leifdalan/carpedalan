@@ -264,43 +264,60 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
 
   new aws.iam.RolePolicy(n('lambda-role-policy'), {
     role: lambdaRole,
-    policy: pulumi.all([privateBucket.arn]).apply(([bucketArn]) =>
-      JSON.stringify({
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Action: [
-              'logs:CreateLogGroup',
-              'logs:CreateLogStream',
-              'logs:PutLogEvents',
-              'ec2:*',
-            ],
-            Resource: 'arn:aws:logs:*:*:*',
-          },
-          {
-            Effect: 'Allow',
-            Action: [
-              'ec2:CreateNetworkInterface',
-              'ec2:DescribeNetworkInterfaces',
-              'ec2:DeleteNetworkInterface',
-            ],
+    policy: pulumi
+      .all([
+        privateBucket.arn,
+        secrets.pgUserSecret.arn,
+        secrets.pgPasswordSecret.arn,
+        rds.arn,
+      ])
+      .apply(([bucketArn, pgUserArn, pgPasswordArn, rdsArn]) =>
+        JSON.stringify({
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: [
+                'logs:CreateLogGroup',
+                'logs:CreateLogStream',
+                'logs:PutLogEvents',
+                'ec2:*',
+              ],
+              Resource: 'arn:aws:logs:*:*:*',
+            },
+            {
+              Effect: 'Allow',
+              Action: [
+                'ec2:CreateNetworkInterface',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DeleteNetworkInterface',
+              ],
 
-            Resource: '*',
-          },
-          {
-            Effect: 'Allow',
-            Action: ['s3:GetBucketLocation', 's3:ListAllMyBuckets'],
-            Resource: 'arn:aws:s3:::*',
-          },
-          {
-            Effect: 'Allow',
-            Action: 's3:*',
-            Resource: [bucketArn, `${bucketArn}/*`],
-          },
-        ],
-      }),
-    ),
+              Resource: '*',
+            },
+            {
+              Effect: 'Allow',
+              Action: ['s3:GetBucketLocation', 's3:ListAllMyBuckets'],
+              Resource: 'arn:aws:s3:::*',
+            },
+            {
+              Effect: 'Allow',
+              Action: 's3:*',
+              Resource: [bucketArn, `${bucketArn}/*`],
+            },
+            {
+              Effect: 'Allow',
+              Action: 'secretsmanager:GetSecretValue',
+              Resource: [pgPasswordArn, pgUserArn],
+            },
+            {
+              Effect: 'Allow',
+              Action: ['rds-db:connect'],
+              Resource: [rdsArn],
+            },
+          ],
+        }),
+      ),
   });
   return { taskRole, executionRole, lambdaRole, bucketUserCreds };
 }
