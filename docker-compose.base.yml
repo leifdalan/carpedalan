@@ -99,7 +99,7 @@ services:
     command: yarn migrate
   sam:
     build: 
-      context: ./imageresizer
+      context: ./imageResizer
       dockerfile: Dockerfile
     command: ["$PWD"]
     volumes:

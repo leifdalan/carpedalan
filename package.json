@@ -16,6 +16,7 @@
     "unit": "COMPOSE_PROJECT_NAME=cd_unit docker-compose -f docker-compose.unit.yml run client yarn test",
     "build": "./scripts/development/buildForTest.sh",
     "start": "yarn && docker-compose up --build -d && ./scripts/development/start.sh",
+    "debug-sam": "yarn && DEBUG_SAM='-d 5959' docker-compose up --build -d && ./scripts/development/start.sh",
     "stop": "docker stop $(docker ps -a -q)",
     "e2e": "COMPOSE_PROJECT_NAME=cd_e2e docker-compose -f docker-compose.e2e.yml run --rm cypress yarn cypress run",
     "test": "yarn build && yarn unit && yarn integration && yarn e2e && yarn stop",

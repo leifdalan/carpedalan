@@ -1,0 +1,3 @@
+FROM lambci/lambda:build-nodejs12.x
+RUN npm install sharp sqip knex exif-parser pg aws-sdk
+
