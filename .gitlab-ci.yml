@@ -109,7 +109,6 @@ e2e:
   script: 
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker load --input api.tar
-    - copy -av dist client/dist
     - yarn e2e
 
 integration:
