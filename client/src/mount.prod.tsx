@@ -19,8 +19,12 @@ declare global {
     __META__: {
       cdn: string;
     };
+    __PUBLIC_PATH__: string;
   }
 }
+
+// Dynamically set the public path so that we can re-use assets.
+__webpack_public_path__ = window.__PUBLIC_PATH__;
 // Doing this so that theres a trace on Chrome Debugger since
 // we are using the debug module (you lose line numbers)
 ReactDOM.render(

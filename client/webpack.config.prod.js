@@ -17,13 +17,13 @@ module.exports = {
   mode: 'production',
   devtool: 'source-map',
   entry: {
-    client: ['./src/mount'],
+    client: ['./src/mount.prod'],
   },
   output: {
     path: path.resolve('dist'),
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',
-    publicPath: `//${process.env.ASSET_CDN_DOMAIN}/`,
+    publicPath: ``,
   },
   resolve: {
     /** Base directories that Webpack will look to resolve absolutely imported modules */

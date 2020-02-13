@@ -2,7 +2,6 @@ version: '2.4'
 
 
 services:
- 
   cypress:
     tty: true
     links:
@@ -16,9 +15,9 @@ services:
     image: registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
     depends_on:
       api: 
-        condition: service_started
+        condition: service_healthy
       alb: 
-        condition: service_started
+        condition: service_healthy
     command: yarn test
     volumes: 
       - ./cypress:/cy/cypress
@@ -33,34 +32,16 @@ services:
       service: alb
     volumes: 
       - ./nginx/nginx-e2e.conf:/etc/nginx/nginx.conf
-      - ./client/dist:/assets/
+      - ./dist:/assets/
 
     depends_on:
       api: 
-        condition: service_started
-      client: 
-        condition: service_started
+        condition: service_healthy
       aws: 
         condition: service_started
+    ports:
+      - "80:80"
 
-
-  client:
-    stdin_open: true
-    tty: true
-    image: client:latest
-    extends:
-      file: docker-compose.base.yml
-      service: client
-    volumes:
-      - ./client/jest.config.js:/app/client/jest.config.js
-      - ./client/setupTests.js:/app/client/setupTests.js
-      - ./client/dist:/app/client/dist
-      - ./client/tsconfig.test.json:/app/client/tsconfig.test.json
-    env_file: 
-      - .env.ci
-    environment: 
-      PROD_BUILD: 'true'
-      PORT: "${CLIENT_PORT-4000}"
 
   api:
     stdin_open: true
@@ -72,23 +53,19 @@ services:
     volumes:
       - './server:/app/server:delegated'
       - './scripts:/app/scripts:delegated'
-      - './client/dist:/app/server/dist'
+      - './dist:/app/server/dist'
       - './index.js:/app/index.js:delegated'
       - './db:/app/db:delegated'
       - './shared:/app/shared:delegated'
       - './.env.ci:/app/.env'
     depends_on:
       pg:
-        condition: service_started
-      client:
-        condition: service_started
+        condition: service_healthy
 
     environment:
       PORT: 8001
       PROD_BUILD: 'true'
       ASSET_CDN_DOMAIN: cdn.local.carpedalan.com
-    ports: 
-      - '8001:8001'
   pg:
     extends:
       file: docker-compose.base.yml

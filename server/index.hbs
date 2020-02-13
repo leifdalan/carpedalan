@@ -45,12 +45,16 @@
   <aside id="modal"></aside>
   <script>
     var __SESSION__ = {{{session}}};
-    var __META__ = {{{meta}}}
-    var __API__ = {{{openApiDoc}}}
+    var __META__ = {{{meta}}};
+    var __API__ = {{{openApiDoc}}};
+    var __PUBLIC_PATH__ = '//{{assetDomain}}/';
   </script>
   {{#if clientAssets}}
     {{#each clientAssets}}
-    <script type="text/javascript" src="{{this}}"></script>
+    <script>
+
+    </script>
+    <script type="text/javascript" src="//{{../assetDomain}}/{{this}}"></script>
     {{/each}}
   {{else}}
   <script type="text/javascript" src="//local.carpedalan.com/dist/client.bundle.js"></script>

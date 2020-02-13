@@ -54,7 +54,7 @@ export default function useTags(): UseTags {
     if (response) {
       setTags(response);
     }
-  }, [response, setTags]);
+  }, []); // eslint-disable-line
 
   return {
     tags: data.tags,
