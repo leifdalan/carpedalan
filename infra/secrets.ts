@@ -7,7 +7,20 @@ interface SecretsI {
   config: pulumi.Config;
 }
 
-export function getSecrets({ config }: SecretsI) {
+export interface AllSecrets {
+  pgUserSecret: aws.secretsmanager.Secret;
+  pgPasswordSecret: aws.secretsmanager.Secret;
+  privateKeySecret: aws.secretsmanager.Secret;
+  adminPassword: aws.secretsmanager.Secret;
+  publicPassword: aws.secretsmanager.Secret;
+  sessionSecret: aws.secretsmanager.Secret;
+  cfKeySecret: aws.secretsmanager.Secret;
+}
+export interface ISecrets {
+  secrets: AllSecrets;
+}
+
+export function getSecrets({ config }: SecretsI): ISecrets {
   const username = config.getSecret('pg_user');
   const password = config.getSecret('pg_password');
   const privateKey = config.getSecret('privateKey');

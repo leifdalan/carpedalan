@@ -7,20 +7,54 @@ const knex = require('knex');
 const exif = require('exif-parser');
 // const pg = require('pg');
 
+const {
+  IS_LOCAL,
+  PG_USER_SECRET_ID,
+  PG_PASSWORD_SECRET_ID,
+  PG_HOST,
+} = process.env;
 const { SIZES, EXIFPROPS } = require('./constants');
 
-const extraBucketParams = process.env.IS_LOCAL
+const secretManager = new aws.SecretsManager();
+const extraBucketParams = IS_LOCAL
   ? {
       endpoint: `http://aws:4572`,
       s3ForcePathStyle: true,
     }
   : {};
 
-const ACL = process.env.IS_LOCAL ? 'public-read' : 'private';
+const ACL = IS_LOCAL ? 'public-read' : 'private';
 
 const s3 = new aws.S3(extraBucketParams);
 
 exports.imageResizer = async (event, context, ...otherThingz) => {
+  let pgUri;
+  if (IS_LOCAL) {
+    pgUri = 'postgres://postgres:postgres@pg:5432/carpedalan';
+  } else {
+    console.time('Getting Secrets');
+    const userPromise = secretManager
+      .getSecretValue({
+        SecretId: PG_USER_SECRET_ID,
+      })
+      .promise();
+    const passwordPromise = secretManager
+      .getSecretValue({
+        SecretId: PG_PASSWORD_SECRET_ID,
+      })
+      .promise();
+
+    const [userResponse, passwordResponse] = await Promise.all([
+      userPromise,
+      passwordPromise,
+    ]);
+    const { SecretString: user } = userResponse;
+    const { SecretString: password } = passwordResponse;
+    console.log('PG USER', user);
+    pgUri = `postgres://${user}:${password}@${PG_HOST}/carpedalan`;
+    console.timeEnd('Getting Secrets');
+  }
+
   context.callbackWaitsForEmptyEventLoop = false; // eslint-disable-line
   console.time('fire');
   console.log('EVENT=============');
@@ -152,7 +186,7 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
     );
     const db = knex({
       client: 'pg',
-      connection: process.env.PG_URI,
+      connection: pgUri,
       pool: {
         min: 2,
         max: 10,

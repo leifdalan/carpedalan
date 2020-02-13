@@ -8,7 +8,6 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/local.carpedalan.com.pem:/etc/ssl/certs/local.carpedalan.com.pem
       - ./nginx/local.carpedalan.com-key.pem:/etc/ssl/private/local.carpedalan.com-key.pem
-      - ./client/dist:/assets/
     healthcheck: 
       test: wget http://localhost/healthcheck -q -O - > /dev/null 2>&1
       interval: 1s
@@ -41,6 +40,7 @@ services:
       NODE_ENV: "${NODE_ENV-development}"
       PROD_BUILD: "${PROD_BUILD-false}"
       PORT: "${CLIENT_PORT-4000}"
+      ASSET_CDN_DOMAIN: 'cdn.local.carpedalan.com'
     volumes: 
       - ./client/src:/app/client/src
       - ./client/docs:/app/client/docs

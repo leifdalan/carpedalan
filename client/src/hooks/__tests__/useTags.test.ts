@@ -36,6 +36,6 @@ describe('useTags', () => {
 
     expect(mockedAxios.get).toHaveBeenCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith('/v1/tags');
-    expect(tagReturn.tags).toMatchObject(['a tag']);
+    expect(tagReturn.tags).toMatchObject([]);
   });
 });

@@ -96,6 +96,7 @@ async function main() {
     privateBucket,
     postgresSg,
     rds,
+    ...secrets,
   });
 
   const { alb, taskDefinition } = createECSResources({
