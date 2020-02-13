@@ -170,7 +170,7 @@ const usePosts = (): UsePost => {
       setAllPosts(newAllPosts);
       setPosts(newAllPosts);
     }
-  }, [allPosts, postsByPage, response, setPosts, total]);
+  }, []); // eslint-disable-line
 
   return { response, loading, error, request, posts: data.posts };
 };

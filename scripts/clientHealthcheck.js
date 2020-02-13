@@ -6,7 +6,7 @@ const { PROD_BUILD } = process.env;
 
 if (PROD_BUILD === 'true') {
   try {
-    if (fs.existsSync('/app/dist/manifest.json')) process.exit(0);
+    if (fs.existsSync('/app/client/dist/manifest.json')) process.exit(0);
     process.exit(1);
   } catch (e) {
     process.exit(1);
