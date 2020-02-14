@@ -12,6 +12,8 @@ services:
         condition: service_healthy
     ports:
       - 443:443
+    volumes:
+      - ./public:/public/
 
 
   api:
@@ -54,6 +56,11 @@ services:
     extends:
       file: docker-compose.base.yml
       service: sam
+    environment: 
+      DEBUG_SAM: "${DEBUG_SAM-}"
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME-cd}
+    ports:
+      - "3001:3001"
       
 
   aws:

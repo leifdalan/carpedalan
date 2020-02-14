@@ -15,9 +15,9 @@ services:
     image: registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
     depends_on:
       api: 
-        condition: service_started
+        condition: service_healthy
       alb: 
-        condition: service_started
+        condition: service_healthy
     command: yarn test
     volumes: 
       - ./cypress:/cy/cypress
@@ -36,7 +36,7 @@ services:
 
     depends_on:
       api: 
-        condition: service_started
+        condition: service_healthy
       aws: 
         condition: service_started
     ports:
@@ -60,7 +60,7 @@ services:
       - './.env.ci:/app/.env'
     depends_on:
       pg:
-        condition: service_started
+        condition: service_healthy
 
     environment:
       PORT: 8001

@@ -32,7 +32,7 @@
       "name": "Lambda",
       "restart": true,
       "protocol": "inspector",
-      "localRoot": "${workspaceFolder}/imageresizer/src",
+      "localRoot": "${workspaceFolder}/imageResizer/src",
       "remoteRoot": "/var/task",
       "port": 5959,
       "sourceMaps": true,

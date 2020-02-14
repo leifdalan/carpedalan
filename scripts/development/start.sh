@@ -4,5 +4,6 @@ set -o errexit
 function down() {
   docker-compose down
 }
+[ ! -d "imageResizer/src/node_modules" ] && echo 'Installing layer deps...' && docker run -v "$PWD/imageResizer/src":/var/task lambci/lambda:build-nodejs12.x npm install sharp sqip knex exif-parser pg aws-sdk
 trap down EXIT
 docker-compose logs -f client alb

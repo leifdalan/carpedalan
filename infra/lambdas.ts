@@ -2,9 +2,10 @@ import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
 import * as pulumi from '@pulumi/pulumi';
 
+import { AllSecrets } from './secrets';
 import { getResourceName as n, getTags as t } from './utils';
 
-interface LambdaI {
+interface LambdaI extends AllSecrets {
   lambdaRole: aws.iam.Role;
   vpc: awsx.ec2.Vpc;
   sg: awsx.ec2.SecurityGroup;
@@ -20,6 +21,8 @@ export function getLambdas({
   privateBucket,
   postgresSg,
   rds,
+  pgUserSecret,
+  pgPasswordSecret,
 }: LambdaI) {
   const layerArchive = new pulumi.asset.FileArchive('../imageResizer/layer/');
 
@@ -46,7 +49,9 @@ export function getLambdas({
     layers: [depLayer.arn],
     environment: {
       variables: {
-        PG_URI: rds.endpoint,
+        PG_HOST: rds.endpoint,
+        PG_USER_SECRET_ID: pgUserSecret.name,
+        PG_PASSWORD_SECRET_ID: pgPasswordSecret.name,
       },
     },
     tags: t(),
