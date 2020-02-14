@@ -170,7 +170,7 @@ const usePosts = (): UsePost => {
       setAllPosts(newAllPosts);
       setPosts(newAllPosts);
     }
-  }, []); // eslint-disable-line
+  }, [response]); // eslint-disable-line
 
   return { response, loading, error, request, posts: data.posts };
 };
