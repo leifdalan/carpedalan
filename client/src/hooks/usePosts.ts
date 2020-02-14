@@ -1,9 +1,11 @@
 import axios from 'axios';
 import debug from 'debug';
-import { DataContext } from 'providers/Data';
 import { stringify } from 'qs';
 import { useContext, useEffect, useState } from 'react';
 
+import { DataContext } from 'providers/Data';
+
+import { PostsWithTagsWithFakes } from './types';
 import useApi from './useApi';
 
 const DEFAULT_PAGE_SIZE = 100;
@@ -29,31 +31,6 @@ export function getBg(): string {
  */
 interface PostsByPage {
   [page: number]: Components.Schemas.PostWithTags[];
-}
-
-/**
- * "Fake" post that hold the fake flag
- *
- * @interface PostsWithTagsWithFakes
- * @extends {Components.Schemas.PostWithTags}
- */
-export interface PostsWithTagsWithFakes
-  extends Components.Schemas.PostWithTags {
-  /**
-   * Whether or not this post object respresents a "fake" one
-   *
-   * @type {boolean}
-   * @memberof PostsWithTagsWithFakes
-   */
-  fake: boolean;
-  /**
-   * Placeholder background rgb value
-   *
-   * @example rgba(234, 123, 532, 0.4)
-   * @type {string}
-   * @memberof PostsWithTagsWithFakes
-   */
-  placeholder: string;
 }
 
 /**
@@ -193,7 +170,7 @@ const usePosts = (): UsePost => {
       setAllPosts(newAllPosts);
       setPosts(newAllPosts);
     }
-  }, [response]);
+  }, []); // eslint-disable-line
 
   return { response, loading, error, request, posts: data.posts };
 };

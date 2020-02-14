@@ -4,6 +4,7 @@ const path = require('path');
 const dotenv = require('dotenv-safe');
 
 const isMigrating = !!process.env.MIGRATING;
+console.log('is migrate', isMigrating);
 dotenv.config({
   path: path.resolve(process.cwd(), isMigrating ? '..' : '.', '.env'),
   example: path.resolve(
@@ -12,6 +13,8 @@ dotenv.config({
     '.env.example',
   ),
 });
+
+console.log('ENV!', process.env.PG_HOST);
 
 module.exports = {
   development: {
@@ -94,7 +97,13 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: process.env.PG_URI,
+    connection: {
+      host: process.env.PG_HOST || 'localhost',
+      database: 'carpedalan',
+      user: process.env.PG_USER,
+      password: process.env.PG_PASSWORD,
+      port: process.env.PG_PORT || 5432,
+    },
     pool: {
       min: 2,
       max: 10,

@@ -1,15 +1,14 @@
-FROM node:12-alpine AS base
-WORKDIR /app
-COPY yarn.lock .
-RUN apk add git=2.20.1-r0
-COPY package.json .
+FROM node:12-slim AS base
+WORKDIR /app/client
+COPY client/yarn.lock .
+COPY client/package.json .
 RUN yarn
-COPY src ./src
-COPY tsconfig.json .
-COPY webpack.config.js .
-COPY babel.config.js .
-COPY devServer.js .
-EXPOSE 4000
-
-
+COPY client/src ./src
+COPY client/tsconfig.json .
+COPY client/webpack.config.js .
+COPY client/webpack.config.prod.js .
+COPY client/babel.config.js .
+COPY client/devServer.js .
+COPY client/.eslintrc.js .
+COPY ./.eslint-ts-base.js /app/
 CMD ["node", "devServer"]

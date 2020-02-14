@@ -1,0 +1,32 @@
+version: '2.4'
+
+services:
+
+  api:
+    stdin_open: true
+    tty: true
+    image: api:latest
+    extends:
+      file: docker-compose.base.yml
+      service: api
+    depends_on:
+      pg_test:
+        condition: service_healthy
+    command: ['yarn', 'integration']
+    volumes:
+      - ./jestrc.js:/app/jestrc.js
+      - ./server/package.json:/app/package.json
+      - ./babel.config.js:/app/babel.config.js
+      - ./.env.test:/app/.env
+      - ./.env.test:/app/.env.test
+    env_file: 
+      - .env.ci
+
+  pg_test:
+    extends:
+      file: docker-compose.base.yml
+      service: pg_test
+    env_file: 
+      - .env.ci
+
+

@@ -1,10 +1,8 @@
-import { PostsWithTagsWithFakes } from 'hooks/usePosts';
-import { bool, func, node, number, oneOf, shape, string } from 'prop-types';
 import * as React from 'react';
-import { default as styled } from 'styled-components';
-import { getFullImageSrcSet, getSquareImageSrcSet } from 'utils';
+import styled from 'styled-components';
 
-// import { propTrueFalse } from '../styles';
+import { PostsWithTagsWithFakes } from 'hooks/types';
+import { getFullImageSrcSet, getSquareImageSrcSet } from 'utils';
 
 const Wrapper = styled.div`
   display: inline-block;
@@ -43,7 +41,6 @@ const Picture = ({
   ratio,
   post,
   placeholderColor,
-  alt,
   children,
   type,
   ...etc

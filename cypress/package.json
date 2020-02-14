@@ -1,0 +1,20 @@
+{
+  "name": "cypress",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.610.0",
+    "cypress": "^3.8.3",
+    "cypress-dark": "^1.7.14",
+    "cypress-file-upload": "^3.5.3",
+    "dotenv-safe": "^8.2.0",
+    "knex": "^0.20.8",
+    "pg": "^7.17.1"
+  }
+}

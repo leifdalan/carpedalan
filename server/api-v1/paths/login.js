@@ -1,7 +1,7 @@
 import { adminPassword, publicPassword } from '../../config';
 import { READ_USER, WRITE_USER } from '../../constants';
 import { UnauthenticatedError } from '../../errors';
-import { setSignedCloudfrontCookie } from '../../middlewares';
+import setSignedCloudfrontCookie from '../middlewares/setCloudfrontCookie';
 import { commonErrors } from '../refs/error';
 
 const status = 200;

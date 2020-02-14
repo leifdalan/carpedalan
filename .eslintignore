@@ -4,5 +4,4 @@ setupTests.js
 photos/
 **/node_modules/
 **/coverage/
-api/setup
 db/seeds

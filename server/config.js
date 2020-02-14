@@ -3,19 +3,14 @@ import path from 'path';
 import dotenv from 'dotenv-safe';
 
 let { env } = process;
-if (env.NODE_ENV === 'test' && !env.WALLABY) {
-  env = dotenv.config({
-    path: '.env.test',
-    example: '.env.example',
-  }).parsed;
-}
+
 if (env.NODE_ENV === 'ci') {
   env = dotenv.config({ path: path.resolve(process.cwd(), '.env.ci') }).parsed;
 }
 
-export const branch = env.CIRCLE_BRANCH;
-export const buildNum = env.CIRCLE_BUILD_NUM;
-export const sha1 = env.CIRCLE_SHA1;
+export const branch = env.CI_COMMIT_REF_NAME;
+export const buildNum = env.CI_JOB_ID;
+export const sha1 = env.CI_COMMIT_SHA;
 export const publicPassword = env.PUBLIC_PASSWORD;
 export const adminPassword = env.ADMIN_PASSWORD;
 export const sessionSecret = env.SESSION_SECRET;
@@ -35,6 +30,7 @@ export const assets = ['runtime.js', 'vendors.js', 'client.js'];
 export const bucket = env.S3_BUCKET;
 export const ssl = env.PGSSLMODE === 'require';
 export const ci = env.CI === 'true';
+export const skipCf = env.SKIP_CF === 'true';
 // Optional
 export const logLevel = env.LOG_LEVEL === 'info';
 export const cdnDomain = env.CDN_DOMAIN;
@@ -45,3 +41,5 @@ export const awsRegion = env.AWS_DEFAULT_REGION;
 export const awsSecretAccessKey = env.AWS_SECRET_ACCESS_KEY;
 export const cfKey = env.CLOUDFRONT_KEY_ID;
 export const secureCookie = isProd || isDev;
+export const privateKey = env.PRIVATE_KEY;
+export const useProdAssets = env.PROD_BUILD === 'true' || isProd;

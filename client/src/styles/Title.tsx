@@ -1,4 +1,4 @@
-import { css, default as styled } from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { getThemeValue, TITLE_FONT } from './utils';
 
@@ -32,5 +32,5 @@ export default styled.h1<TitleProps>`
       ? css`
           text-align: center;
         `
-      : null};
+      : null}
 `;

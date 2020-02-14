@@ -1,35 +1,32 @@
-import cf from 'aws-cloudfront-sign';
-
-import { CF_TIMEOUT } from '../shared/constants';
-
-import { assets, isProd, cdnDomain, domain, cfKey } from './config';
+import { assets, useProdAssets, isProd } from './config';
+import setSignedCloudfrontCookie from './api-v1/middlewares/setCloudfrontCookie';
 
 let clientAssets = false;
-if (isProd) {
-  const manifest = require('./manifest.json'); // eslint-disable-line global-require,import/no-unresolved
+if (useProdAssets) {
+  const manifest = require('./dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
   clientAssets = assets.map(asset => manifest[asset]);
 }
 
-export function setSignedCloudfrontCookie(res) {
-  const options = {
-    keypairId: cfKey,
-    privateKeyPath: `/app/server/cfkeys/pk-${cfKey}.pem`,
-    expireTime: new Date().getTime() + CF_TIMEOUT,
-  };
-  const signedCookies = cf.getSignedCookies(`https://${cdnDomain}/*`, options);
+// export function setSignedCloudfrontCookie(res) {
+//   const options = {
+//     keypairId: cfKey,
+//     privateKeyPath: `/app/server/cfkeys/pk-${cfKey}.pem`,
+//     expireTime: new Date().getTime() + CF_TIMEOUT,
+//   };
+//   const signedCookies = cf.getSignedCookies(`https://${cdnDomain}/*`, options);
 
-  if (Object.keys(signedCookies).length) {
-    Object.keys(signedCookies).forEach(key => {
-      res.cookie(key, signedCookies[key], {
-        domain: `.${domain}`,
-        path: '/',
-        // secure: true,
-        http: true,
-        maxAge: CF_TIMEOUT,
-      });
-    });
-  }
-}
+//   if (Object.keys(signedCookies).length) {
+//     Object.keys(signedCookies).forEach(key => {
+//       res.cookie(key, signedCookies[key], {
+//         domain: `.${domain}`,
+//         path: '/',
+//         // secure: true,
+//         http: true,
+//         maxAge: CF_TIMEOUT,
+//       });
+//     });
+//   }
+// }
 
 /* eslint-disable import/no-extraneous-dependencies,global-require, import/prefer-default-export */
 

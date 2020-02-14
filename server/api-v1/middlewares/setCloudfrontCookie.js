@@ -2,13 +2,18 @@ import cf from 'aws-cloudfront-sign';
 
 import { AWSError } from '../../errors';
 import { CF_TIMEOUT } from '../../../shared/constants';
-import { cdnDomain, cfKey, domain } from '../../config';
+import { cdnDomain, privateKey, cfKey, domain, skipCf } from '../../config';
 
 export default function setSignedCloudfrontCookie(res) {
+  if (skipCf) return;
+  const replaced = privateKey
+    ? privateKey.replace(/\\n/g, '\n').replace(/"/g, '')
+    : null;
+
   try {
     const options = {
       keypairId: cfKey,
-      privateKeyPath: `/app/server/cfkeys/pk-${cfKey}.pem`,
+      privateKeyString: replaced,
       expireTime: new Date().getTime() + CF_TIMEOUT,
     };
     const signedCookies = cf.getSignedCookies(
@@ -20,9 +25,9 @@ export default function setSignedCloudfrontCookie(res) {
         res.cookie(key, signedCookies[key], {
           domain: `.${domain}`,
           path: '/',
-          // secure: true,
+          secure: true,
           http: true,
-          // maxAge: 1000 * 5,
+          maxAge: CF_TIMEOUT,
         });
       });
     }

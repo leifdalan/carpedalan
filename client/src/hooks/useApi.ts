@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
 import debug from 'debug';
+import { useRef, useState } from 'react';
 
 const log = debug('hooks:useApi');
 

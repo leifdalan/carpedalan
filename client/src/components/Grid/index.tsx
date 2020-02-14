@@ -1,14 +1,16 @@
-import Picture from 'components/Picture';
 import debug from 'debug';
-import usePosts, { PostsWithTagsWithFakes } from 'hooks/usePosts';
-import useWindow from 'hooks/useWindow';
 import * as React from 'react';
-import { default as Autosizer } from 'react-virtualized-auto-sizer';
+import { Link, useLocation } from 'react-router-dom';
+import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
-import { default as InfiniteLoader } from 'react-window-infinite-loader';
-import { default as styled } from 'styled-components';
-import useRouter from 'hooks/useRouter';
-import { Link } from 'react-router-dom';
+import InfiniteLoader from 'react-window-infinite-loader';
+import styled from 'styled-components';
+
+import Picture from 'components/Picture';
+import { PostsWithTagsWithFakes } from 'hooks/types';
+import usePosts from 'hooks/usePosts';
+import useWindow from 'hooks/useWindow';
+
 const log = debug('component:Grid');
 
 const { useState } = React;
@@ -45,12 +47,12 @@ const Grid = ({
 }: {
   itemsWithTitle: PostsWithTagsWithFakes[];
 }): React.ReactElement => {
-  const { request, loading, posts } = usePosts();
+  const { request } = usePosts();
   const [refWidth, setRefWidth] = useState<number>(0);
   const { width } = useWindow();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const { location } = useRouter();
+  const location = useLocation();
   const galleryLinkPrefix = location.pathname.endsWith('/')
     ? location.pathname
     : `${location.pathname}/`;
@@ -62,7 +64,7 @@ const Grid = ({
       const { width } = wrapperRef.current.getBoundingClientRect();
       setRefWidth(width);
     }
-  }, [wrapperRef.current, width]);
+  }, [width]);
 
   /**
    * Triggered if isItemLoaded returns false
@@ -91,8 +93,8 @@ const Grid = ({
           }#grid`;
 
           const isGallery = location.pathname.includes('gallery');
-          /* tslint:disable-next-line no-any */
-          let Element = React.Fragment as any;
+
+          let Element = React.Fragment;
           let props = {};
 
           if (!isGallery) {
@@ -103,12 +105,12 @@ const Grid = ({
           }
 
           return (
-            <Element {...props} key={arrayIndex}>
+            <Element {...props} key={post.id}>
               <Picture
-                width={'100%'}
+                width="100%"
                 ratio={1}
                 post={post}
-                shouldShowImage={true}
+                shouldShowImage
                 placeholderColor={itemsWithTitle[index].placeholder}
                 alt={itemsWithTitle[index].description}
                 type="square"
@@ -144,7 +146,7 @@ const Grid = ({
    * @returns {(index: number) => number}
    */
   function getItemSize(containerWidth: number): (index: number) => number {
-    return function calculateSize(index: number) {
+    return function calculateSize() {
       const postsPerRow = Math.floor(refWidth / 150);
       return containerWidth / postsPerRow;
     };
@@ -176,8 +178,9 @@ const Grid = ({
                   }
                   itemSize={getItemSize(width)}
                   width={width}
-                  children={Row}
-                />
+                >
+                  {Row}
+                </List>
               </InnerWrapper>
             )}
           </InfiniteLoader>

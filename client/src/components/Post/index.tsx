@@ -1,10 +1,11 @@
-import Picture from 'components/Picture';
-import { PostsWithTagsWithFakes } from 'hooks/usePosts';
 import * as React from 'react';
-import { Link, LinkProps } from 'react-router-dom';
-import { default as styled } from 'styled-components';
-import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+
+import Picture from 'components/Picture';
+import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePostLink from 'hooks/usePostLink';
+import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
 import {
   BRAND_COLOR,
   formatDate,
@@ -12,7 +13,9 @@ import {
   TITLE_FONT,
 } from 'styles/utils';
 import { getImageRatio, getOriginalImagePath } from 'utils';
-import useRouter from 'hooks/useRouter';
+
+// Which works! and has type safety and autocomplete. Can you think of a way to do
+// type it without "any"?
 
 const Description = styled.div`
   padding: 1em 1em 0;
@@ -30,7 +33,7 @@ const Description = styled.div`
 
 const StyledLink = styled(Link)`
   text-decoration: none;
-  color: ${getThemeValue(BRAND_COLOR)};
+  color: ${getThemeValue('neutralColor')};
 `;
 
 const HR = styled.div`
@@ -82,7 +85,7 @@ const Row = ({
           width={width}
           ratio={isSquare ? 1 : getImageRatio(post)}
           post={post}
-          shouldShowImage={true}
+          shouldShowImage
           placeholderColor={post.placeholder}
           alt={post.description}
           type={isSquare ? 'square' : 'original'}
@@ -94,8 +97,8 @@ const Row = ({
         ) : null}
         {post.tags && post.tags.length ? (
           <ul>
-            {post.tags.map(({ name }, tagIndex) => (
-              <li data-test="tags" key={tagIndex}>
+            {post.tags.map(({ name }) => (
+              <li data-test="tags" key={name}>
                 <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
               </li>
             ))}

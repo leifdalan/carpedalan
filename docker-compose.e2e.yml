@@ -1,94 +1,78 @@
-version: '2.1'
+version: '2.4'
+
 
 services:
-  e2e: 
-    image: $CYPRESS_REPOSITORY:3.2.0
-    links:
-      - "e2e_app:local.carpedalan.com"
-    environment:
-      ## this enables colors in the output
-      TERM: xterm
-      NODE_ENV: ci
-      PG_HOST: e2e_pg
-      CYPRESS_BASE_URL: http://local.carpedalan.com:3001
-      CYPRESS_NUM_TESTS_KEPT_IN_MEMORY: 5
-    working_dir: /app
-    depends_on:
-      e2e_app: 
-        condition: service_healthy
-    volumes: 
-      - ./cypress:/app/cypress/
-      - ./db:/app/db/
-      - ./api:/app/api/
-      - ./shared:/app/shared/
-      - ./.env.ci:/app/.env
-      - ./.env.example:/app/.env.example
-      - ./goodDataWithEtagAndKey.json:/app/goodDataWithEtagAndKey.json
-      ## leverage node module caching so that we don't have to download this huge image
-      - ./node_modules:/app/node_modules
-
-
-    command: bash -c "ls -al && ls cypress -al && pwd && yarn cypress run --env configFile=ci --reporter junit --reporter-options 'mochaFile=/app/cypress/test-output.xml'"  
-    networks:
-      - backend
-  e2e_app:
-    container_name: e2e-app
-    domainname: local.carpedalan.com
-    depends_on:
-      e2e_pg:
-        condition: service_healthy
-    image: $ECR_REPOSITORY:$CIRCLE_SHA1
-
-    volumes: 
-      - ./db:/app/db
-      - ./package.json:/app/package.json
-      - ./.env.ci:/app/.env
-    logging: 
-      driver: "none"
-
-
-    environment:
-      NODE_ENV: ci
-      PORT: 3001
-      CI: "true"
-      PG_HOST: e2e_pg
-      PG_USER: postgres
-      PG_PASSWORD: postgres
-      PG_DATABASE: carpedalan
-      PGSSLMODE: disable
-      PUBLIC_PASSWORD: testpublic
-      ADMIN_PASSWORD: testadmin
-
-    healthcheck:
-      test: "curl -sS localhost:3001/healthcheck"
-      interval: 1s
-      timeout: 1s
-      retries: 10
-    command: "yarn e2e:ci"
-    ports:
-      - 3001:3001
-      - 80:80
-    networks:
-      - backend      
-  e2e_pg:
-    image: postgres:10.0-alpine
+  cypress:
     tty: true
+    links:
+      - "alb:local.carpedalan.com"
+      - "alb:photos.local.carpedalan.com"
+      - "alb:cdn.local.carpedalan.com"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      CYPRESS_BASE_URL: http://local.carpedalan.com
+    env_file: 
+      - .env.ci
+    image: registry.gitlab.com/carpedalan/carpedalan-web/cypress:latest
+    depends_on:
+      api: 
+        condition: service_started
+      alb: 
+        condition: service_started
+    command: yarn test
+    volumes: 
+      - ./cypress:/cy/cypress
+      - ./.env.example:/cy/.env.example
+      - ./.env.ci:/cy/.env
+      - ./db/:/cy/db/
+      - ./shared/:/cy/shared/
 
-    ports: 
-      - 5555:5432
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 1s
-      timeout: 1s
-      retries: 20
-    networks:
-      - backend
+  alb:
+    extends:
+      file: docker-compose.base.yml
+      service: alb
+    volumes: 
+      - ./nginx/nginx-e2e.conf:/etc/nginx/nginx.conf
+      - ./dist:/assets/
 
-networks:
-  backend:
-    driver: bridge      
+    depends_on:
+      api: 
+        condition: service_started
+      aws: 
+        condition: service_started
+    ports:
+      - "80:80"
+
+
+  api:
+    stdin_open: true
+    tty: true
+    image: api:latest
+    extends:
+      file: docker-compose.base.yml
+      service: api
+    volumes:
+      - './server:/app/server:delegated'
+      - './scripts:/app/scripts:delegated'
+      - './dist:/app/server/dist'
+      - './index.js:/app/index.js:delegated'
+      - './db:/app/db:delegated'
+      - './shared:/app/shared:delegated'
+      - './.env.ci:/app/.env'
+    depends_on:
+      pg:
+        condition: service_started
+
+    environment:
+      PORT: 8001
+      PROD_BUILD: 'true'
+      ASSET_CDN_DOMAIN: cdn.local.carpedalan.com
+  pg:
+    extends:
+      file: docker-compose.base.yml
+      service: pg
+  aws:
+    extends:
+      file: docker-compose.base.yml
+      service: aws
+
 

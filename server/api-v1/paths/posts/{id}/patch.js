@@ -5,6 +5,7 @@ const status = 200;
 export default function(posts) {
   const patch = async function(req, res, next) {
     const { body } = req;
+
     try {
       const response = await posts.update(body, req.params.id);
       res.status(status).json(response);

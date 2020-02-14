@@ -1,11 +1,12 @@
-import { PostsWithTagsWithFakes } from 'hooks/usePosts';
-import * as React from 'react';
-import keyBy from 'lodash/keyBy';
 import debug from 'debug';
+import keyBy from 'lodash/keyBy';
+import * as React from 'react';
+
+import { PostsWithTagsWithFakes } from 'hooks/types';
 
 const log = debug('providers:Data');
 
-const { createContext, Children, useState, useReducer } = React;
+const { createContext, Children, useReducer } = React;
 export interface Data {
   posts: PostsWithTagsWithFakes[];
   tags: Paths.GetTags.Responses.$200;
@@ -27,12 +28,14 @@ export interface DataContextI {
   setTags: SetTags;
   addPosts: AddPosts;
 }
+/* eslint-disable  @typescript-eslint/no-empty-function */
 export const DataContext = createContext<DataContextI>({
   data,
   setPosts: () => {},
   setTags: () => {},
   addPosts: () => {},
 });
+/* eslint-enable  @typescript-eslint/no-empty-function */
 
 type Action =
   | { type: 'set posts'; payload: PostsWithTagsWithFakes[] }
@@ -43,11 +46,6 @@ type Action =
     };
 
 function reducer(state: Data, action: Action): Data {
-  console.groupCollapsed(
-    `%c ${action.type}`,
-    'background: green; color: white;',
-  );
-  log(`%c Action: "${action.type}"`, 'background: green;', action);
   let newState = state;
   switch (action.type) {
     case 'set posts':
@@ -78,8 +76,6 @@ function reducer(state: Data, action: Action): Data {
       break;
     }
   }
-  log('%c New State', 'background: green', newState);
-  console.groupEnd();
   return newState;
 }
 

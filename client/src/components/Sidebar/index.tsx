@@ -1,20 +1,16 @@
-import { bool, func, string } from 'prop-types';
+import debug from 'debug';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
-import { default as styled } from 'styled-components';
-import Title from 'styles/Title';
-import { getThemeValue, SIDEBAR_COLOR, TEXT } from 'styles/utils';
+import { Link, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+
 import { User } from 'User';
 import useTags from 'hooks/useTags';
-import debug from 'debug';
-import useRouter from 'hooks/useRouter';
+import Title from 'styles/Title';
+import { getThemeValue, SIDEBAR_COLOR, TEXT } from 'styles/utils';
 
 const log = debug('components:Sidebar');
 
-const { useContext, useEffect } = React;
 interface StyledSidebarProps {
-  /* tslint:disable-next-line */
-  theme: any;
   isOpen?: boolean;
 }
 const StyledSidebar = styled.div<StyledSidebarProps>`
@@ -31,7 +27,7 @@ const StyledSidebar = styled.div<StyledSidebarProps>`
   height: 100%;
   overflow: scroll;
   transition: left 200ms ease-in;
-  font-family: montserratregular;
+  font-family: ${getThemeValue('bodyFont')};
   padding: ${({ isOpen }) => (isOpen ? `1em` : '1em 0')};
   ${Title} {
     margin-top: 0;
@@ -75,15 +71,13 @@ interface SidebarProps {
   isOpen: boolean;
 }
 
-export default function sidebar({
+export default function Sidebar({
   toggleMenu,
   userState,
   isOpen,
 }: SidebarProps) {
   const { tags } = useTags();
-  const {
-    location: { hash, pathname },
-  } = useRouter();
+  const { hash } = useLocation();
 
   log('tags', tags);
   return userState ? (

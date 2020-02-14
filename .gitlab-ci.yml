@@ -1,0 +1,195 @@
+image: registry.gitlab.com/carpedalan/carpedalan-web/runner:latest
+
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+
+stages:
+  - build
+  - test
+  - deploy
+
+default:
+  before_script:
+    - pulumi login s3://carpedalan-pulumi
+    - pulumi stack select dev
+
+build client:
+  tags: 
+    - leif
+  image: docker:18.06.3
+  before_script:
+    - echo 'Skipping login'
+  stage: build
+  services:
+    - docker:18.06.3-dind
+  cache:
+    key: client-cache
+    paths:
+      - client.tar
+  artifacts: 
+    expire_in: 1 week
+    paths: 
+      - client.tar
+      - dist
+  script: 
+    - ls -al
+    - '[ -f ./client.tar ] && docker load --input client.tar'
+    - docker build -t client:latest -f client/Dockerfile --cache-from client:latest --cache-from node:12-slim .
+    - docker run -v "$PWD/dist":/app/dist -e "ASSET_CDN_DOMAIN=cdn.carpe.dalan.dev" client:latest yarn build:prod
+    - ls -al
+    - docker save client:latest > client.tar
+
+build api:
+  tags: 
+    - leif
+
+  image: docker:18.06.3
+  before_script:
+    - echo 'Skipping login'
+  stage: build
+  services:
+  - docker:18.06.3-dind
+  cache:
+    key: api-cache
+    paths:
+      - api.tar
+  artifacts: 
+    expire_in: 1 week
+    paths: 
+      - api.tar
+  script: 
+    - ls -al
+    - '[ -f ./api.tar ] && docker load --input api.tar'
+    - docker build -t api:latest -f server/Dockerfile --cache-from api:latest --cache-from node:12-alpine . --target=dev
+    - docker save api:latest > api.tar
+
+dependencies:
+  tags: 
+    - leif
+
+  before_script:
+    - echo 'Skipping login'
+  stage: build
+  cache:
+    key: npm-1
+    paths:
+      - node_modules/
+      - client/node_modules
+      - server/node_modules
+  script:
+    - yarn
+
+# build production:
+#   services:
+#     - docker:18.06.3-dind
+#   script:
+#     - ./scripts/pipeline/build.sh
+#     - docker save $ECR:$CI_COMMIT_SHA > app.tar
+#   stage: build
+#   artifacts:
+#     expire_in: 30 daysx
+#     paths:
+#       - app.tar
+
+build layer deps:
+  tags: 
+    - leif
+
+  stage: build
+  services:
+    - docker:18.06.3-dind
+  script:
+    - cd imageResizer/layer/nodejs
+    - yarn build
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - imageResizer/layer/
+  
+e2e:
+  tags: 
+    - leif
+
+  stage: test
+  before_script:
+    - echo 'Skipping login'
+  services:
+    - docker:18.06.3-dind
+  dependencies:
+    - build client
+    - build api
+  script: 
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker load --input api.tar
+    # - yarn e2e
+    - COMPOSE_PROJECT_NAME=cd_e2e docker-compose -f docker-compose.e2e.yml up
+
+integration:
+  tags: 
+    - leif
+
+  stage: test
+  before_script:
+    - echo 'Skipping login'
+  services:
+    - docker:18.06.3-dind
+  dependencies:
+    - build api
+  script: 
+    - docker load --input api.tar
+    - yarn integration
+
+unit:
+  stage: test
+  before_script:
+    - echo 'Skipping login'
+  services:
+    - docker:18.06.3-dind
+  dependencies:
+    - build client
+  script: 
+    - docker load --input client.tar
+    - yarn unit
+
+lint:
+  tags: 
+    - leif
+
+  stage: test
+  image: node:12-slim
+  before_script:
+    - echo 'Skipping login'
+  cache:
+    key: npm-1
+    policy: pull
+    paths: 
+      - node_modules
+  dependencies: []
+  script: 
+    - yarn lint
+
+deploy:
+  tags: 
+    - leif
+
+  stage: deploy
+  services:
+  - docker:18.06.3-dind
+
+  cache:
+    key: npm-1
+    policy: pull
+    paths: 
+      - node_modules
+  script:
+    - ls -al
+    - ls -al dist
+    - cat dist/manifest.json
+    - docker load --input api.tar
+    - pulumi up --yes --non-interactive
+  dependencies:
+    - build layer deps
+    - build client
+    - build api

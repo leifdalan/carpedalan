@@ -1,9 +1,9 @@
+import debug from 'debug';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { default as styled } from 'styled-components';
+import styled from 'styled-components';
 
 import FlexContainer from 'styles/FlexContainer';
-import debug from 'debug';
 
 const log = debug('components:Modal');
 

@@ -1,7 +1,6 @@
-import { default as styled } from 'styled-components';
+import styled from 'styled-components';
 
 import Title from './Title';
-import { prop } from './utils';
 
 export enum Side {
   right = 'right',
@@ -13,10 +12,8 @@ interface MenuProps {
 }
 
 const Menu = styled(Title)<MenuProps>`
-  background: none;
   color: inherit;
   border: none;
-  padding: 0;
   cursor: pointer;
   outline: inherit;
   position: fixed;

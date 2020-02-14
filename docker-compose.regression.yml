@@ -1,0 +1,92 @@
+version: '2.4'
+
+
+services:
+  e2e:
+    tty: true
+    links:
+      - "alb:local.carpedalan.com"
+      - "alb:photos.local.carpedalan.com"
+      - "alb:cdn.local.carpedalan.com"
+    environment:
+      CYPRESS_BASE_URL: https://local.carpedalan.com
+    env_file: 
+      - .env.ci
+
+    build:
+      context: .
+      dockerfile: e2e/Dockerfile
+    depends_on:
+      api: 
+        condition: service_healthy
+      client: 
+        condition: service_healthy
+    command: yarn test
+    volumes: 
+      - ./e2e/screenshots:/e2e/screenshots
+      - ./e2e/src:/e2e/src
+      - ./e2e/jest.config.js:/e2e/jest.config.js
+      # - ./.env.example:/cy/.env.example
+      # - ./.env.ci:/cy/.env
+      # - ./db/:/cy/db/
+      # - ./shared/:/cy/shared/
+
+  alb:
+    extends:
+      file: docker-compose.base.yml
+      service: alb
+    depends_on:
+      api: 
+        condition: service_healthy
+      client: 
+        condition: service_healthy
+      aws: 
+        condition: service_started
+
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
+
+
+  client:
+    stdin_open: true
+    tty: true
+    extends:
+      file: docker-compose.base.yml
+      service: client
+    env_file: 
+      - .env.ci
+    environment: 
+      PROD_BUILD: 'true'
+      PORT: "${CLIENT_PORT-4000}"
+
+  api:
+    stdin_open: true
+    tty: true
+    extends:
+      file: docker-compose.base.yml
+      service: api
+    depends_on:
+      pg:
+        condition: service_healthy
+      client:
+        condition: service_healthy
+    env_file: 
+      - .env.ci
+
+    environment:
+      PORT: 8001
+      PROD_BUILD: 'true'
+      ASSET_CDN_DOMAIN: cdn.local.carpedalan.com
+    # ports: 
+    #   - '8001:8001'
+  pg:
+    extends:
+      file: docker-compose.base.yml
+      service: pg
+  aws:
+    extends:
+      file: docker-compose.base.yml
+      service: aws
+
+

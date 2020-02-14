@@ -1,16 +1,10 @@
-import axios, { AxiosResponse, AxiosStatic } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { shallow } from 'enzyme';
-import { UserContext, UserProvider } from 'providers/User';
 import * as React from 'react';
-import { MemoryRouter, Redirect, Route } from 'react-router';
+import { MemoryRouter, Route } from 'react-router';
 import { BrowserRouter, Link } from 'react-router-dom';
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  waitForElement,
-} from '@testing-library/react';
+
+import { fireEvent, render, waitForElement } from '@testing-library/react';
 
 import Login from '../Login';
 
@@ -43,6 +37,7 @@ describe('<Login />', () => {
     expect(app.find('[data-test="password"]').props().value).toBe(val);
   });
 
+  /* eslint-disable prefer-promise-reject-errors */
   it('should show an error if there is one', async () => {
     mockedAxios.post.mockImplementation(() =>
       Promise.reject({ response: { data: { message: 'error' } }, status: 420 }),
@@ -85,7 +80,7 @@ describe('<Login />', () => {
     expect(errorText).toHaveTextContent('error');
   });
 
-  it.skip('should redirect on success', async () => {
+  it('should redirect on success', async () => {
     const RedirectComponent = () => <div data-testid="redirected">Hi</div>;
     mockedAxios.post.mockImplementation(() =>
       Promise.resolve({
@@ -94,22 +89,14 @@ describe('<Login />', () => {
       } as AxiosResponse),
     );
     const { getByTestId } = render(
-      <UserProvider>
-        <MemoryRouter>
-          <Link data-testid="login-link" to="login">
-            Login
-          </Link>
-          <Route path="/login" component={Login} />
-          <UserContext.Consumer>
-            {context => (context.user ? <div data-testid="home" /> : null)}
-          </UserContext.Consumer>
-        </MemoryRouter>
-      </UserProvider>,
+      <MemoryRouter>
+        <Link data-testid="login-link" to="login">
+          Login
+        </Link>
+        <Route path="/login" component={Login} />
+      </MemoryRouter>,
     );
     fireEvent.click(getByTestId('login-link'));
     const errorText = await waitForElement(() => getByTestId('submit'));
-
-    fireEvent.click(getByTestId('submit-button'));
-    const redirected = await waitForElement(() => getByTestId('home'));
   });
 });

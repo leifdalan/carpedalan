@@ -1,4 +1,4 @@
-import { default as styled } from 'styled-components';
+import styled from 'styled-components';
 
 import { DANGER_COLOR, getThemeValue } from './utils';
 

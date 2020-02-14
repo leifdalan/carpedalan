@@ -42,11 +42,13 @@ const invitation = () => {
         /* more items */
       ],
     };
+
     try {
       const promise = ses.sendEmail(params).promise();
       const receipt = await promise;
       res.status(200).json(receipt);
     } catch (e) {
+      console.log('error', e); // eslint-disable-line
       res.status(500).send();
       throw new AWSError(e);
     }

@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "docker run -v \"$PWD\":/var/task lambci/lambda:build-nodejs8.10 npm install sharp sqip knex exif-parser pg",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "cp ../shared/constants.js . && zip -r -X ../imageResizer.zip index.js constants.js && cd .. && aws lambda update-function-code --function-name image-processor --zip-file fileb://imageResizer.zip --profile carpedalan-prod",
     "stage": "cp ../shared/constants.js . && zip -r -X ../imageResizer.zip * && cd .. && aws lambda update-function-code --function-name carpedalan-west --zip-file fileb://imageResizer.zip --profile carpedev --region us-west-2"
@@ -13,8 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "exif-parser": "^0.1.12",
-    "knex": "^0.16.3",
-    "pg": "^7.8.1",
+    "knex": "^0.16.5",
+    "pg": "^7.18.1",
     "sharp": "^0.21.3",
     "sqip": "^0.3.3"
   }

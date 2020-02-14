@@ -1,7 +1,8 @@
-import * as React from 'react';
 import { mount } from 'enzyme';
+import * as React from 'react';
+
 import { DataProvider } from 'providers/Data';
-/* tslint:disable no-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const TestHook = ({ callback }: { callback: (...args: any[]) => any }) => {
   callback();
   return null;

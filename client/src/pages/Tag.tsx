@@ -1,23 +1,20 @@
 import axios from 'axios';
+import debug from 'debug';
+import * as React from 'react';
+import { Link, RouteComponentProps, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+
 import Feed from 'components/Feed';
 import Grid from 'components/Grid';
-import debug from 'debug';
-import usePosts, { PostsWithTagsWithFakes, getBg } from 'hooks/usePosts';
-import useRouter from 'hooks/useRouter';
-import * as React from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
-import { default as styled } from 'styled-components';
+import { PostsWithTagsWithFakes } from 'hooks/types';
 import useApi from 'hooks/useApi';
+import { getBg } from 'hooks/usePosts';
 import useTags from 'hooks/useTags';
 import { DataContext } from 'providers/Data';
+
 const log = debug('component:Tag');
 
 const { useState, useContext } = React;
-const InnerWrapper = styled.main`
-  max-width: 768px;
-  margin: auto;
-  height: 100%;
-`;
 
 const { useEffect, useRef } = React;
 
@@ -26,21 +23,11 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
-const PostWrapper = styled.article`
-  max-width: 620px;
-  width: 100%;
-  margin: 0 auto;
-`;
-
 const GridListSwitcher = styled.div`
   position: fixed;
   z-index: 2;
   top: 0;
   right: 0;
-`;
-
-const RowWrapper = styled.div`
-  display: flex;
 `;
 
 /**
@@ -84,23 +71,22 @@ const Tag = (
 
   const gridRef = useRef(0);
 
-  const {
-    match: { params },
-    location: { hash, pathname },
-  } = useRouter();
+  const { hash, pathname } = useLocation();
 
   function isGrid() {
     return hash.includes('grid');
   }
 
+  const { match } = props;
   /**
    * Add Title to posts list
    */
   useEffect(() => {
     log('%c post dep changed', 'background: blue;');
+
     if (response) {
       const newPosts = [...response.data];
-      newPosts.unshift({ key: props.match.params.tagName });
+      newPosts.unshift({ key: match.params.tagName });
       const newPostsWithFake = newPosts.map(post => ({
         ...post,
         fake: false,
@@ -110,22 +96,21 @@ const Tag = (
       setPostsWithTitle(newPostsWithFake);
       addPosts(newPostsWithFake);
     }
-  }, [response]);
+  }, [addPosts, match.params.tagName, response]);
 
   /**
    * Fetch posts by tag when the tags change, or the tagName (route)
    * changes.
    */
   useEffect(() => {
-    log('params', props.match.params);
     if (tags.length) {
-      const tag = tags.find(tag => tag.name === props.match.params.tagName);
+      const tag = tags.find(tag => tag.name === match.params.tagName);
       if (tag && tag.id) {
         request(tag.id);
         gridRef.current += 1;
       }
     }
-  }, [tags, props.match.params.tagName]);
+  }, [tags, match.params.tagName, request]);
 
   log('loading', loading);
 
@@ -141,15 +126,9 @@ const Tag = (
       ) : (
         <Wrapper data-testid="home" ref={wrapperRef}>
           {isGrid() ? (
-            <Grid
-              key={props.match.params.tagName}
-              itemsWithTitle={postsWithTitle}
-            />
+            <Grid key={match.params.tagName} itemsWithTitle={postsWithTitle} />
           ) : (
-            <Feed
-              key={props.match.params.tagName}
-              itemsWithTitle={postsWithTitle}
-            />
+            <Feed key={match.params.tagName} itemsWithTitle={postsWithTitle} />
           )}
         </Wrapper>
       )}

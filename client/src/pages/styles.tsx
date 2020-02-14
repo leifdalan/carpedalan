@@ -1,6 +1,7 @@
-import { default as styled } from 'styled-components';
+import styled from 'styled-components';
+
 import Title from 'styles/Title';
-import { BRAND_COLOR, getThemeValue, MAIN, prop } from 'styles/utils';
+import { BRAND_COLOR, getThemeValue, MAIN } from 'styles/utils';
 
 export const InputWrapper = styled.div`
   display: flex;

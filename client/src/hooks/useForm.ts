@@ -118,7 +118,7 @@ export default function useForm(formName: string) {
 
   useEffect(() => {
     formStore = forms;
-  }, []);
+  }, [forms]);
 
   /**
    * Function used for setting a value on a given field for the form
@@ -179,7 +179,7 @@ export default function useForm(formName: string) {
    * @param {UseField} { field, handleChange }
    * @returns onChange callabck handler and value
    */
-  function useField({ field, handleChange, validate = f => false }: UseField) {
+  function useField({ field, handleChange, validate = () => false }: UseField) {
     return {
       onChange: handleChange
         ? (arg0: React.ChangeEvent<HTMLInputElement>) => {

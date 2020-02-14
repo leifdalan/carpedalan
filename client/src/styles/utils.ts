@@ -1,16 +1,12 @@
-import format from 'date-fns/format';
-import fromUnixTime from 'date-fns/fromUnixTime';
-import { createGlobalStyle } from 'styled-components';
+import { format, fromUnixTime } from 'date-fns';
+import { createGlobalStyle, DefaultTheme } from 'styled-components';
 
 interface StyledProp {
   [index: string]: string;
 }
 
 export const formatDate = (timestamp: number): string =>
-  format(fromUnixTime(timestamp), 'MMM d yyyy', {
-    awareOfUnicodeTokens: true,
-    /* tslint:disable-next-line */
-  } as any); 
+  format(fromUnixTime(timestamp), 'MMM d yyyy');
 
 export const MAIN = 'main';
 export const TEXT = 'text';
@@ -21,15 +17,52 @@ export const BODY_FONT = 'bodyFont';
 export const TITLE_FONT = 'titleFont';
 export const DANGER_COLOR = 'dangerColor';
 export const NEUTRAL_COLOR = 'neutralColor';
-export const getThemeValue = (value: string) => ({
-  theme,
-}: {
-  theme: StyledProp;
-}) => theme[value];
+export const cdn = process.env.ASSET_CDN_DOMAIN;
 
-// tslint:disable-next-line
-export function prop<T>(value: keyof T): (props: T) => any {
-  return props => props[value];
+/**
+ * Utility to be used in styled component interpolations to grab a specific
+ * theme value
+ * @example
+ * ```
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: ${getThemeValue('neutralColor')};
+`;
+```
+ *
+ * @export
+ * @param {keyof DefaultTheme} value
+ */
+export function getThemeValue(value: keyof DefaultTheme) {
+  return function({ theme }: { theme: DefaultTheme }) {
+    return theme[value];
+  };
+}
+
+/**
+ * Function to be used in styled-component interpolations. 
+ * @example
+ * ```
+interface IStyled {
+  width?: {
+    something: number;
+  };
+}
+
+const Styledz = styled.div<IStyled>`
+  width: ${`${prop('width')}as`}px;
+`;
+```
+ *
+ * @export
+ * @template T
+ * @param {keyof T} value
+ * @returns
+ */
+export function prop<T>(value: keyof T) {
+  return function(props: T) {
+    return props[value];
+  };
 }
 
 export const propTrueFalse = (
@@ -42,8 +75,8 @@ export const GlobalStyleComponent = createGlobalStyle`
   
   @font-face {
     font-family: 'lobster';
-    src: url('https://cdn.carpedalan.com/lobster.woff2') format('woff2'),
-         url('https://cdn.carpedalan.com/lobster.woff') format('woff');
+    src: url('//${cdn}/lobster.woff2') format('woff2'),
+         url('//${cdn}/lobster.woff') format('woff');
     font-weight: normal;
     font-style: normal;
   }
@@ -51,14 +84,14 @@ export const GlobalStyleComponent = createGlobalStyle`
   
   @font-face {
     font-family: 'montserratregular';
-    src: url('https://cdn.carpedalan.com/montserrat-regular-webfont.woff2') format('woff2'),
-         url('https://cdn.carpedalan.com/montserrat-regular-webfont.woff') format('woff');
+    src: url('//${cdn}/montserrat-regular-webfont.woff2') format('woff2'),
+         url('//${cdn}/montserrat-regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
   }
   @font-face {
     font-family: 'SourceSans';
-    src: url('https://cdn.carpedalan.com/source-sans-variable.woff2') format('woff2-variations');
+    src: url('//${cdn}/source-sans-variable.woff2') format('woff2-variations');
   }
 
   html {
@@ -111,7 +144,7 @@ const dark = {
 const lite = {
   [BODY_FONT]: `Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
   [MAIN]: 'white',
-  [TEXT]: '#444',
+  [TEXT]: '#443',
   [SIDEBAR_COLOR]: 'rgba(247, 205, 219, 0.8)',
   [BRAND_COLOR]: 'rgb(0, 72, 206)',
   [SECONDARY_COLOR]: '#ff8c0e',

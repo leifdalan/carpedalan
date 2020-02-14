@@ -1,46 +1,47 @@
 FROM node:12-alpine AS base
 WORKDIR /app
-COPY yarn.lock .
+COPY server/yarn.lock .
 
-COPY package.json .
-RUN apk add curl=7.64.0-r1 git=2.20.1-r0
+COPY server/package.json .
 RUN yarn --production --ignore-optional
-COPY . .
+RUN apk add postgresql git
+COPY server/ ./server
+COPY shared/ ./shared
+COPY .env.example .
+COPY index.js . 
 COPY scripts/ ./scripts
 COPY db/ ./db
 EXPOSE 3001
 
-FROM base as prod
-COPY .env .
-ARG CRICLE_SHA1
-ARG CIRCLE_BUILD_NUM
-ARG CIRCLE_BRANCH
-ENV CIRCLE_SHA1=$CIRCLE_SHA1
-ENV CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM
-ENV CIRCLE_BRANCH=$CIRCLE_BRANCH
-ENV NODE_ENV=production
-EXPOSE 80
-EXPOSE 514
-EXPOSE 6514
-
-
-CMD ["yarn", "start:prod"]
 
 
 FROM base AS dev
 RUN yarn --ignore-optional
-COPY .env .
-COPY nodemon.json .
-# COPY webpack.prod.js .
-# RUN NODE_ENV=production yarn build
+COPY server/nodemon.json .
 EXPOSE 9229
 
-# FROM gcr.io/distroless/nodejs as small
-# COPY --from=prod /app /
-# ENV NODE_ENV=production
-# EXPOSE 80
-# EXPOSE 514
-# EXPOSE 6514
+
+# FROM node:12-alpine as client-build
+# WORKDIR /client
+# COPY client/yarn.lock .
+# COPY client/package.json .
+# RUN yarn
+# COPY client/src ./src
+# COPY client/tsconfig.json .
+# COPY client/webpack.config.prod.js .
+# ENV PROD_BUILD=true
+# RUN ls -al
+# RUN yarn build:prod
+
+FROM base as prod
+# COPY --from=client-build /client/dist/ /app/server/dist
+COPY dist/ server/dist
+RUN ls -al server/dist
+COPY .env.example .env
+
+ENV NODE_ENV=production
+
+CMD ["yarn", "start:prod"]
 
 
-# CMD ["index.js"]
+

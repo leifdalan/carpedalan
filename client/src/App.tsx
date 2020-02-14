@@ -1,21 +1,20 @@
 import axios from 'axios';
 import debug from 'debug';
-import useUser from 'hooks/useUser';
-import { DataProvider } from 'providers/Data';
-import RouterContext from 'providers/RouterContext';
-import { UserProvider } from 'providers/User';
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import Routes from 'Routes';
 import { ThemeProvider } from 'styled-components';
-import { GlobalStyleComponent, themes } from 'styles/utils';
+
+import Routes from 'Routes';
 import { User } from 'User';
+import useUser from 'hooks/useUser';
+import { DataProvider } from 'providers/Data';
+import { GlobalStyleComponent, themes } from 'styles/utils';
 
 const log = debug('App');
 
 const refreshCookie = async () => {
-  log('Refreshing cookie');
-  const response = await axios.post('/v1/refresh');
+  log('Refreshing cookiaxdae');
+  await axios.post('/v1/refresh');
 };
 
 const { useEffect } = React;
@@ -31,27 +30,23 @@ const App: React.FC<{ user: User }> = () => {
     if (userState) {
       const interval = setInterval(() => {
         refreshCookie();
-      }, 1000 * 30);
+      }, 1000 * 31);
       return () => clearInterval(interval);
     }
     return () => {};
   }, [userState]);
 
   return (
-    <UserProvider>
-      <DataProvider>
-        <BrowserRouter>
-          <RouterContext>
-            <ThemeProvider theme={themes.lite}>
-              <>
-                <Routes />
-                <GlobalStyleComponent />
-              </>
-            </ThemeProvider>
-          </RouterContext>
-        </BrowserRouter>
-      </DataProvider>
-    </UserProvider>
+    <DataProvider>
+      <BrowserRouter>
+        <ThemeProvider theme={themes.lite}>
+          <>
+            <Routes />
+            <GlobalStyleComponent />
+          </>
+        </ThemeProvider>
+      </BrowserRouter>
+    </DataProvider>
   );
 };
 

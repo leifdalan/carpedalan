@@ -1,0 +1,7 @@
+*
+!server
+!shared
+!index.js
+!scripts
+!db
+server/node_modules

@@ -97,3 +97,10 @@ coverage
 dist
 *.zip
 .sql
+.localstack
+imageResizer/layer/nodejs/false
+imageResizer/layer/nodejs/include
+imageResizer/layer/nodejs/lib
+imageResizer/layer/nodejs/platform.json
+imageResizer/layer/nodejs/versions.json
+

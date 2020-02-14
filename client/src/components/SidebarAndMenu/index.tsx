@@ -1,6 +1,8 @@
+import * as React from 'react';
+
 import Menu from 'components/Menu';
 import Sidebar from 'components/Sidebar';
-import * as React from 'react';
+
 import useUser from '../../hooks/useUser';
 
 const { useState } = React;
@@ -14,15 +16,14 @@ const { useState } = React;
  */
 const SidebarAndMenu: React.FC = (): React.ReactElement => {
   const [shouldShowSidebar, setShouldShowSidebar] = useState(false);
-  const { user: userState, setUser } = useUser();
-  const isLoggedIn = !!userState;
+  const { user: userState } = useUser();
 
   const toggleMenu = () => setShouldShowSidebar(!shouldShowSidebar);
 
   return (
     <>
       <Menu data-test="menu" onClick={toggleMenu} type="button" side="left">
-        Menu
+        Menuz
       </Menu>
       <Sidebar
         isOpen={shouldShowSidebar}
