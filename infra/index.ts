@@ -69,7 +69,7 @@ async function main() {
       bucket: publicBucket,
       source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
       contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
-      contentEncoding: 'gzip',
+      ...(item === 'report.html' ? {} : { contentEncoding: 'gzip' }),
     });
   }
 
