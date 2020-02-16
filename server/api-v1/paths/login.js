@@ -23,7 +23,7 @@ const login = () => {
     }
   };
   post.apiDoc = {
-    description: 'Log user in',
+    description: 'Log userz1 in',
     operationId: 'login',
     tags: ['_user'],
     requestBody: {

@@ -35,6 +35,7 @@ devMiddleware.waitUntilValid(() => {
 });
 
 app.use('/docs', express.static('docs'));
+app.use('/build', express.static('build'));
 app.use(devMiddleware);
 app.use(webpackHotMiddleWare(compiler));
 

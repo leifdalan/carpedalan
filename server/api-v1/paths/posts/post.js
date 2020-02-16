@@ -2,7 +2,7 @@ import { commonErrors } from '../../refs/error';
 
 const status = 201;
 
-// Showing that you don't need to have apiDoc defined on methodHandlers.
+// Showing that you don't need to have apiDoc defined on methodHandlers.zzzz
 export default function(posts) {
   const post = async function(req, res, next) {
     const { body } = req;

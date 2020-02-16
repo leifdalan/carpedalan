@@ -6,6 +6,7 @@ import { getResourceName as n, getTags as t } from './utils';
 export function makeVpc() {
   const vpc = new awsx.ec2.Vpc(n('vpc'), {
     tags: t(),
+    numberOfNatGateways: 0,
   });
 
   // Allocate a security group and then a series of rules:

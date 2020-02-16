@@ -4,6 +4,7 @@ module.exports = {
     "project": "./client/tsconfig.json",
     "tsconfigRootDir": "."
   },
+  "ignorePatterns": ["swaggerSchema.d.ts"],
   "env": {
     "browser": true,
     "jest/globals": true
