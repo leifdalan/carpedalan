@@ -20,7 +20,8 @@
     "stop": "docker stop $(docker ps -a -q)",
     "e2e": "COMPOSE_PROJECT_NAME=cd_e2e docker-compose -f docker-compose.e2e.yml run --rm cypress yarn cypress run",
     "test": "yarn build && yarn unit && yarn integration && yarn e2e && yarn stop",
-    "ci": "yarn lint && yarn build && yarn test && ./scripts/development/buildForDeploy.sh" 
+    "ci": "yarn lint && yarn build && yarn test && ./scripts/development/buildForDeploy.sh",
+    "reload": "docker-compose exec alb nginx -s reload"
   },
   "author": "",
   "license": "ISC",
@@ -58,8 +59,8 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "@pulumi/aws": "1.18.0",
-    "@pulumi/awsx": "0.18.14",
+    "@pulumi/aws": "1.22.0",
+    "@pulumi/awsx": "0.19.2",
     "@pulumi/pulumi": "1.8.1",
     "rimraf": "^3.0.1"
   },

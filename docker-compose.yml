@@ -25,6 +25,7 @@ services:
     volumes:
       - './server:/app/server:delegated'
       - './client/dist:/app/server/dist'
+      - './client/src/swaggerSchema.d.ts:/app/swaggerSchema.d.ts'
       - './scripts:/app/scripts:delegated'
       - './index.js:/app/index.js:delegated'
       - './db:/app/db:delegated'

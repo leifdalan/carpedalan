@@ -12,7 +12,7 @@ const webpack = require('webpack');
 const Stylish = require('webpack-stylish');
 
 module.exports = {
-  context: path.resolve(__dirname),
+  context: process.cwd(),
   mode: 'development',
   devtool: 'eval-source-map',
   entry: {
@@ -73,7 +73,10 @@ module.exports = {
       },
     }),
     new Stylish(),
-    // new Eslint({ files: 'src/**/*' }),
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('./build/library/library.json'), // eslint-disable-line
+    }), // new Eslint({ files: 'src/**/*' }),
     new webpack.HotModuleReplacementPlugin(),
   ],
   // devServer: {

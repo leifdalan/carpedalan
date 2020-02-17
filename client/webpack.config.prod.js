@@ -48,7 +48,7 @@ module.exports = {
     splitChunks: {
       cacheGroups: {
         vendor: {
-          test: /node_modules\/(?!(react-window|date-fns|react-virtualized*)\/).*/,
+          test: /node_modules\//,
           name: 'vendors',
           chunks: 'all',
         },
@@ -77,7 +77,7 @@ module.exports = {
     ...(isProdBuildForLocal
       ? []
       : [
-          // new S3Plugin({
+          // new S`3Plugin({
           //   // s3Options are required
           //   s3Options: {
           //     accessKeyId: process.env.AWS_ACCESS_KEY_ID,

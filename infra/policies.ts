@@ -22,8 +22,21 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
     tags: t(),
   });
 
-  const bucketUserCreds = new aws.iam.AccessKey(n('bucket-access-key'), {
-    user: bucketUser.name,
+  const bucketUserCreds = pulumi.secret(
+    new aws.iam.AccessKey(n('bucket-access-key'), {
+      user: bucketUser.name,
+    }),
+  );
+
+  const bucketUserCredSecret = new aws.secretsmanager.Secret(
+    n('bucket-access-key-secret'),
+    {
+      tags: t(),
+    },
+  );
+  new aws.secretsmanager.SecretVersion(n('bucket-access-key-s'), {
+    secretId: bucketUserCredSecret.id,
+    secretString: bucketUserCreds.secret,
   });
 
   const policy = new aws.iam.Policy('allow-s3-management-policy', {
@@ -72,6 +85,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
           secrets.sessionSecret.arn,
           secrets.cfKeySecret.arn,
           rds.arn,
+          bucketUserCredSecret.arn,
         ])
         .apply(
           ([
@@ -83,6 +97,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
             session,
             cfKey,
             rdsArn,
+            bucketUserCredSecret,
           ]) =>
             JSON.stringify({
               Version: '2012-10-17',
@@ -102,6 +117,8 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
                     publicPass,
                     session,
                     cfKey,
+                    bucketUserCredSecret,
+
                     // key id?
                   ],
                 },
@@ -319,5 +336,11 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
         }),
       ),
   });
-  return { taskRole, executionRole, lambdaRole, bucketUserCreds };
+  return {
+    taskRole,
+    executionRole,
+    lambdaRole,
+    bucketUserCredSecret,
+    bucketUserCreds,
+  };
 }

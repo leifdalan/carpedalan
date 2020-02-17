@@ -41,7 +41,7 @@ async function main() {
 
   const { postgresSg, sg, vpc } = makeVpc();
 
-  const { rds } = makeDB({ vpc, postgresSg, config });
+  const { rds } = await makeDB({ vpc, postgresSg, config });
 
   const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({
@@ -83,13 +83,20 @@ async function main() {
     });
   }
 
-  const { taskRole, executionRole, lambdaRole, bucketUserCreds } = getPolicies({
+  const {
+    taskRole,
+    executionRole,
+    lambdaRole,
+    bucketUserCredSecret,
+    bucketUserCreds,
+  } = getPolicies({
     secrets,
     privateBucket,
     rds,
   });
 
-  const { layer } = getLambdas({
+  // const { layer } =
+  await getLambdas({
     lambdaRole,
     vpc,
     sg,
@@ -113,6 +120,7 @@ async function main() {
     privateDistroDomain,
     publicDistroDomain,
     publicBucket,
+    bucketUserCredSecret,
     bucketUserCreds,
     albCertificateArn: newCert,
   });
@@ -134,7 +142,7 @@ async function main() {
   return {
     revisionNumber: taskDefinition.taskDefinition.revision,
     secrets: secrets.pgUserSecret,
-    layerArn: layer.arn,
+    // layerArn: layer.arn,
     containers: taskDefinition.containers.web.image.imageResult,
     assetBucket: publicBucket.bucket,
     cdnDomain: publicDistroDomain,

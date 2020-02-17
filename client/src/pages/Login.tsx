@@ -26,8 +26,7 @@ const postLogin = async (reqBody: Paths.Login.RequestBody) => {
     const { data } = response;
     return data;
   } catch (e) {
-    if (e.response) throw e.response.data as Components.Schemas.Error;
-    throw e as Components.Schemas.Error;
+    throw e?.response?.data as Components.Schemas.Error;
   }
 };
 
@@ -76,15 +75,14 @@ const Login: React.FC<{}> = (): React.ReactElement => {
       password: String(passwordInput.value),
     });
   };
-
   return (
     <InputWrapper>
       <InputForm
-        data-test="submit"
+        data-test="submitzz"
         data-testid="submit"
         onSubmit={handleSubmit}
       >
-        <StyledTitle center>Login</StyledTitle>
+        <StyledTitle center>Logssin</StyledTitle>
         {user}
         <Input>
           <input data-test="password" type="password" {...passwordInput} />
