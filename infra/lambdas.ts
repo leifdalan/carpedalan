@@ -14,7 +14,7 @@ interface LambdaI extends AllSecrets {
   rds: aws.rds.Instance;
 }
 
-export function getLambdas({
+export async function getLambdas({
   lambdaRole,
   vpc,
   sg,
@@ -24,29 +24,32 @@ export function getLambdas({
   pgUserSecret,
   pgPasswordSecret,
 }: LambdaI) {
-  const layerArchive = new pulumi.asset.FileArchive('../imageResizer/layer/');
+  // const layerArchive = new pulumi.asset.FileArchive(
+  //   '../imageResizer/layer/layer.zip',
+  // );
 
-  const depLayer = new aws.lambda.LayerVersion(n('dep-layer'), {
-    compatibleRuntimes: ['nodejs12.x'],
-    code: layerArchive,
-    layerName: n('dep-layer'),
-    // sourceCodeHash: layerHash,
-  });
-
+  // const depLayer = new aws.lambda.LayerVersion(n('dep-layer'), {
+  //   compatibleRuntimes: ['nodejs12.x'],
+  //   code: layerArchive,
+  //   layerName: n('dep-layer'),
+  //   // sourceCodeHash: layerHash,
+  // });
+  const privateSubnets = await vpc.privateSubnetIds;
+  const publicSubnets = await vpc.publicSubnetIds;
   const code = new pulumi.asset.FileArchive('../imageResizer/src/');
 
   const photoLambda = new aws.lambda.Function(n('photo-lambda'), {
     code,
     vpcConfig: {
       securityGroupIds: [sg.securityGroup.id, postgresSg.securityGroup.id],
-      subnetIds: [...vpc.privateSubnetIds, ...vpc.publicSubnetIds],
+      subnetIds: [...privateSubnets, ...publicSubnets],
     },
     memorySize: 2048,
     timeout: 45,
     handler: 'image.imageResizer',
     role: lambdaRole.arn,
     runtime: 'nodejs12.x',
-    layers: [depLayer.arn],
+    // layers: [depLayer.arn],
     environment: {
       variables: {
         PG_HOST: rds.endpoint,
@@ -62,5 +65,5 @@ export function getLambdas({
   privateBucket.onObjectCreated(n('bucket-handler'), photoLambda, {
     filterPrefix: 'raw/',
   });
-  return { layer: depLayer };
+  // return { layer: depLayer };
 }

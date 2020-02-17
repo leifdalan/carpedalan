@@ -10,7 +10,7 @@ interface MakeDBI {
   config: pulumi.Config;
 }
 
-export function makeDB({ vpc, postgresSg, config }: MakeDBI) {
+export async function makeDB({ vpc, postgresSg, config }: MakeDBI) {
   const username = config.getSecret('pg_user');
   const password = config.getSecret('pg_password');
   const subnetGroup = new aws.rds.SubnetGroup(n('pulumisubnet'), {
@@ -18,13 +18,15 @@ export function makeDB({ vpc, postgresSg, config }: MakeDBI) {
     tags: t(),
   });
 
+  const subnets = await vpc.privateSubnets;
+
   const rds = new aws.rds.Instance(n('rds'), {
     username,
     password,
     allowMajorVersionUpgrade: true,
     instanceClass: 'db.t2.micro',
     applyImmediately: true,
-    availabilityZone: vpc.privateSubnets[0].subnet.availabilityZone,
+    availabilityZone: subnets[0].subnet.availabilityZone,
     dbSubnetGroupName: subnetGroup.name,
     vpcSecurityGroupIds: [postgresSg.id],
     engine: 'postgres',

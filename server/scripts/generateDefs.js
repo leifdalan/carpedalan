@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import express from 'express';
+// eslint-disable-next-line no-unused-vars
 import dtsgenerator from 'dtsgenerator';
 
 import initialize from '../api-v1/initialize';

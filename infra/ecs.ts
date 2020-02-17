@@ -28,7 +28,8 @@ interface CreateI {
   };
   aRecord: aws.route53.Record;
   publicBucket: aws.s3.Bucket;
-  bucketUserCreds: aws.iam.AccessKey;
+  bucketUserCredSecret: aws.secretsmanager.Secret;
+  bucketUserCreds: pulumi.Output<aws.iam.AccessKey>;
 }
 
 export function createECSResources({
@@ -43,6 +44,7 @@ export function createECSResources({
   targetDomain,
   publicDistroDomain,
   privateDistroDomain,
+  bucketUserCredSecret,
   bucketUserCreds,
 }: CreateI) {
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
@@ -126,10 +128,6 @@ export function createECSResources({
       value: pulumi.interpolate`${bucketUserCreds.id}`,
     },
     {
-      name: 'AWS_SECRET_ACCESS_KEY',
-      value: pulumi.interpolate`${bucketUserCreds.secret}`,
-    },
-    {
       name: 'CI_JOB_ID',
       value: CI_JOB_ID,
     },
@@ -161,6 +159,10 @@ export function createECSResources({
         portMappings: [listener],
         environment: env,
         secrets: [
+          {
+            name: 'AWS_SECRET_ACCESS_KEY',
+            valueFrom: pulumi.interpolate`${bucketUserCredSecret.arn}`,
+          },
           {
             name: 'PRIVATE_KEY',
             valueFrom: pulumi.interpolate`${secrets.privateKeySecret.arn}`,
