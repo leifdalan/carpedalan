@@ -9,6 +9,7 @@ docker build -t api:latest -f server/Dockerfile --cache-from api:latest --cache-
 echo 'Building lambda layer...'
 cd imageResizer/layer/nodejs && yarn build && cd ..
 echo 'Zipping up layer folder...'
+rm -f layer.zip
 zip -r -X layer.zip ./*
 cd ..
 yarn
