@@ -24,7 +24,9 @@ export function getLambdas({
   pgUserSecret,
   pgPasswordSecret,
 }: LambdaI) {
-  const layerArchive = new pulumi.asset.FileArchive('../imageResizer/layer/');
+  const layerArchive = new pulumi.asset.FileArchive(
+    '../imageResizer/layer/layer.zip',
+  );
 
   const depLayer = new aws.lambda.LayerVersion(n('dep-layer'), {
     compatibleRuntimes: ['nodejs12.x'],
