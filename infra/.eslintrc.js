@@ -20,7 +20,8 @@ const config = {
       ...base.rules,
       "no-new": "off",
       "@typescript-eslint/ban-ts-ignore": "warn",
-      "import/no-extraneous-dependencies": "off"
+      "import/no-extraneous-dependencies": "off",
+      "@typescript-eslint/ban-ts-ignore": "off"
     }
   
   }
