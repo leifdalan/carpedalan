@@ -1,13 +1,12 @@
+import Routes from 'Routes';
+import { User } from 'User';
 import axios from 'axios';
 import debug from 'debug';
+import useUser from 'hooks/useUser';
+import { DataProvider } from 'providers/Data';
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
-
-import Routes from 'Routes';
-import { User } from 'User';
-import useUser from 'hooks/useUser';
-import { DataProvider } from 'providers/Data';
 import { GlobalStyleComponent, themes } from 'styles/utils';
 
 const log = debug('App');

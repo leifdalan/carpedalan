@@ -4,6 +4,11 @@
     "./server",
     "./client"
   ],
+  "engines": {
+    "node": "10.13.0",
+    "yarn": "1.21.1"
+  },
+  "engineStrict": true,
   "name": "carpedalan",
   "version": "2.0.0",
   "description": "Carpe Dalan",
@@ -59,8 +64,8 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "@pulumi/aws": "1.22.0",
-    "@pulumi/awsx": "0.19.2",
+    "@pulumi/aws": "1.18.0",
+    "@pulumi/awsx": "0.18.14",
     "@pulumi/pulumi": "1.8.1",
     "rimraf": "^3.0.1"
   },

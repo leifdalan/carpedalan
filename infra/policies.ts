@@ -97,7 +97,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
             session,
             cfKey,
             rdsArn,
-            bucketUserCredSecret,
+            bucketUserCredSecretArn,
           ]) =>
             JSON.stringify({
               Version: '2012-10-17',
@@ -117,8 +117,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
                     publicPass,
                     session,
                     cfKey,
-                    bucketUserCredSecret,
-
+                    bucketUserCredSecretArn,
                     // key id?
                   ],
                 },
@@ -206,6 +205,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
           secrets.sessionSecret.arn,
           secrets.cfKeySecret.arn,
           rds.arn,
+          bucketUserCredSecret.arn,
         ])
         .apply(
           ([
@@ -217,6 +217,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
             session,
             cfKey,
             rdsArn,
+            bucketUserCredSecretArn,
           ]) =>
             JSON.stringify({
               Version: '2012-10-17',
@@ -236,6 +237,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
                     publicPass,
                     session,
                     cfKey,
+                    bucketUserCredSecretArn,
                     // key id?
                   ],
                 },
@@ -340,7 +342,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
     taskRole,
     executionRole,
     lambdaRole,
-    bucketUserCredSecret,
     bucketUserCreds,
+    bucketUserCredSecret,
   };
 }
