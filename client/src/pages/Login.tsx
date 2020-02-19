@@ -78,7 +78,7 @@ const Login: React.FC<{}> = (): React.ReactElement => {
   return (
     <InputWrapper>
       <InputForm
-        data-test="submitzz"
+        data-test="submit"
         data-testid="submit"
         onSubmit={handleSubmit}
       >

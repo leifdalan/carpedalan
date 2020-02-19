@@ -6,10 +6,8 @@ interface IMenu {
   readonly side: string;
 }
 const Menu = styled.button<IMenu>`
-  background: none;
   color: inherit;
   border: none;
-  padding: 0;
   cursor: pointer;
   outline: inherit;
   position: fixed;

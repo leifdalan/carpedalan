@@ -1,4 +1,7 @@
 {  
+  "plugins": [
+    "stylelint-order"
+  ],  
   "processors": [
     "stylelint-processor-styled-components"
   ],
