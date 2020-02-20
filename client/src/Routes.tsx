@@ -29,7 +29,7 @@ const Routes: React.FC = () => {
     if (globalUser) {
       fetchTags();
     }
-  }, [globalUser]); // eslint-disable-line
+  }, [fetchTags, globalUser]);
 
   return (
     <Suspense fallback={<Spinner />}>

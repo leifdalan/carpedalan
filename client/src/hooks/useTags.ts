@@ -1,6 +1,6 @@
 import axios from 'axios';
 import debug from 'debug';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useCallback } from 'react';
 
 import { DataContext, Data } from 'providers/Data';
 
@@ -49,15 +49,21 @@ export interface UseTags {
 
 export default function useTags(): UseTags {
   const { response, request } = useApi(getTags);
+  const fetchTags = useCallback(
+    arg => {
+      return request(arg);
+    },
+    [request],
+  );
   const { setTags, data } = useContext(DataContext);
   useEffect(() => {
     if (response) {
       setTags(response);
     }
-  }, []); // eslint-disable-line
+  }, [response, setTags]);
 
   return {
     tags: data.tags,
-    fetchTags: request,
+    fetchTags,
   };
 }

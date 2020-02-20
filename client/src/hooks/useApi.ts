@@ -1,5 +1,5 @@
 import debug from 'debug';
-import { useRef, useState } from 'react';
+import { useState, useCallback } from 'react';
 
 const log = debug('hooks:useApi');
 
@@ -17,12 +17,14 @@ export default function useApi<T, U>(action: (args: T | never) => Promise<U>) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Components.Schemas.Error | null>(null);
   const [response, setResponse] = useState<U>();
-  const retry = useRef(() => {});
 
-  async function request(arg: T | never) {
+  /**
+   *
+   *
+   * @param {(T | never)} arg
+   */
+  async function requestFunc(arg: T | never) {
     try {
-      const trial = () => action(arg);
-      retry.current = trial;
       setLoading(true);
       const res = await action(arg);
       setLoading(false);
@@ -32,5 +34,6 @@ export default function useApi<T, U>(action: (args: T | never) => Promise<U>) {
       setError(e);
     }
   }
-  return { loading, request, error, response, retry: retry.current };
+  const request = useCallback(requestFunc, []);
+  return { loading, request, error, response };
 }

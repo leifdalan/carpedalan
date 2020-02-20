@@ -73,7 +73,6 @@ const Feed = ({
    * @returns {boolean}
    */
   function isItemLoaded(index: number): boolean {
-    log('checking', !itemsWithTitle[index].fake);
     return !itemsWithTitle[index].fake;
   }
 

@@ -6,7 +6,7 @@ import { PostsWithTagsWithFakes } from 'hooks/types';
 
 const log = debug('providers:Data');
 
-const { createContext, Children, useReducer } = React;
+const { createContext, Children, useReducer, useCallback } = React;
 export interface Data {
   posts: PostsWithTagsWithFakes[];
   tags: Paths.GetTags.Responses.$200;
@@ -84,15 +84,24 @@ export const DataConsumer = DataContext.Consumer;
 export const DataProvider: React.FC<React.ReactNode> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, data);
 
-  const setPosts = (posts: PostsWithTagsWithFakes[]) =>
-    dispatch({ type: 'set posts', payload: posts });
+  const setPosts = useCallback(
+    (posts: PostsWithTagsWithFakes[]) =>
+      dispatch({ type: 'set posts', payload: posts }),
+    [dispatch],
+  );
 
-  const addPosts = (posts: PostsWithTagsWithFakes[]) =>
-    dispatch({ type: 'set posts', payload: posts });
+  const addPosts = useCallback(
+    (posts: PostsWithTagsWithFakes[]) =>
+      dispatch({ type: 'set posts', payload: posts }),
+    [dispatch],
+  );
 
-  const setTags = (tags: Paths.GetTags.Responses.$200) => {
-    dispatch({ type: 'set tags', payload: tags });
-  };
+  const setTags = useCallback(
+    (tags: Paths.GetTags.Responses.$200) => {
+      dispatch({ type: 'set tags', payload: tags });
+    },
+    [dispatch],
+  );
 
   const value: DataContextI = {
     setTags,

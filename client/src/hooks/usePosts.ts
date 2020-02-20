@@ -3,6 +3,7 @@ import debug from 'debug';
 import { stringify } from 'qs';
 import { useContext, useEffect, useState } from 'react';
 
+import usePrevious from 'hooks/usePrevious';
 import { DataContext } from 'providers/Data';
 
 import { PostsWithTagsWithFakes } from './types';
@@ -130,9 +131,9 @@ const usePosts = (): UsePost => {
   const [postsByPage, setPostsByPage] = useState<PostsByPage>({});
   const [total, setTotal] = useState<number>(0);
   const [allPosts, setAllPosts] = useState<PostsWithTagsWithFakes[]>([]);
-
+  const previousResponse = usePrevious(response);
   useEffect(() => {
-    if (response) {
+    if (response && response !== previousResponse) {
       const newPostsByPage = {
         ...postsByPage,
         [response.meta.page]: response.data,
@@ -170,7 +171,7 @@ const usePosts = (): UsePost => {
       setAllPosts(newAllPosts);
       setPosts(newAllPosts);
     }
-  }, [response]); // eslint-disable-line
+  }, [allPosts, postsByPage, previousResponse, response, setPosts, total]);
 
   return { response, loading, error, request, posts: data.posts };
 };

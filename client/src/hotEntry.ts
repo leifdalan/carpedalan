@@ -2,5 +2,4 @@ import { hot } from 'react-hot-loader/root'; // eslint-disable-line import/no-ex
 
 import App from './App';
 
-// setConfig({ pureSFC: true });
 export default hot(App);
