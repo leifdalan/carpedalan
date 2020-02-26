@@ -12,7 +12,6 @@ import { getLambdas } from './lambdas';
 import { getPolicies } from './policies';
 import { makeDB } from './rds';
 import { getSecrets } from './secrets';
-import { getResourceName as n, getTags as t } from './utils';
 import { makeVpc } from './vpc';
 
 async function main() {
@@ -34,7 +33,7 @@ async function main() {
     namespace: 'assets',
   });
 
-  const newCert = makeCerts({
+  const albCert = makeCerts({
     region: 'us-west-2',
     domain: targetDomain,
     namespace: 'main-domain',
@@ -43,13 +42,6 @@ async function main() {
   const { postgresSg, sg, vpc, vpcendpointSg } = makeVpc();
 
   const { rds } = makeDB({ vpc, postgresSg, config });
-
-  new aws.ec2.VpcEndpoint(n('vpc-endpoint-s3'), {
-    vpcEndpointType: 'Gateway',
-    vpcId: vpc.vpc.id,
-    serviceName: 'com.amazonaws.us-west-2.s3',
-    tags: t(n('vpc-endpoint-s3')),
-  });
 
   const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({
@@ -131,7 +123,7 @@ async function main() {
     publicBucket,
     bucketUserCredSecret,
     bucketUserCreds,
-    albCertificateArn: newCert,
+    albCertificateArn: albCert,
   });
 
   const domainParts = getDomainAndSubdomain(targetDomain);

@@ -31,11 +31,13 @@ export function createBucket({
   allowCors = false,
   vpc,
 }: GetBucketsI) {
-  /* tslint:disable-next-line */
   function n(resource: string) {
     return name(`${namespace}-${resource}`);
   }
 
+  /**
+   * Origin Access Identity is the link between CF origins and S3 buckets
+   */
   const originAccessIdentity = new aws.cloudfront.OriginAccessIdentity(
     n('origin-access'),
     {
@@ -43,6 +45,9 @@ export function createBucket({
     },
   );
 
+  /**
+   * Actual S3 bucket. Set to private and delegate access through cloudfront
+   */
   const privateBucket = new aws.s3.Bucket(n('private-bucket'), {
     acl: 'private',
     forceDestroy: true,
@@ -50,6 +55,10 @@ export function createBucket({
     tags: t(n('private-bucket')),
   });
 
+  /**
+   * If VPC is specified, this bucket needs an extra policy to allow
+   * access via VPC Gateway endpoint
+   */
   const extra = vpc
     ? pulumi.interpolate`, {
     "Sid": "2",
@@ -59,15 +68,18 @@ export function createBucket({
     "Resource": "arn:aws:s3:::${privateBucket.bucket}/*",
     "Condition": {
         "StringEquals": {
-            "aws:sourceVpc": "${vpc?.vpc.id}"
+            "aws:sourceVpc": "${vpc.vpc.id}"
         }
     }
   }
   `
     : '';
 
-  new aws.s3.BucketPolicy(n('private-photo-bucket-policy'), {
+  new aws.s3.BucketPolicy(n('bucket-policy'), {
     bucket: privateBucket.bucket,
+    /**
+     * Policy required for CF distros to access the bucket via OAI id.
+     */
     policy: pulumi.interpolate`{
       "Version": "2008-10-17",
       "Id": "PolicyForCloudFrontPrivateContent",
@@ -88,7 +100,7 @@ export function createBucket({
 
   const s3OriginId = 'S3PhotoOrigin';
   const s3Distribution = new aws.cloudfront.Distribution(n('private-distro'), {
-    aliases: [domain],
+    aliases: [domain], // Route 53 aliases
     comment: 'Some comment',
     tags: t(n('private-distro')),
     defaultCacheBehavior: {

@@ -24,12 +24,18 @@ export function getLambdas({
   pgUserSecret,
   pgPasswordSecret,
 }: LambdaI) {
+  const runtime = 'nodejs12.x';
+  /**
+   * Have to use a zip to upload as the AWS CLI has a had limit on
+   * a single upload, whether its a batch of files or a zip of the same
+   * set of files.
+   */
   const layerArchive = new pulumi.asset.FileArchive(
     '../imageResizer/layer/layer.zip',
   );
 
   const depLayer = new aws.lambda.LayerVersion(n('dep-layer'), {
-    compatibleRuntimes: ['nodejs12.x'],
+    compatibleRuntimes: [runtime],
     code: layerArchive,
     layerName: n('dep-layer'),
     // sourceCodeHash: layerHash,
@@ -48,11 +54,12 @@ export function getLambdas({
     timeout: 45,
     handler: 'image.imageResizer',
     role: lambdaRole.arn,
-    runtime: 'nodejs12.x',
+    runtime,
     layers: [depLayer.arn],
     environment: {
       variables: {
         PG_HOST: rds.endpoint,
+        // Lambda will use secretsManager to retrieve these values at runtime.
         PG_USER_SECRET_ID: pgUserSecret.name,
         PG_PASSWORD_SECRET_ID: pgPasswordSecret.name,
       },
@@ -61,6 +68,10 @@ export function getLambdas({
       'A process to create thumbnails, upload them to s3, and update the database',
   });
 
+  /**
+   * Event Subscription! This is the definition for the trigger event
+   * that will fire the lambda.
+   */
   privateBucket.onObjectCreated(n('bucket-handler'), photoLambda, {
     filterPrefix: 'raw/',
   });

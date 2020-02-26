@@ -3,19 +3,33 @@ import * as awsx from '@pulumi/awsx';
 
 import { getResourceName as n, getTags as t } from './utils';
 
-// Allocate a new VPC using any of the above techniques.
 export function makeVpc() {
   const vpc = new awsx.ec2.Vpc(n('vpc'), {
     tags: t(n('vpc')),
     numberOfNatGateways: 0, // these are $20 / month!
   });
 
-  // Allocate a security group and then a series of rules:
+  /**
+   * Security group for http/https access only
+   */
   const sg = new awsx.ec2.SecurityGroup(n('http-https-sg'), {
     vpc,
     tags: t(n('http-https-sg')),
   });
 
+  sg.createEgressRule(n('outbound-access'), {
+    location: new awsx.ec2.AnyIPv4Location(),
+    ports: new awsx.ec2.AllTcpPorts(),
+    description: 'allow outbound access to anywhere',
+  });
+
+  /**
+   * This security group is for the VPC endpoints.
+   * @TODO
+   * Figure out specifically what ports need traffic for the endpoints
+   * to function properly/communicate with other services within
+   * the VPC.
+   */
   const vpcendpointSg = new awsx.ec2.SecurityGroup(n('vpce'), {
     vpc,
     tags: t(n('vpce')),
@@ -33,14 +47,18 @@ export function makeVpc() {
     description: 'allow all access',
   });
 
-  sg.createEgressRule(n('outbound-access'), {
-    location: new awsx.ec2.AnyIPv4Location(),
-    ports: new awsx.ec2.AllTcpPorts(),
-    description: 'allow outbound access to anywhere',
-  });
+  /**
+   * Security group for postgres ports only
+   */
   const postgresSg = new awsx.ec2.SecurityGroup(n('postgresSg'), {
     vpc,
     tags: t(n('postgresSg')),
+  });
+
+  postgresSg.createIngressRule(n('postgres-access'), {
+    location: new awsx.ec2.AnyIPv4Location(),
+    ports: new awsx.ec2.TcpPorts(5432),
+    description: 'allow postgres access',
   });
 
   /**
@@ -69,11 +87,11 @@ export function makeVpc() {
     subnetIds: [vpc.privateSubnetIds[1]],
   });
 
-  // 1) inbound SSH traffic on port 22 from a specific IP address
-  postgresSg.createIngressRule(n('postgres-access'), {
-    location: new awsx.ec2.AnyIPv4Location(),
-    ports: new awsx.ec2.TcpPorts(5432),
-    description: 'allow postgres access',
+  new aws.ec2.VpcEndpoint(n('vpc-endpoint-s3'), {
+    vpcEndpointType: 'Gateway',
+    vpcId: vpc.vpc.id,
+    serviceName: 'com.amazonaws.us-west-2.s3',
+    tags: t(n('vpc-endpoint-s3')),
   });
 
   return {

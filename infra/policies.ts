@@ -18,6 +18,11 @@ interface PolicyI {
   privateBucket: aws.s3.Bucket;
 }
 export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
+  /**
+   * User created that will be used for the webserver to create signed
+   * policies on behalf of the end-user for direct uploads to the private
+   * photo bucket.
+   */
   const bucketUser = new aws.iam.User(n('private-bucket-user'), {
     tags: t(n('private-bucket-user')),
   });
@@ -34,6 +39,12 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
       tags: t(n('bucket-access-key-secret')),
     },
   );
+
+  /**
+   * Storing this as a SecretsManager secret so that ECS can use
+   * `valueFrom` rather than `value` so that the value is never exposed
+   * to anyone with console access to AWS.
+   */
   new aws.secretsmanager.SecretVersion(n('bucket-access-key-s'), {
     secretId: bucketUserCredSecret.id,
     secretString: bucketUserCreds.secret,
@@ -52,11 +63,19 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
     },
   });
 
-  new aws.iam.UserPolicy(n('verdaccio-user-policy'), {
+  /**
+   * Attach a policy to the bucket user that allows S3 access to the bucket,
+   * as the generated signed policy will need PUT access to upload to the bucket
+   * directly.
+   */
+  new aws.iam.UserPolicy(n('end-user-bucket-policy'), {
     user: bucketUser.name,
     policy: policy.policy,
   });
 
+  /**
+   * Using default roles for tasks and execution for ECS.
+   */
   const taskRole = new aws.iam.Role(n('task-role'), {
     assumeRolePolicy: JSON.stringify(
       awsx.ecs.TaskDefinition.defaultRoleAssumeRolePolicy(),
@@ -71,6 +90,11 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
     tags: t(n('execution-role')),
   });
 
+  /**
+   * Task role policy must include permissions needed to spin up, access
+   * resources like secrets that are used to embed environment variables
+   * in containers.
+   */
   new aws.iam.RolePolicy(
     n('task-role-policy'),
     {
@@ -191,6 +215,10 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
     { dependsOn: secrets.privateKeySecret },
   );
 
+  /**
+   * "Execute" policy are all permissions needed in the runtime of the container,
+   * including AWS services access. e.g. RDS connection
+   */
   new aws.iam.RolePolicy(
     n('execute-role-policy'),
     {
@@ -281,6 +309,9 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
     tags: t(n('lambda-role')),
   });
 
+  /**
+   * Resources the lambda needs to access other AWS resources
+   */
   new aws.iam.RolePolicy(n('lambda-role-policy'), {
     role: lambdaRole,
     policy: pulumi

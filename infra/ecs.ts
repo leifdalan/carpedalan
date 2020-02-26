@@ -49,6 +49,10 @@ export function createECSResources({
   bucketUserCreds,
   vpcendpointSg,
 }: CreateI) {
+  /**
+   * Create a load balancer that has a target group that matches the container's
+   * exposed ports.
+   */
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
     vpc,
     securityGroups: [sg],
@@ -58,7 +62,7 @@ export function createECSResources({
 
   const targetGroup = alb.createTargetGroup(n('web'), {
     vpc,
-    port: 80,
+    port: 80, // This is the magic port that must match the container image's exposed port.
     healthCheck: {
       path: '/healthcheck',
       timeout: 5,
@@ -66,12 +70,19 @@ export function createECSResources({
     tags: t(n('web')),
   });
 
+  /**
+   * This will create a listener rule pointing to the target group, listening
+   * on outside traffic port 443, with the right certArn.
+   */
   const listener = targetGroup.createListener(n('listener'), {
     vpc,
     port: 443,
-    certificateArn: albCertificateArn, // @TODO MAKE NEW CERT
+    certificateArn: albCertificateArn,
   });
 
+  /**
+   * Targetgroup-less listener that will redirect to https/443
+   */
   alb.createListener(n('redirecthttp'), {
     port: 80,
     protocol: 'HTTP',
@@ -91,6 +102,15 @@ export function createECSResources({
     securityGroups: [sg, postgresSg, vpcendpointSg],
   });
 
+  /**
+   * Create a launch configuration, autoscaling group and instances specified
+   * in `minSize`. Since this VPC does NOT have a NAT gateway associated with
+   * its private subnets, we need to 1) create a VPCendpoint for the autoscaling
+   * service, and 2) specify a private subnet that the endpoint also has. Pulumi
+   * will spin up a cloudformation template, and without 1) and 2), a ready state
+   * will never be reached because cloudformation can't communicate with the
+   * instances properly.
+   */
   cluster.createAutoScalingGroup(n('micro-scaling-group'), {
     templateParameters: { minSize: 2 },
     launchConfigurationArgs: {
@@ -101,6 +121,10 @@ export function createECSResources({
     subnetIds: [...vpc.publicSubnetIds, vpc.privateSubnetIds[1]],
   });
 
+  /**
+   * Environment variables set in the container runtime. These will
+   * be exposed to anyone with programmatic or console access to AWS.
+   */
   const env = [
     {
       name: 'PG_HOST',
@@ -148,22 +172,39 @@ export function createECSResources({
     },
   ];
 
-  const repository = new aws.ecr.Repository(n('repository'));
+  /**
+   * Docker repository for storing and referencing our images in ECS tasks.
+   */
+  const repository = new aws.ecr.Repository(n('repository'), {
+    tags: t(n('repository')),
+  });
 
+  /**
+   * Task definition for ECS service
+   */
   const taskDefinition = new awsx.ecs.EC2TaskDefinition(n('task'), {
-    executionRole,
-    taskRole,
+    executionRole, // Needs all perms for container runtime
+    taskRole, // Needs all perms necessary for "spinning up" (e.g. secretsmanager)
     vpc,
     tags: t(n('task')),
     // @ts-ignore
     containers: {
       web: {
+        /**
+         * This utility will actually run a docker build with the included args
+         * and push to the ECR repository, tagged with the SHA of the docker
+         * build.
+         */
         image: awsx.ecs.Image.fromDockerBuild(repository, {
           context: '../',
           dockerfile: '../server/Dockerfile',
           extraOptions: ['--target', 'prod', '--cache-from', 'api:latest'],
         }),
         memory: 256,
+        /**
+         * When specifying the listener here, it automatically maps its port,
+         * so in this case, analogous to "80:80"
+         */
         portMappings: [listener],
         // @ts-ignore
         environment: env,
@@ -221,7 +262,7 @@ export function createECSResources({
     cluster,
     taskDefinition,
     desiredCount: 1,
-    waitForSteadyState: false,
+    waitForSteadyState: false, // Will continue the pulumi build without verifying read state
     securityGroups: [vpcendpointSg],
     tags: t(n('service')),
   });
