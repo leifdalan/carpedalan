@@ -19,6 +19,7 @@ COPY index.js .
 COPY scripts/ ./scripts
 COPY db/ ./db
 
+
 EXPOSE 9229
 
 
@@ -39,6 +40,14 @@ FROM base as prod
 COPY dist/ server/dist
 RUN ls -al server/dist
 COPY .env.example .env
+COPY server/nodemon.json .
+COPY server/ ./server
+COPY shared/ ./shared
+COPY .env.example .
+COPY index.js . 
+COPY scripts/ ./scripts
+COPY db/ ./db
+
 
 ENV NODE_ENV=production
 

@@ -8,11 +8,11 @@ export function getResourceName(name: string) {
 interface Tag {
   [name: string]: string;
 }
-export function getTags(tags?: Tag): aws.Tags {
+export function getTags(name?: string): aws.Tags {
   return {
     isPulumiGenerated: 'true',
     project: pulumi.getProject(),
     stack: pulumi.getStack(),
-    ...tags,
+    ...(name ? { Name: name } : {}),
   };
 }

@@ -1,4 +1,5 @@
 import * as aws from '@pulumi/aws';
+import * as awsx from '@pulumi/awsx';
 import * as pulumi from '@pulumi/pulumi';
 
 import { getDomainAndSubdomain } from './certs';
@@ -11,6 +12,7 @@ interface GetBucketsI {
   certificateArn: pulumi.OutputInstance<string>;
   isPrivate: boolean;
   allowCors?: boolean;
+  vpc?: awsx.ec2.Vpc;
 }
 const corsRules = (domain: string) => [
   {
@@ -27,6 +29,7 @@ export function createBucket({
   certificateArn,
   mainDomain,
   allowCors = false,
+  vpc,
 }: GetBucketsI) {
   /* tslint:disable-next-line */
   function n(resource: string) {
@@ -44,8 +47,24 @@ export function createBucket({
     acl: 'private',
     forceDestroy: true,
     ...(allowCors ? { corsRules: corsRules(mainDomain) } : {}),
-    tags: t(),
+    tags: t(n('private-bucket')),
   });
+
+  const extra = vpc
+    ? pulumi.interpolate`, {
+    "Sid": "2",
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": "s3:*",
+    "Resource": "arn:aws:s3:::${privateBucket.bucket}/*",
+    "Condition": {
+        "StringEquals": {
+            "aws:sourceVpc": "${vpc?.vpc.id}"
+        }
+    }
+  }
+  `
+    : '';
 
   new aws.s3.BucketPolicy(n('private-photo-bucket-policy'), {
     bucket: privateBucket.bucket,
@@ -61,7 +80,8 @@ export function createBucket({
           },
           "Action": "s3:GetObject",
           "Resource": "arn:aws:s3:::${privateBucket.bucket}/*"
-        }
+        }${extra}
+        
       ]
     }`,
   });
@@ -70,7 +90,7 @@ export function createBucket({
   const s3Distribution = new aws.cloudfront.Distribution(n('private-distro'), {
     aliases: [domain],
     comment: 'Some comment',
-    tags: t(),
+    tags: t(n('private-distro')),
     defaultCacheBehavior: {
       allowedMethods: [
         'DELETE',
@@ -114,7 +134,7 @@ export function createBucket({
         pathPattern: '/*',
         targetOriginId: s3OriginId,
         viewerProtocolPolicy: 'redirect-to-https',
-        ...(isPrivate ? { trustedSigners: ['self'] } : {}),
+        ...(isPrivate ? { trustedSigners: ['self', '574173441346'] } : {}),
       },
     ],
     origins: [

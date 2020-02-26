@@ -49,7 +49,11 @@ const Feed = ({
    */
   function loadMoreItems(index: number) {
     log('loading from feedd');
-    return request({ page: Math.floor(index / 100) + 1 });
+    return request({
+      requestBody: {
+        page: Math.floor(index / 100) + 1,
+      },
+    });
   }
 
   const Row = ({ index, style }: RowRender) => {

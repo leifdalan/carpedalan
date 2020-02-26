@@ -5,3 +5,4 @@ photos/
 **/node_modules/
 **/coverage/
 db/seeds
+client/src/ApiClient.ts

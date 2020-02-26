@@ -12,6 +12,7 @@ import { getLambdas } from './lambdas';
 import { getPolicies } from './policies';
 import { makeDB } from './rds';
 import { getSecrets } from './secrets';
+import { getResourceName as n, getTags as t } from './utils';
 import { makeVpc } from './vpc';
 
 async function main() {
@@ -39,9 +40,16 @@ async function main() {
     namespace: 'main-domain',
   });
 
-  const { postgresSg, sg, vpc } = makeVpc();
+  const { postgresSg, sg, vpc, vpcendpointSg } = makeVpc();
 
   const { rds } = makeDB({ vpc, postgresSg, config });
+
+  new aws.ec2.VpcEndpoint(n('vpc-endpoint-s3'), {
+    vpcEndpointType: 'Gateway',
+    vpcId: vpc.vpc.id,
+    serviceName: 'com.amazonaws.us-west-2.s3',
+    tags: t(n('vpc-endpoint-s3')),
+  });
 
   const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({
@@ -50,6 +58,7 @@ async function main() {
     domain: privateDistroDomain,
     namespace: 'private-photos',
     isPrivate: true,
+    vpc,
   });
 
   const publicDistroDomain = `cdn.${targetDomain}`;
@@ -109,6 +118,7 @@ async function main() {
     vpc,
     sg,
     rds,
+    vpcendpointSg,
     postgresSg,
     config,
     taskRole,
@@ -140,7 +150,6 @@ async function main() {
   });
   return {
     revisionNumber: taskDefinition.taskDefinition.revision,
-    secrets: secrets.pgUserSecret,
     layerArn: layer.arn,
     containers: taskDefinition.containers.web.image.imageResult,
     assetBucket: publicBucket.bucket,

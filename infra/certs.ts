@@ -60,7 +60,7 @@ export function makeCerts({
       domainName: domain,
       validationMethod: 'DNS',
       subjectAlternativeNames: [`local.${domain}`, ...subDomains],
-      tags: t(),
+      tags: t(n('certificate')),
     },
 
     { provider: providerRegion },

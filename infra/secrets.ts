@@ -30,29 +30,29 @@ export function getSecrets({ config }: SecretsI): ISecrets {
   const cfKey = config.getSecret('cfKey');
 
   const privateKeySecret = new aws.secretsmanager.Secret(n('private-key'), {
-    tags: t(),
+    tags: t(n('private-key')),
   });
 
   const adminPassword = new aws.secretsmanager.Secret(n('adminPassword'), {
-    tags: t(),
+    tags: t(n('adminPassword')),
   });
 
   const publicPassword = new aws.secretsmanager.Secret(n('publicPassword'), {
-    tags: t(),
+    tags: t(n('publicPassword')),
   });
 
   const sessionSecret = new aws.secretsmanager.Secret(n('sessionSecret'), {
-    tags: t(),
+    tags: t(n('sessionSecret')),
   });
 
   const pgUserSecret = new aws.secretsmanager.Secret(n('pg-user'), {
-    tags: t(),
+    tags: t(n('pg-user')),
   });
   const pgPasswordSecret = new aws.secretsmanager.Secret(n('pg-password'), {
-    tags: t(),
+    tags: t(n('pg-password')),
   });
   const cfKeySecret = new aws.secretsmanager.Secret(n('cfKey'), {
-    tags: t(),
+    tags: t(n('cfKey')),
   });
 
   if (privateKey) {

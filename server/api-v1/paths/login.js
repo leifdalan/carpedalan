@@ -23,7 +23,7 @@ const login = () => {
     }
   };
   post.apiDoc = {
-    description: 'Log userz1 in',
+    description: 'Log user in',
     operationId: 'login',
     tags: ['_user'],
     requestBody: {
@@ -33,6 +33,7 @@ const login = () => {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             description: 'Object with password property',
             required: ['password'],
             properties: {

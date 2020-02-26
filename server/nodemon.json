@@ -1,3 +1,6 @@
 {
-  "watch": ["!**__tests__/**/*", "api-v1/**/*", "index.hbs", "routes.js", "server.js", "sw.js" ]
+  "watch": ["!**__tests__/**/*", "api-v1/**/*", "index.hbs", "routes.js", "server.js", "sw.js" ],
+  "events": {
+    "restart": "node -r esm server/scripts/generateDefs.js"
+  }
 }

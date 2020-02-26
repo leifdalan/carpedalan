@@ -1,6 +1,8 @@
 import debug from 'debug';
 import { useState, useCallback } from 'react';
 
+import { ErrorI } from 'ApiClient';
+
 const log = debug('hooks:useApi');
 
 /**
@@ -15,7 +17,7 @@ const log = debug('hooks:useApi');
  */
 export default function useApi<T, U>(action: (args: T | never) => Promise<U>) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Components.Schemas.Error | null>(null);
+  const [error, setError] = useState<ErrorI | null>(null);
   const [response, setResponse] = useState<U>();
 
   /**

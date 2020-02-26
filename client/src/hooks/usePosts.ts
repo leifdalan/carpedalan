@@ -1,8 +1,7 @@
-import axios from 'axios';
 import debug from 'debug';
-import { stringify } from 'qs';
 import { useContext, useEffect, useState } from 'react';
 
+import { client, PostWithTagsI } from 'ApiClient';
 import usePrevious from 'hooks/usePrevious';
 import { DataContext } from 'providers/Data';
 
@@ -31,7 +30,7 @@ export function getBg(): string {
  * @interface PostsByPage
  */
 interface PostsByPage {
-  [page: number]: Components.Schemas.PostWithTags[];
+  [page: number]: PostWithTagsI[];
 }
 
 /**
@@ -64,70 +63,16 @@ function makePostsListWithFakes(
 }
 
 /**
- *  Return value for custom hook UsePost
- *
- * @interface UsePost
- */
-export interface UsePost {
-  loading: boolean;
-  error: Components.Schemas.Error | null;
-  request: (arg: Paths.GetPosts.QueryParameters) => Promise<void>;
-  posts: PostsWithTagsWithFakes[];
-  response: Components.Schemas.PostList | undefined;
-}
-
-/**
- * Post getter API function.
- *
- * @param {Paths.GetPosts.QueryParameters} {
- *   fields = ['key', 'imageHeight', 'imageWidth', 'status'],
- *   order = 'asc',
- *   page = 1,
- *   isPending = false,
- * }
- * @returns {Promise<Paths.GetPosts.Responses.$200>}
- */
-const getPosts = async ({
-  fields = [
-    'key',
-    'imageHeight',
-    'imageWidth',
-    'status',
-    'orientation',
-    'description',
-  ],
-  order = 'desc',
-  page = 1,
-  isPending = false,
-}: Paths.GetPosts.QueryParameters): Promise<Paths.GetPosts.Responses.$200> => {
-  try {
-    log('Getting posts...', { page });
-    const queryParams: Paths.GetPosts.QueryParameters = {
-      fields,
-      page,
-      order,
-      isPending,
-    };
-    const response = await axios.get(`/v1/posts?${stringify(queryParams)}`);
-    const { data } = response;
-    return data;
-  } catch (e) {
-    if (e.response) throw e.response.data as Components.Schemas.Error;
-    throw e as Components.Schemas.Error;
-  }
-};
-
-/**
  * Custom hook for retrieving posts and managing a list of them.
  * Will return a "fake" list of posts filled in with actual API calls
  * that have occured.
  *
  * @returns {UsePost}
  */
-const usePosts = (): UsePost => {
+const usePosts = () => {
   const { setPosts, data } = useContext(DataContext);
 
-  const { request, response, loading, error } = useApi(getPosts);
+  const { request, response, loading, error } = useApi(client.getPosts);
   const [postsByPage, setPostsByPage] = useState<PostsByPage>({});
   const [total, setTotal] = useState<number>(0);
   const [allPosts, setAllPosts] = useState<PostsWithTagsWithFakes[]>([]);

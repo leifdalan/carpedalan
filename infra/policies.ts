@@ -19,7 +19,7 @@ interface PolicyI {
 }
 export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
   const bucketUser = new aws.iam.User(n('private-bucket-user'), {
-    tags: t(),
+    tags: t(n('private-bucket-user')),
   });
 
   const bucketUserCreds = pulumi.secret(
@@ -31,7 +31,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
   const bucketUserCredSecret = new aws.secretsmanager.Secret(
     n('bucket-access-key-secret'),
     {
-      tags: t(),
+      tags: t(n('bucket-access-key-secret')),
     },
   );
   new aws.secretsmanager.SecretVersion(n('bucket-access-key-s'), {
@@ -61,14 +61,14 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
     assumeRolePolicy: JSON.stringify(
       awsx.ecs.TaskDefinition.defaultRoleAssumeRolePolicy(),
     ),
-    tags: t(),
+    tags: t(n('task-role')),
   });
 
   const executionRole = new aws.iam.Role(n('execution-role'), {
     assumeRolePolicy: JSON.stringify(
       awsx.ecs.TaskDefinition.defaultRoleAssumeRolePolicy(),
     ),
-    tags: t(),
+    tags: t(n('execution-role')),
   });
 
   new aws.iam.RolePolicy(
@@ -278,7 +278,7 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
         }
       ]
     }`,
-    tags: t(),
+    tags: t(n('lambda-role')),
   });
 
   new aws.iam.RolePolicy(n('lambda-role-policy'), {

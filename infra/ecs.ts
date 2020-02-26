@@ -9,6 +9,7 @@ interface CreateI {
   vpc: awsx.ec2.Vpc;
   albCertificateArn: pulumi.OutputInstance<string>;
   sg: awsx.ec2.SecurityGroup;
+  vpcendpointSg: awsx.ec2.SecurityGroup;
   postgresSg: awsx.ec2.SecurityGroup;
   rds: aws.rds.Instance;
   config: pulumi.Config;
@@ -46,22 +47,23 @@ export function createECSResources({
   privateDistroDomain,
   bucketUserCredSecret,
   bucketUserCreds,
+  vpcendpointSg,
 }: CreateI) {
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
     vpc,
     securityGroups: [sg],
     external: true,
-    tags: t(),
+    tags: t(n('alb')),
   });
 
-  const targetGroup = alb.createTargetGroup(n('webapp'), {
+  const targetGroup = alb.createTargetGroup(n('web'), {
     vpc,
     port: 80,
     healthCheck: {
       path: '/healthcheck',
       timeout: 5,
     },
-    tags: t(),
+    tags: t(n('web')),
   });
 
   const listener = targetGroup.createListener(n('listener'), {
@@ -85,13 +87,18 @@ export function createECSResources({
 
   const cluster = new awsx.ecs.Cluster(n('cluster'), {
     vpc,
-    tags: t(),
-    securityGroups: [sg, postgresSg],
+    tags: t(n('cluster')),
+    securityGroups: [sg, postgresSg, vpcendpointSg],
   });
 
-  cluster.createAutoScalingGroup(n('auto-scaling-group'), {
+  cluster.createAutoScalingGroup(n('micro-scaling-group'), {
     templateParameters: { minSize: 2 },
-    launchConfigurationArgs: { instanceType: 't2.nano' },
+    launchConfigurationArgs: {
+      instanceType: 't2.micro',
+      securityGroups: [vpcendpointSg],
+    },
+    vpc,
+    subnetIds: [...vpc.publicSubnetIds, vpc.privateSubnetIds[1]],
   });
 
   const env = [
@@ -146,7 +153,8 @@ export function createECSResources({
   const taskDefinition = new awsx.ecs.EC2TaskDefinition(n('task'), {
     executionRole,
     taskRole,
-    tags: t(),
+    vpc,
+    tags: t(n('task')),
     // @ts-ignore
     containers: {
       web: {
@@ -157,18 +165,22 @@ export function createECSResources({
         }),
         memory: 256,
         portMappings: [listener],
+        // @ts-ignore
         environment: env,
         secrets: [
           {
             name: 'AWS_SECRET_ACCESS_KEY',
+            // @ts-ignore
             valueFrom: pulumi.interpolate`${bucketUserCredSecret.arn}`,
           },
           {
             name: 'PRIVATE_KEY',
+            // @ts-ignore
             valueFrom: pulumi.interpolate`${secrets.privateKeySecret.arn}`,
           },
           {
             name: 'PG_USER',
+            // @ts-ignore
             valueFrom: pulumi.interpolate`${secrets.pgUserSecret.arn}`,
           },
           {
@@ -179,6 +191,7 @@ export function createECSResources({
           },
           {
             name: 'ADMIN_PASSWORD',
+            // @ts-ignore
             valueFrom: pulumi.interpolate`${secrets.adminPassword.arn}`,
           },
           {
@@ -209,7 +222,8 @@ export function createECSResources({
     taskDefinition,
     desiredCount: 1,
     waitForSteadyState: false,
-    tags: t(),
+    securityGroups: [vpcendpointSg],
+    tags: t(n('service')),
   });
 
   return { alb, taskDefinition };

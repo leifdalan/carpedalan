@@ -38,6 +38,7 @@ export function getLambdas({
   const code = new pulumi.asset.FileArchive('../imageResizer/src/');
 
   const photoLambda = new aws.lambda.Function(n('photo-lambda'), {
+    tags: t(n('photo-lambda')),
     code,
     vpcConfig: {
       securityGroupIds: [sg.securityGroup.id, postgresSg.securityGroup.id],
@@ -56,7 +57,6 @@ export function getLambdas({
         PG_PASSWORD_SECRET_ID: pgPasswordSecret.name,
       },
     },
-    tags: t(),
     description:
       'A process to create thumbnails, upload them to s3, and update the database',
   });

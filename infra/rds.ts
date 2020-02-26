@@ -15,7 +15,7 @@ export function makeDB({ vpc, postgresSg, config }: MakeDBI) {
   const password = config.getSecret('pg_password');
   const subnetGroup = new aws.rds.SubnetGroup(n('pulumisubnet'), {
     subnetIds: vpc.privateSubnetIds,
-    tags: t(),
+    tags: t(n('pulumisubnet')),
   });
 
   const rds = new aws.rds.Instance(n('rds'), {
@@ -33,7 +33,7 @@ export function makeDB({ vpc, postgresSg, config }: MakeDBI) {
     publiclyAccessible: false,
     allocatedStorage: 20,
     skipFinalSnapshot: true,
-    tags: t(),
+    tags: t(n('rds')),
   });
 
   return { rds };

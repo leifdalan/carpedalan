@@ -74,7 +74,7 @@ const Grid = ({
    */
   function loadMoreItems(index: number): Promise<void> {
     const realIndex = index * postsPerRow;
-    return request({ page: Math.floor(realIndex / 100) + 1 });
+    return request({ requestBody: { page: Math.floor(realIndex / 100) + 1 } });
   }
 
   const Row = ({ index, style }: RowRender) => {

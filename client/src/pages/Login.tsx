@@ -1,7 +1,7 @@
-import axios from 'axios';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
+import { client } from 'ApiClient';
 import useApi from 'hooks/useApi';
 import useForm from 'hooks/useForm';
 import useUser from 'hooks/useUser';
@@ -11,24 +11,6 @@ import Input from 'styles/Input';
 import { InputForm, InputWrapper, StyledTitle } from './styles';
 
 const { useEffect, useState } = React;
-/**
- * Post Login api caller
- *
- * @param {Paths.Login.RequestBody} reqBody
- * @returns {Promise<Paths.Login.Responses.$200>}
- */
-const postLogin = async (reqBody: Paths.Login.RequestBody) => {
-  try {
-    const response = await axios.post<Paths.Login.Responses.$200>(
-      '/v1/login',
-      reqBody,
-    );
-    const { data } = response;
-    return data;
-  } catch (e) {
-    throw e?.response?.data as Components.Schemas.Error;
-  }
-};
 
 /**
  * Login component. Return markup for page level component
@@ -55,11 +37,11 @@ const Login: React.FC<{}> = (): React.ReactElement => {
 
   const passwordInput = useField({ handleChange, field: 'password' });
 
-  const { request, error, response } = useApi(postLogin);
+  const { request, error, response } = useApi(client.login);
 
   useEffect(() => {
     if (response) {
-      setUser(response && response.user);
+      setUser(response?.user);
     }
   }, [response, setUser]);
 
@@ -72,7 +54,9 @@ const Login: React.FC<{}> = (): React.ReactElement => {
     e.preventDefault();
     shouldShowError(true);
     request({
-      password: String(passwordInput.value),
+      requestBody: {
+        password: String(passwordInput.value),
+      },
     });
   };
   return (

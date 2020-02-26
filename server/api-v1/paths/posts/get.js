@@ -96,7 +96,7 @@ export default function(posts) {
             ],
           },
         },
-        description: 'Fields to return in the response',
+        description: 'Fields to return in the responses',
       },
     ],
     responses: {

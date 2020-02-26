@@ -1,0 +1,19 @@
+encryptionsalt: v1:8nfNnV3tSRc=:v1:2qCACRE9qABchGFc:lWggaOIP4Lg+dt4biQO3Sq4DRsP34w==
+config:
+  aws:profile: carpedev2020root
+  aws:region: us-west-2
+  carpedalan:adminPassword:
+    secure: v1:CB0p83uXmSA/9f1c:1s+vxtcrgTQrdYsxy4i2CkEEHPjRYQy8krV3
+  carpedalan:cfKey:
+    secure: v1:YX65OKWkuwRDH3s2:MUQZmeKUf+E/gGx/dIx/3oS8bixnT85GFJ0bGc+tpA/2p/MK
+  carpedalan:domain: carpe.dalan.dev
+  carpedalan:pg_password:
+    secure: v1:QpMMv1tDlqYiZ/n3:AdgquvuyU0kKmaMdrI/QEKrD+k1Hg33o7H74eBC8e7r8RkOSrvQ=
+  carpedalan:pg_user:
+    secure: v1:xZyF7ruE2DH80YH8:lPIjqv+CtYtIn1roR5A+b/x450D/mbcX2lA=
+  carpedalan:privateKey:
+    secure: v1:d4AiOgXHD/xDuXom:B/b06fSHwn+pnFGwJCkIlCShW/gII3lzISY=
+  carpedalan:publicPassword:
+    secure: v1:aOnVu+S+PfcUSO+M:Vj3DKvlPz18RQ9dy3C2pwkziKatHhfZBips0UtVvwvE=
+  carpedalan:sessionSecret:
+    secure: v1:2cCCdi8aFcMnyFhR:4QuzYRtmwhD7QrgRf6E6p12fsPR76Uo/X+Lrg+Q=

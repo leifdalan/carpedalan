@@ -1,9 +1,9 @@
-import axios from 'axios';
 import debug from 'debug';
 import * as React from 'react';
 import { Link, RouteComponentProps, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { client } from 'ApiClient';
 import Feed from 'components/Feed';
 import Grid from 'components/Grid';
 import { PostsWithTagsWithFakes } from 'hooks/types';
@@ -31,24 +31,6 @@ const GridListSwitcher = styled.div`
 `;
 
 /**
- * API request function
- *
- * @param {string} tagId
- * @returns {Promise<Paths.GetPostsByTag.Responses.$200>}
- */
-async function getPostTags(
-  tagId: string,
-): Promise<Paths.GetPostsByTag.Responses.$200> {
-  try {
-    const response = await axios.get(`/v1/tags/${tagId}/posts`);
-    return response.data;
-  } catch (e) {
-    if (e.response) throw e.response.data as Components.Schemas.Error;
-    throw e as Components.Schemas.Error;
-  }
-}
-
-/**
  * Tag view. Gets posts by tag based on the route param. Will
  * update view when the route param changes, and make another request
  * @param {RouteComponentProps<{ tagName: string }>} props
@@ -57,7 +39,7 @@ async function getPostTags(
 const Tag = (
   props: RouteComponentProps<{ tagName: string }>,
 ): React.ReactElement => {
-  const { request, response, loading } = useApi(getPostTags);
+  const { request, response, loading } = useApi(client.getPostsByTag);
 
   const { addPosts } = useContext(DataContext);
 
@@ -105,8 +87,12 @@ const Tag = (
   useEffect(() => {
     if (tags.length) {
       const tag = tags.find(tag => tag.name === match.params.tagName);
-      if (tag && tag.id) {
-        request(tag.id);
+      if (tag?.id) {
+        request({
+          requestParams: {
+            tagId: tag.id,
+          },
+        });
         gridRef.current += 1;
       }
     }
