@@ -75,27 +75,24 @@ export function createBucket({
   `
     : '';
 
-  new aws.s3.BucketPolicy(n('bucket-policy'), {
+  new aws.s3.BucketPolicy(n('private-photo-bucket-policy'), {
     bucket: privateBucket.bucket,
-    /**
-     * Policy required for CF distros to access the bucket via OAI id.
-     */
     policy: pulumi.interpolate`{
-      "Version": "2008-10-17",
-      "Id": "PolicyForCloudFrontPrivateContent",
-      "Statement": [
-        {
-          "Sid": "1",
-          "Effect": "Allow",
-          "Principal": {
-              "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${originAccessIdentity.id}"
-          },
-          "Action": "s3:GetObject",
-          "Resource": "arn:aws:s3:::${privateBucket.bucket}/*"
-        }${extra}
-        
-      ]
-    }`,
+        "Version": "2008-10-17",
+        "Id": "PolicyForCloudFrontPrivateContent",
+        "Statement": [
+          {
+            "Sid": "1",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${originAccessIdentity.id}"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::${privateBucket.bucket}/*"
+          }${extra}
+          
+        ]
+      }`,
   });
 
   const s3OriginId = 'S3PhotoOrigin';
@@ -146,7 +143,7 @@ export function createBucket({
         pathPattern: '/*',
         targetOriginId: s3OriginId,
         viewerProtocolPolicy: 'redirect-to-https',
-        ...(isPrivate ? { trustedSigners: ['self', '574173441346'] } : {}),
+        ...(isPrivate ? { trustedSigners: ['self'] } : {}),
       },
     ],
     origins: [
