@@ -70,6 +70,6 @@
     "rimraf": "^3.0.1"
   },
   "optionalDependencies": {
-    "cypress": "3.8.2"
+    "cypress": "4.0.2"
   }
 }

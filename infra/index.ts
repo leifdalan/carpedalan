@@ -103,6 +103,7 @@ async function main() {
     privateBucket,
     postgresSg,
     rds,
+    vpcendpointSg,
     ...secrets,
   });
 

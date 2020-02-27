@@ -10,6 +10,7 @@ interface LambdaI extends AllSecrets {
   vpc: awsx.ec2.Vpc;
   sg: awsx.ec2.SecurityGroup;
   postgresSg: awsx.ec2.SecurityGroup;
+  vpcendpointSg: awsx.ec2.SecurityGroup;
   privateBucket: aws.s3.Bucket;
   rds: aws.rds.Instance;
 }
@@ -23,6 +24,7 @@ export function getLambdas({
   rds,
   pgUserSecret,
   pgPasswordSecret,
+  vpcendpointSg,
 }: LambdaI) {
   const runtime = 'nodejs12.x';
   /**
@@ -47,7 +49,11 @@ export function getLambdas({
     tags: t(n('photo-lambda')),
     code,
     vpcConfig: {
-      securityGroupIds: [sg.securityGroup.id, postgresSg.securityGroup.id],
+      securityGroupIds: [
+        sg.securityGroup.id,
+        postgresSg.securityGroup.id,
+        vpcendpointSg.securityGroup.id,
+      ],
       subnetIds: [...vpc.privateSubnetIds, ...vpc.publicSubnetIds],
     },
     memorySize: 2048,

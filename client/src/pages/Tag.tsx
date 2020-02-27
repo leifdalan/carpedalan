@@ -40,17 +40,12 @@ const Tag = (
   props: RouteComponentProps<{ tagName: string }>,
 ): React.ReactElement => {
   const { request, response, loading } = useApi(client.getPostsByTag);
-
   const { addPosts } = useContext(DataContext);
-
   const { tags } = useTags();
-
   const [postsWithTitle, setPostsWithTitle] = useState<
     PostsWithTagsWithFakes[]
   >([]);
-
   const wrapperRef = useRef<HTMLInputElement>(null);
-
   const gridRef = useRef(0);
 
   const { hash, pathname } = useLocation();

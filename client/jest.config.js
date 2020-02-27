@@ -1,10 +1,10 @@
 module.exports = {
-  globals: {
-    'ts-jest': {
-      babelConfig: true,
-      tsConfig: 'tsconfig.test.json',
-    },
-  },
+  // globals: {
+  //   'ts-jest': {
+  //     babelConfig: true,
+  //     tsConfig: 'tsconfig.test.json',
+  //   },
+  // },
   verbose: false,
   modulePaths: ['<rootDir>/src'],
   roots: ['<rootDir>/src'],
@@ -15,9 +15,9 @@ module.exports = {
     '<rootDir>/dist',
     '<rootDir>/build',
   ],
-  transform: {
-    '^.+\\.(j|t)sx?$': 'ts-jest',
-  },
+  // transform: {
+  //   '^.+\\.(j|t)sx?$': 'ts-jest',
+  // },
   coverageDirectory: '.coverage',
   collectCoverageFrom: ['**/*.{ts,tsx}'],
   coveragePathIgnorePatterns: [

@@ -1,9 +1,9 @@
-import axios from 'axios';
 import debug from 'debug';
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 
+import { client as api } from 'ApiClient';
 import Routes from 'Routes';
 import { User } from 'User';
 import useUser from 'hooks/useUser';
@@ -14,7 +14,7 @@ const log = debug('App');
 
 const refreshCookie = async () => {
   log('Refreshing cookiaxdae');
-  await axios.post('/v1/refresh');
+  await api.refresh();
 };
 
 const { useEffect } = React;
@@ -30,7 +30,7 @@ const App: React.FC<{ user: User }> = () => {
     if (userState) {
       const interval = setInterval(() => {
         refreshCookie();
-      }, 1000 * 31);
+      }, 1000 * 29);
       return () => clearInterval(interval);
     }
     return () => {};

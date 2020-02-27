@@ -9,12 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.610.0",
-    "cypress": "^3.8.3",
+    "aws-sdk": "^2.627.0",
+    "cypress": "^4.0.2",
     "cypress-dark": "^1.7.14",
     "cypress-file-upload": "^3.5.3",
     "dotenv-safe": "^8.2.0",
-    "knex": "^0.20.8",
-    "pg": "^7.17.1"
+    "knex": "^0.20.10",
+    "pg": "^7.18.2"
   }
 }

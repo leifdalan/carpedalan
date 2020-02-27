@@ -1,47 +1,37 @@
+const babelConfig = require('./client/babel.config');
+
 module.exports = function(wallaby) {
   return {
+    autodetect: true,
     files: [
-      '**/*.js?(x)',
-      '**/*.hbs',
-      '!**/__tests__/*.js?(x)',
+      'client/src/**/*.ts?(x)',
+      { pattern: '**/*.d.ts', ignore: true },
+      'client/setupTests.js',
+      '!**/__tests__/*.ts?(x)',
       '!**/node_modules/**/*',
-      '!src/**/*',
-      '!client/**/*',
-      '!devtools/**/*',
-      '!data.js',
-      '!dist/**/*',
-      '!coverage/**/*',
-      '!scripts/**/*',
-      '!**/cypress/**/*',
-      'api/__mocks__/*.*',
+      '!client/dist/**/*',
+      '!client/coverage/**/*',
+      '!client/scripts/**/*',
+      'client/tsconfig.test.json',
+      'client/jest.config.js',
+      'client/package.json',
     ],
-    filesWithNoCoverageCalculated: [
-      'db/**/*',
-      '/*.*',
-      'src/**/*',
-      'webpack.prod.js',
-      'jestrc.js',
-      'vandelay-js.js',
-      'wallaby.js',
-      'shared/constants.js',
-      'webpack.config.js',
-      'babel.config.js',
-      'index.js',
-      'api-v1/**/index.js',
-      'api-v1/setup/**/*',
-      'server/config.js',
-      'server/middlewares.js',
-      'server/sw.js',
-      'server/constants.js',
-      'server/devMiddleware.config.js',
-      'server/db.js',
-      'imageResizer/**/*',
-    ],
+    //   filesWithNoCoverageCalculated: [
+    //     'db/**/*',
+    //     '/*.*',
+    //     'webpack.prod.js',
+    //     'jestrc.config.json',
+    //     'vandelay-js.js',
+    //     'wallaby.js',
+    //     'shared/constants.js',
+    //     'webpack.config.js',
+    //     'babel.config.js',
+    //     'index.js',
+    //   ],
     tests: [
-      'server/**/__tests__/*.js?(x)',
+      'client/**/__tests__/*.ts?(x)',
       '!api/**/__tests__/*',
       '!node_modules/**/*',
-      '!**/logout.js',
       '!**/node_modules/**/*',
     ],
 
@@ -54,13 +44,33 @@ module.exports = function(wallaby) {
     },
 
     compilers: {
-      '**/*.js?(x)': wallaby.compilers.babel(),
+      '**/*.ts?(x)': wallaby.compilers.babel(babelConfig),
+
+      // '**/*.ts?(x)': wallaby.compilers.typeScript({
+      //   isolatedModules: true,
+      //   module: 'commonjs',
+      // }),
     },
+    //   // preprocessors: {
+    //   //   /* eslint-disable */
+    //   //   '**/*.ts?(x)': file =>
+    //   //     require('@babel/core').transform(file.content, {
+    //   //       sourceMap: true,
+    //   //       filename: file.path,
+    //   //       presets: [require('babel-preset-jest')],
+    //   //     }),
+    //   //     /* eslint-enable */
+    //   // },
 
     testFramework: 'jest',
 
-    debug: true,
+    //   debug: true,
 
-    lowCoverageThreshold: 50,
+    //   lowCoverageThreshold: 50,
+    //   // setup() {
+    //   //   const jestConfig = require(`${wallaby.localProjectDir}/jest.config.js`); // eslint-disable-line
+    //   //   jestConfig.transform = {};
+    //   //   wallaby.testFramework.configure(jestConfig);
+    //   // },
   };
 };

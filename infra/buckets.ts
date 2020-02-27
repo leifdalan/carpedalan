@@ -57,7 +57,8 @@ export function createBucket({
 
   /**
    * If VPC is specified, this bucket needs an extra policy to allow
-   * access via VPC Gateway endpoint
+   * access via VPC Gateway endpoint. In our case this is for the lambda
+   * that needs bucket access, but the lambda is in a VPC.
    */
   const extra = vpc
     ? pulumi.interpolate`, {
@@ -143,7 +144,7 @@ export function createBucket({
         pathPattern: '/*',
         targetOriginId: s3OriginId,
         viewerProtocolPolicy: 'redirect-to-https',
-        ...(isPrivate ? { trustedSigners: ['self', '574173441346'] } : {}),
+        ...(isPrivate ? { trustedSigners: ['574173441346'] } : {}),
       },
     ],
     origins: [

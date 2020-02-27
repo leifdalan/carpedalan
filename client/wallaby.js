@@ -1,5 +1,6 @@
 module.exports = function(wallaby) {
   return {
+    autodetect: true,
     files: [
       'src/**/*.ts?(x)',
       { pattern: '**/*.d.ts', ignore: true },
@@ -13,18 +14,18 @@ module.exports = function(wallaby) {
       'jest.config.js',
       'package.json',
     ],
-    filesWithNoCoverageCalculated: [
-      'db/**/*',
-      '/*.*',
-      'webpack.prod.js',
-      'jestrc.config.json',
-      'vandelay-js.js',
-      'wallaby.js',
-      'shared/constants.js',
-      'webpack.config.js',
-      'babel.config.js',
-      'index.js',
-    ],
+    //   filesWithNoCoverageCalculated: [
+    //     'db/**/*',
+    //     '/*.*',
+    //     'webpack.prod.js',
+    //     'jestrc.config.json',
+    //     'vandelay-js.js',
+    //     'wallaby.js',
+    //     'shared/constants.js',
+    //     'webpack.config.js',
+    //     'babel.config.js',
+    //     'index.js',
+    //   ],
     tests: [
       '**/__tests__/*.ts?(x)',
       '!api/**/__tests__/*',
@@ -42,33 +43,33 @@ module.exports = function(wallaby) {
     },
 
     compilers: {
-      // '**/*.js?(x)': wallaby.compilers.babel(),
+      '**/*.ts?(x)': wallaby.compilers.babel(),
 
-      '**/*.ts?(x)': wallaby.compilers.typeScript({
-        isolatedModules: true,
-        module: 'commonjs',
-      }),
+      // '**/*.ts?(x)': wallaby.compilers.typeScript({
+      //   isolatedModules: true,
+      //   module: 'commonjs',
+      // }),
     },
-    preprocessors: {
-      /* eslint-disable */
-      '**/*.ts?(x)': file =>
-        require('@babel/core').transform(file.content, {
-          sourceMap: true,
-          filename: file.path,
-          presets: [require('babel-preset-jest')],
-        }),
-        /* eslint-enable */
-    },
+    //   // preprocessors: {
+    //   //   /* eslint-disable */
+    //   //   '**/*.ts?(x)': file =>
+    //   //     require('@babel/core').transform(file.content, {
+    //   //       sourceMap: true,
+    //   //       filename: file.path,
+    //   //       presets: [require('babel-preset-jest')],
+    //   //     }),
+    //   //     /* eslint-enable */
+    //   // },
 
     testFramework: 'jest',
 
-    debug: true,
+    //   debug: true,
 
-    lowCoverageThreshold: 50,
-    setup() {
-      const jestConfig = require(`${wallaby.localProjectDir}/jest.config.js`); // eslint-disable-line
-      jestConfig.transform = {};
-      wallaby.testFramework.configure(jestConfig);
-    },
+    //   lowCoverageThreshold: 50,
+    //   // setup() {
+    //   //   const jestConfig = require(`${wallaby.localProjectDir}/jest.config.js`); // eslint-disable-line
+    //   //   jestConfig.transform = {};
+    //   //   wallaby.testFramework.configure(jestConfig);
+    //   // },
   };
 };

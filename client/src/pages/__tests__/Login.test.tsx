@@ -23,7 +23,7 @@ describe('<Login />', () => {
     const app = shallow(<Login />);
     const val = 'val';
     app.find('[data-test="submit"]').simulate('submit', new Event('submit'));
-    expect(mockedAxios.post).toHaveBeenCalledWith('/v1/login', {
+    expect(mockedAxios.post).toHaveBeenCalledWith('/v1/login/', {
       password: '',
     });
   });

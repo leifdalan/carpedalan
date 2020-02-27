@@ -11,11 +11,14 @@ cd imageResizer/layer/nodejs && yarn build && cd ..
 echo 'Zipping up layer folder...'
 rm -f layer.zip
 zip -r -X layer.zip ./*
-cd ..
+pwd
+cd ../..
+pwd
 yarn
 echo 'Removing imageResizer/src/node_modules for lambda layer deployment...'
 rm -rf imageResizer/src/node_modules
 echo 'Removing imageResizer/layer/nodejs/node_modules for lambda layer deployment...'
 rm -rf imageResizer/layer/nodejs/node_modules
 echo 'Running pulumi up.'
-CI_JOB_ID=$(git log -1 --pretty=%B) CI_COMMIT_SHA=$(git rev-parse HEAD) CI_COMMIT_REF_NAME=$(git rev-parse --abbrev-ref HEAD) pulumi up
+CI_JOB_ID=$(git log -1 --pretty=%B) CI_COMMIT_SHA=$(git rev-parse HEAD) CI_COMMIT_REF_NAME=$(git rev-parse --abbrev-ref HEAD) AWS_PROFILE=carpedev2020root pulumi up
+[ -x "$(command -v notif)" ] && notif "Pulumi deployed!"
