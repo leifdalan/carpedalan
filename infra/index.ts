@@ -39,7 +39,7 @@ async function main() {
     namespace: 'main-domain',
   });
 
-  const { postgresSg, sg, vpc, vpcendpointSg } = makeVpc();
+  const { postgresSg, sg, vpc, vpcendpointSg, s3Endpoint } = makeVpc();
 
   const { rds } = makeDB({ vpc, postgresSg, config });
 
@@ -51,6 +51,7 @@ async function main() {
     namespace: 'private-photos',
     isPrivate: true,
     vpc,
+    s3Endpoint,
   });
 
   const publicDistroDomain = `cdn.${targetDomain}`;

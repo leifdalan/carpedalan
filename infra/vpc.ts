@@ -87,11 +87,27 @@ export function makeVpc() {
     subnetIds: [vpc.privateSubnetIds[1]],
   });
 
-  new aws.ec2.VpcEndpoint(n('vpc-endpoint-s3'), {
+  const s3Endpoint = new aws.ec2.VpcEndpoint(n('vpc-endpoint-s3'), {
     vpcEndpointType: 'Gateway',
     vpcId: vpc.vpc.id,
     serviceName: 'com.amazonaws.us-west-2.s3',
     tags: t(n('vpc-endpoint-s3')),
+    /**
+     * https://aws.amazon.com/premiumsupport/knowledge-center/connect-s3-vpc-endpoint/
+     * Need to add an entry to the route table that is explicitly linked to a private
+     * subnet that the service that is attempting to access s3 (in this case lambda)
+     * shares. By citing a routeTable, this has a side effect of adding a route to
+     * that route table that makes this connections work.
+     */
+    ...(vpc?.privateSubnets[0]?.routeTable?.id &&
+    vpc?.privateSubnets[1]?.routeTable?.id
+      ? {
+          routeTableIds: [
+            vpc?.privateSubnets[0]?.routeTable?.id,
+            vpc?.privateSubnets[1]?.routeTable?.id,
+          ],
+        }
+      : {}),
   });
 
   return {
@@ -99,5 +115,6 @@ export function makeVpc() {
     sg,
     vpc,
     vpcendpointSg,
+    s3Endpoint,
   };
 }
