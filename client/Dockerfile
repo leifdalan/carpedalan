@@ -3,7 +3,6 @@ WORKDIR /app/client
 COPY client/yarn.lock .
 COPY client/package.json .
 RUN yarn
-COPY client/src ./src
 COPY client/tsconfig.json .
 COPY client/webpack.config.js .
 COPY client/webpack.config.dll.js .
@@ -13,4 +12,6 @@ COPY client/babel.config.js .
 COPY client/devServer.js .
 COPY client/.eslintrc.js .
 COPY ./.eslint-ts-base.js /app/
+COPY client/src ./src
+
 CMD ["node", "devServer"]

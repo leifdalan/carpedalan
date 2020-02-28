@@ -410,6 +410,9 @@ export const PostWithTags = {
   ...post,
   properties: {
     ...post.properties,
+    placeholder: {
+      type: 'string',
+    },
     [TAGS]: {
       type: 'array',
       items: {

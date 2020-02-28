@@ -511,6 +511,7 @@ export interface PostWithTagsI {
    * exif data extracted for yResolution
    */
   yResolution?: string;
+  placeholder?: string;
 }
 
 /**
@@ -814,6 +815,7 @@ export interface PostListI {
      * exif data extracted for yResolution
      */
     yResolution?: string;
+    placeholder?: string;
   }[];
   /**
    * Meta data about list and collection
@@ -1478,6 +1480,7 @@ export interface GetPostsResponseBodyI {
      * exif data extracted for yResolution
      */
     yResolution?: string;
+    placeholder?: string;
   }[];
   /**
    * Meta data about list and collection
@@ -1575,7 +1578,7 @@ export interface GetPostsQueryI {
   )[];
 }
 
-export interface CreatePostzResponseBodyI {
+export interface CreatePostResponseBodyI {
   id?: string;
   rotate?: 0 | 90 | 180 | 270;
   /**
@@ -1819,7 +1822,7 @@ export interface CreatePostzResponseBodyI {
   yResolution?: string;
 }
 
-export interface CreatePostzRequestBodyI {
+export interface CreatePostRequestBodyI {
   id?: string;
   rotate?: 0 | 90 | 180 | 270;
   /**
@@ -2359,6 +2362,7 @@ export interface GetPostsByTagResponseBodyI {
      * exif data extracted for yResolution
      */
     yResolution?: string;
+    placeholder?: string;
   }[];
   /**
    * Meta data about list and collection
@@ -2640,6 +2644,7 @@ export interface GetPostResponseBodyI {
    * exif data extracted for yResolution
    */
   yResolution?: string;
+  placeholder?: string;
 }
 
 export interface GetPostPathI {
@@ -2649,7 +2654,7 @@ export interface GetPostPathI {
   id: string;
 }
 
-export interface PatchPostzResponseBodyI {
+export interface PatchPostResponseBodyI {
   id?: string;
   rotate?: 0 | 90 | 180 | 270;
   /**
@@ -2901,9 +2906,10 @@ export interface PatchPostzResponseBodyI {
    * exif data extracted for yResolution
    */
   yResolution?: string;
+  placeholder?: string;
 }
 
-export interface PatchPostzRequestBodyI {
+export interface PatchPostRequestBodyI {
   id?: string;
   rotate?: 0 | 90 | 180 | 270;
   /**
@@ -3147,7 +3153,7 @@ export interface PatchPostzRequestBodyI {
   yResolution?: string;
 }
 
-export interface PatchPostzPathI {
+export interface PatchPostPathI {
   id: string;
 }
 
@@ -3300,12 +3306,12 @@ export default class ApiClient {
   /**
    * Create Post
    *
-   * @returns {Promise<CreatePostzResponseBodyI | ErrorI>}
+   * @returns {Promise<CreatePostResponseBodyI | ErrorI>}
    */      
-  public async createPostz({ requestBody }: BodyOnly<CreatePostzRequestBodyI>) {
+  public async createPost({ requestBody }: BodyOnly<CreatePostRequestBodyI>) {
     try {
       
-      const { data } = await axios.post<CreatePostzResponseBodyI>(`/v1/posts/`, requestBody);
+      const { data } = await axios.post<CreatePostResponseBodyI>(`/v1/posts/`, requestBody);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;
@@ -3402,12 +3408,12 @@ export default class ApiClient {
   /**
    * Patch Posts
    *
-   * @returns {Promise<PatchPostzResponseBodyI | ErrorI>}
+   * @returns {Promise<PatchPostResponseBodyI | ErrorI>}
    */      
-  public async patchPostz({ requestBody, requestParams }: BodyAndPath<PatchPostzRequestBodyI, PatchPostzPathI>) {
+  public async patchPost({ requestBody, requestParams }: BodyAndPath<PatchPostRequestBodyI, PatchPostPathI>) {
     try {
       const { id } = requestParams;
-      const { data } = await axios.patch<PatchPostzResponseBodyI>(`/v1/posts/${id}`, requestBody);
+      const { data } = await axios.patch<PatchPostResponseBodyI>(`/v1/posts/${id}`, requestBody);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;

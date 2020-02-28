@@ -68,6 +68,11 @@ export function getLambdas({
         // Lambda will use secretsManager to retrieve these values at runtime.
         PG_USER_SECRET_ID: pgUserSecret.name,
         PG_PASSWORD_SECRET_ID: pgPasswordSecret.name,
+        /**
+         * @TODO Figure out how to get this dynamically from aws.elasticache.Cluster/ReplicaGroup
+         */
+
+        REDIS_URL: 'redis://svg.g5a76u.0001.usw2.cache.amazonaws.com:6379/0',
       },
     },
     description:

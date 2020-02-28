@@ -31,6 +31,7 @@ interface CreateI {
   publicBucket: aws.s3.Bucket;
   bucketUserCredSecret: aws.secretsmanager.Secret;
   bucketUserCreds: pulumi.Output<aws.iam.AccessKey>;
+  redis: aws.elasticache.Cluster;
 }
 
 export function createECSResources({
@@ -48,7 +49,8 @@ export function createECSResources({
   bucketUserCredSecret,
   bucketUserCreds,
   vpcendpointSg,
-}: CreateI) {
+}: // redis,
+CreateI) {
   /**
    * Create a load balancer that has a target group that matches the container's
    * exposed ports.
@@ -169,6 +171,13 @@ export function createECSResources({
     {
       name: 'CI_COMMIT_REF_NAME',
       value: CI_COMMIT_REF_NAME,
+    },
+    {
+      name: 'REDIS_URL',
+      /**
+       * @TODO Figure out how to get this dynamically from aws.elasticache.Cluster/ReplicaGroup
+       */
+      value: pulumi.interpolate`redis://svg.g5a76u.0001.usw2.cache.amazonaws.com:6379/0`,
     },
   ];
 

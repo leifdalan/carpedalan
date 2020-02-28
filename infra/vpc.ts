@@ -61,6 +61,12 @@ export function makeVpc() {
     description: 'allow postgres access',
   });
 
+  postgresSg.createIngressRule(n('redis-access'), {
+    location: new awsx.ec2.AnyIPv4Location(),
+    ports: new awsx.ec2.TcpPorts(6379),
+    description: 'allow redis access',
+  });
+
   /**
    * These Vpc Endpoints are for services that live inside the VPC that need to access
    * AWS resources WITHOUT a NAT gateway, because NAT gateways on private subnets

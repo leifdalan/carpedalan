@@ -1,17 +1,21 @@
 /* eslint-disable import/no-extraneous-dependencies,prefer-destructuring,no-console,import/no-unresolved */
 
+const fs = require('fs');
+const { promisify } = require('util');
+
 const sharp = require('sharp');
 const aws = require('aws-sdk');
-// const sqip = require('sqip');
+const sqip = require('sqip');
 const knex = require('knex');
+const redis = require('redis');
 const exif = require('exif-parser');
-// const pg = require('pg');
 
 const {
   IS_LOCAL,
   PG_USER_SECRET_ID,
   PG_PASSWORD_SECRET_ID,
   PG_HOST,
+  REDIS_URL,
 } = process.env;
 const { SIZES, EXIFPROPS } = require('./constants');
 
@@ -22,7 +26,6 @@ const extraBucketParams = IS_LOCAL
       s3ForcePathStyle: true,
     }
   : {};
-
 const ACL = IS_LOCAL ? 'public-read' : 'private';
 
 const s3 = new aws.S3(extraBucketParams);
@@ -67,7 +70,7 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
   const bucket = event.Records[0].s3.bucket.name;
   console.error('bucket', bucket);
   console.error('sizes', SIZES);
-
+  let resized;
   let buffer;
   try {
     console.log('hello?');
@@ -87,7 +90,7 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
   // / TODO CHECK METADATA FOR ROTATE HERE
 
   console.log('rotate', buffer.Metadata.rotate);
-  let resized;
+
   let rotated;
   let exifData;
   try {
@@ -174,6 +177,7 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
   }
 
   // Update record
+  let pgResponse;
   try {
     const validExifData = Object.keys(EXIFPROPS).reduce(
       (acc, exifKey) => ({
@@ -222,13 +226,36 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
       };
     }
 
-    const pgResponse = await db('photos')
+    pgResponse = await db('photos')
       .update(updateClause)
       .where('key', `original/${withoutOriginal}`)
       .returning('*');
     console.log('pgResponse', pgResponse);
   } catch (e) {
     console.log('PG error', e);
+  }
+  if (pgResponse) {
+    try {
+      console.time('sqip');
+      const client = redis.createClient({
+        url: REDIS_URL,
+      });
+      const set = promisify(client.set).bind(client);
+      fs.writeFileSync(`/tmp/${withoutOriginal}`, resized[2], 'utf8');
+      const result = sqip({
+        filename: `/tmp/${withoutOriginal}`,
+        numberOfPrimitives: 25,
+      });
+      console.timeEnd('sqip');
+
+      console.error('result', result.final_svg);
+      console.error('pgResponse[0].id', pgResponse[0].id);
+
+      const stuff = await set(pgResponse[0].id, result.final_svg);
+      console.error('stuff', stuff);
+    } catch (e) {
+      console.log('SQIP Error', e);
+    }
   }
 
   console.timeEnd('fire');

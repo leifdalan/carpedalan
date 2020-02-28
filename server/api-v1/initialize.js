@@ -18,6 +18,7 @@ import v1ApiDoc from './api-doc';
 import posts from './services/posts';
 import tags from './services/tags';
 import aws from './services/aws';
+import redis from './services/redis';
 
 export const paths = [
   {
@@ -78,6 +79,7 @@ export default function initializeSwagger(app) {
       posts,
       tags,
       aws,
+      redis,
     },
     errorMiddleware: (err, req, res, next) => { // eslint-disable-line
       if (!err.status) {

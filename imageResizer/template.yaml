@@ -30,6 +30,7 @@ Resources:
           AWS_SECRET_ACCESS_KEY: 'fake'
           PG_URI: 'postgres://postgres:postgres@pg:5432/carpedalan'
           IS_LOCAL: true
+          REDIS_URL: redis://redis:6379/0
       CodeUri: ./src/
       Handler: image.imageResizer
       Runtime: nodejs12.x

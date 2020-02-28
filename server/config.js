@@ -43,3 +43,4 @@ export const cfKey = env.CLOUDFRONT_KEY_ID;
 export const secureCookie = isProd || isDev;
 export const privateKey = env.PRIVATE_KEY;
 export const useProdAssets = env.PROD_BUILD === 'true' || isProd;
+export const redisUrl = env.REDIS_URL;

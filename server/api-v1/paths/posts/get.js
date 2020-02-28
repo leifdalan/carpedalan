@@ -18,9 +18,10 @@ import {
 
 const status = 200;
 
-export default function(posts) {
+export default function(posts, redis) {
   async function get(req, res, next) {
     const { order, page, isPending, fields, ...rest } = req.query;
+
     if (Object.keys(rest).length > 0) {
       return next(
         new BadRequestError(
@@ -38,7 +39,23 @@ export default function(posts) {
       isPending,
       fields,
     });
-    return res.status(status).json(response);
+
+    const ids = response.data.map(({ id }) => id);
+    console.time('redis');
+    console.error('ids', ids);
+
+    const svgs = await redis.mget(ids);
+    console.error('stuff', svgs);
+    const responseWithPlaceholders = {
+      ...response,
+      data: response.data.map((d, i) => ({
+        ...d,
+        placeholder: svgs[i],
+      })),
+    };
+    console.timeEnd('redis');
+
+    return res.status(status).json(responseWithPlaceholders);
   }
 
   get.apiDoc = {

@@ -11,6 +11,7 @@ import { createECSResources } from './ecs';
 import { getLambdas } from './lambdas';
 import { getPolicies } from './policies';
 import { makeDB } from './rds';
+import { makeRedis } from './redis';
 import { getSecrets } from './secrets';
 import { makeVpc } from './vpc';
 
@@ -42,6 +43,7 @@ async function main() {
   const { postgresSg, sg, vpc, vpcendpointSg, s3Endpoint } = makeVpc();
 
   const { rds } = makeDB({ vpc, postgresSg, config });
+  const { redis } = makeRedis({ vpc, postgresSg, config });
 
   const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({
@@ -95,6 +97,7 @@ async function main() {
     secrets,
     privateBucket,
     rds,
+    redis,
   });
 
   const { layer } = getLambdas({
@@ -126,6 +129,7 @@ async function main() {
     bucketUserCredSecret,
     bucketUserCreds,
     albCertificateArn: albCert,
+    redis,
   });
 
   const domainParts = getDomainAndSubdomain(targetDomain);

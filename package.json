@@ -46,6 +46,7 @@
     "dtsgenerator": "^2.3.2",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-jest": "^23.6.0",
@@ -67,7 +68,12 @@
     "@pulumi/aws": "1.23.0",
     "@pulumi/awsx": "0.18.14",
     "@pulumi/pulumi": "1.11.1",
-    "rimraf": "^3.0.1"
+    "exif-parser": "^0.1.12",
+    "knex": "^0.20.10",
+    "redis": "^3.0.2",
+    "rimraf": "^3.0.1",
+    "sharp": "^0.24.1",
+    "sqip": "^0.3.3"
   },
   "optionalDependencies": {
     "cypress": "4.0.2"
