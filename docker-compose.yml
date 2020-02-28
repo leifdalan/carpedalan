@@ -76,3 +76,9 @@ services:
       - "4567-4595:4567-4595"
       - "${PORT_WEB_UI-8081}:${PORT_WEB_UI-8081}"    
 
+  redis:
+    extends:
+      file: docker-compose.base.yml
+      service: redis
+    ports: 
+      - 6379:6379

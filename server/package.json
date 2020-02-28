@@ -99,6 +99,7 @@
     "lodash": "^4.17.15",
     "logrocket": "^1.0.6",
     "pg": "^7.9.0",
+    "redis": "^3.0.2",
     "swagger-ui-express": "^4.0.2",
     "uuid": "^3.3.2",
     "winston": "^3.2.1",

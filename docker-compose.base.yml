@@ -125,3 +125,6 @@ services:
       - './e2e/src:/e2e/src/'
       - './e2e/screenshots:/e2e/screenshots/'
 
+  redis: 
+    image: redis:5.0.6
+    
