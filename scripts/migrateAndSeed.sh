@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 echo "**************** Beginning DB Migration ****************"
 yarn knex migrate:latest --knexfile db/setup.js

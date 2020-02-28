@@ -1,3 +1,4 @@
+#!/bin/bash
 set -e
 echo 'PG_HOSTz'
 echo $PG_HOST
