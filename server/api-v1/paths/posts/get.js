@@ -41,19 +41,17 @@ export default function(posts, redis) {
     });
 
     const ids = response.data.map(({ id }) => id);
-    console.time('redis');
-    console.error('ids', ids);
-
-    const svgs = await redis.mget(ids);
-    console.error('stuff', svgs);
-    const responseWithPlaceholders = {
-      ...response,
-      data: response.data.map((d, i) => ({
-        ...d,
-        placeholder: svgs[i],
-      })),
-    };
-    console.timeEnd('redis');
+    let responseWithPlaceholders = response;
+    if (ids.length) {
+      const svgs = await redis.mget(ids);
+      responseWithPlaceholders = {
+        ...response,
+        data: response.data.map((d, i) => ({
+          ...d,
+          placeholder: svgs[i],
+        })),
+      };
+    }
 
     return res.status(status).json(responseWithPlaceholders);
   }

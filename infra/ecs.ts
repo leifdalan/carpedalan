@@ -31,7 +31,7 @@ interface CreateI {
   publicBucket: aws.s3.Bucket;
   bucketUserCredSecret: aws.secretsmanager.Secret;
   bucketUserCreds: pulumi.Output<aws.iam.AccessKey>;
-  redis: aws.elasticache.Cluster;
+  repGroup: aws.elasticache.ReplicationGroup;
 }
 
 export function createECSResources({
@@ -49,6 +49,7 @@ export function createECSResources({
   bucketUserCredSecret,
   bucketUserCreds,
   vpcendpointSg,
+  repGroup,
 }: // redis,
 CreateI) {
   /**
@@ -177,7 +178,7 @@ CreateI) {
       /**
        * @TODO Figure out how to get this dynamically from aws.elasticache.Cluster/ReplicaGroup
        */
-      value: pulumi.interpolate`redis://svg.g5a76u.0001.usw2.cache.amazonaws.com:6379/0`,
+      value: pulumi.interpolate`redis://${repGroup.primaryEndpointAddress}/0`,
     },
   ];
 

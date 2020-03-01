@@ -11,23 +11,34 @@ interface MakeDBI {
 }
 
 export function makeRedis({ vpc, postgresSg }: MakeDBI) {
-  const subnetGroup = new aws.elasticache.SubnetGroup('redissubnet', {
+  const subnetGroup = new aws.elasticache.SubnetGroup(n('redissubnet'), {
     subnetIds: vpc.privateSubnetIds,
   });
 
-  const redis = new aws.elasticache.Cluster('svg', {
-    engine: 'redis',
-    engineVersion: '5.0.6',
-    numCacheNodes: 1,
-    nodeType: 'cache.t2.micro',
-    parameterGroupName: 'default.redis5.0',
-    port: 6379,
-    securityGroupIds: [postgresSg.id],
-    applyImmediately: true,
-    availabilityZone: vpc.privateSubnets[0].subnet.availabilityZone,
-    subnetGroupName: subnetGroup.name,
+  const replicationGroup = new aws.elasticache.ReplicationGroup(
+    'replicationGroup',
+    {
+      engine: 'redis',
+      engineVersion: '5.0.6',
+      nodeType: 'cache.t2.micro',
+      replicationGroupDescription: 'hmmm?',
+      replicationGroupId: 'repgroupid',
+      securityGroupIds: [postgresSg.id],
+      subnetGroupName: subnetGroup.name,
+      clusterMode: {
+        numNodeGroups: 1,
+        replicasPerNodeGroup: 0,
+      },
+      applyImmediately: true,
+      tags: t(n('replicationGroup')),
+    },
+  );
+
+  const redis = new aws.elasticache.Cluster(n('svg'), {
+    replicationGroupId: replicationGroup.id,
     clusterId: 'svg',
+    tags: t(n('svg')),
   });
 
-  return { redis };
+  return { redis, replicationGroup };
 }

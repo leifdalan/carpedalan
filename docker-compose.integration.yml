@@ -12,6 +12,8 @@ services:
     depends_on:
       pg_test:
         condition: service_healthy
+      redis:
+        condition: service_started
     command: ['yarn', 'integration']
     volumes:
       - ./jestrc.js:/app/jestrc.js
@@ -28,5 +30,11 @@ services:
       service: pg_test
     env_file: 
       - .env.ci
+
+  redis:
+    extends:
+      file: docker-compose.base.yml
+      service: redis
+
 
 

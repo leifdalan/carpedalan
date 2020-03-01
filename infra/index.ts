@@ -43,7 +43,7 @@ async function main() {
   const { postgresSg, sg, vpc, vpcendpointSg, s3Endpoint } = makeVpc();
 
   const { rds } = makeDB({ vpc, postgresSg, config });
-  const { redis } = makeRedis({ vpc, postgresSg, config });
+  const { redis, replicationGroup } = makeRedis({ vpc, postgresSg, config });
 
   const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({
@@ -108,6 +108,7 @@ async function main() {
     postgresSg,
     rds,
     vpcendpointSg,
+    repGroup: replicationGroup,
     ...secrets,
   });
 
@@ -129,7 +130,7 @@ async function main() {
     bucketUserCredSecret,
     bucketUserCreds,
     albCertificateArn: albCert,
-    redis,
+    repGroup: replicationGroup,
   });
 
   const domainParts = getDomainAndSubdomain(targetDomain);
@@ -152,6 +153,7 @@ async function main() {
     containers: taskDefinition.containers.web.image.imageResult,
     assetBucket: publicBucket.bucket,
     cdnDomain: publicDistroDomain,
+    replicationGroup: replicationGroup.primaryEndpointAddress,
   };
 }
 module.exports = main();

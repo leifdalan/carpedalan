@@ -12,4 +12,4 @@ const get = promisify(client.get).bind(client);
 const mget = promisify(client.mget).bind(client);
 const set = promisify(client.set).bind(client);
 
-export default { set, get, mget };
+export default { set, get, mget, client };

@@ -74,5 +74,11 @@ services:
     extends:
       file: docker-compose.base.yml
       service: aws
+  redis:
+    extends:
+      file: docker-compose.base.yml
+      service: redis
+
+
 
 

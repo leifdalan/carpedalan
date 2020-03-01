@@ -13,6 +13,7 @@ interface LambdaI extends AllSecrets {
   vpcendpointSg: awsx.ec2.SecurityGroup;
   privateBucket: aws.s3.Bucket;
   rds: aws.rds.Instance;
+  repGroup: aws.elasticache.ReplicationGroup;
 }
 
 export function getLambdas({
@@ -25,6 +26,7 @@ export function getLambdas({
   pgUserSecret,
   pgPasswordSecret,
   vpcendpointSg,
+  repGroup,
 }: LambdaI) {
   const runtime = 'nodejs12.x';
   /**
@@ -71,8 +73,7 @@ export function getLambdas({
         /**
          * @TODO Figure out how to get this dynamically from aws.elasticache.Cluster/ReplicaGroup
          */
-
-        REDIS_URL: 'redis://svg.g5a76u.0001.usw2.cache.amazonaws.com:6379/0',
+        REDIS_URL: pulumi.interpolate`redis://${repGroup.primaryEndpointAddress}/0`,
       },
     },
     description:
