@@ -39,9 +39,9 @@ async function main() {
     namespace: 'main-domain',
   });
 
-  const { postgresSg, sg, vpc, vpcendpointSg } = makeVpc();
+  const { vpc } = makeVpc();
 
-  const { rds } = makeDB({ vpc, postgresSg, config });
+  const { rds } = makeDB({ config, vpc });
 
   const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({
@@ -98,21 +98,13 @@ async function main() {
 
   const { layer } = getLambdas({
     lambdaRole,
-    vpc,
-    sg,
     privateBucket,
-    postgresSg,
     rds,
-    vpcendpointSg,
     ...secrets,
   });
 
   const { alb, taskDefinition } = createECSResources({
-    vpc,
-    sg,
     rds,
-    vpcendpointSg,
-    postgresSg,
     config,
     taskRole,
     executionRole,
@@ -125,6 +117,7 @@ async function main() {
     bucketUserCredSecret,
     bucketUserCreds,
     albCertificateArn: albCert,
+    vpc,
   });
 
   const domainParts = getDomainAndSubdomain(targetDomain);

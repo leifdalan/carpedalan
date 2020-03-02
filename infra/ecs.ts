@@ -6,11 +6,7 @@ import { getResourceName as n, getTags as t } from './utils';
 
 const { CI_JOB_ID, CI_COMMIT_SHA, CI_COMMIT_REF_NAME } = process.env;
 interface CreateI {
-  vpc: awsx.ec2.Vpc;
   albCertificateArn: pulumi.OutputInstance<string>;
-  sg: awsx.ec2.SecurityGroup;
-  vpcendpointSg: awsx.ec2.SecurityGroup;
-  postgresSg: awsx.ec2.SecurityGroup;
   rds: aws.rds.Instance;
   config: pulumi.Config;
   taskRole: aws.iam.Role;
@@ -31,13 +27,11 @@ interface CreateI {
   publicBucket: aws.s3.Bucket;
   bucketUserCredSecret: aws.secretsmanager.Secret;
   bucketUserCreds: pulumi.Output<aws.iam.AccessKey>;
+  vpc: awsx.ec2.Vpc;
 }
 
 export function createECSResources({
-  vpc,
   albCertificateArn,
-  sg,
-  postgresSg,
   rds,
   taskRole,
   executionRole,
@@ -47,21 +41,18 @@ export function createECSResources({
   privateDistroDomain,
   bucketUserCredSecret,
   bucketUserCreds,
-  vpcendpointSg,
+  vpc,
 }: CreateI) {
   /**
    * Create a load balancer that has a target group that matches the container's
    * exposed ports.
    */
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
-    vpc,
-    securityGroups: [sg],
     external: true,
     tags: t(n('alb')),
   });
 
   const targetGroup = alb.createTargetGroup(n('web'), {
-    vpc,
     port: 80, // This is the magic port that must match the container image's exposed port.
     healthCheck: {
       path: '/healthcheck',
@@ -75,7 +66,6 @@ export function createECSResources({
    * on outside traffic port 443, with the right certArn.
    */
   const listener = targetGroup.createListener(n('listener'), {
-    vpc,
     port: 443,
     certificateArn: albCertificateArn,
   });
@@ -97,9 +87,9 @@ export function createECSResources({
   });
 
   const cluster = new awsx.ecs.Cluster(n('cluster'), {
-    vpc,
     tags: t(n('cluster')),
-    securityGroups: [sg, postgresSg, vpcendpointSg],
+    vpc,
+    securityGroups: [vpc.vpc.defaultSecurityGroupId],
   });
 
   /**
@@ -115,10 +105,9 @@ export function createECSResources({
     templateParameters: { minSize: 2 },
     launchConfigurationArgs: {
       instanceType: 't2.micro',
-      securityGroups: [vpcendpointSg],
+      securityGroups: [vpc.vpc.defaultSecurityGroupId],
     },
-    vpc,
-    subnetIds: [...vpc.publicSubnetIds, vpc.privateSubnetIds[1]],
+    subnetIds: [...vpc.publicSubnetIds, ...vpc.privateSubnetIds],
   });
 
   /**
@@ -263,7 +252,6 @@ export function createECSResources({
     taskDefinition,
     desiredCount: 1,
     waitForSteadyState: false, // Will continue the pulumi build without verifying read state
-    securityGroups: [vpcendpointSg],
     tags: t(n('service')),
   });
 
