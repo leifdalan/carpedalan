@@ -6,17 +6,16 @@ import { getResourceName as n, getTags as t } from './utils';
 
 interface MakeDBI {
   vpc: awsx.ec2.Vpc;
-  postgresSg: awsx.ec2.SecurityGroup;
   config: pulumi.Config;
 }
 
-export function makeDB({ vpc, postgresSg, config }: MakeDBI) {
+export function makeDB({ vpc, config }: MakeDBI) {
   const username = config.getSecret('pg_user');
   const password = config.getSecret('pg_password');
-  const subnetGroup = new aws.rds.SubnetGroup(n('pulumisubnet'), {
-    subnetIds: vpc.privateSubnetIds,
-    tags: t(n('pulumisubnet')),
-  });
+  // const subnetGroup = new aws.rds.SubnetGroup(n('pulumisubnet'), {
+  //   subnetIds: vpc.privateSubnetIds,
+  //   tags: t(n('pulumisubnet')),
+  // });
 
   const rds = new aws.rds.Instance(n('rds'), {
     username,
@@ -24,13 +23,12 @@ export function makeDB({ vpc, postgresSg, config }: MakeDBI) {
     allowMajorVersionUpgrade: true,
     instanceClass: 'db.t2.micro',
     applyImmediately: true,
-    availabilityZone: vpc.privateSubnets[0].subnet.availabilityZone,
-    dbSubnetGroupName: subnetGroup.name,
-    vpcSecurityGroupIds: [postgresSg.id],
+    availabilityZone: vpc.publicSubnets[0].subnet.availabilityZone,
+    // dbSubnetGroupName: subnetGroup.name,
     engine: 'postgres',
     name: 'carpedalan',
     port: 5432,
-    publiclyAccessible: false,
+    publiclyAccessible: true,
     allocatedStorage: 20,
     skipFinalSnapshot: true,
     tags: t(n('rds')),
