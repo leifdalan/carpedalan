@@ -11,6 +11,7 @@ import { createECSResources } from './ecs';
 import { getLambdas } from './lambdas';
 import { getPolicies } from './policies';
 import { makeDB } from './rds';
+import { makeRedis } from './redis';
 import { getSecrets } from './secrets';
 import { makeSns } from './sns';
 import { getResourceName as n } from './utils';
@@ -44,6 +45,7 @@ async function main() {
   const { vpc } = makeVpc();
 
   const { rds } = makeDB({ config, vpc });
+  const { redis, replicationGroup } = makeRedis({ vpc });
 
   const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({
@@ -96,6 +98,7 @@ async function main() {
     secrets,
     privateBucket,
     rds,
+    redis,
   });
 
   const runtime = 'nodejs12.x';
@@ -138,6 +141,7 @@ async function main() {
     bucketUserCredSecret,
     bucketUserCreds,
     albCertificateArn: albCert,
+    repGroup: replicationGroup,
     vpc,
   });
 
@@ -161,6 +165,7 @@ async function main() {
     containers: taskDefinition.containers.web.image.imageResult,
     assetBucket: publicBucket.bucket,
     cdnDomain: publicDistroDomain,
+    replicationGroup: replicationGroup.primaryEndpointAddress,
   };
 }
 module.exports = main();

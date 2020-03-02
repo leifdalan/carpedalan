@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const knex = require('knex');
 const config = require('../../../db/knexfile');
 const db = require('../../../server/db').default;
+const redis = require('../services/redis');
 dotenv.config({ path: path.resolve(process.cwd(), `.env.${process.env.NODE_ENV}`) });
 const connection = knex(config[process.env.NODE_ENV]);
 
@@ -17,4 +18,10 @@ beforeEach(async () => {
 afterAll(async () => {
   await connection.destroy();
   await db.destroy();
+  /**
+   * @TODO why is this not working
+   */
+  console.error('client', redis);
+  
+  redis.client.end();
 })

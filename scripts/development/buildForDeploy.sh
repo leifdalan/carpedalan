@@ -21,4 +21,4 @@ echo 'Removing imageResizer/layer/nodejs/node_modules for lambda layer deploymen
 rm -rf imageResizer/layer/nodejs/node_modules
 echo 'Running pulumi up.'
 CI_JOB_ID=$(git log -1 --pretty=%B) CI_COMMIT_SHA=$(git rev-parse HEAD) CI_COMMIT_REF_NAME=$(git rev-parse --abbrev-ref HEAD) AWS_PROFILE=carpedev2020root pulumi up
-[ -x "$(command -v notif)" ] && notif "Pulumi deployed!"
+notif "Pulumi deployed!"

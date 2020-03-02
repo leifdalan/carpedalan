@@ -5,7 +5,6 @@ const fs = require('fs');
 const sharp = require('sharp');
 const aws = require('aws-sdk');
 const sqip = require('sqip');
-const knex = require('knex');
 const exif = require('exif-parser');
 
 const {
@@ -15,7 +14,7 @@ const {
   PG_HOST,
   TOPIC_ARN,
 } = process.env;
-const { SIZES, EXIFPROPS } = require('./constants');
+const { SIZES } = require('./constants');
 
 const sns = new aws.SNS();
 const secretManager = new aws.SecretsManager();
@@ -175,64 +174,6 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
     console.timeEnd('put');
   }
 
-  // Update record
-  let pgResponse;
-  try {
-    const validExifData = Object.keys(EXIFPROPS).reduce(
-      (acc, exifKey) => ({
-        ...acc,
-        ...(exifData.tags[exifKey]
-          ? { [EXIFPROPS[exifKey]]: exifData.tags[exifKey] }
-          : {}),
-      }),
-      {},
-    );
-    const db = knex({
-      client: 'pg',
-      connection: pgUri,
-      pool: {
-        min: 2,
-        max: 10,
-      },
-    });
-    console.log(validExifData);
-    console.log(withoutOriginal);
-    // Check for bad exif
-    // const success = false;
-    console.error(`original/${withoutExtension}${rotateString}.jpg`);
-
-    let updateClause = {
-      key: `original/${withoutExtension}${rotateString}.jpg`,
-    };
-    if (!exifData || !exifData.tags) {
-      updateClause = {
-        isPending: true,
-      };
-    } else if (
-      !exifData.tags.DateTimeOriginal ||
-      !exifData.tags.ImageHeight ||
-      !exifData.tags.ImageWidth
-    ) {
-      updateClause = {
-        isPending: true,
-      };
-    } else {
-      updateClause = {
-        timestamp: exifData.tags.DateTimeOriginal,
-        status: 'active',
-        isPending: false,
-        ...validExifData,
-      };
-    }
-
-    pgResponse = await db('photos')
-      .update(updateClause)
-      .where('key', `original/${withoutOriginal}`)
-      .returning('*');
-    console.log('pgResponse', pgResponse);
-  } catch (e) {
-    console.log('PG error', e);
-  }
   try {
     console.time('sqip');
     fs.writeFileSync(`/tmp/${withoutOriginal}`, resized[2], 'utf8');
@@ -247,6 +188,10 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
           svg: result.final_svg,
           pgUri,
           whereClause: `original/${withoutOriginal}`,
+          exifData,
+          withoutExtension,
+          withoutOriginal,
+          rotateString,
         }),
         TopicArn: TOPIC_ARN,
       })

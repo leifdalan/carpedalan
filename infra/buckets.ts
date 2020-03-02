@@ -13,6 +13,7 @@ interface GetBucketsI {
   isPrivate: boolean;
   allowCors?: boolean;
   vpc?: awsx.ec2.Vpc;
+  s3Endpoint?: aws.ec2.VpcEndpoint;
 }
 const corsRules = (domain: string) => [
   {
@@ -30,6 +31,7 @@ export function createBucket({
   mainDomain,
   allowCors = false,
   vpc,
+  s3Endpoint,
 }: GetBucketsI) {
   function n(resource: string) {
     return name(`${namespace}-${resource}`);
@@ -60,8 +62,9 @@ export function createBucket({
    * access via VPC Gateway endpoint. In our case this is for the lambda
    * that needs bucket access, but the lambda is in a VPC.
    */
-  const extra = vpc
-    ? pulumi.interpolate`, {
+  const extra =
+    vpc && s3Endpoint
+      ? pulumi.interpolate`, {
     "Sid": "2",
     "Effect": "Allow",
     "Principal": "*",
@@ -72,9 +75,20 @@ export function createBucket({
             "aws:sourceVpc": "${vpc.vpc.id}"
         }
     }
-  }
+  }, {
+      "Sid": "3",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::${privateBucket.bucket}/*",
+      "Condition": {
+          "StringEquals": {
+              "aws:sourceVpce": "${s3Endpoint.id}"
+          }
+      }
+    }
   `
-    : '';
+      : '';
 
   new aws.s3.BucketPolicy(n('private-photo-bucket-policy'), {
     bucket: privateBucket.bucket,

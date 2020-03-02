@@ -12,11 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.620.0",
+    "aws-sdk": "2.629.0",
     "exif-parser": "^0.1.12",
-    "knex": "^0.19.5",
+    "knex": "^0.20.10",
     "pg": "^7.18.2",
-    "sharp": "^0.23.4",
+    "redis": "^3.0.2",
+    "sharp": "^0.24.1",
     "sqip": "^0.3.3"
   }
 }
