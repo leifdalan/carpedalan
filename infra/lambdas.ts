@@ -8,33 +8,20 @@ interface LambdaI extends AllSecrets {
   lambdaRole: aws.iam.Role;
   privateBucket: aws.s3.Bucket;
   rds: aws.rds.Instance;
+  topic: aws.sns.Topic;
+  depLayer: aws.lambda.LayerVersion;
 }
 
 export function getLambdas({
   lambdaRole,
-
   privateBucket,
   rds,
   pgUserSecret,
   pgPasswordSecret,
+  topic,
+  depLayer,
 }: LambdaI) {
   const runtime = 'nodejs12.x';
-  /**
-   * Have to use a zip to upload as the AWS CLI has a had limit on
-   * a single upload, whether its a batch of files or a zip of the same
-   * set of files.
-   */
-  const layerArchive = new pulumi.asset.FileArchive(
-    '../imageResizer/layer/layer.zip',
-  );
-
-  const depLayer = new aws.lambda.LayerVersion(n('dep-layer'), {
-    compatibleRuntimes: [runtime],
-    code: layerArchive,
-    layerName: n('dep-layer'),
-    // sourceCodeHash: layerHash,
-  });
-
   const code = new pulumi.asset.FileArchive('../imageResizer/src/');
 
   const photoLambda = new aws.lambda.Function(n('photo-lambda'), {
@@ -52,6 +39,7 @@ export function getLambdas({
         // Lambda will use secretsManager to retrieve these values at runtime.
         PG_USER_SECRET_ID: pgUserSecret.name,
         PG_PASSWORD_SECRET_ID: pgPasswordSecret.name,
+        TOPIC_ARN: topic.arn,
       },
     },
     description:

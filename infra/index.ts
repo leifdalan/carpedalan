@@ -12,6 +12,8 @@ import { getLambdas } from './lambdas';
 import { getPolicies } from './policies';
 import { makeDB } from './rds';
 import { getSecrets } from './secrets';
+import { makeSns } from './sns';
+import { getResourceName as n } from './utils';
 import { makeVpc } from './vpc';
 
 async function main() {
@@ -96,10 +98,29 @@ async function main() {
     rds,
   });
 
+  const runtime = 'nodejs12.x';
+  /**
+   * Have to use a zip to upload as the AWS CLI has a had limit on
+   * a single upload, whether its a batch of files or a zip of the same
+   * set of files.
+   */
+  const layerArchive = new pulumi.asset.FileArchive(
+    '../imageResizer/layer/layer.zip',
+  );
+
+  const depLayer = new aws.lambda.LayerVersion(n('dep-layer'), {
+    compatibleRuntimes: [runtime],
+    code: layerArchive,
+    layerName: n('dep-layer'),
+    // sourceCodeHash: layerHash,
+  });
+  const { topic } = makeSns({ vpc, depLayer, lambdaRole });
   const { layer } = getLambdas({
     lambdaRole,
+    topic,
     privateBucket,
     rds,
+    depLayer,
     ...secrets,
   });
 

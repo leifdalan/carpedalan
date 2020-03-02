@@ -357,6 +357,11 @@ export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
             },
             {
               Effect: 'Allow',
+              Action: 'sns:*',
+              Resource: '*',
+            },
+            {
+              Effect: 'Allow',
               Action: 'secretsmanager:*',
               Resource: [pgPasswordArn, pgUserArn],
             },

@@ -1,20 +1,23 @@
 /* eslint-disable import/no-extraneous-dependencies,prefer-destructuring,no-console,import/no-unresolved */
 
+const fs = require('fs');
+
 const sharp = require('sharp');
 const aws = require('aws-sdk');
-// const sqip = require('sqip');
+const sqip = require('sqip');
 const knex = require('knex');
 const exif = require('exif-parser');
-// const pg = require('pg');
 
 const {
   IS_LOCAL,
   PG_USER_SECRET_ID,
   PG_PASSWORD_SECRET_ID,
   PG_HOST,
+  TOPIC_ARN,
 } = process.env;
 const { SIZES, EXIFPROPS } = require('./constants');
 
+const sns = new aws.SNS();
 const secretManager = new aws.SecretsManager();
 const extraBucketParams = IS_LOCAL
   ? {
@@ -22,7 +25,6 @@ const extraBucketParams = IS_LOCAL
       s3ForcePathStyle: true,
     }
   : {};
-
 const ACL = IS_LOCAL ? 'public-read' : 'private';
 
 const s3 = new aws.S3(extraBucketParams);
@@ -67,7 +69,7 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
   const bucket = event.Records[0].s3.bucket.name;
   console.error('bucket', bucket);
   console.error('sizes', SIZES);
-
+  let resized;
   let buffer;
   try {
     console.log('hello?');
@@ -87,7 +89,7 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
   // / TODO CHECK METADATA FOR ROTATE HERE
 
   console.log('rotate', buffer.Metadata.rotate);
-  let resized;
+
   let rotated;
   let exifData;
   try {
@@ -174,6 +176,7 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
   }
 
   // Update record
+  let pgResponse;
   try {
     const validExifData = Object.keys(EXIFPROPS).reduce(
       (acc, exifKey) => ({
@@ -222,13 +225,37 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
       };
     }
 
-    const pgResponse = await db('photos')
+    pgResponse = await db('photos')
       .update(updateClause)
       .where('key', `original/${withoutOriginal}`)
       .returning('*');
     console.log('pgResponse', pgResponse);
   } catch (e) {
     console.log('PG error', e);
+  }
+  try {
+    console.time('sqip');
+    fs.writeFileSync(`/tmp/${withoutOriginal}`, resized[2], 'utf8');
+    const result = sqip({
+      filename: `/tmp/${withoutOriginal}`,
+      numberOfPrimitives: 25,
+    });
+    console.timeEnd('sqip');
+    const something = await sns
+      .publish({
+        Message: JSON.stringify({
+          svg: result.final_svg,
+          pgUri,
+          whereClause: `original/${withoutOriginal}`,
+        }),
+        TopicArn: TOPIC_ARN,
+      })
+      .promise();
+    console.error('something', something);
+
+    console.error('result', result.final_svg);
+  } catch (e) {
+    console.log('SQIP Error', e);
   }
 
   console.timeEnd('fire');
