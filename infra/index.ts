@@ -117,7 +117,12 @@ async function main() {
     layerName: n('dep-layer'),
     // sourceCodeHash: layerHash,
   });
-  const { topic } = makeSns({ vpc, depLayer, lambdaRole });
+  const { topic } = makeSns({
+    vpc,
+    depLayer,
+    lambdaRole,
+    repGroup: replicationGroup,
+  });
   const { layer } = getLambdas({
     lambdaRole,
     topic,

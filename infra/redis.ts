@@ -4,14 +4,10 @@ import * as awsx from '@pulumi/awsx';
 import { getResourceName as n, getTags as t } from './utils';
 
 interface MakeDBI {
-  vpc: awsx.ec2.Vpc;
+  vpc?: awsx.ec2.Vpc;
 }
 
-export function makeRedis({ vpc }: MakeDBI) {
-  const subnetGroup = new aws.elasticache.SubnetGroup(n('redissubnet'), {
-    subnetIds: vpc.privateSubnetIds,
-  });
-
+export function makeRedis() {
   const replicationGroup = new aws.elasticache.ReplicationGroup(
     'replicationGroup',
     {
@@ -20,7 +16,6 @@ export function makeRedis({ vpc }: MakeDBI) {
       nodeType: 'cache.t2.micro',
       replicationGroupDescription: 'hmmm?',
       replicationGroupId: 'repgroupid',
-      subnetGroupName: subnetGroup.name,
       clusterMode: {
         numNodeGroups: 1,
         replicasPerNodeGroup: 0,
@@ -28,6 +23,7 @@ export function makeRedis({ vpc }: MakeDBI) {
       applyImmediately: true,
       tags: t(n('replicationGroup')),
     },
+    { ignoreChanges: ['clusterMode'] },
   );
 
   const redis = new aws.elasticache.Cluster(n('svg'), {

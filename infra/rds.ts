@@ -28,7 +28,7 @@ export function makeDB({ vpc, config }: MakeDBI) {
     engine: 'postgres',
     name: 'carpedalan',
     port: 5432,
-    publiclyAccessible: true,
+    publiclyAccessible: false,
     allocatedStorage: 20,
     skipFinalSnapshot: true,
     tags: t(n('rds')),

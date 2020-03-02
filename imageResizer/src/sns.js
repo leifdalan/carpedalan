@@ -1,7 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies,prefer-destructuring,no-console,import/no-unresolved,no-unused-vars */
+const { promisify } = require('util');
+
 const knex = require('knex');
 const redis = require('redis');
 
+const { REDIS_URL } = process.env;
 const { SIZES, EXIFPROPS } = require('./constants');
 
 exports.sns = async (event, context) => {
@@ -19,6 +22,7 @@ exports.sns = async (event, context) => {
     withoutOriginal,
     pgUri,
     rotateString,
+    svg,
   } = message;
   let pgResponse;
   try {
@@ -78,8 +82,23 @@ exports.sns = async (event, context) => {
     console.log('PG error', e);
   }
 
+  try {
+    console.time('sqip');
+    const client = redis.createClient({
+      url: REDIS_URL,
+    });
+
+    const set = promisify(client.set).bind(client);
+    console.error('pgResponse[0].id', pgResponse[0].id);
+
+    const stuff = await set(pgResponse[0].id, svg);
+    console.error('stuff', stuff);
+  } catch (e) {
+    console.error('redis error', e);
+  }
+
   return {
     statusCode: 200,
-    message: 'hello',
+    message: pgResponse[0].id,
   };
 };

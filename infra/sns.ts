@@ -8,9 +8,10 @@ interface MakeSnsI {
   vpc: awsx.ec2.Vpc;
   depLayer: aws.lambda.LayerVersion;
   lambdaRole: aws.iam.Role;
+  repGroup: aws.elasticache.ReplicationGroup;
 }
 
-export function makeSns({ vpc, depLayer, lambdaRole }: MakeSnsI) {
+export function makeSns({ vpc, depLayer, lambdaRole, repGroup }: MakeSnsI) {
   const runtime = 'nodejs12.x';
   const topic = new aws.sns.Topic(n('svg-topic'));
 
@@ -27,6 +28,11 @@ export function makeSns({ vpc, depLayer, lambdaRole }: MakeSnsI) {
     handler: 'sns.sns',
     role: lambdaRole.arn,
     runtime,
+    environment: {
+      variables: {
+        REDIS_URL: pulumi.interpolate`redis://${repGroup.primaryEndpointAddress}/0`,
+      },
+    },
     layers: [depLayer.arn],
     description:
       'A process to create thumbnails, upload them to s3, and update the database',

@@ -158,7 +158,7 @@ export function createBucket({
         pathPattern: '/*',
         targetOriginId: s3OriginId,
         viewerProtocolPolicy: 'redirect-to-https',
-        ...(isPrivate ? { trustedSigners: ['574173441346'] } : {}),
+        ...(isPrivate ? { trustedSigners: ['404112572358'] } : {}),
       },
     ],
     origins: [
