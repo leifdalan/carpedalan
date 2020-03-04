@@ -30,8 +30,10 @@ const s3 = new aws.S3(extraBucketParams);
 
 exports.imageResizer = async (event, context, ...otherThingz) => {
   let pgUri;
+  console.error('event', event);
+
   if (IS_LOCAL) {
-    pgUri = 'postgres://postgres:postgres@pg:5432/carpedalan';
+    pgUri = 'postgres://postgres:postgres@pg:5432/postgres';
   } else {
     console.time('Getting Secrets');
     const userPromise = secretManager
@@ -131,7 +133,6 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
   } finally {
     console.timeEnd('sharp');
   }
-  let response;
   const withoutOriginal = key.split('/')[1];
   const withoutExtension = withoutOriginal.split('.')[0];
   const rotateString = rotate ? `-${rotate}` : '';
@@ -182,27 +183,51 @@ exports.imageResizer = async (event, context, ...otherThingz) => {
       numberOfPrimitives: 25,
     });
     console.timeEnd('sqip');
-    const something = await sns
-      .publish({
-        Message: JSON.stringify({
-          svg: result.final_svg,
-          pgUri,
-          whereClause: `original/${withoutOriginal}`,
-          exifData,
-          withoutExtension,
-          withoutOriginal,
-          rotateString,
-        }),
-        TopicArn: TOPIC_ARN,
-      })
-      .promise();
-    console.error('something', something);
+    if (!IS_LOCAL) {
+      const something = await sns
+        .publish({
+          Message: JSON.stringify({
+            svg: result.final_svg,
+            pgUri,
+            whereClause: `original/${withoutOriginal}`,
+            exifData,
+            withoutExtension,
+            withoutOriginal,
+            rotateString,
+          }),
+          TopicArn: TOPIC_ARN,
+        })
+        .promise();
+      console.error('something', something);
 
-    console.error('result', result.final_svg);
+      console.error('result', result.final_svg);
+    } else {
+      // Message to be sent to fake SNS (local file)
+      return {
+        Records: [
+          {
+            Sns: {
+              Message: JSON.stringify({
+                svg: result.final_svg,
+                pgUri,
+                whereClause: `original/${withoutOriginal}`,
+                exifData,
+                withoutExtension,
+                withoutOriginal,
+                rotateString,
+              }),
+            },
+          },
+        ],
+      };
+    }
   } catch (e) {
     console.log('SQIP Error', e);
   }
 
   console.timeEnd('fire');
-  return response;
+  return {
+    statusCode: 404,
+    body: 'hello',
+  };
 };

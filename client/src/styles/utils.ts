@@ -1,5 +1,7 @@
 import { format, fromUnixTime } from 'date-fns';
-import { createGlobalStyle, DefaultTheme } from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
+
+// and extend them!
 
 interface StyledProp {
   [index: string]: string;
@@ -19,6 +21,24 @@ export const DANGER_COLOR = 'dangerColor';
 export const NEUTRAL_COLOR = 'neutralColor';
 export const cdn = process.env.ASSET_CDN_DOMAIN;
 
+export interface DefaultTheme {
+  /**
+   *
+   * Main color.
+   * @type {string}
+   * @memberof DefaultTheme
+   */
+  [MAIN]: string;
+  [TEXT]: string;
+  [SIDEBAR_COLOR]: string;
+  [BRAND_COLOR]: string;
+  [SECONDARY_COLOR]: string;
+  [BODY_FONT]: string;
+  [TITLE_FONT]: string;
+  [DANGER_COLOR]: string;
+  [NEUTRAL_COLOR]: string;
+}
+
 /**
  * Utility to be used in styled component interpolations to grab a specific
  * theme value
@@ -34,7 +54,7 @@ const StyledLink = styled(Link)`
  * @param {keyof DefaultTheme} value
  */
 export function getThemeValue(value: keyof DefaultTheme) {
-  return function({ theme }: { theme: DefaultTheme }) {
+  return function({ theme }: { theme: DefaultTheme }): string {
     return theme[value];
   };
 }
@@ -65,11 +85,15 @@ export function prop<T>(value: keyof T) {
   };
 }
 
-export const propTrueFalse = (
-  value: string,
-  truthy: string,
-  falsey: string,
-) => (props: StyledProp) => (props[value] ? truthy : falsey);
+export function propTrueFalse<T>(
+  value: keyof T,
+  truthy: string | number,
+  falsey: string | number,
+) {
+  return function(props: T) {
+    return props[value] ? truthy : falsey;
+  };
+}
 
 export const GlobalStyleComponent = createGlobalStyle`
   

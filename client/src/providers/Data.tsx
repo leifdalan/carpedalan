@@ -2,6 +2,7 @@ import debug from 'debug';
 import keyBy from 'lodash/keyBy';
 import * as React from 'react';
 
+import { GetTagsResponseBodyI } from 'utils/ApiClient';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 
 const log = debug('providers:Data');
@@ -9,7 +10,7 @@ const log = debug('providers:Data');
 const { createContext, Children, useReducer, useCallback } = React;
 export interface Data {
   posts: PostsWithTagsWithFakes[];
-  tags: Paths.GetTags.Responses.$200;
+  tags: GetTagsResponseBodyI;
   postsById: {
     [uuid: string]: PostsWithTagsWithFakes;
   };
@@ -21,7 +22,7 @@ const data: Data = {
 };
 type SetPosts = (posts: PostsWithTagsWithFakes[]) => void;
 type AddPosts = (posts: PostsWithTagsWithFakes[]) => void;
-type SetTags = (posts: Paths.GetTags.Responses.$200) => void;
+type SetTags = (posts: GetTagsResponseBodyI) => void;
 export interface DataContextI {
   data: Data;
   setPosts: SetPosts;
@@ -42,7 +43,7 @@ type Action =
   | { type: 'add posts'; payload: PostsWithTagsWithFakes[] }
   | {
       type: 'set tags';
-      payload: Paths.GetTags.Responses.$200;
+      payload: GetTagsResponseBodyI;
     };
 
 function reducer(state: Data, action: Action): Data {
@@ -97,7 +98,7 @@ export const DataProvider: React.FC<React.ReactNode> = ({ children }) => {
   );
 
   const setTags = useCallback(
-    (tags: Paths.GetTags.Responses.$200) => {
+    (tags: GetTagsResponseBodyI) => {
       dispatch({ type: 'set tags', payload: tags });
     },
     [dispatch],

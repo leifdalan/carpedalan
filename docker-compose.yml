@@ -5,6 +5,7 @@ services:
     extends:
       file: docker-compose.base.yml
       service: alb
+      
     depends_on:
       api: 
         condition: service_healthy
@@ -13,27 +14,28 @@ services:
     ports:
       - 443:443
     volumes:
-      - ./public:/public/
-      - ./client/dist:/assets/
+      - ./public:/public/:cached
+      - ./client/dist:/assets/:cached
 
 
   api:
     extends:
       file: docker-compose.base.yml
       service: api
+
     ports:
       - 9227:9229
     volumes:
-      - './server:/app/server:delegated'
-      - './client/dist:/app/server/dist'
-      - './client/src/swaggerSchema.d.ts:/app/swaggerSchema.d.ts'
-      - './client/src/ApiClient.ts:/app/ApiClient.ts'
-      - './scripts:/app/scripts:delegated'
-      - './index.js:/app/index.js:delegated'
-      - './db:/app/db:delegated'
-      - './shared:/app/shared:delegated'
-      - './.env-local:/app/.env'
-      - './dev-dump.sql:/app/dev-dump.sql'
+      - './server:/app/server:cached'
+      - './client/dist:/app/server/dist:cached'
+      - './client/src/swaggerSchema.d.ts:/app/swaggerSchema.d.ts:cached'
+      - './client/src/ApiClient.ts:/app/ApiClient.ts:cached'
+      - './scripts:/app/scripts:cached'
+      - './index.js:/app/index.js:cached'
+      - './db:/app/db:cached'
+      - './shared:/app/shared:cached'
+      - './.env-local:/app/.env:cached'
+      - './dev-dump.sql:/app/dev-dump.sql:cached'
 
     depends_on:
       pg:
@@ -56,6 +58,9 @@ services:
       service: pg
     ports: 
       - 5432:5432
+    # This will auto-import this sql dump on init
+    volumes: 
+      - ./carpedalan.sql.gz:/docker-entrypoint-initdb.d/carpedalan.sql.gz:cached
 
   sam:
     extends:
@@ -82,3 +87,13 @@ services:
       service: redis
     ports: 
       - 6379:6379
+    # Mounting this and running the below command will import this
+    volumes: 
+      - ./output.rdb:/data/dir/output.rdb:cached
+    
+    command: redis-server --dbfilename output.rdb --dir /data/dir/
+
+
+
+
+  

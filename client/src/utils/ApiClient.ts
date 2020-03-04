@@ -1,5 +1,3 @@
-
-  
 import axios from 'axios';
 import { stringify } from 'qs';
 
@@ -35,7 +33,7 @@ export interface PostI {
    */
   description?: string;
   key: string;
-  status?: "active" | "deleted";
+  status?: 'active' | 'deleted';
   createdAt?: string;
   updatedAt?: string;
   isPending?: boolean;
@@ -279,7 +277,7 @@ export interface PostWithTagsI {
    */
   description?: string;
   key: string;
-  status?: "active" | "deleted";
+  status?: 'active' | 'deleted';
   createdAt?: string;
   updatedAt?: string;
   isPending?: boolean;
@@ -511,7 +509,7 @@ export interface PostWithTagsI {
    * exif data extracted for yResolution
    */
   yResolution?: string;
-  placeholder?: string;
+  svg?: string;
 }
 
 /**
@@ -583,7 +581,7 @@ export interface PostListI {
      */
     description?: string;
     key: string;
-    status?: "active" | "deleted";
+    status?: 'active' | 'deleted';
     createdAt?: string;
     updatedAt?: string;
     isPending?: boolean;
@@ -815,7 +813,7 @@ export interface PostListI {
      * exif data extracted for yResolution
      */
     yResolution?: string;
-    placeholder?: string;
+    svg?: string;
   }[];
   /**
    * Meta data about list and collection
@@ -858,7 +856,7 @@ export interface PostPatchI {
    */
   description?: string;
   key?: string;
-  status?: "active" | "deleted";
+  status?: 'active' | 'deleted';
   createdAt?: string;
   updatedAt?: string;
   isPending?: boolean;
@@ -1126,19 +1124,19 @@ export interface UploadResponseBodyI {
     /**
      * Meta data about the signed upload policy
      */
-    "x-amz-algorithm"?: string;
+    'x-amz-algorithm'?: string;
     /**
      * Meta data about the signed upload policy
      */
-    "x-amz-credential"?: string;
+    'x-amz-credential'?: string;
     /**
      * Meta data about the signed upload policy
      */
-    "x-amz-date"?: string;
+    'x-amz-date'?: string;
     /**
      * Meta data about the signed upload policy
      */
-    "x-amz-signature"?: string;
+    'x-amz-signature'?: string;
     [k: string]: any;
   };
   [k: string]: any;
@@ -1248,7 +1246,7 @@ export interface GetPostsResponseBodyI {
      */
     description?: string;
     key: string;
-    status?: "active" | "deleted";
+    status?: 'active' | 'deleted';
     createdAt?: string;
     updatedAt?: string;
     isPending?: boolean;
@@ -1480,7 +1478,7 @@ export interface GetPostsResponseBodyI {
      * exif data extracted for yResolution
      */
     yResolution?: string;
-    placeholder?: string;
+    svg?: string;
   }[];
   /**
    * Meta data about list and collection
@@ -1507,74 +1505,74 @@ export interface GetPostsQueryI {
   /**
    * Order of query of posts
    */
-  order?: "asc" | "desc";
+  order?: 'asc' | 'desc';
   page?: number;
   isPending?: boolean;
   fields?: (
-    | "id"
-    | "timestamp"
-    | "date"
-    | "originalUrl"
-    | "description"
-    | "etag"
-    | "key"
-    | "createdAt"
-    | "updatedAt"
-    | "status"
-    | "apertureValue"
-    | "brightnessValue"
-    | "colorSpace"
-    | "contrast"
-    | "createDate"
-    | "customRendered"
-    | "dateTimeOriginal"
-    | "digitalZoomRatio"
-    | "exifImageHeight"
-    | "exifImageWidth"
-    | "exposureCompensation"
-    | "exposureMode"
-    | "exposureProgram"
-    | "exposureTime"
-    | "flash"
-    | "fNumber"
-    | "focalLength"
-    | "focalLengthIn35mmFormat"
-    | "gpsAltitude"
-    | "gpsAltitudeRef"
-    | "gpsDateStamp"
-    | "gpsDOP"
-    | "gpsLatitude"
-    | "gpsLatitudeRef"
-    | "gpsLongitude"
-    | "gpsLongitudeRef"
-    | "gpsTimeStamp"
-    | "gpsVersionID"
-    | "imageHeight"
-    | "imageWidth"
-    | "interopIndex"
-    | "ISO"
-    | "make"
-    | "maxApertureValue"
-    | "meteringMode"
-    | "model"
-    | "modifyDate"
-    | "orientation"
-    | "resolutionUnit"
-    | "saturation"
-    | "sceneCaptureType"
-    | "sensingMethod"
-    | "sharpness"
-    | "shutterSpeedValue"
-    | "software"
-    | "subjectDistance"
-    | "subjectDistanceRange"
-    | "subSecTime"
-    | "subSecTimeDigitized"
-    | "subSecTimeOriginal"
-    | "whiteBalance"
-    | "xResolution"
-    | "yCbCrPositioning"
-    | "yResolution"
+    | 'id'
+    | 'timestamp'
+    | 'date'
+    | 'originalUrl'
+    | 'description'
+    | 'etag'
+    | 'key'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'status'
+    | 'apertureValue'
+    | 'brightnessValue'
+    | 'colorSpace'
+    | 'contrast'
+    | 'createDate'
+    | 'customRendered'
+    | 'dateTimeOriginal'
+    | 'digitalZoomRatio'
+    | 'exifImageHeight'
+    | 'exifImageWidth'
+    | 'exposureCompensation'
+    | 'exposureMode'
+    | 'exposureProgram'
+    | 'exposureTime'
+    | 'flash'
+    | 'fNumber'
+    | 'focalLength'
+    | 'focalLengthIn35mmFormat'
+    | 'gpsAltitude'
+    | 'gpsAltitudeRef'
+    | 'gpsDateStamp'
+    | 'gpsDOP'
+    | 'gpsLatitude'
+    | 'gpsLatitudeRef'
+    | 'gpsLongitude'
+    | 'gpsLongitudeRef'
+    | 'gpsTimeStamp'
+    | 'gpsVersionID'
+    | 'imageHeight'
+    | 'imageWidth'
+    | 'interopIndex'
+    | 'ISO'
+    | 'make'
+    | 'maxApertureValue'
+    | 'meteringMode'
+    | 'model'
+    | 'modifyDate'
+    | 'orientation'
+    | 'resolutionUnit'
+    | 'saturation'
+    | 'sceneCaptureType'
+    | 'sensingMethod'
+    | 'sharpness'
+    | 'shutterSpeedValue'
+    | 'software'
+    | 'subjectDistance'
+    | 'subjectDistanceRange'
+    | 'subSecTime'
+    | 'subSecTimeDigitized'
+    | 'subSecTimeOriginal'
+    | 'whiteBalance'
+    | 'xResolution'
+    | 'yCbCrPositioning'
+    | 'yResolution'
   )[];
 }
 
@@ -1598,7 +1596,7 @@ export interface CreatePostResponseBodyI {
    */
   description?: string;
   key: string;
-  status?: "active" | "deleted";
+  status?: 'active' | 'deleted';
   createdAt?: string;
   updatedAt?: string;
   isPending?: boolean;
@@ -1842,7 +1840,7 @@ export interface CreatePostRequestBodyI {
    */
   description?: string;
   key: string;
-  status?: "active" | "deleted";
+  status?: 'active' | 'deleted';
   createdAt?: string;
   updatedAt?: string;
   isPending?: boolean;
@@ -2073,7 +2071,7 @@ export interface LoginResponseBodyI {
   /**
    * Role of user
    */
-  user?: "read" | "write";
+  user?: 'read' | 'write';
   [k: string]: any;
 }
 
@@ -2130,7 +2128,7 @@ export interface GetPostsByTagResponseBodyI {
      */
     description?: string;
     key: string;
-    status?: "active" | "deleted";
+    status?: 'active' | 'deleted';
     createdAt?: string;
     updatedAt?: string;
     isPending?: boolean;
@@ -2362,7 +2360,7 @@ export interface GetPostsByTagResponseBodyI {
      * exif data extracted for yResolution
      */
     yResolution?: string;
-    placeholder?: string;
+    svg?: string;
   }[];
   /**
    * Meta data about list and collection
@@ -2412,7 +2410,7 @@ export interface GetPostResponseBodyI {
    */
   description?: string;
   key: string;
-  status?: "active" | "deleted";
+  status?: 'active' | 'deleted';
   createdAt?: string;
   updatedAt?: string;
   isPending?: boolean;
@@ -2644,7 +2642,7 @@ export interface GetPostResponseBodyI {
    * exif data extracted for yResolution
    */
   yResolution?: string;
-  placeholder?: string;
+  svg?: string;
 }
 
 export interface GetPostPathI {
@@ -2674,7 +2672,7 @@ export interface PatchPostResponseBodyI {
    */
   description?: string;
   key: string;
-  status?: "active" | "deleted";
+  status?: 'active' | 'deleted';
   createdAt?: string;
   updatedAt?: string;
   isPending?: boolean;
@@ -2906,7 +2904,7 @@ export interface PatchPostResponseBodyI {
    * exif data extracted for yResolution
    */
   yResolution?: string;
-  placeholder?: string;
+  svg?: string;
 }
 
 export interface PatchPostRequestBodyI {
@@ -2929,7 +2927,7 @@ export interface PatchPostRequestBodyI {
    */
   description?: string;
   key?: string;
-  status?: "active" | "deleted";
+  status?: 'active' | 'deleted';
   createdAt?: string;
   updatedAt?: string;
   isPending?: boolean;
@@ -3164,281 +3162,274 @@ export interface DelPostPathI {
   id: string;
 }
 
-
-export default class ApiClient {
-  
+export class ApiClient {
   /**
    * Setting a property on the user session cookie token
    *
    * @returns {Promise<SetUserResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async setUser({ requestBody }: BodyOnly<SetUserRequestBodyI>) {
     try {
-      
-      const { data } = await axios.post<SetUserResponseBodyI>(`/v1/user/`, requestBody);
+      const { data } = await axios.post<SetUserResponseBodyI>(
+        `/v1/user/`,
+        requestBody,
+      );
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Get signed upload url
    *
    * @returns {Promise<UploadResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async upload({ requestBody }: BodyOnly<UploadQueryI>) {
     try {
-      
       const { data } = await axios.get<UploadResponseBodyI>(`/v1/upload/`);
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Get Tags
    *
    * @returns {Promise<GetTagsResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async getTags() {
     try {
-      
       const { data } = await axios.get<GetTagsResponseBodyI>(`/v1/tags/`);
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Create tag
    *
    * @returns {Promise<PostTagsResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async postTags({ requestBody }: BodyOnly<PostTagsRequestBodyI>) {
     try {
-      
-      const { data } = await axios.post<PostTagsResponseBodyI>(`/v1/tags/`, requestBody);
+      const { data } = await axios.post<PostTagsResponseBodyI>(
+        `/v1/tags/`,
+        requestBody,
+      );
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * User refreshed cookie
    *
    * @returns {Promise<RefreshResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async refresh() {
     try {
-      
       const { data } = await axios.post<RefreshResponseBodyI>(`/v1/refresh/`);
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Delete bulk posts
    *
    * @returns {Promise<void | ErrorI>}
-   */      
-  public async deleteBulkPosts({ requestBody }: BodyOnly<DeleteBulkPostsRequestBodyI>) {
+   */
+
+  public async deleteBulkPosts({
+    requestBody,
+  }: BodyOnly<DeleteBulkPostsRequestBodyI>) {
     try {
-      
-      const { data } = await axios.delete<void>(`/v1/posts/bulk${stringify(requestBody)}`);
+      const { data } = await axios.delete<void>(
+        `/v1/posts/bulk${stringify(requestBody)}`,
+      );
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Get Posts
    *
    * @returns {Promise<void | ErrorI>}
-   */      
+   */
+
   public async postPosts({ requestBody }: BodyOnly<PostPostsRequestBodyI>) {
     try {
-      
       const { data } = await axios.patch<void>(`/v1/posts/bulk`, requestBody);
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Get Posts
    *
    * @returns {Promise<GetPostsResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async getPosts({ requestBody }: BodyOnly<GetPostsQueryI>) {
     try {
-      
       const { data } = await axios.get<GetPostsResponseBodyI>(`/v1/posts/`);
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Create Post
    *
    * @returns {Promise<CreatePostResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async createPost({ requestBody }: BodyOnly<CreatePostRequestBodyI>) {
     try {
-      
-      const { data } = await axios.post<CreatePostResponseBodyI>(`/v1/posts/`, requestBody);
+      const { data } = await axios.post<CreatePostResponseBodyI>(
+        `/v1/posts/`,
+        requestBody,
+      );
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Log user logout
    *
    * @returns {Promise<void | ErrorI>}
-   */      
+   */
+
   public async logout() {
     try {
-      
       const { data } = await axios.post<void>(`/v1/logout/`);
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Log user in
    *
    * @returns {Promise<LoginResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async login({ requestBody }: BodyOnly<LoginRequestBodyI>) {
     try {
-      
-      const { data } = await axios.post<LoginResponseBodyI>(`/v1/login/`, requestBody);
+      const { data } = await axios.post<LoginResponseBodyI>(
+        `/v1/login/`,
+        requestBody,
+      );
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * User requested an invite
    *
    * @returns {Promise<void | ErrorI>}
-   */      
+   */
+
   public async invitation({ requestBody }: BodyOnly<InvitationRequestBodyI>) {
     try {
-      
       const { data } = await axios.post<void>(`/v1/invitation/`, requestBody);
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Get Posts associated with a tag
    *
    * @returns {Promise<GetPostsByTagResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async getPostsByTag({ requestParams }: PathOnly<GetPostsByTagPathI>) {
     try {
       const { tagId } = requestParams;
-      const { data } = await axios.get<GetPostsByTagResponseBodyI>(`/v1/tags/${tagId}/posts`);
+      const { data } = await axios.get<GetPostsByTagResponseBodyI>(
+        `/v1/tags/${tagId}/posts`,
+      );
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Get Post
    *
    * @returns {Promise<GetPostResponseBodyI | ErrorI>}
-   */      
+   */
+
   public async getPost({ requestParams }: PathOnly<GetPostPathI>) {
     try {
       const { id } = requestParams;
       const { data } = await axios.get<GetPostResponseBodyI>(`/v1/posts/${id}`);
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Patch Posts
    *
    * @returns {Promise<PatchPostResponseBodyI | ErrorI>}
-   */      
-  public async patchPost({ requestBody, requestParams }: BodyAndPath<PatchPostRequestBodyI, PatchPostPathI>) {
+   */
+
+  public async patchPost({
+    requestBody,
+    requestParams,
+  }: BodyAndPath<PatchPostRequestBodyI, PatchPostPathI>) {
     try {
       const { id } = requestParams;
-      const { data } = await axios.patch<PatchPostResponseBodyI>(`/v1/posts/${id}`, requestBody);
+      const { data } = await axios.patch<PatchPostResponseBodyI>(
+        `/v1/posts/${id}`,
+        requestBody,
+      );
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 
   /**
    * Delete Post
    *
    * @returns {Promise<void | ErrorI>}
-   */      
+   */
+
   public async delPost({ requestParams }: PathOnly<DelPostPathI>) {
     try {
       const { id } = requestParams;
       const { data } = await axios.delete<void>(`/v1/posts/${id}`);
       return data;
-    } catch(e) {
+    } catch (e) {
       throw e?.response?.data as ErrorI;
     }
-    
   }
-
 }
 
 export const client = new ApiClient();
-

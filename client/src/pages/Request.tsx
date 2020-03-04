@@ -1,6 +1,6 @@
-import axios from 'axios';
 import * as React from 'react';
 
+import { client } from 'utils/ApiClient';
 import useApi from 'hooks/useApi';
 import useForm from 'hooks/useForm';
 import useUser from 'hooks/useUser';
@@ -12,22 +12,6 @@ import { InputForm, InputWrapper, StyledTitle } from './styles';
 
 const { useState } = React;
 
-/**
- * Post Invitation api caller
- *
- * @param {Paths.Invitation.RequestBody} reqBody
- * @returns {Promise<Void>}
- */
-const requestInvitation = async (
-  reqBody: Paths.Invitation.RequestBody,
-): Promise<void> => {
-  try {
-    await axios.post('/v1/invitation', reqBody);
-  } catch (e) {
-    if (e.response) throw e.response.data as Components.Schemas.Error;
-    throw e as Components.Schemas.Error;
-  }
-};
 /**
  * Request route component. Includes form and api effects
  */
@@ -53,7 +37,7 @@ const Invitation: React.FC = () => {
     validate: v => (!v ? 'Is required' : false),
   });
   const emailInput = useField({ handleChange, field: 'email' });
-  const { request, error } = useApi(requestInvitation);
+  const { request, error } = useApi(client.invitation);
 
   /**
    * Submit hanlder. Calls the Invitation API.
@@ -64,8 +48,10 @@ const Invitation: React.FC = () => {
     e.preventDefault();
     shouldShowError(true);
     request({
-      name: String(nameInput.value),
-      email: String(emailInput.value),
+      requestBody: {
+        name: String(nameInput.value),
+        email: String(emailInput.value),
+      },
     });
   };
   return (

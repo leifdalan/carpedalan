@@ -1,6 +1,7 @@
 import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
 import * as pulumi from '@pulumi/pulumi';
+import { Input } from '@pulumi/pulumi';
 
 import { getResourceName as n, getTags as t } from './utils';
 
@@ -61,6 +62,12 @@ CreateI) {
       path: '/healthcheck',
       timeout: 5,
     },
+    /**
+     * Needs to be "instance" instead of default "ip" because our task definition
+     * network mode is "bridge" (needed to link containers together in the "docker
+     * way")
+     */
+    targetType: 'instance',
     tags: t(n('web')),
   });
 
@@ -144,7 +151,7 @@ CreateI) {
     },
     {
       name: 'PORT',
-      value: pulumi.interpolate`${targetGroup.targetGroup.port}`,
+      value: '8000',
     },
     {
       name: 'AWS_ACCESS_KEY_ID',
@@ -178,6 +185,29 @@ CreateI) {
     tags: t(n('repository')),
   });
 
+  new aws.ecr.LifecyclePolicy(n('lifecycle'), {
+    repository: repository.name,
+    policy: {
+      rules: [
+        {
+          rulePriority: 1,
+          description: 'Delete everything!',
+          selection: {
+            tagStatus: 'any' as Input<'any' | 'tagged' | 'untagged'>,
+            countType: 'sinceImagePushed' as Input<
+              'imageCountMoreThan' | 'sinceImagePushed'
+            >,
+            countUnit: 'days',
+            countNumber: 3,
+          },
+          action: {
+            type: 'expire',
+          },
+        },
+      ],
+    },
+  });
+
   /**
    * Task definition for ECS service
    */
@@ -185,9 +215,34 @@ CreateI) {
     executionRole, // Needs all perms for container runtime
     taskRole, // Needs all perms necessary for "spinning up" (e.g. secretsmanager)
     vpc,
+    /**
+     * "Bridge" mode (rather than default "awsvpc") allows inter-docker service
+     * aliasing, in the classic docker networking sense.
+     */
+    networkMode: 'bridge',
     tags: t(n('task')),
-    // @ts-ignore
+
     containers: {
+      nginx: {
+        image: awsx.ecs.Image.fromDockerBuild(repository, {
+          context: '../nginx',
+          dockerfile: '../nginx/Dockerfile',
+        }),
+
+        memory: 128,
+        links: ['web'],
+        portMappings: [listener],
+        // healthCheck: {
+        //   command: [
+        //     'CMD-SHELL',
+        //     'wget http://localhost/healthcheck -q -O - > /dev/null 2>&1',
+        //   ],
+        //   interval: 5,
+        //   retries: 5,
+        //   startPeriod: 10,
+        // },
+      },
+      // @ts-ignore
       web: {
         /**
          * This utility will actually run a docker build with the included args
@@ -199,12 +254,24 @@ CreateI) {
           dockerfile: '../server/Dockerfile',
           extraOptions: ['--target', 'prod', '--cache-from', 'api:latest'],
         }),
+        // healthCheck: {
+        //   command: ['CMD-SHELL', 'node ./scripts/healthcheck'],
+        //   interval: 5,
+        //   retries: 5,
+        //   startPeriod: 10,
+        // },
         memory: 256,
         /**
          * When specifying the listener here, it automatically maps its port,
          * so in this case, analogous to "80:80"
          */
-        portMappings: [listener],
+        portMappings: [
+          {
+            hostPort: 8000,
+            containerPort: 8000,
+            protocol: 'tcp',
+          },
+        ],
         // @ts-ignore
         environment: env,
         secrets: [

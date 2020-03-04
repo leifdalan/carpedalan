@@ -3,12 +3,12 @@ import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 
-import { client as api } from 'ApiClient';
 import Routes from 'Routes';
 import { User } from 'User';
 import useUser from 'hooks/useUser';
 import { DataProvider } from 'providers/Data';
 import { GlobalStyleComponent, themes } from 'styles/utils';
+import { client as api } from 'utils/ApiClient';
 
 const log = debug('App');
 

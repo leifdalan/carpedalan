@@ -43,3 +43,17 @@ Resources:
             Path: /hello
             Method: post
 
+  Redis:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Environment: 
+        Variables:
+          FARTS: 'stinky'
+          AWS_ACCESS_KEY_ID: 'fake'
+          AWS_SECRET_ACCESS_KEY: 'fake'
+          PG_URI: 'postgres://postgres:postgres@pg:5432/carpedalan'
+          IS_LOCAL: true
+          REDIS_URL: redis://redis:6379/0
+      CodeUri: ./src/
+      Handler: sns.sns
+      Runtime: nodejs12.x

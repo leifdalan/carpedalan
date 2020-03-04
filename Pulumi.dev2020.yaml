@@ -7,6 +7,7 @@ config:
   carpedalan:cfKey:
     secure: v1:YX65OKWkuwRDH3s2:MUQZmeKUf+E/gGx/dIx/3oS8bixnT85GFJ0bGc+tpA/2p/MK
   carpedalan:domain: carpe.dalan.dev
+  carpedalan:isDbPublic: "true"
   carpedalan:pg_password:
     secure: v1:QpMMv1tDlqYiZ/n3:AdgquvuyU0kKmaMdrI/QEKrD+k1Hg33o7H74eBC8e7r8RkOSrvQ=
   carpedalan:pg_user:

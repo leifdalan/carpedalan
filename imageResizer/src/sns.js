@@ -78,6 +78,9 @@ exports.sns = async (event, context) => {
       .where('key', `original/${withoutOriginal}`)
       .returning('*');
     console.log('pgResponse', pgResponse);
+    db.destroy((...args) => {
+      console.log('Destroyed.', args);
+    });
   } catch (e) {
     console.log('PG error', e);
   }
@@ -92,6 +95,7 @@ exports.sns = async (event, context) => {
     console.error('pgResponse[0].id', pgResponse[0].id);
 
     const stuff = await set(pgResponse[0].id, svg);
+
     console.error('stuff', stuff);
   } catch (e) {
     console.error('redis error', e);

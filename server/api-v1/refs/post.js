@@ -410,7 +410,7 @@ export const PostWithTags = {
   ...post,
   properties: {
     ...post.properties,
-    placeholder: {
+    svg: {
       type: 'string',
       nullable: true,
     },

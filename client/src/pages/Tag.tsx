@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Link, RouteComponentProps, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { client } from 'ApiClient';
+import { client } from 'utils/ApiClient';
 import Feed from 'components/Feed';
 import Grid from 'components/Grid';
 import { PostsWithTagsWithFakes } from 'hooks/types';

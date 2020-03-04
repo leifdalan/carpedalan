@@ -5,9 +5,9 @@ services:
     image: nginx:alpine
     restart: always
     volumes: 
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/local.carpedalan.com.pem:/etc/ssl/certs/local.carpedalan.com.pem
-      - ./nginx/local.carpedalan.com-key.pem:/etc/ssl/private/local.carpedalan.com-key.pem
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:cached
+      - ./nginx/local.carpedalan.com.pem:/etc/ssl/certs/local.carpedalan.com.pem:cached
+      - ./nginx/local.carpedalan.com-key.pem:/etc/ssl/private/local.carpedalan.com-key.pem:cached
     healthcheck: 
       test: wget http://localhost/healthcheck -q -O - > /dev/null 2>&1
       interval: 1s
@@ -42,15 +42,15 @@ services:
       PORT: "${CLIENT_PORT-4000}"
       ASSET_CDN_DOMAIN: 'cdn.local.carpedalan.com'
     volumes: 
-      - ./client/src:/app/client/src
-      - ./client/docs:/app/client/docs
-      - ./client/dist:/app/client/dist
-      - ./scripts:/app/client/scripts
-      - ./client/webpack.config.js:/app/client/webpack.config.js
-      - ./client/webpack.config.prod.js:/app/client/webpack.config.prod.js
-      - ./client/devServer.js:/app/client/devServer.js
-      - ./client/docker-entry.sh:/app/client/docker-entry.sh
-      - ./.eslint-ts-base.js:/app/.eslint-ts-base.js
+      - ./client/src:/app/client/src:delegated
+      - ./client/docs:/app/client/docs:cached
+      - ./client/dist:/app/client/dist:cached
+      - ./scripts:/app/client/scripts:cached
+      - ./client/webpack.config.js:/app/client/webpack.config.js:cached
+      - ./client/webpack.config.prod.js:/app/client/webpack.config.prod.js:cached
+      - ./client/devServer.js:/app/client/devServer.js:cached
+      - ./client/docker-entry.sh:/app/client/docker-entry.sh:cached
+      - ./.eslint-ts-base.js:/app/.eslint-ts-base.js:cached
     healthcheck: 
       test: ["CMD-SHELL", "node ./scripts/clientHealthcheck"]
       interval: 1s
@@ -90,8 +90,8 @@ services:
       PG_PORT: 5432
     tty: true
     volumes:
-      - ./db:/app/db:delegated
-      - ./shared:/app/shared:delegated
+      - ./db:/app/db:cached
+      - ./shared:/app/shared:cached
     build:
       context: .
       dockerfile: ./server/Dockerfile
@@ -103,14 +103,14 @@ services:
       dockerfile: Dockerfile
     command: ["$PWD"]
     volumes:
-      - ./imageresizer:/app
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ./imageresizer:/app:cached
+      - /var/run/docker.sock:/var/run/docker.sock:cached
 
   aws:
     image: localstack/localstack:0.10.5
     volumes:
-      - './.localstack:/tmp/localstack'
-      - '/var/run/docker.sock:/var/run/docker.sock'    
+      - './.localstack:/tmp/localstack:cached'
+      - '/var/run/docker.sock:/var/run/docker.sock:cached'    
     environment:
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
@@ -122,9 +122,8 @@ services:
       context: .
       dockerfile: ./e2e/Dockerfile
     volumes:
-      - './e2e/src:/e2e/src/'
-      - './e2e/screenshots:/e2e/screenshots/'
+      - './e2e/src:/e2e/src/:cached'
+      - './e2e/screenshots:/e2e/screenshots/:cached'
 
   redis: 
-    image: redis:5.0.6
-    
+    image: redis:5.0.6    

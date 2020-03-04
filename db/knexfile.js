@@ -20,7 +20,7 @@ module.exports = {
     client: 'pg',
     connection: {
       host: 'pg',
-      database: 'carpedalan',
+      database: 'postgres',
       user: 'postgres',
       password: 'postgres',
     },

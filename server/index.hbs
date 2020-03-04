@@ -4,7 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  {{#if isProd}}
   <title>Carpe Dalan</title>
+  {{else}}
+  <title>Carpe DEV</title>
+  {{/if}}
   <meta name="description" content="The Dalan family app" />
   <link rel="apple-touch-icon-precomposed" sizes="57x57" href="//{{assetDomain}}/apple-touch-icon-57x57.png" />
   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="//{{assetDomain}}/apple-touch-icon-114x114.png" />

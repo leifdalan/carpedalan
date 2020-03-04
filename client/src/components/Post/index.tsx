@@ -80,12 +80,6 @@ const Row = ({
           Download
         </Download>
       </Header>
-      <div
-        data-danger="true"
-        dangerouslySetInnerHTML={{
-          __html: post.placeholder,
-        }}
-      />
       <Element {...props}>
         <Picture
           width={width}

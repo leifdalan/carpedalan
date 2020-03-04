@@ -12,6 +12,7 @@ interface MakeDBI {
 export function makeDB({ vpc, config }: MakeDBI) {
   const username = config.getSecret('pg_user');
   const password = config.getSecret('pg_password');
+  const publiclyAccessible = config.get('isDbPublic') === 'true';
   // const subnetGroup = new aws.rds.SubnetGroup(n('pulumisubnet'), {
   //   subnetIds: vpc.privateSubnetIds,
   //   tags: t(n('pulumisubnet')),
@@ -28,7 +29,7 @@ export function makeDB({ vpc, config }: MakeDBI) {
     engine: 'postgres',
     name: 'carpedalan',
     port: 5432,
-    publiclyAccessible: false,
+    publiclyAccessible,
     allocatedStorage: 20,
     skipFinalSnapshot: true,
     tags: t(n('rds')),

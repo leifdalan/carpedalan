@@ -106,13 +106,7 @@ const Feed = ({
           isItemLoaded={isItemLoaded}
           loadMoreItems={loadMoreItems}
         >
-          {({
-            onItemsRendered,
-            ref,
-          }: {
-            onItemsRendered: () => void;
-            ref: React.MutableRefObject<null>;
-          }) => (
+          {({ onItemsRendered, ref }) => (
             <InnerWrapper>
               <List
                 ref={ref}

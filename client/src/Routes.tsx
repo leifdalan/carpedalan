@@ -36,23 +36,18 @@ const Routes: React.FC = () => {
       <SidebarAndMenu />
       <Switch>
         <Route exact path="/request" component={Request} />
-
-        {globalUser ? (
-          <Route exact path="/" component={LazySlash} />
-        ) : (
-          <Route exact path="/" component={Login} />
-        )}
-        {globalUser ? (
-          <Route path="/gallery" component={LazySlash} />
-        ) : (
-          <Route exact path="/" component={Login} />
-        )}
         {globalUser ? (
           <Route
             path="/tag/:tagName"
             render={props => <LazyTag {...props} />}
           />
         ) : null}
+
+        {globalUser ? (
+          <Route path="/" component={LazySlash} />
+        ) : (
+          <Route exact path="/" component={Login} />
+        )}
         <Route component={RedirectToLogin} />
       </Switch>
     </Suspense>

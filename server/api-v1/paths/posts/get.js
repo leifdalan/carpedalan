@@ -53,7 +53,7 @@ export default function(posts, redis) {
         ...response,
         data: response.data.map((d, i) => ({
           ...d,
-          placeholder: svgs[i],
+          svg: svgs[i],
         })),
       };
     }

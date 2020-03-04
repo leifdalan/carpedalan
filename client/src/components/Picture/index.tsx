@@ -1,15 +1,26 @@
-import * as React from 'react';
-import styled from 'styled-components';
+import debug from 'debug';
+import React, { SyntheticEvent, useState, useCallback } from 'react';
+import styled, { css } from 'styled-components';
 
 import { PostsWithTagsWithFakes } from 'hooks/types';
+import { propTrueFalse } from 'styles/utils';
 import { getFullImageSrcSet, getSquareImageSrcSet } from 'utils';
 
 const Wrapper = styled.div`
   display: inline-block;
   margin-bottom: -4px;
+  overflow: hidden;
 `;
 
-const StyledPicture = styled.picture`
+interface LoadedPictureI {
+  loaded: boolean;
+  shouldTransition: boolean;
+  transitionTime: number;
+}
+
+const log = debug('components:Picture');
+
+const StyledPicture = styled.picture<LoadedPictureI>`
   position: absolute;
   top: 0;
   left: 0;
@@ -21,6 +32,29 @@ const StyledPicture = styled.picture`
     left: 0;
     width: 100%;
     height: 100%;
+    ${({ shouldTransition, transitionTime }) =>
+      shouldTransition
+        ? css`
+            transition-property: opacity;
+            transition-duration: ${transitionTime}ms;
+          `
+        : null}
+    opacity: ${propTrueFalse('loaded', 1, 0)};
+  }
+`;
+
+const SVGWrapper = styled.figure`
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  > svg {
+    height: 100%;
+    width: 100%;
   }
 `;
 
@@ -34,6 +68,10 @@ interface PictureInterface {
   type: string;
   children?: React.ReactChildren;
 }
+log('hellzo');
+function handleContextMenu(e: SyntheticEvent<HTMLPictureElement>) {
+  e.preventDefault();
+}
 
 const Picture = ({
   shouldShowImage,
@@ -44,32 +82,69 @@ const Picture = ({
   children,
   type,
   ...etc
-}: PictureInterface) => (
-  <Wrapper
-    style={{
-      width,
-      position: 'relative',
-    }}
-    {...etc}
-  >
-    <div
-      className="image"
+}: PictureInterface) => {
+  const [shouldTransition, setShouldTransition] = useState(true);
+  const [loaded, setLoading] = useState(false);
+  const [transitionTime, setTransitionTime] = useState(400);
+  const renderStart = performance.now();
+
+  const handleLoad = useCallback(() => {
+    const timeNow = performance.now();
+    const timeElapsed = timeNow - renderStart;
+    log('timeElapsssszzed for load: ', `${Math.floor(timeElapsed)}ms`);
+    if (timeElapsed < 300) setShouldTransition(false);
+    const transitionTime = Math.max(200, 600 - timeElapsed);
+    log('TransitionTime', transitionTime);
+    setTransitionTime(transitionTime);
+    setLoading(true);
+  }, [renderStart]);
+  return (
+    <Wrapper
       style={{
-        paddingTop: `${ratio * 100}%`,
+        width,
         position: 'relative',
-        backgroundColor: placeholderColor,
       }}
+      {...etc}
     >
-      {shouldShowImage && !post.fake ? (
-        <StyledPicture as="picture" data-test={post.key}>
-          {type === 'original'
-            ? getFullImageSrcSet({ post })
-            : getSquareImageSrcSet({ post })}
-        </StyledPicture>
-      ) : null}
-      {children}
-    </div>
-  </Wrapper>
-);
+      <div
+        className="image"
+        style={{
+          paddingTop: `${ratio * 100}%`,
+          position: 'relative',
+          backgroundColor: placeholderColor,
+          overflow: 'hidden',
+        }}
+      >
+        {post.svg ? (
+          <SVGWrapper
+            dangerouslySetInnerHTML={{
+              __html: post.svg.replace(
+                '<svg',
+                '<svg preserveAspectRatio="xMidYMid slice"',
+              ),
+            }}
+          />
+        ) : null}
+
+        {shouldShowImage && !post.fake ? (
+          <StyledPicture
+            onLoad={handleLoad}
+            as="picture"
+            loaded={loaded}
+            onContextMenu={handleContextMenu}
+            shouldTransition={shouldTransition}
+            transitionTime={transitionTime}
+            data-test={post.key}
+          >
+            {type === 'original'
+              ? getFullImageSrcSet({ post })
+              : getSquareImageSrcSet({ post })}
+          </StyledPicture>
+        ) : null}
+        {children}
+      </div>
+    </Wrapper>
+  );
+};
 
 export default Picture;

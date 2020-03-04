@@ -45,7 +45,7 @@ async function main() {
   const { vpc } = makeVpc();
 
   const { rds } = makeDB({ config, vpc });
-  const { redis, replicationGroup } = makeRedis({ vpc });
+  const { redis, replicationGroup } = makeRedis();
 
   const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({

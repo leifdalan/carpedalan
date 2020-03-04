@@ -1,30 +1,12 @@
-import axios from 'axios';
 import debug from 'debug';
 import { useContext, useEffect, useCallback } from 'react';
 
+import { client } from 'utils/ApiClient';
 import { DataContext, Data } from 'providers/Data';
 
 import useApi from './useApi';
 
 const log = debug('hooks:useTags');
-
-/**
- * Get tags API call
- *
- * @returns {(Promise<
- *   Paths.GetTags.Responses.$200 | Components.Schemas.Error
- * >)}
- */
-const getTags = async (): Promise<Paths.GetTags.Responses.$200> => {
-  try {
-    log('gettingTags');
-    const response = await axios.get('/v1/tags');
-    return response.data;
-  } catch (e) {
-    if (e.response) throw e.response.data as Components.Schemas.Error;
-    throw e as Components.Schemas.Error;
-  }
-};
 
 /**
  * Return values for useTag hook
@@ -48,7 +30,7 @@ export interface UseTags {
 }
 
 export default function useTags(): UseTags {
-  const { response, request } = useApi(getTags);
+  const { response, request } = useApi(client.getTags);
   const fetchTags = useCallback(
     arg => {
       return request(arg);
