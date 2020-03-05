@@ -1,6 +1,6 @@
 import debug from 'debug';
 import * as React from 'react';
-import { Link, Route, useLocation } from 'react-router-dom';
+import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Feed from 'components/Feed';
@@ -70,7 +70,9 @@ const Slash: React.FC = (): React.ReactElement => {
           <Feed itemsWithTitle={postsWithTitle} />
         )}
       </Wrapper>
-      <Route exact path="**/gallery/:postId" component={Gallery} />
+      <Routes>
+        <Route path="gallery/:postId" element={<Gallery />} />
+      </Routes>
     </>
   );
 };

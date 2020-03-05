@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { client } from 'utils/ApiClient';
+import { client } from 'ApiClient';
 import useApi from 'hooks/useApi';
 import useForm from 'hooks/useForm';
 import useUser from 'hooks/useUser';

@@ -1,7 +1,7 @@
 import debug from 'debug';
 import { useState, useCallback } from 'react';
 
-import { ErrorI } from 'utils/ApiClient';
+import { ErrorI } from 'ApiClient';
 
 const log = debug('hooks:useApi');
 

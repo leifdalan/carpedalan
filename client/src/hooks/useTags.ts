@@ -1,7 +1,7 @@
 import debug from 'debug';
 import { useContext, useEffect, useCallback } from 'react';
 
-import { client } from 'utils/ApiClient';
+import { client } from 'ApiClient';
 import { DataContext, Data } from 'providers/Data';
 
 import useApi from './useApi';

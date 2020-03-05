@@ -1,4 +1,4 @@
-import { PostWithTagsI } from 'utils/ApiClient';
+import { PostWithTagsI } from 'ApiClient';
 
 /**
  * "Fake" post that hold the fake flag

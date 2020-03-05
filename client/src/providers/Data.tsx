@@ -2,7 +2,7 @@ import debug from 'debug';
 import keyBy from 'lodash/keyBy';
 import * as React from 'react';
 
-import { GetTagsResponseBodyI } from 'utils/ApiClient';
+import { GetTagsResponseBodyI } from 'ApiClient';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 
 const log = debug('providers:Data');

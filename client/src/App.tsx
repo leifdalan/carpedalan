@@ -8,7 +8,7 @@ import { User } from 'User';
 import useUser from 'hooks/useUser';
 import { DataProvider } from 'providers/Data';
 import { GlobalStyleComponent, themes } from 'styles/utils';
-import { client as api } from 'utils/ApiClient';
+import { client as api } from 'ApiClient';
 
 const log = debug('App');
 

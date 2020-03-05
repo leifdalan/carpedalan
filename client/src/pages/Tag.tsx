@@ -1,9 +1,9 @@
 import debug from 'debug';
 import * as React from 'react';
-import { Link, RouteComponentProps, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { client } from 'utils/ApiClient';
+import { client } from 'ApiClient';
 import Feed from 'components/Feed';
 import Grid from 'components/Grid';
 import { PostsWithTagsWithFakes } from 'hooks/types';
@@ -36,9 +36,8 @@ const GridListSwitcher = styled.div`
  * @param {RouteComponentProps<{ tagName: string }>} props
  * @returns {React.ReactElement}
  */
-const Tag = (
-  props: RouteComponentProps<{ tagName: string }>,
-): React.ReactElement => {
+const Tag = (): React.ReactElement => {
+  const { tagName } = useParams();
   const { request, response, loading } = useApi(client.getPostsByTag);
   const { addPosts } = useContext(DataContext);
   const { tags } = useTags();
@@ -54,7 +53,6 @@ const Tag = (
     return hash.includes('grid');
   }
 
-  const { match } = props;
   /**
    * Add Title to posts list
    */
@@ -63,7 +61,7 @@ const Tag = (
 
     if (response) {
       const newPosts = [...response.data];
-      newPosts.unshift({ key: match.params.tagName });
+      newPosts.unshift({ key: tagName });
       const newPostsWithFake = newPosts.map(post => ({
         ...post,
         fake: false,
@@ -73,7 +71,7 @@ const Tag = (
       setPostsWithTitle(newPostsWithFake);
       addPosts(newPostsWithFake);
     }
-  }, [addPosts, match.params.tagName, response]);
+  }, [addPosts, tagName, response]);
 
   /**
    * Fetch posts by tag when the tags change, or the tagName (route)
@@ -81,7 +79,7 @@ const Tag = (
    */
   useEffect(() => {
     if (tags.length) {
-      const tag = tags.find(tag => tag.name === match.params.tagName);
+      const tag = tags.find(tag => tag.name === tagName);
       if (tag?.id) {
         request({
           requestParams: {
@@ -91,7 +89,7 @@ const Tag = (
         gridRef.current += 1;
       }
     }
-  }, [tags, match.params.tagName, request]);
+  }, [tags, tagName, request]);
 
   log('loading', loading);
 
@@ -107,9 +105,9 @@ const Tag = (
       ) : (
         <Wrapper data-testid="home" ref={wrapperRef}>
           {isGrid() ? (
-            <Grid key={match.params.tagName} itemsWithTitle={postsWithTitle} />
+            <Grid key={tagName} itemsWithTitle={postsWithTitle} />
           ) : (
-            <Feed key={match.params.tagName} itemsWithTitle={postsWithTitle} />
+            <Feed key={tagName} itemsWithTitle={postsWithTitle} />
           )}
         </Wrapper>
       )}

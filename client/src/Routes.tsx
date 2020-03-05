@@ -1,6 +1,6 @@
 import debug from 'debug';
 import * as React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Routes } from 'react-router-dom';
 
 import SidebarAndMenu from 'components/SidebarAndMenu';
 import useTags from 'hooks/useTags';
@@ -21,7 +21,7 @@ const LazyTag = lazy(() => import(/* webpackChunkName: "tag" */ 'pages/Tag'));
 
 const Spinner = () => <div>12341234i1234124oij</div>;
 
-const Routes: React.FC = () => {
+const AppRoutes: React.FC = () => {
   const { fetchTags } = useTags();
   const { user: globalUser } = useUser();
   useEffect(() => {
@@ -34,24 +34,21 @@ const Routes: React.FC = () => {
   return (
     <Suspense fallback={<Spinner />}>
       <SidebarAndMenu />
-      <Switch>
-        <Route exact path="/request" component={Request} />
+      <Routes>
+        <Route exact path="/request" element={<Request />} />
         {globalUser ? (
-          <Route
-            path="/tag/:tagName"
-            render={props => <LazyTag {...props} />}
-          />
+          <Route path="/tag/:tagName" element={<LazyTag />} />
         ) : null}
 
         {globalUser ? (
-          <Route path="/" component={LazySlash} />
+          <Route path="/*" element={<LazySlash />} />
         ) : (
-          <Route exact path="/" component={Login} />
+          <Route path="/" element={<Login />} />
         )}
-        <Route component={RedirectToLogin} />
-      </Switch>
+        <Route path="*" element={<RedirectToLogin />} />
+      </Routes>
     </Suspense>
   );
 };
 
-export default Routes;
+export default AppRoutes;

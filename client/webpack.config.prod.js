@@ -4,11 +4,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 
-const CompressionPlugin = require('compression-webpack-plugin');
+const BrotliPlugin = require('brotli-webpack-plugin');
 const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const Manifest = require('webpack-manifest-plugin');
 const Stylish = require('webpack-stylish');
+const Visualizer = require('webpack-visualizer-plugin');
 // const S3Plugin = require('webpack-s3-plugin');
 
 const isProdBuildForLocal = process.env.PROD_BUILD === 'true';
@@ -64,13 +65,13 @@ module.exports = {
         ASSET_CDN_DOMAIN: JSON.stringify(process.env.ASSET_CDN_DOMAIN),
       },
     }),
+    new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false }),
+    new BrotliPlugin({
+      test: /\.(js|map)$/,
+      asset: '[path]',
+    }),
     new Manifest({
       fileName: `manifest.json`,
-    }),
-    new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false }),
-    new CompressionPlugin({
-      exclude: [`manifest.json`, 'report.html'],
-      filename: '[path]',
     }),
 
     new Stylish(),

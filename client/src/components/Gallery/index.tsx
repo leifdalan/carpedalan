@@ -1,6 +1,6 @@
 import debug from 'debug';
 import React, { useRef, useContext, MouseEvent } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import useWindow from 'hooks/useWindow';
@@ -20,12 +20,12 @@ const Container = styled(FlexContainer)`
   height: 100%;
 `;
 
-type GalleryI = RouteComponentProps<{ postId: string }>;
-
-const Gallery: React.FC<GalleryI> = ({ match, history, location }) => {
+const Gallery: React.FC = () => {
   const { width, height } = useWindow();
   const safeRef = useRef(null);
-
+  const params = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const {
     data: { postsById },
   } = useContext(DataContext);
@@ -33,7 +33,7 @@ const Gallery: React.FC<GalleryI> = ({ match, history, location }) => {
 
   const postId = Object.keys(postsById).find(id => {
     if (id) {
-      return id.split('-')[0] === match.params.postId;
+      return id.split('-')[0] === params.postId;
     }
     return false;
   });
@@ -55,10 +55,10 @@ const Gallery: React.FC<GalleryI> = ({ match, history, location }) => {
     e.preventDefault();
 
     const routeWithoutGallery = location.pathname
-      .replace(`/${match.params.postId}`, '')
+      .replace(`/${params.postId}`, '')
       .replace('/gallery', '');
     log('route', routeWithoutGallery);
-    history.push(`${routeWithoutGallery || '/'}${location.hash}`);
+    navigate(`${routeWithoutGallery || '/'}${location.hash}`);
   };
 
   return (

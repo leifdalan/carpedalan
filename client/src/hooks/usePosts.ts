@@ -1,7 +1,7 @@
 import debug from 'debug';
 import { useContext, useEffect, useState } from 'react';
 
-import { client, PostWithTagsI } from 'utils/ApiClient';
+import { client, PostWithTagsI } from 'ApiClient';
 import usePrevious from 'hooks/usePrevious';
 import { DataContext } from 'providers/Data';
 
