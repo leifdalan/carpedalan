@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import { MemoryRouter, Route } from 'react-router';
-import { BrowserRouter, Link } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
+import { BrowserRouter, Link, Routes, Route } from 'react-router-dom';
 
 import { fireEvent, render, waitForElement } from '@testing-library/react';
 
@@ -93,7 +93,9 @@ describe('<Login />', () => {
         <Link data-testid="login-link" to="login">
           Login
         </Link>
-        <Route path="/login" component={Login} />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
       </MemoryRouter>,
     );
     fireEvent.click(getByTestId('login-link'));

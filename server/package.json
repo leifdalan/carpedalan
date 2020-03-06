@@ -8,8 +8,8 @@
   "scripts": {
     "setup": "./scripts/setup.sh",
     "lint": "eslint db imageResizer scripts server shared  --ext .js,.jsx",
-    "integration": "NODE_ENV=test PG_HOST=pg_test PG_PORT=5432 jest -c jestrc.js --runInBand",
-    "integration:ci": "PG_HOST=localhost NODE_ENV=ci jest -c jestrc.js --runInBand --verbose",
+    "integration": "NODE_ENV=test PG_HOST=pg_test PG_PORT=5432 node -r esm node_modules/.bin/jest -c jestrc.js --runInBand",
+    "integration:ci": "PG_HOST=localhost NODE_ENV=ci node -r esm node_modules/.bin/jest -c jestrc.js --runInBand --verbose",
     "build": "BABEL_ENV=production NODE_ENV=production yarn webpack --mode production --config webpack.prod.js",
     "migrateAndSeed": "MIGRATING=true ./scripts/migrateAndSeed.sh",
     "migrate": "MIGRATING=true ./scripts/migrate.sh",
@@ -86,6 +86,7 @@
     "body-parser": "^1.18.3",
     "connect-pg-simple": "^5.0.0",
     "cookie-parser": "^1.4.4",
+    "core-js": "^3.6.4",
     "cors": "^2.8.5",
     "date-fns": "2.9.0",
     "dotenv-safe": "^6.1.0",

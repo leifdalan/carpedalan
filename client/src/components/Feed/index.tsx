@@ -1,5 +1,5 @@
 import debug from 'debug';
-import * as React from 'react';
+import React, { useCallback, memo, useMemo } from 'react';
 import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -17,7 +17,7 @@ const InnerWrapper = styled.main`
   height: 100%;
 `;
 
-const { VariableSizeList: List } = ReactWindow;
+const { VariableSizeList: List, areEqual } = ReactWindow;
 
 const PostWrapper = styled.article`
   max-width: 620px;
@@ -32,7 +32,29 @@ const RowWrapper = styled.div`
 interface RowRender {
   index: number;
   style: React.CSSProperties;
+  data: PostsWithTagsWithFakes[];
 }
+
+const Title = styled.h1`
+  font-family: 'lobster';
+  margin-top: 70px;
+  text-align: center;
+  font-size: 48px;
+  letter-spacing: 3px;
+`;
+
+const Row = memo(({ index, style, data }: RowRender) => {
+  if (index === 0 && data[0]) {
+    return <Title style={{ ...style, height: '150px' }}>{data[0].key}</Title>;
+  }
+  return (
+    <RowWrapper style={style} data-testid={index}>
+      <PostWrapper>
+        <Post hasLink post={data[index]} />
+      </PostWrapper>
+    </RowWrapper>
+  );
+}, areEqual);
 
 const Feed = ({
   itemsWithTitle,
@@ -47,27 +69,17 @@ const Feed = ({
    * @param {number} index
    * @returns Promise<void>
    */
-  function loadMoreItems(index: number) {
-    log('loading from feedd');
-    return request({
-      requestBody: {
-        page: Math.floor(index / 100) + 1,
-      },
-    });
-  }
-
-  const Row = ({ index, style }: RowRender) => {
-    if (index === 0 && itemsWithTitle[0]) {
-      return <div style={style}>{itemsWithTitle[0].key}</div>;
-    }
-    return (
-      <RowWrapper style={style} data-testid={index}>
-        <PostWrapper>
-          <Post post={itemsWithTitle[index]} />
-        </PostWrapper>
-      </RowWrapper>
-    );
-  };
+  const loadMoreItems = useCallback(
+    (index: number) => {
+      log('loading from feedd');
+      return request({
+        requestBody: {
+          page: Math.floor(index / 100) + 1,
+        },
+      });
+    },
+    [request],
+  );
 
   /**
    * Function for determining if item is "loaded", causes loadMoreItems
@@ -76,53 +88,64 @@ const Feed = ({
    * @param {number} index
    * @returns {boolean}
    */
-  function isItemLoaded(index: number): boolean {
-    return !itemsWithTitle[index].fake;
-  }
+  const isItemLoaded = useCallback(
+    (index: number): boolean => {
+      return !itemsWithTitle[index].fake;
+    },
+    [itemsWithTitle],
+  );
 
-  function calculateSize(index: number): number {
-    const post = itemsWithTitle[index];
-    let height = 1;
-    let width = 1;
-    if (post.imageHeight) {
-      height = Number(post.imageHeight);
-    }
-    if (post.imageWidth) {
-      width = Number(post.imageWidth);
-    }
+  const calculateSize = useCallback(
+    containerWidth => (index: number): number => {
+      if (index === 0) return 150;
+      const post = itemsWithTitle[index];
+      let height = 1;
+      let width = 1;
+      if (post.imageHeight) {
+        height = Number(post.imageHeight);
+      }
+      if (post.imageWidth) {
+        width = Number(post.imageWidth);
+      }
 
-    const ratio = post.orientation === '6' ? width / height : height / width;
-    let size = ratio * Math.min(768, 620);
-    if (post.description) size += 34;
-    if (post.tags && post.tags.length) size += 34;
-    return size + 58;
-  }
-
-  return (
-    <Autosizer>
-      {({ height, width }) => (
-        <InfiniteLoader
-          itemCount={itemsWithTitle.length}
-          isItemLoaded={isItemLoaded}
-          loadMoreItems={loadMoreItems}
-        >
-          {({ onItemsRendered, ref }) => (
-            <InnerWrapper>
-              <List
-                ref={ref}
-                height={height}
-                onItemsRendered={onItemsRendered}
-                itemCount={itemsWithTitle.length}
-                itemSize={calculateSize}
-                width={width}
-              >
-                {Row}
-              </List>
-            </InnerWrapper>
-          )}
-        </InfiniteLoader>
-      )}
-    </Autosizer>
+      const ratio = post.orientation === '6' ? width / height : height / width;
+      let size = ratio * Math.min(containerWidth, 620);
+      if (post.description) size += 34;
+      if (post.tags && post.tags.length) size += 34;
+      return size + 112;
+    },
+    [itemsWithTitle],
+  );
+  return useMemo(
+    () => (
+      <Autosizer>
+        {({ height, width }) => (
+          <InfiniteLoader
+            itemCount={itemsWithTitle.length}
+            isItemLoaded={isItemLoaded}
+            loadMoreItems={loadMoreItems}
+          >
+            {({ onItemsRendered, ref }) => (
+              <InnerWrapper>
+                <List
+                  ref={ref}
+                  innerRef={ref}
+                  height={height}
+                  itemData={itemsWithTitle}
+                  onItemsRendered={onItemsRendered}
+                  itemCount={itemsWithTitle.length}
+                  itemSize={calculateSize(width)}
+                  width={width}
+                >
+                  {Row}
+                </List>
+              </InnerWrapper>
+            )}
+          </InfiniteLoader>
+        )}
+      </Autosizer>
+    ),
+    [calculateSize, isItemLoaded, itemsWithTitle, loadMoreItems],
   );
 };
 

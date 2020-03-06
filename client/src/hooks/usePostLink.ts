@@ -1,5 +1,5 @@
 import { Fragment, ElementType } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { PostsWithTagsWithFakes } from 'hooks/types';
 
@@ -12,21 +12,19 @@ interface UsePostLink {
     | {};
 }
 
-const usePostLink = (post: PostsWithTagsWithFakes): UsePostLink => {
-  const location = useLocation();
-  const galleryLinkPrefix = location.pathname.endsWith('/')
-    ? location.pathname
-    : `${location.pathname}/`;
+const usePostLink = ({
+  post,
+  hasLink,
+}: {
+  post: PostsWithTagsWithFakes;
+  hasLink: boolean;
+}): UsePostLink => {
+  const galleryLink = `gallery/${post.id ? post.id.split('-')[0] : ''}`;
 
-  const galleryLink = `${galleryLinkPrefix}gallery/${
-    post.id ? post.id.split('-')[0] : ''
-  }`;
-
-  const isGallery = location.pathname.includes('gallery');
-  const Element = isGallery ? Fragment : Link;
+  const Element = hasLink ? Link : Fragment;
   let props = {};
 
-  if (!isGallery) {
+  if (hasLink) {
     props = {
       to: galleryLink,
     };

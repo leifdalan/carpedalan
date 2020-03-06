@@ -23,7 +23,7 @@ const SidebarAndMenu: React.FC = (): React.ReactElement => {
   return (
     <>
       <Menu data-test="menu" onClick={toggleMenu} type="button" side="left">
-        Menuz
+        Menu
       </Menu>
       <Sidebar
         isOpen={shouldShowSidebar}

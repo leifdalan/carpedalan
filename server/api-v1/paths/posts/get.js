@@ -43,11 +43,7 @@ export default function(posts, redis) {
     const ids = response.data.map(({ id }) => id);
     let responseWithPlaceholders = response;
     if (ids.length) {
-      console.time('redisGet'); // eslint-disable-line no-console
       const svgs = await redis.mget(ids);
-      console.timeEnd('redisGet'); // eslint-disable-line no-console
-      console.error('ids', ids); // eslint-disable-line no-console
-      console.error('svgs', svgs); // eslint-disable-line no-console
 
       responseWithPlaceholders = {
         ...response,

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<App /> should match snapshot 1`] = `
-<DataProvider>
+<Component>
   <BrowserRouter>
     <ThemeProvider
       theme={
@@ -18,9 +18,9 @@ exports[`<App /> should match snapshot 1`] = `
         }
       }
     >
-      <Routes />
+      <AppRoutes />
       <Memo(GlobalStyleComponent) />
     </ThemeProvider>
   </BrowserRouter>
-</DataProvider>
+</Component>
 `;

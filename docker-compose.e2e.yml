@@ -61,6 +61,9 @@ services:
     depends_on:
       pg:
         condition: service_healthy
+      redis:
+        condition: service_started
+
 
     environment:
       PORT: 8001
@@ -70,6 +73,13 @@ services:
     extends:
       file: docker-compose.base.yml
       service: pg
+    ports: 
+      - 5432:5432
+    # This will auto-import this sql dump on init
+    volumes: 
+      - ./carpedalan.sql.gz:/docker-entrypoint-initdb.d/carpedalan.sql.gz
+
+
   aws:
     extends:
       file: docker-compose.base.yml
@@ -78,6 +88,10 @@ services:
     extends:
       file: docker-compose.base.yml
       service: redis
+    volumes: 
+      - ./output.rdb:/data/dir/output.rdb:cached
+    
+    command: redis-server --dbfilename output.rdb --dir /data/dir/
 
 
 

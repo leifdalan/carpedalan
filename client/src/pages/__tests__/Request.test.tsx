@@ -22,7 +22,7 @@ describe('<Request />', () => {
     const app = shallow(<Request />);
     const val = 'val';
     app.find('[data-test="submit"]').simulate('submit', new Event('submit'));
-    expect(mockedAxios.post).toHaveBeenCalledWith('/v1/invitation', {
+    expect(mockedAxios.post).toHaveBeenCalledWith('/v1/invitation/', {
       name: '',
       email: '',
     });

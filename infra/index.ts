@@ -14,7 +14,7 @@ import { makeDB } from './rds';
 import { makeRedis } from './redis';
 import { getSecrets } from './secrets';
 import { makeSns } from './sns';
-import { getResourceName as n } from './utils';
+import { getResourceName as n, createHashFromFile } from './utils';
 import { makeVpc } from './vpc';
 
 async function main() {
@@ -111,11 +111,15 @@ async function main() {
     '../imageResizer/layer/layer.zip',
   );
 
+  const sourceCodeHash = await createHashFromFile(
+    '../imageResizer/layer/layer.zip',
+  );
   const depLayer = new aws.lambda.LayerVersion(n('dep-layer'), {
     compatibleRuntimes: [runtime],
     code: layerArchive,
     layerName: n('dep-layer'),
-    // sourceCodeHash: layerHash,
+
+    sourceCodeHash,
   });
   const { topic } = makeSns({
     vpc,
@@ -171,6 +175,7 @@ async function main() {
     assetBucket: publicBucket.bucket,
     cdnDomain: publicDistroDomain,
     replicationGroup: replicationGroup.primaryEndpointAddress,
+    layerHash: sourceCodeHash,
   };
 }
 module.exports = main();

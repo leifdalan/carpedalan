@@ -9,6 +9,7 @@
 !client
 !e2e
 !dist
+scripts/samples
 client/node_modules
 e2e/node_modules
 cypress/node_modules

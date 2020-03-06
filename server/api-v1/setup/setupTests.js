@@ -21,7 +21,6 @@ afterAll(async () => {
   /**
    * @TODO why is this not working
    */
-  console.error('client', redis);
   
-  redis.client.end();
+  redis.default.client.end(true);
 })

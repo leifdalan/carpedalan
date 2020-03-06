@@ -1,6 +1,6 @@
 import debug from 'debug';
-import * as React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useRef, useEffect, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -20,7 +20,6 @@ const InnerWrapper = styled.main`
   height: 100%;
 `;
 
-const { useRef, useEffect } = React;
 const { VariableSizeList: List } = ReactWindow;
 
 const Wrapper = styled.div`
@@ -52,11 +51,6 @@ const Grid = ({
   const { width } = useWindow();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const location = useLocation();
-  const galleryLinkPrefix = location.pathname.endsWith('/')
-    ? location.pathname
-    : `${location.pathname}/`;
-
   const postsPerRow = Math.floor(refWidth / 150);
 
   useEffect(() => {
@@ -72,55 +66,51 @@ const Grid = ({
    * @param {number} index
    * @returns Promise<void>
    */
-  function loadMoreItems(index: number): Promise<void> {
-    const realIndex = index * postsPerRow;
-    return request({ requestBody: { page: Math.floor(realIndex / 100) + 1 } });
-  }
+  const loadMoreItems = useCallback(
+    (index: number): Promise<void> => {
+      const realIndex = index * postsPerRow;
+      return request({
+        requestBody: { page: Math.floor(realIndex / 100) + 1 },
+      });
+    },
+    [postsPerRow, request],
+  );
 
-  const Row = ({ index, style }: RowRender) => {
-    const postsPerRow = Math.floor(refWidth / 150);
+  const Row = useCallback(
+    ({ index, style }: RowRender) => {
+      const postsPerRow = Math.floor(refWidth / 150);
 
-    if (index === 0 && itemsWithTitle[0]) {
-      return <div style={style}>{itemsWithTitle[0].key}</div>;
-    }
+      if (index === 0 && itemsWithTitle[0]) {
+        return <div style={style}>{itemsWithTitle[0].key}</div>;
+      }
 
-    return (
-      <RowWrapper style={style} data-testid={index}>
-        {[...Array(postsPerRow).fill(0)].map((num, arrayIndex) => {
-          const post = itemsWithTitle[index * postsPerRow + arrayIndex];
-          const galleryLink = `${galleryLinkPrefix}gallery/${
-            post.id ? post.id.split('-')[0] : ''
-          }#grid`;
+      return (
+        <RowWrapper style={style} data-testid={index}>
+          {[...Array(postsPerRow).fill(0)].map((num, arrayIndex) => {
+            const post = itemsWithTitle[index * postsPerRow + arrayIndex];
+            const galleryLink = `gallery/${
+              post.id ? post.id.split('-')[0] : ''
+            }#grid`;
 
-          const isGallery = location.pathname.includes('gallery');
-
-          let Element = React.Fragment;
-          let props = {};
-
-          if (!isGallery) {
-            Element = StyledLink;
-            props = {
-              to: galleryLink,
-            };
-          }
-
-          return (
-            <Element {...props} key={post.id}>
-              <Picture
-                width="100%"
-                ratio={1}
-                post={post}
-                shouldShowImage
-                placeholderColor={itemsWithTitle[index].placeholder}
-                alt={itemsWithTitle[index].description}
-                type="square"
-              />
-            </Element>
-          );
-        })}
-      </RowWrapper>
-    );
-  };
+            return (
+              <StyledLink to={galleryLink} key={post.id}>
+                <Picture
+                  width="100%"
+                  ratio={1}
+                  post={post}
+                  shouldShowImage
+                  placeholderColor={itemsWithTitle[index].placeholder}
+                  alt={itemsWithTitle[index].description}
+                  type="square"
+                />
+              </StyledLink>
+            );
+          })}
+        </RowWrapper>
+      );
+    },
+    [itemsWithTitle, refWidth],
+  );
 
   /**
    * Function for determining if item is "loaded", causes loadMoreItems
@@ -129,13 +119,20 @@ const Grid = ({
    * @param {number} index
    * @returns {boolean}
    */
-  function isItemLoaded(index: number): boolean {
-    if (!itemsWithTitle[index * postsPerRow]) {
-      log('%c Overflow', 'background: red; color: black', index * postsPerRow);
-      return true;
-    }
-    return !itemsWithTitle[index * postsPerRow].fake;
-  }
+  const isItemLoaded = useCallback(
+    (index: number): boolean => {
+      if (!itemsWithTitle[index * postsPerRow]) {
+        log(
+          '%c Overflow',
+          'background: red; color: black',
+          index * postsPerRow,
+        );
+        return true;
+      }
+      return !itemsWithTitle[index * postsPerRow].fake;
+    },
+    [itemsWithTitle, postsPerRow],
+  );
 
   /**
    * Curried function that takes the container width and calculates
@@ -145,42 +142,55 @@ const Grid = ({
    * @param {number} containerWidth
    * @returns {(index: number) => number}
    */
-  function getItemSize(containerWidth: number): (index: number) => number {
-    return function calculateSize() {
-      const postsPerRow = Math.floor(refWidth / 150);
-      return containerWidth / postsPerRow;
-    };
-  }
+  const getItemSize = useCallback(
+    (containerWidth: number): ((index: number) => number) => {
+      return function calculateSize() {
+        const postsPerRow = Math.floor(refWidth / 150);
+        return containerWidth / postsPerRow;
+      };
+    },
+    [refWidth],
+  );
 
-  return (
-    <Wrapper ref={wrapperRef}>
-      <Autosizer>
-        {({ height, width }) => (
-          <InfiniteLoader
-            itemCount={itemsWithTitle.length}
-            isItemLoaded={isItemLoaded}
-            loadMoreItems={loadMoreItems}
-          >
-            {({ onItemsRendered, ref }) => (
-              <InnerWrapper>
-                <List
-                  ref={ref}
-                  height={height}
-                  onItemsRendered={onItemsRendered}
-                  itemCount={
-                    Math.floor(itemsWithTitle.length / postsPerRow) || 1
-                  }
-                  itemSize={getItemSize(width)}
-                  width={width}
-                >
-                  {Row}
-                </List>
-              </InnerWrapper>
-            )}
-          </InfiniteLoader>
-        )}
-      </Autosizer>
-    </Wrapper>
+  return useMemo(
+    () => (
+      <Wrapper ref={wrapperRef}>
+        <Autosizer>
+          {({ height, width }) => (
+            <InfiniteLoader
+              itemCount={itemsWithTitle.length}
+              isItemLoaded={isItemLoaded}
+              loadMoreItems={loadMoreItems}
+            >
+              {({ onItemsRendered, ref }) => (
+                <InnerWrapper>
+                  <List
+                    ref={ref}
+                    height={height}
+                    onItemsRendered={onItemsRendered}
+                    itemCount={
+                      Math.floor(itemsWithTitle.length / postsPerRow) || 1
+                    }
+                    itemSize={getItemSize(width)}
+                    width={width}
+                  >
+                    {Row}
+                  </List>
+                </InnerWrapper>
+              )}
+            </InfiniteLoader>
+          )}
+        </Autosizer>
+      </Wrapper>
+    ),
+    [
+      Row,
+      getItemSize,
+      isItemLoaded,
+      itemsWithTitle.length,
+      loadMoreItems,
+      postsPerRow,
+    ],
   );
 };
 

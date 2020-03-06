@@ -11,11 +11,9 @@ import {
   formatDate,
   getThemeValue,
   TITLE_FONT,
+  prop,
 } from 'styles/utils';
 import { getImageRatio, getOriginalImagePath } from 'utils';
-
-// Which works! and has type safety and autocomplete. Can you think of a way to do
-// type it without "any"?
 
 const Description = styled.div`
   padding: 1em 1em 0;
@@ -36,17 +34,6 @@ const StyledLink = styled(Link)`
   color: ${getThemeValue('neutralColor')};
 `;
 
-const HR = styled.div`
-  margin-top: 1em;
-  display: flex;
-  justify-content: center;
-  :after {
-    border-bottom: 1px solid #999;
-    width: calc(100% - 2em);
-    content: '';
-  }
-`;
-
 const Download = styled.a`
   color: ${getThemeValue(BRAND_COLOR)};
   font-family: ${getThemeValue(TITLE_FONT)};
@@ -54,9 +41,21 @@ const Download = styled.a`
   text-decoration: none;
 `;
 
-const Header = styled(FlexContainer)`
-  padding: 1em;
+const Header = styled(FlexContainer)<{ width?: string }>`
   background-color: ${getThemeValue('main')};
+  padding: 1em;
+  width: ${prop('width')};
+  align-self: center;
+`;
+
+const Article = styled.article`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Post = ({
@@ -74,8 +73,13 @@ const Post = ({
 }) => {
   const { Element, props } = usePostLink({ post, hasLink });
   return (
-    <article ref={safeRef}>
-      <Header justifyContent={FlexEnums.spaceBetween}>
+    <Article>
+      <Header
+        width={width}
+        ref={safeRef}
+        as="header"
+        justifyContent={FlexEnums.spaceBetween}
+      >
         <Download data-test="date" as="div">
           {post.timestamp ? formatDate(post.timestamp) : null}
         </Download>
@@ -108,8 +112,7 @@ const Post = ({
           </ul>
         ) : null}
       </Description>
-      <HR />
-    </article>
+    </Article>
   );
 };
 

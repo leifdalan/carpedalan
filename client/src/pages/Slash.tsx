@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import Feed from 'components/Feed';
 import Gallery from 'components/Gallery';
 import Grid from 'components/Grid';
+import Menu from 'components/Menu';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePosts from 'hooks/usePosts';
 
@@ -22,13 +23,6 @@ const { useEffect } = React;
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-`;
-
-const GridListSwitcher = styled.div`
-  position: fixed;
-  z-index: 2;
-  top: 0;
-  right: 0;
 `;
 
 interface RowRender {
@@ -51,17 +45,17 @@ const Slash: React.FC = (): React.ReactElement => {
   useEffect(() => {
     log('%c post dep changed', 'background: blue;');
     const newPosts = [...posts];
-    newPosts.unshift({ fake: true, placeholder: '', key: 'title' });
+    newPosts.unshift({ fake: true, placeholder: '', key: 'Carpe Dalan' });
     setPostsWithTitle(newPosts);
   }, [posts]);
 
   return (
     <>
-      <GridListSwitcher>
+      <Menu side="right">
         <Link to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
           {hash.includes('grid') ? 'List' : 'Grid'}
         </Link>
-      </GridListSwitcher>
+      </Menu>
 
       <Wrapper data-testid="home">
         {isGrid() ? (

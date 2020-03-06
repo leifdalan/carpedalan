@@ -1,15 +1,14 @@
 import debug from 'debug';
-import React, { useRef, useContext, MouseEvent } from 'react';
+import React, { useRef, useContext } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
+import GalleryPost from 'components/GalleryPost';
+import Modal from 'components/Modal';
 import useWindow from 'hooks/useWindow';
 import { DataContext } from 'providers/Data';
 import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
-
-import { getImageRatio } from '../../utils';
-import Modal from '../Modal';
-import Post from '../Post';
+import { getImageRatio } from 'utils';
 
 const log = debug('components:Gallery');
 
@@ -29,7 +28,6 @@ const Gallery: React.FC = () => {
   const {
     data: { postsById },
   } = useContext(DataContext);
-  log('posts', postsById);
 
   const postId = Object.keys(postsById).find(id => {
     if (id) {
@@ -51,9 +49,7 @@ const Gallery: React.FC = () => {
       ? `${height / photoAspectRatio - 100}px`
       : '100%';
 
-  const onClose = (e: MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-
+  const onClose = () => {
     const routeWithoutGallery = location.pathname
       .replace(`/${params.postId}`, '')
       .replace('/gallery', '');
@@ -64,7 +60,12 @@ const Gallery: React.FC = () => {
   return (
     <Modal onClose={onClose} safeRef={safeRef}>
       <Container alignItems={center} justifyContent={center}>
-        <Post safeRef={safeRef} post={post} width={photoWidth} />
+        <GalleryPost
+          hasLink={false}
+          safeRef={safeRef}
+          post={post}
+          width={photoWidth}
+        />
       </Container>
     </Modal>
   );

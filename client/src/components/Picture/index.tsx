@@ -98,6 +98,7 @@ const Picture = ({
     setTransitionTime(transitionTime);
     setLoading(true);
   }, [renderStart]);
+
   return (
     <Wrapper
       style={{

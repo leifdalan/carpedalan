@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { prop } from 'styles/utils';
+import { prop, getThemeValue } from 'styles/utils';
 
 interface IMenu {
   readonly side: string;
@@ -19,6 +19,17 @@ const Menu = styled.button<IMenu>`
   box-shadow: rgba(255, 255, 255, 0.6) 0px 0px 10px 10px;
   border-radius: 40%;
   margin-top: 1em;
+  font-family: ${getThemeValue('titleFont')};
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: 7px;
+  font-size: 16px;
+  a {
+    text-decoration: none;
+    &:hover {
+      color: inherit;
+    }
+  }
 `;
 
 export default Menu;

@@ -1,7 +1,6 @@
 import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
 import * as pulumi from '@pulumi/pulumi';
-import { Input } from '@pulumi/pulumi';
 
 import { getResourceName as n, getTags as t } from './utils';
 
@@ -193,8 +192,8 @@ CreateI) {
           rulePriority: 1,
           description: 'Delete everything!',
           selection: {
-            tagStatus: 'any' as Input<'any' | 'tagged' | 'untagged'>,
-            countType: 'sinceImagePushed' as Input<
+            tagStatus: 'any' as pulumi.Input<'any' | 'tagged' | 'untagged'>,
+            countType: 'sinceImagePushed' as pulumi.Input<
               'imageCountMoreThan' | 'sinceImagePushed'
             >,
             countUnit: 'days',

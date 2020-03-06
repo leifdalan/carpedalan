@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import Title from './Title';
+import { getThemeValue } from './utils';
 
 export enum Side {
   right = 'right',
@@ -25,6 +26,7 @@ const Menu = styled(Title)<MenuProps>`
   box-shadow: rgba(255, 255, 255, 0.6) 0px 0px 10px 10px;
   border-radius: 40%;
   margin-top: 1em;
+  font-family: ${getThemeValue('titleFont')};
 `;
 
 export default Menu;

@@ -43,7 +43,7 @@ const AppRoutes: React.FC = () => {
         {globalUser ? (
           <Route path="/*" element={<LazySlash />} />
         ) : (
-          <Route path="/" element={<Login />} />
+          <Route path="/*" element={<Login />} />
         )}
         <Route path="*" element={<RedirectToLogin />} />
       </Routes>

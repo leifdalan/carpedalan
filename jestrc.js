@@ -18,9 +18,6 @@ module.exports = {
     '!api/setup/**/*',
   ],
 
-  // transform: {
-  //   '\\.m?js$': 'esm',
-  // },
   // transformIgnorePatterns: [],
   // transformIgnorePatterns: [
   //   'node_modules/(?!(react-virtualized|react-select|)/)',

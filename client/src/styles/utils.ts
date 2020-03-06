@@ -1,5 +1,5 @@
 import { format, fromUnixTime } from 'date-fns';
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle, keyframes } from 'styled-components';
 
 // and extend them!
 
@@ -95,6 +95,11 @@ export function propTrueFalse<T>(
   };
 }
 
+const animation = keyframes`
+    0%{background-position:0% 65%}
+    50%{background-position:100% 36%}
+    100%{background-position:0% 65%}`;
+
 export const GlobalStyleComponent = createGlobalStyle`
   
   @font-face {
@@ -126,14 +131,19 @@ export const GlobalStyleComponent = createGlobalStyle`
   }
 
   body, html, #root {
-    background: ${getThemeValue(MAIN)}; 
-    color: ${getThemeValue(TEXT)};
+    /* color: ${getThemeValue(TEXT)}; */
     width: 100%;
     height: 100%;
     padding: 0;
     margin: 0;
     font-family: ${getThemeValue(BODY_FONT)};
     font-variation-settings: 'wght' 387, 'wdth' 90;
+  }
+
+  a {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
 
   #root {
@@ -153,6 +163,26 @@ export const GlobalStyleComponent = createGlobalStyle`
     width: 100%;
     display: block;
   }
+  body {
+    background: linear-gradient(76deg, #fae0ff, #bdfbff, #ffc3bd);
+
+    background-size: 600% 600%;
+
+    min-height: 100vh;
+    animation: ${animation} 60s ease infinite;
+  
+  &:before {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    mask-image: linear-gradient(to bottom, transparent, black);
+    background: linear-gradient(90deg, #b9b9b9,#e1bfff);	
+  }
+}  
 `;
 
 const dark = {
@@ -167,7 +197,7 @@ const dark = {
 
 const lite = {
   [BODY_FONT]: `Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif`,
-  [MAIN]: 'white',
+  [MAIN]: '#ffebfa',
   [TEXT]: '#443',
   [SIDEBAR_COLOR]: 'rgba(247, 205, 219, 0.8)',
   [BRAND_COLOR]: 'rgb(0, 72, 206)',
