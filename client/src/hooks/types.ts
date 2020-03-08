@@ -4,9 +4,9 @@ import { PostWithTagsI } from 'ApiClient';
  * "Fake" post that hold the fake flag
  *
  * @interface PostsWithTagsWithFakes
- * @extends {Components.Schemas.PostWithTags}
+ * @extends {PostWithTagsI}
  */
-export interface PostsWithTagsWithFakes extends PostWithTagsI {
+export interface PostsWithTagsWithFakes extends Omit<PostWithTagsI, 'key'> {
   /**
    * Whether or not this post object respresents a "fake" one
    *
@@ -22,4 +22,5 @@ export interface PostsWithTagsWithFakes extends PostWithTagsI {
    * @memberof PostsWithTagsWithFakes
    */
   placeholder: string;
+  key?: string;
 }

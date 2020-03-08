@@ -1,12 +1,17 @@
 import debug from 'debug';
-import React, { useCallback, memo, useMemo } from 'react';
+import throttle from 'lodash/throttle';
+import React, { memo, RefObject, useEffect, useRef, useCallback } from 'react';
 import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import styled from 'styled-components';
 
+import withErrorBoundary from 'components/ErrorBoundary';
 import Post from 'components/Post';
+import { defaultPostsPerPage } from 'config';
 import { PostsWithTagsWithFakes } from 'hooks/types';
+import useCallbackRef from 'hooks/useCallbackRef';
+import useLocalStorage from 'hooks/useLocalStorage';
 import usePosts from 'hooks/usePosts';
 
 const log = debug('component:Feed');
@@ -56,12 +61,32 @@ const Row = memo(({ index, style, data }: RowRender) => {
   );
 }, areEqual);
 
+interface LoadedInfiniteLoaderType extends InfiniteLoader {
+  _listRef: ReactWindow.VariableSizeList;
+}
+
 const Feed = ({
   itemsWithTitle,
 }: {
   itemsWithTitle: PostsWithTagsWithFakes[];
 }): React.ReactElement => {
   const { request } = usePosts();
+  const localScroll = useRef(0);
+  const [scrollPos, setScrollPos] = useLocalStorage<number>('feedScrollPos', 0);
+  const refCallback = useCallback(
+    (ref: LoadedInfiniteLoaderType | null) => {
+      ref?._listRef?.scrollTo?.(scrollPos); // eslint-disable-line no-unused-expressions
+    },
+    [scrollPos],
+  );
+  const infiniteRef = useCallbackRef<LoadedInfiniteLoaderType>(
+    null,
+    refCallback,
+  );
+
+  useEffect(() => {
+    return () => setScrollPos(localScroll.current);
+  }, [setScrollPos]);
 
   /**
    * Triggered if isItemLoaded returns false
@@ -70,11 +95,16 @@ const Feed = ({
    * @returns Promise<void>
    */
   const loadMoreItems = useCallback(
-    (index: number) => {
-      log('loading from feedd');
+    (startIndex: number) => {
+      log(
+        '%c loading from feed',
+        'background: red; font-size: 32px',
+        startIndex,
+        Math.floor(startIndex / defaultPostsPerPage) + 1,
+      );
       return request({
         requestBody: {
-          page: Math.floor(index / 100) + 1,
+          page: Math.floor(startIndex / defaultPostsPerPage) + 1,
         },
       });
     },
@@ -90,9 +120,24 @@ const Feed = ({
    */
   const isItemLoaded = useCallback(
     (index: number): boolean => {
+      // if (itemsWithTitle[index].fake)
+      //   console.error('NOT LOADED', index, itemsWithTitle[index]);
       return !itemsWithTitle[index].fake;
     },
     [itemsWithTitle],
+  );
+
+  const handleScroll = useCallback(
+    (onScroll: ReactWindow.ListOnScrollProps) => {
+      const throttled = throttle(
+        ({ scrollOffset }: ReactWindow.ListOnScrollProps) => {
+          if (scrollOffset !== 0) localScroll.current = scrollOffset;
+        },
+        1000,
+      );
+      return throttled(onScroll);
+    },
+    [],
   );
 
   const calculateSize = useCallback(
@@ -116,37 +161,35 @@ const Feed = ({
     },
     [itemsWithTitle],
   );
-  return useMemo(
-    () => (
-      <Autosizer>
-        {({ height, width }) => (
-          <InfiniteLoader
-            itemCount={itemsWithTitle.length}
-            isItemLoaded={isItemLoaded}
-            loadMoreItems={loadMoreItems}
-          >
-            {({ onItemsRendered, ref }) => (
-              <InnerWrapper>
-                <List
-                  ref={ref}
-                  innerRef={ref}
-                  height={height}
-                  itemData={itemsWithTitle}
-                  onItemsRendered={onItemsRendered}
-                  itemCount={itemsWithTitle.length}
-                  itemSize={calculateSize(width)}
-                  width={width}
-                >
-                  {Row}
-                </List>
-              </InnerWrapper>
-            )}
-          </InfiniteLoader>
-        )}
-      </Autosizer>
-    ),
-    [calculateSize, isItemLoaded, itemsWithTitle, loadMoreItems],
+  return (
+    <Autosizer>
+      {({ height, width }) => (
+        <InfiniteLoader
+          itemCount={itemsWithTitle.length}
+          isItemLoaded={isItemLoaded}
+          loadMoreItems={loadMoreItems}
+          ref={infiniteRef as RefObject<InfiniteLoader>}
+        >
+          {({ onItemsRendered, ref }) => (
+            <InnerWrapper>
+              <List
+                ref={ref}
+                height={height}
+                itemData={itemsWithTitle}
+                onItemsRendered={onItemsRendered}
+                itemCount={itemsWithTitle.length}
+                itemSize={calculateSize(width)}
+                width={width}
+                onScroll={handleScroll}
+              >
+                {Row}
+              </List>
+            </InnerWrapper>
+          )}
+        </InfiniteLoader>
+      )}
+    </Autosizer>
   );
 };
 
-export default Feed;
+export default withErrorBoundary({ Component: Feed, namespace: 'Feed' });

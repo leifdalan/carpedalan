@@ -121,7 +121,7 @@ const Picture = ({
             dangerouslySetInnerHTML={{
               __html: post.svg.replace(
                 '<svg',
-                '<svg preserveAspectRatio="xMidYMid slice"',
+                '<svg preserveAspectRatio="xMidYMid slice"', // deal with it
               ),
             }}
           />

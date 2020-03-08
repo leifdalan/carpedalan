@@ -36,11 +36,11 @@ export const getImagePath = ({
   prefix = 'web',
 }: GetImagePath): string => {
   const { width, height } = SIZE_MAP[size];
-  return post.fake
-    ? ''
-    : `https://${cdn}/${prefix}/${
-        post.key.split('/')[1].split('.')[0]
-      }-${width}${height ? `-${height}` : ''}.${type}`;
+  const base = post.key?.split('/')[1]?.split('.')[0];
+  const extension = `${width}${height ? `-${height}` : ''}`;
+  if (!post.fake && base)
+    return `https://${cdn}/${prefix}/${base}-${extension}.${type}`;
+  return '';
 };
 
 export const getOriginalImagePath = ({

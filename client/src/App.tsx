@@ -6,6 +6,7 @@ import { ThemeProvider } from 'styled-components';
 import { client as api } from 'ApiClient';
 import Routes from 'Routes';
 import { User } from 'User';
+import withErrorBoundary from 'components/ErrorBoundary';
 import useUser from 'hooks/useUser';
 import { DataProvider } from 'providers/Data';
 import { GlobalStyleComponent, themes } from 'styles/utils';
@@ -50,4 +51,4 @@ const App: React.FC<{ user: User }> = () => {
   );
 };
 
-export default App;
+export default withErrorBoundary({ Component: App, namespace: 'App Level' });

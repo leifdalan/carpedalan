@@ -37,6 +37,9 @@ services:
       - './.env-local:/app/.env:cached'
       - './dev-dump.sql:/app/dev-dump.sql:cached'
 
+    environment: 
+      DEFAULT_POSTS_PER_PAGE: "${DEFAULT_POSTS_PER_PAGE-100}"
+
     depends_on:
       pg:
         condition: service_healthy
@@ -50,6 +53,9 @@ services:
       service: client
     ports:
       - 4000:4000
+    environment: 
+      DEFAULT_POSTS_PER_PAGE: "${DEFAULT_POSTS_PER_PAGE-100}"
+
 
 
   pg:

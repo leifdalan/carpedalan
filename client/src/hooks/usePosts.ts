@@ -2,13 +2,14 @@ import debug from 'debug';
 import { useContext, useEffect, useState } from 'react';
 
 import { client, PostWithTagsI } from 'ApiClient';
+import { defaultPostsPerPage } from 'config';
 import usePrevious from 'hooks/usePrevious';
 import { DataContext } from 'providers/Data';
 
 import { PostsWithTagsWithFakes } from './types';
 import useApi from './useApi';
 
-const DEFAULT_PAGE_SIZE = 100;
+const DEFAULT_PAGE_SIZE = defaultPostsPerPage;
 
 const log = debug('hooks:usePosts');
 
@@ -69,11 +70,13 @@ function makePostsListWithFakes(
  *
  * @returns {UsePost}
  */
+
+let postsByPage = {};
 const usePosts = () => {
   const { setPosts, data } = useContext(DataContext);
 
   const { request, response, loading, error } = useApi(client.getPosts);
-  const [postsByPage, setPostsByPage] = useState<PostsByPage>({});
+
   const [total, setTotal] = useState<number>(0);
   const [allPosts, setAllPosts] = useState<PostsWithTagsWithFakes[]>([]);
   const previousResponse = usePrevious(response);
@@ -84,7 +87,7 @@ const usePosts = () => {
         [response.meta.page]: response.data,
       };
 
-      setPostsByPage(newPostsByPage);
+      postsByPage = newPostsByPage;
       if (!total) {
         setTotal(response.meta.count);
       }
@@ -116,7 +119,7 @@ const usePosts = () => {
       setAllPosts(newAllPosts);
       setPosts(newAllPosts);
     }
-  }, [allPosts, postsByPage, previousResponse, response, setPosts, total]);
+  }, [allPosts, previousResponse, response, setPosts, total]);
 
   return { response, loading, error, request, posts: data.posts };
 };

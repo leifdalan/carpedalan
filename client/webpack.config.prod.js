@@ -62,6 +62,9 @@ module.exports = {
         NODE_ENV: JSON.stringify('production'),
         LOG_LEVEL: JSON.stringify(process.env.LOG_LEVEL),
         ASSET_CDN_DOMAIN: JSON.stringify(process.env.ASSET_CDN_DOMAIN),
+        DEFAULT_POSTS_PER_PAGE: JSON.stringify(
+          process.env.DEFAULT_POSTS_PER_PAGE,
+        ),
       },
     }),
     new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false }),

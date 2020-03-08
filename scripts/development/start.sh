@@ -1,5 +1,5 @@
 #!/bin/bash
-set -o errexit
+set -e
 # pushd "$(cd "$(dirname "$0")" ; pwd -P )/.." > /dev/null
 function down() {
   docker-compose down

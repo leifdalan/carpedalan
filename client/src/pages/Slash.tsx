@@ -31,7 +31,7 @@ interface RowRender {
 }
 
 const Slash: React.FC = (): React.ReactElement => {
-  const { posts } = usePosts();
+  const { posts, request } = usePosts();
   const [postsWithTitle, setPostsWithTitle] = useState<
     PostsWithTagsWithFakes[]
   >(posts);
@@ -43,9 +43,17 @@ const Slash: React.FC = (): React.ReactElement => {
   }
 
   useEffect(() => {
+    request({
+      requestBody: {
+        page: 1,
+      },
+    });
+  }, [request]);
+
+  useEffect(() => {
     log('%c post dep changed', 'background: blue;');
     const newPosts = [...posts];
-    newPosts.unshift({ fake: true, placeholder: '', key: 'Carpe Dalan' });
+    newPosts.unshift({ fake: false, placeholder: '', key: 'Carpe Dalan' });
     setPostsWithTitle(newPosts);
   }, [posts]);
 

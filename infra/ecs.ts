@@ -169,6 +169,10 @@ CreateI) {
       value: CI_COMMIT_REF_NAME,
     },
     {
+      name: 'DEFAULT_POSTS_PER_PAGE',
+      value: '50',
+    },
+    {
       name: 'REDIS_URL',
       /**
        * @TODO Figure out how to get this dynamically from aws.elasticache.Cluster/ReplicaGroup

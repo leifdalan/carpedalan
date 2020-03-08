@@ -1,10 +1,15 @@
-import * as React from 'react';
-import { Link } from 'react-router-dom';
+import debug from 'debug';
+import React, { useCallback, useState, useMemo } from 'react';
+import { useLocation } from 'react-router';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSwipeable, SwipeCallback } from 'react-swipeable';
 import styled from 'styled-components';
 
 import Picture from 'components/Picture';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePostLink from 'hooks/usePostLink';
+import usePosts from 'hooks/usePosts';
+import useWindow from 'hooks/useWindow';
 import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
 import {
   BRAND_COLOR,
@@ -14,6 +19,22 @@ import {
   prop,
 } from 'styles/utils';
 import { getImageRatio, getOriginalImagePath } from 'utils';
+
+const log = debug('components:Gallery');
+
+const TRANSITION_TIME = 200;
+const TRANSITION_TIME_MS = `${TRANSITION_TIME}ms`;
+
+const NextPrev = styled.article`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -1;
+  flex-direction: column;
+`;
 
 const Description = styled.div`
   padding: 1em 1em 0;
@@ -58,22 +79,24 @@ const Article = styled.article`
   align-items: center;
 `;
 
-const Post = ({
-  post,
-  isSquare = false,
-  width = '100%',
-  safeRef,
-  hasLink,
-}: {
+interface PostI {
   post: PostsWithTagsWithFakes;
   isSquare?: boolean;
   width?: string;
   safeRef?: React.MutableRefObject<HTMLElement | null>;
   hasLink: boolean;
-}) => {
+}
+
+const PostBody = ({
+  post,
+  isSquare = false,
+  width = '100%',
+  safeRef,
+  hasLink,
+}: PostI) => {
   const { Element, props } = usePostLink({ post, hasLink });
   return (
-    <Article>
+    <>
       <Header
         width={width}
         ref={safeRef}
@@ -112,7 +135,155 @@ const Post = ({
           </ul>
         ) : null}
       </Description>
-    </Article>
+    </>
+  );
+};
+
+const Post = ({
+  post,
+  isSquare = false,
+  width = '100%',
+  safeRef,
+  hasLink,
+}: PostI) => {
+  const { width: windowWidth } = useWindow();
+  const navigate = useNavigate();
+  const { posts } = usePosts();
+  const [swipe, setSwipe] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const location = useLocation();
+
+  const [previousPost, nextPost] = useMemo(() => {
+    const postIndex = posts.findIndex(({ id }) => id === post.id);
+    log('post index', postIndex);
+    return [posts[postIndex - 1], posts[postIndex + 1]];
+  }, [post.id, posts]);
+
+  const handleSwiping = useCallback<SwipeCallback>(
+    eventData => {
+      if (!previousPost && eventData.deltaX < 0) {
+        setSwipe(eventData.deltaX / 4);
+      } else if (!nextPost && eventData.deltaX > 0) {
+        setSwipe(eventData.deltaX / 4);
+      } else {
+        setSwipe(eventData.deltaX);
+      }
+
+      if (!isSwiping) setIsSwiping(true);
+    },
+    [isSwiping, nextPost, previousPost],
+  );
+
+  const handleSwiped = useCallback<SwipeCallback>(
+    eventData => {
+      setIsSwiping(false);
+      log('DElta', eventData.deltaX);
+      if (
+        nextPost &&
+        eventData.deltaX > 0 &&
+        (eventData.deltaX > 100 || eventData.velocity > 0.5)
+      ) {
+        setSwipe(windowWidth);
+        const galleryLink = `/gallery/${
+          nextPost.id ? nextPost.id.split('-')[0] : ''
+        }${location.hash}`;
+        setTimeout(() => {
+          navigate(galleryLink);
+          setIsSwiping(true);
+          setSwipe(0);
+        }, TRANSITION_TIME);
+      } else if (
+        previousPost &&
+        eventData.deltaX < 0 &&
+        (eventData.deltaX < -100 || eventData.velocity > 0.5)
+      ) {
+        setSwipe(-windowWidth);
+        const galleryLink = `/gallery/${
+          previousPost.id ? previousPost.id.split('-')[0] : ''
+        }${location.hash}`;
+        setTimeout(() => {
+          navigate(galleryLink);
+          setIsSwiping(true);
+          setSwipe(0);
+        }, TRANSITION_TIME);
+      } else {
+        setSwipe(0);
+      }
+
+      log('done swiping');
+    },
+    [location.hash, navigate, nextPost, previousPost, windowWidth],
+  );
+
+  const handlers = useSwipeable({
+    onSwiping: handleSwiping,
+    trackMouse: true,
+    onSwiped: handleSwiped,
+    preventDefaultTouchmoveEvent: true,
+  });
+
+  const percentage = Math.abs(swipe / windowWidth);
+
+  return (
+    <>
+      {previousPost && swipe < 0 ? (
+        <NextPrev
+          style={{
+            transform: `scale(${0.5 + percentage * 0.5})`,
+            opacity: percentage,
+            ...(!isSwiping
+              ? { transition: `transform ${TRANSITION_TIME_MS} ease-out` }
+              : {}),
+          }}
+        >
+          <PostBody
+            post={previousPost}
+            hasLink={hasLink}
+            isSquare={isSquare}
+            width={width}
+          />
+        </NextPrev>
+      ) : null}
+      <Article
+        {...handlers}
+        style={{
+          transform: `translate(${-swipe}px)`,
+          opacity: 1 - percentage,
+          ...(!isSwiping
+            ? {
+                opacity: 1 - percentage,
+                transition: `transform ${TRANSITION_TIME_MS} ease-out, opacity ${TRANSITION_TIME_MS} ease-out`,
+              }
+            : {}),
+        }}
+      >
+        <PostBody
+          post={post}
+          hasLink={hasLink}
+          isSquare={isSquare}
+          width={width}
+          safeRef={safeRef}
+        />
+      </Article>
+      {nextPost && swipe > 0 ? (
+        <NextPrev
+          style={{
+            transform: `scale(${0.5 + percentage * 0.5})`,
+            opacity: percentage,
+            ...(!isSwiping
+              ? { transition: `transform ${TRANSITION_TIME_MS} ease-out` }
+              : {}),
+          }}
+        >
+          <PostBody
+            post={nextPost}
+            hasLink={hasLink}
+            isSquare={isSquare}
+            width={width}
+          />
+        </NextPrev>
+      ) : null}
+    </>
   );
 };
 

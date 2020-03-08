@@ -2,6 +2,7 @@ import debug from 'debug';
 import * as React from 'react';
 import { Redirect, Route, Routes } from 'react-router-dom';
 
+import withErrorBoundary from 'components/ErrorBoundary';
 import SidebarAndMenu from 'components/SidebarAndMenu';
 import useTags from 'hooks/useTags';
 import useUser from 'hooks/useUser';
@@ -51,4 +52,4 @@ const AppRoutes: React.FC = () => {
   );
 };
 
-export default AppRoutes;
+export default withErrorBoundary({ Component: AppRoutes, namespace: 'Routes' });

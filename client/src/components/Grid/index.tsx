@@ -7,6 +7,7 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import styled from 'styled-components';
 
 import Picture from 'components/Picture';
+import { defaultPostsPerPage } from 'config';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePosts from 'hooks/usePosts';
 import useWindow from 'hooks/useWindow';
@@ -35,11 +36,6 @@ const StyledLink = styled(Link)`
   display: block;
   width: 100%;
 `;
-
-interface RowRender {
-  index: number;
-  style: React.CSSProperties;
-}
 
 const Grid = ({
   itemsWithTitle,
@@ -70,14 +66,14 @@ const Grid = ({
     (index: number): Promise<void> => {
       const realIndex = index * postsPerRow;
       return request({
-        requestBody: { page: Math.floor(realIndex / 100) + 1 },
+        requestBody: { page: Math.floor(realIndex / defaultPostsPerPage) + 1 },
       });
     },
     [postsPerRow, request],
   );
 
   const Row = useCallback(
-    ({ index, style }: RowRender) => {
+    ({ index, style }: ReactWindow.ListChildComponentProps) => {
       const postsPerRow = Math.floor(refWidth / 150);
 
       if (index === 0 && itemsWithTitle[0]) {
@@ -85,7 +81,11 @@ const Grid = ({
       }
 
       return (
-        <RowWrapper style={style} data-testid={index}>
+        <RowWrapper
+          key={itemsWithTitle[index].id}
+          style={style}
+          data-testid={index}
+        >
           {[...Array(postsPerRow).fill(0)].map((num, arrayIndex) => {
             const post = itemsWithTitle[index * postsPerRow + arrayIndex];
             const galleryLink = `gallery/${
@@ -121,6 +121,7 @@ const Grid = ({
    */
   const isItemLoaded = useCallback(
     (index: number): boolean => {
+      log('index for grid', index, postsPerRow);
       if (!itemsWithTitle[index * postsPerRow]) {
         log(
           '%c Overflow',
@@ -129,6 +130,10 @@ const Grid = ({
         );
         return true;
       }
+      log(
+        'itemsWithTitle[index * postsPerRow]',
+        itemsWithTitle[index * postsPerRow],
+      );
       return !itemsWithTitle[index * postsPerRow].fake;
     },
     [itemsWithTitle, postsPerRow],

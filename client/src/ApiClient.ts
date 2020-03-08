@@ -3294,7 +3294,7 @@ export default class ApiClient {
   public async getPosts({ requestBody }: BodyOnly<GetPostsQueryI>) {
     try {
       
-      const { data } = await axios.get<GetPostsResponseBodyI>(`/v1/posts/`);
+      const { data } = await axios.get<GetPostsResponseBodyI>(`/v1/posts?${stringify(requestBody)}`);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;

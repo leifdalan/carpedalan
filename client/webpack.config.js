@@ -70,6 +70,9 @@ module.exports = {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
         LOG_LEVEL: JSON.stringify(process.env.LOG_LEVEL),
         ASSET_CDN_DOMAIN: JSON.stringify(process.env.ASSET_CDN_DOMAIN),
+        DEFAULT_POSTS_PER_PAGE: JSON.stringify(
+          process.env.DEFAULT_POSTS_PER_PAGE,
+        ),
       },
     }),
     new Stylish(),
