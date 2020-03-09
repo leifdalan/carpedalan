@@ -1,6 +1,5 @@
 import debug from 'debug';
-import throttle from 'lodash/throttle';
-import React, { memo, RefObject, useEffect, useRef, useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -10,9 +9,8 @@ import withErrorBoundary from 'components/ErrorBoundary';
 import Post from 'components/Post';
 import { defaultPostsPerPage } from 'config';
 import { PostsWithTagsWithFakes } from 'hooks/types';
-import useCallbackRef from 'hooks/useCallbackRef';
-import useLocalStorage from 'hooks/useLocalStorage';
 import usePosts from 'hooks/usePosts';
+import useScrollPersist from 'hooks/useScrollPersist';
 
 const log = debug('component:Feed');
 
@@ -61,33 +59,13 @@ const Row = memo(({ index, style, data }: RowRender) => {
   );
 }, areEqual);
 
-interface LoadedInfiniteLoaderType extends InfiniteLoader {
-  _listRef: ReactWindow.VariableSizeList;
-}
-
 const Feed = ({
   itemsWithTitle,
 }: {
   itemsWithTitle: PostsWithTagsWithFakes[];
 }): React.ReactElement => {
   const { request } = usePosts();
-  const localScroll = useRef(0);
-  const [scrollPos, setScrollPos] = useLocalStorage<number>('feedScrollPos', 0);
-  const refCallback = useCallback(
-    (ref: LoadedInfiniteLoaderType | null) => {
-      ref?._listRef?.scrollTo?.(scrollPos); // eslint-disable-line no-unused-expressions
-    },
-    [scrollPos],
-  );
-  const infiniteRef = useCallbackRef<LoadedInfiniteLoaderType>(
-    null,
-    refCallback,
-  );
-
-  useEffect(() => {
-    return () => setScrollPos(localScroll.current);
-  }, [setScrollPos]);
-
+  const { infiniteRef, handleScroll } = useScrollPersist('feed');
   /**
    * Triggered if isItemLoaded returns false
    *
@@ -95,20 +73,27 @@ const Feed = ({
    * @returns Promise<void>
    */
   const loadMoreItems = useCallback(
-    (startIndex: number) => {
+    async (startIndex: number) => {
       log(
         '%c loading from feed',
         'background: red; font-size: 32px',
         startIndex,
         Math.floor(startIndex / defaultPostsPerPage) + 1,
       );
-      return request({
+      const page = Math.floor(startIndex / defaultPostsPerPage) + 1;
+
+      if (infiniteRef) {
+        log('RESETTTING!!!!!', startIndex);
+      }
+      await request({
         requestBody: {
           page: Math.floor(startIndex / defaultPostsPerPage) + 1,
         },
       });
+      infiniteRef.current._listRef.resetAfterIndex(0, true);
+      return Promise.resolve();
     },
-    [request],
+    [infiniteRef, request],
   );
 
   /**
@@ -120,24 +105,9 @@ const Feed = ({
    */
   const isItemLoaded = useCallback(
     (index: number): boolean => {
-      // if (itemsWithTitle[index].fake)
-      //   console.error('NOT LOADED', index, itemsWithTitle[index]);
       return !itemsWithTitle[index].fake;
     },
     [itemsWithTitle],
-  );
-
-  const handleScroll = useCallback(
-    (onScroll: ReactWindow.ListOnScrollProps) => {
-      const throttled = throttle(
-        ({ scrollOffset }: ReactWindow.ListOnScrollProps) => {
-          if (scrollOffset !== 0) localScroll.current = scrollOffset;
-        },
-        1000,
-      );
-      return throttled(onScroll);
-    },
-    [],
   );
 
   const calculateSize = useCallback(
@@ -168,10 +138,16 @@ const Feed = ({
           itemCount={itemsWithTitle.length}
           isItemLoaded={isItemLoaded}
           loadMoreItems={loadMoreItems}
-          ref={infiniteRef as RefObject<InfiniteLoader>}
+          ref={infiniteRef}
         >
           {({ onItemsRendered, ref }) => (
             <InnerWrapper>
+              <div
+                onClick={() =>
+                  infiniteRef.current._listRef.resetAfterIndex(0, true)}
+              >
+                RESET
+              </div>
               <List
                 ref={ref}
                 height={height}

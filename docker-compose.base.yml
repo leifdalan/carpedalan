@@ -2,7 +2,7 @@ version: '2.4'
 
 services:
   alb:
-    image: nginx:alpine
+    image: fholzer/nginx-brotli:latest
     restart: always
     volumes: 
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:cached

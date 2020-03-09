@@ -71,6 +71,7 @@ async function main() {
   for (const item of fs.readdirSync(path.join(__dirname, '..', 'dist'))) {
     const filePath = path.join(__dirname, '..', 'dist', item);
     new aws.s3.BucketObject(item, {
+      cacheControl: 'max-age=31536000',
       bucket: publicBucket,
       source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
       contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
@@ -85,6 +86,7 @@ async function main() {
       bucket: publicBucket,
       source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
       contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
+      cacheControl: 'max-age=31536000',
     });
   }
 

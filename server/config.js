@@ -44,3 +44,4 @@ export const secureCookie = isProd || isDev;
 export const privateKey = env.PRIVATE_KEY;
 export const useProdAssets = env.PROD_BUILD === 'true' || isProd;
 export const redisUrl = env.REDIS_URL;
+export const defaultPostsPerPage = env.DEFAULT_POSTS_PER_PAGE || 100;

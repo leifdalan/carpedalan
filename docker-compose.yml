@@ -65,8 +65,8 @@ services:
     ports: 
       - 5432:5432
     # This will auto-import this sql dump on init
-    volumes: 
-      - ./carpedalan.sql.gz:/docker-entrypoint-initdb.d/carpedalan.sql.gz:cached
+    # volumes: 
+      # - ./dev-dump.sql:/docker-entrypoint-initdb.d/dev-dump.sql:cached
 
   sam:
     extends:

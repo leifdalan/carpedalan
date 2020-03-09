@@ -10,6 +10,7 @@ import Picture from 'components/Picture';
 import { defaultPostsPerPage } from 'config';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePosts from 'hooks/usePosts';
+import useScrollPersist from 'hooks/useScrollPersist';
 import useWindow from 'hooks/useWindow';
 
 const log = debug('component:Grid');
@@ -45,6 +46,8 @@ const Grid = ({
   const { request } = usePosts();
   const [refWidth, setRefWidth] = useState<number>(0);
   const { width } = useWindow();
+  const { infiniteRef, handleScroll } = useScrollPersist('grid');
+
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const postsPerRow = Math.floor(refWidth / 150);
@@ -81,13 +84,10 @@ const Grid = ({
       }
 
       return (
-        <RowWrapper
-          key={itemsWithTitle[index].id}
-          style={style}
-          data-testid={index}
-        >
+        <RowWrapper key={index} style={style} data-testid={index}>
           {[...Array(postsPerRow).fill(0)].map((num, arrayIndex) => {
             const post = itemsWithTitle[index * postsPerRow + arrayIndex];
+            if (!post) return null;
             const galleryLink = `gallery/${
               post.id ? post.id.split('-')[0] : ''
             }#grid`;
@@ -166,6 +166,7 @@ const Grid = ({
               itemCount={itemsWithTitle.length}
               isItemLoaded={isItemLoaded}
               loadMoreItems={loadMoreItems}
+              ref={infiniteRef}
             >
               {({ onItemsRendered, ref }) => (
                 <InnerWrapper>
@@ -178,6 +179,7 @@ const Grid = ({
                     }
                     itemSize={getItemSize(width)}
                     width={width}
+                    onScroll={handleScroll}
                   >
                     {Row}
                   </List>
@@ -191,6 +193,8 @@ const Grid = ({
     [
       Row,
       getItemSize,
+      handleScroll,
+      infiniteRef,
       isItemLoaded,
       itemsWithTitle.length,
       loadMoreItems,

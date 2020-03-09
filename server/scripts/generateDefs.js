@@ -24,7 +24,7 @@ function getSchemaOrRef(obj) {
 }
 
 async function main() {
-  console.log('Generating TS API Client for client codebase.');
+  console.log('Generating TS API Client for client codebase...');
   console.time('Generated.');
   const { components, paths } = openApiDoc.apiDoc;
   const { schemas } = components;
@@ -200,7 +200,7 @@ async function main() {
         : 'void';
 
       let functionArgs;
-      if (['get', 'delete'].includes(method)) {
+      if (['get', 'delete'].includes(method.toLowerCase())) {
         functionArgs = requestBodyDef
           ? `(\`/v1${thisApiPath}\${stringify(requestBody)}\`)`
           : `(\`/v1${thisApiPath}\`)`;

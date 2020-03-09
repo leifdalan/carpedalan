@@ -2,7 +2,6 @@ import db from '../../../db';
 import { PGError } from '../../../errors';
 import {
   ACTIVE,
-  DEFAULT_POSTS_PER_PAGE,
   ID,
   IS_PENDING,
   NAME,
@@ -14,6 +13,7 @@ import {
   TAGS,
   TIMESTAMP,
 } from '../../../../shared/constants';
+import { defaultPostsPerPage } from '../../../config';
 
 // Get all
 const getAll = async ({
@@ -38,7 +38,7 @@ const getAll = async ({
 
     const tagName = 'tagName';
     const tagId = 'tagId';
-    const limit = DEFAULT_POSTS_PER_PAGE;
+    const limit = defaultPostsPerPage;
     const offset = (page - 1) * limit;
     const tagWhere = tag ? { tagId: tag } : {};
     let selectStatement;
