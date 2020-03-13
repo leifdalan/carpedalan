@@ -12,14 +12,20 @@ import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePosts from 'hooks/usePosts';
 import useScrollPersist from 'hooks/useScrollPersist';
 import useWindow from 'hooks/useWindow';
+import { propTrueFalse } from 'styles/utils';
 
 const log = debug('component:Grid');
 
 const { useState } = React;
-const InnerWrapper = styled.main`
+
+interface InnerWrapperI {
+  hasPersisted: boolean;
+}
+const InnerWrapper = styled.main<InnerWrapperI>`
   max-width: 768px;
   margin: auto;
   height: 100%;
+  opacity: ${propTrueFalse('hasPersisted', 1, 0)};
 `;
 
 const { VariableSizeList: List } = ReactWindow;
@@ -46,10 +52,12 @@ const Grid = ({
   const { request } = usePosts();
   const [refWidth, setRefWidth] = useState<number>(0);
   const { width } = useWindow();
-  const { infiniteRef, handleScroll } = useScrollPersist(
-    'grid',
-    itemsWithTitle,
-  );
+  const {
+    infiniteRef,
+    handleScroll,
+    hasPersisted,
+    scrollIndex,
+  } = useScrollPersist('grid', itemsWithTitle);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -69,17 +77,46 @@ const Grid = ({
    * @returns Promise<void>
    */
   const loadMoreItems = useCallback(
-    (index: number): Promise<void> => {
-      const realIndex = index * postsPerRow;
-      return request({
-        requestBody: { page: Math.floor(realIndex / defaultPostsPerPage) + 1 },
-      });
+    (startIndex: number, stopIndex: number): Promise<void[]> => {
+      const average = Math.floor((stopIndex + startIndex) / 2);
+
+      const realIndex = average * postsPerRow;
+      const averagePage = Math.floor(realIndex / defaultPostsPerPage) + 1;
+      const aboveAveragePage =
+        Math.floor((stopIndex * postsPerRow) / defaultPostsPerPage) + 1;
+      const belowAveragePage =
+        Math.floor((startIndex * postsPerRow) / defaultPostsPerPage) + 1;
+      const pagesToLoad = [averagePage];
+      if (averagePage !== aboveAveragePage) pagesToLoad.push(aboveAveragePage);
+      if (averagePage !== belowAveragePage) pagesToLoad.push(belowAveragePage);
+      log(
+        'Grid Load more',
+        pagesToLoad,
+        startIndex,
+        stopIndex,
+        average,
+        postsPerRow,
+        realIndex,
+      );
+
+      if ((itemsWithTitle.length > 1 && hasPersisted) || scrollIndex === 0) {
+        return Promise.all(
+          pagesToLoad.map(page =>
+            request({
+              requestBody: {
+                page,
+              },
+            }),
+          ),
+        );
+      }
+      return Promise.resolve([]);
     },
-    [postsPerRow, request],
+    [hasPersisted, itemsWithTitle.length, postsPerRow, request, scrollIndex],
   );
 
   const Row = useCallback(
-    ({ index, style }: ReactWindow.ListChildComponentProps) => {
+    ({ index, style, isScrolling }: ReactWindow.ListChildComponentProps) => {
       const postsPerRow = Math.floor(refWidth / 150);
 
       if (index === 0 && itemsWithTitle[0]) {
@@ -101,8 +138,8 @@ const Grid = ({
                   width="100%"
                   ratio={1}
                   post={post}
-                  shouldShowImage
-                  placeholderColor={itemsWithTitle[index].placeholder}
+                  shouldShowImage={!isScrolling}
+                  placeholderColor={post.placeholder}
                   alt={itemsWithTitle[index].description}
                   type="square"
                 />
@@ -133,10 +170,6 @@ const Grid = ({
         );
         return true;
       }
-      log(
-        'itemsWithTitle[index * postsPerRow]',
-        itemsWithTitle[index * postsPerRow],
-      );
       return !itemsWithTitle[index * postsPerRow].fake;
     },
     [itemsWithTitle, postsPerRow],
@@ -172,10 +205,11 @@ const Grid = ({
               ref={infiniteRef}
             >
               {({ onItemsRendered, ref }) => (
-                <InnerWrapper>
+                <InnerWrapper hasPersisted={hasPersisted}>
                   <List
                     ref={ref}
                     height={height}
+                    useIsScrolling
                     onItemsRendered={args => {
                       handleScroll(args);
                       onItemsRendered(args);
@@ -199,6 +233,7 @@ const Grid = ({
       Row,
       getItemSize,
       handleScroll,
+      hasPersisted,
       infiniteRef,
       isItemLoaded,
       itemsWithTitle.length,

@@ -20,11 +20,16 @@ import tags from './services/tags';
 import aws from './services/aws';
 import redis from './services/redis';
 import GetIndex from './paths/posts/getIndex';
+import Meta from './paths/posts/meta';
 
 export const paths = [
   {
     path: '/posts/getIndex/',
     module: GetIndex,
+  },
+  {
+    path: '/posts/meta/',
+    module: Meta,
   },
   {
     path: '/posts/',

@@ -1,5 +1,5 @@
 import debug from 'debug';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 
 import { client, PostWithTagsI } from 'ApiClient';
 import { defaultPostsPerPage } from 'config';
@@ -71,16 +71,66 @@ function makePostsListWithFakes(
  * @returns {UsePost}
  */
 
-let postsByPage = {};
-const usePosts = () => {
+let postsByPage: PostsByPage = {};
+const pagesRequested = new Set<number>();
+function usePosts() {
   const { setPosts, data } = useContext(DataContext);
 
-  const { request, response, loading, error } = useApi(client.getPosts);
+  const { request: apiRequest, response, loading, error } = useApi(
+    client.getPosts,
+  );
+
+  const request = useCallback(
+    async (args: Parameters<typeof apiRequest>[0]) => {
+      const pageRequested = args.requestBody.page || -1;
+      if (!pagesRequested.has(pageRequested)) {
+        pagesRequested.add(pageRequested);
+        try {
+          await apiRequest(args);
+        } catch (e) {
+          pagesRequested.delete(pageRequested);
+          throw e;
+        }
+      }
+      return Promise.resolve();
+    },
+    [apiRequest],
+  );
+
+  const {
+    request: metaRequest,
+    response: metaResponse,
+    loading: metaLoading,
+  } = useApi(client.getPostMeta);
 
   const [total, setTotal] = useState<number>(0);
   const [allPosts, setAllPosts] = useState<PostsWithTagsWithFakes[]>([]);
   const previousResponse = usePrevious(response);
+
   useEffect(() => {
+    if (metaResponse) {
+      const allPostsWithTagsWithFakess = [
+        ...Array(metaResponse.count).keys(),
+      ].map(
+        (num): PostsWithTagsWithFakes => ({
+          key: `${num}`,
+          fake: true,
+          imageHeight: `${metaResponse.averageRatio * 100}`,
+          imageWidth: '100',
+          placeholder: getBg(),
+        }),
+      );
+      setAllPosts(allPostsWithTagsWithFakess);
+      log('setAllPosts');
+      setPosts(allPostsWithTagsWithFakess);
+      if (metaResponse?.count) {
+        setTotal(metaResponse.count);
+      }
+    }
+  }, [metaRequest, metaResponse, setPosts]);
+
+  useEffect(() => {
+    log('response', response, allPosts.length);
     if (response && response !== previousResponse) {
       const newPostsByPage = {
         ...postsByPage,
@@ -97,6 +147,7 @@ const usePosts = () => {
          * If there are no posts, lets fill an array of length "count" with "fake"
          * posts so that the list viewer can create a reasonably accurate scrollbar
          */
+        log('making new');
         const allPostsWithTagsWithFakess = [
           ...Array(response.meta.count).keys(),
         ].map(
@@ -121,7 +172,16 @@ const usePosts = () => {
     }
   }, [allPosts, previousResponse, response, setPosts, total]);
 
-  return { response, loading, error, request, posts: data.posts };
-};
+  return {
+    response,
+    loading,
+    error,
+    request,
+    posts: data.posts,
+    metaRequest,
+    metaResponse,
+    metaLoading,
+  };
+}
 
 export default usePosts;

@@ -2,7 +2,7 @@ import debug from 'debug';
 import { useState, useEffect, useCallback } from 'react';
 
 import { ErrorI } from 'ApiClient';
-import { RetryTuple, RequestObject } from 'hooks/types';
+import { RetryTuple } from 'hooks/types';
 import useToast from 'hooks/useToast';
 
 interface ApiState {
@@ -34,9 +34,7 @@ const log = debug('hooks:useApi');
  * @param {((args: T) => Promise<U>)} action
  * @returns
  */
-export default function useApi<U>(
-  action?: (args: RequestObject | never) => Promise<U>,
-) {
+export default function useApi<T, U>(action?: (args: T | never) => Promise<U>) {
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
   const [error, setError] = useState<ErrorI | null>(null);
@@ -62,7 +60,7 @@ export default function useApi<U>(
    */
 
   const requestFunc = useCallback(
-    async (arg: RequestObject) => {
+    async (arg: T) => {
       try {
         setLoading(true);
         setGlobalApiState({

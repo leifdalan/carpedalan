@@ -10,14 +10,20 @@ import Post from 'components/Post';
 import { defaultPostsPerPage } from 'config';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePosts from 'hooks/usePosts';
+import usePrevious from 'hooks/usePrevious';
 import useScrollPersist from 'hooks/useScrollPersist';
+import { propTrueFalse } from 'styles/utils';
 
 const log = debug('component:Feed');
 
-const InnerWrapper = styled.main`
+interface InnerWrapperI {
+  hasPersisted: boolean;
+}
+const InnerWrapper = styled.main<InnerWrapperI>`
   max-width: 768px;
   margin: auto;
   height: 100%;
+  opacity: ${propTrueFalse('hasPersisted', 1, 0)};
 `;
 
 const { VariableSizeList: List, areEqual } = ReactWindow;
@@ -65,10 +71,14 @@ const Feed = ({
   itemsWithTitle: PostsWithTagsWithFakes[];
 }): React.ReactElement => {
   const { request } = usePosts();
-  const { infiniteRef, handleScroll } = useScrollPersist(
-    'feed',
-    itemsWithTitle,
-  );
+
+  const {
+    infiniteRef,
+    handleScroll,
+    hasPersisted,
+    scrollIndex,
+  } = useScrollPersist('feed', itemsWithTitle);
+  const previousItemsWithTitle = usePrevious(itemsWithTitle);
   /**
    * Triggered if isItemLoaded returns false
    *
@@ -76,28 +86,34 @@ const Feed = ({
    * @returns Promise<void>
    */
   const loadMoreItems = useCallback(
-    async (startIndex: number) => {
+    async (startIndex: number, stopIndex: number) => {
       log(
         '%c loading from feed',
         'background: red; font-size: 32px',
         startIndex,
         Math.floor(startIndex / defaultPostsPerPage) + 1,
       );
+      const average = Math.floor((stopIndex + startIndex) / 2);
 
-      await request({
-        requestBody: {
-          page: Math.floor(startIndex / defaultPostsPerPage) + 1,
-        },
-      });
+      if ((itemsWithTitle.length > 1 && hasPersisted) || scrollIndex === 0) {
+        await request({
+          requestBody: {
+            page: Math.floor(average / defaultPostsPerPage) + 1,
+          },
+        });
+      }
 
       return Promise.resolve();
     },
-    [request],
+    [hasPersisted, itemsWithTitle.length, request, scrollIndex],
   );
 
   useEffect(() => {
-    infiniteRef?.current?._listRef?.resetAfterIndex?.(0, true);
-  }, [infiniteRef, itemsWithTitle]);
+    if (itemsWithTitle !== previousItemsWithTitle) {
+      infiniteRef?.current?._listRef?.resetAfterIndex?.(0, true);
+      infiniteRef?.current?._listRef?.scrollToItem?.(scrollIndex, 'center');
+    }
+  }, [infiniteRef, itemsWithTitle, previousItemsWithTitle, scrollIndex]);
 
   /**
    * Function for determining if item is "loaded", causes loadMoreItems
@@ -108,7 +124,7 @@ const Feed = ({
    */
   const isItemLoaded = useCallback(
     (index: number): boolean => {
-      return !itemsWithTitle[index].fake;
+      return !itemsWithTitle[index + 1]?.fake;
     },
     [itemsWithTitle],
   );
@@ -134,6 +150,7 @@ const Feed = ({
     },
     [itemsWithTitle],
   );
+
   return (
     <Autosizer>
       {({ height, width }) => (
@@ -144,7 +161,7 @@ const Feed = ({
           ref={infiniteRef}
         >
           {({ onItemsRendered, ref }) => (
-            <InnerWrapper>
+            <InnerWrapper hasPersisted={hasPersisted}>
               <List
                 ref={ref}
                 height={height}

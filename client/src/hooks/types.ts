@@ -33,3 +33,13 @@ export interface PostsWithTagsWithFakes extends Omit<PostWithTagsI, 'key'> {
   placeholder: string;
   key?: string;
 }
+
+// export declare function ApiRequest(args: BodyOnly<object>): Promise<void>;
+// export declare function ApiRequest(args: PathOnly<object>): Promise<void>;
+// export declare function ApiRequest(
+//   args: BodyAndPath<object, object>,
+// ): Promise<void>;
+
+// export declare function ApiRequest(args: undefined): Promise<void>;
+
+// export type RetryTuple = [typeof ApiRequest, object];

@@ -3,15 +3,15 @@
 import axios from 'axios';
 import { stringify } from 'qs';
 
-interface BodyOnly<T> {
+export interface BodyOnly<T> {
   requestBody: T;
 }
 
-interface PathOnly<T> {
+export interface PathOnly<T> {
   requestParams: T;
 }
 
-interface BodyAndPath<T, U> {
+export interface BodyAndPath<T, U> {
   requestBody: T;
   requestParams: U;
 }
@@ -1194,6 +1194,21 @@ export interface RefreshResponseBodyI {
    * Acknoweldgement that the user has been refreshed
    */
   refreshed?: boolean;
+  [k: string]: any;
+}
+
+/**
+ * Result of get meta
+ */
+export interface GetPostMetaResponseBodyI {
+  /**
+   * Number of posts
+   */
+  count: number;
+  /**
+   * Average aspect ratio of all posts
+   */
+  averageRatio: number;
   [k: string]: any;
 }
 
@@ -3262,6 +3277,23 @@ export default class ApiClient {
     try {
       
       const { data } = await axios.post<RefreshResponseBodyI>(`/v1/refresh/`);
+      return data;
+    } catch(e) {
+      throw e?.response?.data as ErrorI;
+    }
+    
+  }
+
+
+  /**
+   * Gets the index of a post by timestamp
+   *
+   * @returns {Promise<GetPostMetaResponseBodyI | ErrorI>}
+   */      
+  public async getPostMeta() {
+    try {
+      
+      const { data } = await axios.get<GetPostMetaResponseBodyI>(`/v1/posts/meta/`);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;

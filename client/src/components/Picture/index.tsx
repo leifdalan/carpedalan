@@ -1,5 +1,5 @@
 import debug from 'debug';
-import React, { SyntheticEvent, useState, useCallback } from 'react';
+import React, { SyntheticEvent, useState, useCallback, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 
 import { PostsWithTagsWithFakes } from 'hooks/types';
@@ -85,7 +85,9 @@ const Picture = ({
 }: PictureInterface) => {
   const [shouldTransition, setShouldTransition] = useState(true);
   const [loaded, setLoading] = useState(false);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
   const [transitionTime, setTransitionTime] = useState(400);
+  const [showSvg, setShowSvg] = useState(false);
   const renderStart = performance.now();
 
   const handleLoad = useCallback(() => {
@@ -98,6 +100,21 @@ const Picture = ({
     setTransitionTime(transitionTime);
     setLoading(true);
   }, [renderStart]);
+
+  useEffect(() => {
+    const visible = setTimeout(() => {
+      setHasBeenVisible(true);
+    }, 300);
+
+    const visibleSvg = setTimeout(() => {
+      setShowSvg(true);
+    }, 50);
+
+    return () => {
+      clearTimeout(visible);
+      clearTimeout(visibleSvg);
+    };
+  }, []);
 
   return (
     <Wrapper
@@ -116,7 +133,7 @@ const Picture = ({
           overflow: 'hidden',
         }}
       >
-        {post.svg ? (
+        {post.svg && showSvg ? (
           <SVGWrapper
             dangerouslySetInnerHTML={{
               __html: post.svg.replace(
@@ -127,7 +144,7 @@ const Picture = ({
           />
         ) : null}
 
-        {shouldShowImage && !post.fake ? (
+        {(shouldShowImage || loaded || hasBeenVisible) && !post.fake ? (
           <StyledPicture
             onLoad={handleLoad}
             as="picture"

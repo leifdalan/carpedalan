@@ -30,8 +30,8 @@ interface RowRender {
   style: React.CSSProperties;
 }
 
-const Slash: React.FC = (): React.ReactElement => {
-  const { posts, request } = usePosts();
+const Slash: React.FC = () => {
+  const { posts, metaRequest, metaResponse, metaLoading } = usePosts();
   const [postsWithTitle, setPostsWithTitle] = useState<
     PostsWithTagsWithFakes[]
   >(posts);
@@ -43,12 +43,8 @@ const Slash: React.FC = (): React.ReactElement => {
   }
 
   useEffect(() => {
-    request({
-      requestBody: {
-        page: 1,
-      },
-    });
-  }, [request]);
+    metaRequest(undefined);
+  }, [metaRequest]);
 
   useEffect(() => {
     log('%c post dep changed', 'background: blue;');
@@ -57,7 +53,7 @@ const Slash: React.FC = (): React.ReactElement => {
     setPostsWithTitle(newPosts);
   }, [posts]);
 
-  return (
+  return metaResponse && !metaLoading ? (
     <>
       <Menu side="right">
         <Link to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
@@ -76,7 +72,7 @@ const Slash: React.FC = (): React.ReactElement => {
         <Route path="gallery/:postId" element={<Gallery />} />
       </Routes>
     </>
-  );
+  ) : null;
 };
 
 export default Slash;
