@@ -12,14 +12,16 @@ const writeUserAgent = request.agent();
 
 // check this first
 const folder = process.argv[2];
+const site = process.argv[3];
+const password = process.argv[4];
 console.error('folder', folder);
 
 const errors = [];
 async function main() {
   try {
     const response = await writeUserAgent
-      .post('https://local.carpedalan.com/v1/login')
-      .send({ password: 'asd' });
+      .post(`https://${site}/v1/login`)
+      .send({ password });
     console.error('response', response);
 
     const dataFiles = fs.readdirSync(
@@ -31,12 +33,10 @@ async function main() {
       dataFiles.map(async file => {
         console.log('file', file);
         try {
-          await writeUserAgent
-            .post('https://local.carpedalan.com/v1/posts')
-            .send({
-              description: '',
-              key: file,
-            });
+          await writeUserAgent.post(`https://${site}/v1/posts`).send({
+            description: '',
+            key: file,
+          });
         } catch (e) {
           console.error('e.response', e.response);
           errors.push(e);

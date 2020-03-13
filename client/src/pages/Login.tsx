@@ -19,7 +19,7 @@ const { useEffect, useState } = React;
  */
 const Login: React.FC<{}> = (): React.ReactElement => {
   const { setUser, user } = useUser();
-  const [showError, shouldShowError] = useState(true);
+  const [, shouldShowError] = useState(true);
 
   /**
    * Change handler passed intended for passage to `useField`. Has
@@ -37,7 +37,7 @@ const Login: React.FC<{}> = (): React.ReactElement => {
 
   const passwordInput = useField({ handleChange, field: 'password' });
 
-  const { request, error, response } = useApi(client.login);
+  const { request, response } = useApi(client.login);
 
   useEffect(() => {
     if (response) {
@@ -78,11 +78,6 @@ const Login: React.FC<{}> = (): React.ReactElement => {
         >
           Login
         </Button>
-        {error && showError && !user ? (
-          <div data-test="error" data-testid="error">
-            {error.message}
-          </div>
-        ) : null}
         <Link to="/request">Request access</Link>
       </InputForm>
     </InputWrapper>

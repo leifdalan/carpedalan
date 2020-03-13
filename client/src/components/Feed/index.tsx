@@ -1,5 +1,5 @@
 import debug from 'debug';
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -39,7 +39,7 @@ interface RowRender {
 }
 
 const Title = styled.h1`
-  font-family: 'lobster';
+  font-family: lobster, sans-serif;
   margin-top: 70px;
   text-align: center;
   font-size: 48px;
@@ -65,7 +65,10 @@ const Feed = ({
   itemsWithTitle: PostsWithTagsWithFakes[];
 }): React.ReactElement => {
   const { request } = usePosts();
-  const { infiniteRef, handleScroll } = useScrollPersist('feed');
+  const { infiniteRef, handleScroll } = useScrollPersist(
+    'feed',
+    itemsWithTitle,
+  );
   /**
    * Triggered if isItemLoaded returns false
    *
@@ -80,21 +83,21 @@ const Feed = ({
         startIndex,
         Math.floor(startIndex / defaultPostsPerPage) + 1,
       );
-      const page = Math.floor(startIndex / defaultPostsPerPage) + 1;
 
-      if (infiniteRef) {
-        log('RESETTTING!!!!!', startIndex);
-      }
       await request({
         requestBody: {
           page: Math.floor(startIndex / defaultPostsPerPage) + 1,
         },
       });
-      infiniteRef.current._listRef.resetAfterIndex(0, true);
+
       return Promise.resolve();
     },
-    [infiniteRef, request],
+    [request],
   );
+
+  useEffect(() => {
+    infiniteRef?.current?._listRef?.resetAfterIndex?.(0, true);
+  }, [infiniteRef, itemsWithTitle]);
 
   /**
    * Function for determining if item is "loaded", causes loadMoreItems
@@ -142,21 +145,17 @@ const Feed = ({
         >
           {({ onItemsRendered, ref }) => (
             <InnerWrapper>
-              <div
-                onClick={() =>
-                  infiniteRef.current._listRef.resetAfterIndex(0, true)}
-              >
-                RESET
-              </div>
               <List
                 ref={ref}
                 height={height}
                 itemData={itemsWithTitle}
-                onItemsRendered={onItemsRendered}
+                onItemsRendered={args => {
+                  handleScroll(args);
+                  onItemsRendered(args);
+                }}
                 itemCount={itemsWithTitle.length}
                 itemSize={calculateSize(width)}
                 width={width}
-                onScroll={handleScroll}
               >
                 {Row}
               </List>

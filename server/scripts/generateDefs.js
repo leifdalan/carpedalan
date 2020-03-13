@@ -201,8 +201,8 @@ async function main() {
 
       let functionArgs;
       if (['get', 'delete'].includes(method.toLowerCase())) {
-        functionArgs = requestBodyDef
-          ? `(\`/v1${thisApiPath}\${stringify(requestBody)}\`)`
+        functionArgs = queryDef
+          ? `(\`/v1${thisApiPath.slice(0, -1)}?\${stringify(requestBody)}\`)`
           : `(\`/v1${thisApiPath}\`)`;
       } else {
         functionArgs = requestBodyDef

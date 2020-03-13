@@ -4,6 +4,7 @@ import { Redirect, Route, Routes } from 'react-router-dom';
 
 import withErrorBoundary from 'components/ErrorBoundary';
 import SidebarAndMenu from 'components/SidebarAndMenu';
+import Toaster from 'components/Toaster';
 import useTags from 'hooks/useTags';
 import useUser from 'hooks/useUser';
 import Login from 'pages/Login';
@@ -34,6 +35,7 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Suspense fallback={<Spinner />}>
+      <Toaster />
       <SidebarAndMenu />
       <Routes>
         <Route exact path="/request" element={<Request />} />

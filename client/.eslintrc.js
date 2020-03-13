@@ -45,7 +45,7 @@ module.exports = {
     "import/export": "off",
     "import/order": ["error", {"groups": ["builtin", "external", "internal", "parent", "sibling", "index"], "newlines-between" : "always", "alphabetize": {"order": "asc"}}],
     "import/prefer-default-export": "off", // Allow single Named-export
-    "no-unused-expressions": ["warn", {
+    "no-unused-expressions": ["off", {
       "allowShortCircuit": true,
       "allowTernary": true
     }], // https://eslint.org/docs/rules/no-unused-expressions
@@ -67,6 +67,7 @@ module.exports = {
     /**
      * @description rules of eslint-plugin-react-hooks
      */
+    "react/no-array-index-key": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
     "react/jsx-props-no-spreading": "off",
@@ -78,7 +79,7 @@ module.exports = {
     "@typescript-eslint/interface-name-prefix": "off",
     "no-shadow": "off",
     "func-names": "off",
-    "react/no-array-index-key": "warn",
+    "react/no-array-index-key": "off",
     "import/extensions": [
       "error",
       "ignorePackages",

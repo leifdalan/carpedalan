@@ -13,7 +13,7 @@ const post = (req, res) => {
 };
 
 post.apiDoc = {
-  description: 'Setting a property on the user session cookie token',
+  description: 'Setting a property on the user session cookie tokenz',
   operationId: 'setUser',
   tags: ['_user'],
   requestBody: {

@@ -14,6 +14,7 @@ import { makeDB } from './rds';
 import { makeRedis } from './redis';
 import { getSecrets } from './secrets';
 import { makeSns } from './sns';
+// import { makeSqs } from './sqs';
 import { getResourceName as n, createHashFromFile } from './utils';
 import { makeVpc } from './vpc';
 

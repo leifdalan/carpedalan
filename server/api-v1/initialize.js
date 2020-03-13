@@ -19,18 +19,23 @@ import posts from './services/posts';
 import tags from './services/tags';
 import aws from './services/aws';
 import redis from './services/redis';
+import GetIndex from './paths/posts/getIndex';
 
 export const paths = [
+  {
+    path: '/posts/getIndex/',
+    module: GetIndex,
+  },
   {
     path: '/posts/',
     module: Posts,
   },
   {
-    path: '/posts/{id}',
+    path: '/posts/{id}/',
     module: PostsId,
   },
   {
-    path: '/posts/bulk',
+    path: '/posts/bulk/',
     module: Bulk,
   },
   {
@@ -38,7 +43,7 @@ export const paths = [
     module: Tags,
   },
   {
-    path: '/tags/{tagId}/posts',
+    path: '/tags/{tagId}/posts/',
     module: TagPosts,
   },
   {

@@ -46,7 +46,10 @@ const Grid = ({
   const { request } = usePosts();
   const [refWidth, setRefWidth] = useState<number>(0);
   const { width } = useWindow();
-  const { infiniteRef, handleScroll } = useScrollPersist('grid');
+  const { infiniteRef, handleScroll } = useScrollPersist(
+    'grid',
+    itemsWithTitle,
+  );
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -173,13 +176,15 @@ const Grid = ({
                   <List
                     ref={ref}
                     height={height}
-                    onItemsRendered={onItemsRendered}
+                    onItemsRendered={args => {
+                      handleScroll(args);
+                      onItemsRendered(args);
+                    }}
                     itemCount={
                       Math.floor(itemsWithTitle.length / postsPerRow) || 1
                     }
                     itemSize={getItemSize(width)}
                     width={width}
-                    onScroll={handleScroll}
                   >
                     {Row}
                   </List>

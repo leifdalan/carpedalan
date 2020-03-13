@@ -1197,6 +1197,24 @@ export interface RefreshResponseBodyI {
   [k: string]: any;
 }
 
+/**
+ * Result of getIndex call
+ */
+export interface GetPostsIndexResponseBodyI {
+  /**
+   * Index of photo
+   */
+  index?: number;
+  [k: string]: any;
+}
+
+export interface GetPostsIndexQueryI {
+  /**
+   * Timestamp of the desired post
+   */
+  timestamp: string;
+}
+
 export interface DeleteBulkPostsRequestBodyI {
   /**
    * Array of ids to delete
@@ -3168,7 +3186,7 @@ export interface DelPostPathI {
 export default class ApiClient {
   
   /**
-   * Setting a property on the user session cookie token
+   * Setting a property on the user session cookie tokenz
    *
    * @returns {Promise<SetUserResponseBodyI | ErrorI>}
    */      
@@ -3192,7 +3210,7 @@ export default class ApiClient {
   public async upload({ requestBody }: BodyOnly<UploadQueryI>) {
     try {
       
-      const { data } = await axios.get<UploadResponseBodyI>(`/v1/upload/`);
+      const { data } = await axios.get<UploadResponseBodyI>(`/v1/upload?${stringify(requestBody)}`);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;
@@ -3253,6 +3271,23 @@ export default class ApiClient {
 
 
   /**
+   * Gets the index of a post by timestamp
+   *
+   * @returns {Promise<GetPostsIndexResponseBodyI | ErrorI>}
+   */      
+  public async getPostsIndex({ requestBody }: BodyOnly<GetPostsIndexQueryI>) {
+    try {
+      
+      const { data } = await axios.get<GetPostsIndexResponseBodyI>(`/v1/posts/getIndex?${stringify(requestBody)}`);
+      return data;
+    } catch(e) {
+      throw e?.response?.data as ErrorI;
+    }
+    
+  }
+
+
+  /**
    * Delete bulk posts
    *
    * @returns {Promise<void | ErrorI>}
@@ -3260,7 +3295,7 @@ export default class ApiClient {
   public async deleteBulkPosts({ requestBody }: BodyOnly<DeleteBulkPostsRequestBodyI>) {
     try {
       
-      const { data } = await axios.delete<void>(`/v1/posts/bulk${stringify(requestBody)}`);
+      const { data } = await axios.delete<void>(`/v1/posts/bulk/`);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;
@@ -3277,7 +3312,7 @@ export default class ApiClient {
   public async postPosts({ requestBody }: BodyOnly<PostPostsRequestBodyI>) {
     try {
       
-      const { data } = await axios.patch<void>(`/v1/posts/bulk`, requestBody);
+      const { data } = await axios.patch<void>(`/v1/posts/bulk/`, requestBody);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;
@@ -3379,7 +3414,7 @@ export default class ApiClient {
   public async getPostsByTag({ requestParams }: PathOnly<GetPostsByTagPathI>) {
     try {
       const { tagId } = requestParams;
-      const { data } = await axios.get<GetPostsByTagResponseBodyI>(`/v1/tags/${tagId}/posts`);
+      const { data } = await axios.get<GetPostsByTagResponseBodyI>(`/v1/tags/${tagId}/posts/`);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;
@@ -3396,7 +3431,7 @@ export default class ApiClient {
   public async getPost({ requestParams }: PathOnly<GetPostPathI>) {
     try {
       const { id } = requestParams;
-      const { data } = await axios.get<GetPostResponseBodyI>(`/v1/posts/${id}`);
+      const { data } = await axios.get<GetPostResponseBodyI>(`/v1/posts/${id}/`);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;
@@ -3413,7 +3448,7 @@ export default class ApiClient {
   public async patchPost({ requestBody, requestParams }: BodyAndPath<PatchPostRequestBodyI, PatchPostPathI>) {
     try {
       const { id } = requestParams;
-      const { data } = await axios.patch<PatchPostResponseBodyI>(`/v1/posts/${id}`, requestBody);
+      const { data } = await axios.patch<PatchPostResponseBodyI>(`/v1/posts/${id}/`, requestBody);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;
@@ -3430,7 +3465,7 @@ export default class ApiClient {
   public async delPost({ requestParams }: PathOnly<DelPostPathI>) {
     try {
       const { id } = requestParams;
-      const { data } = await axios.delete<void>(`/v1/posts/${id}`);
+      const { data } = await axios.delete<void>(`/v1/posts/${id}/`);
       return data;
     } catch(e) {
       throw e?.response?.data as ErrorI;

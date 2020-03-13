@@ -1,4 +1,13 @@
 import { PostWithTagsI } from 'ApiClient';
+/**
+ * @TODO figure out this `any`..... Can't use union types
+ */
+export type RequestObject = any;
+
+export type RetryTuple = [
+  (args: RequestObject) => Promise<void>,
+  RequestObject,
+];
 
 /**
  * "Fake" post that hold the fake flag

@@ -146,6 +146,17 @@ export const GlobalStyleComponent = createGlobalStyle`
     user-select: none;
   }
 
+  button {
+    appearance: none;
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;    
+  }
+
   #root {
     margin-top: 0;
   }  
