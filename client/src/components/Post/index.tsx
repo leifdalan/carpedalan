@@ -65,12 +65,14 @@ const Post = ({
   width = '100%',
   safeRef,
   hasLink,
+  isScrolling,
 }: {
   post: PostsWithTagsWithFakes;
   isSquare?: boolean;
   width?: string;
   safeRef?: React.MutableRefObject<HTMLElement | null>;
   hasLink: boolean;
+  isScrolling?: boolean;
 }) => {
   const { Element, props } = usePostLink({ post, hasLink });
   return (
@@ -88,7 +90,7 @@ const Post = ({
           width={width}
           ratio={isSquare ? 1 : getImageRatio(post)}
           post={post}
-          shouldShowImage
+          shouldShowImage={!isScrolling}
           placeholderColor={post.placeholder}
           alt={post.description}
           type={isSquare ? 'square' : 'original'}

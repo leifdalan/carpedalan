@@ -1,9 +1,14 @@
+import getUnixTime from 'date-fns/getUnixTime';
 import debug from 'debug';
-import * as React from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { client } from 'ApiClient';
 import { User } from 'User';
+import useApi from 'hooks/useApi';
+import usePosts from 'hooks/usePosts';
+import useScrollPersist from 'hooks/useScrollPersist';
 import useTags from 'hooks/useTags';
 import Title from 'styles/Title';
 import { getThemeValue, SIDEBAR_COLOR, TEXT } from 'styles/utils';
@@ -78,8 +83,27 @@ export default function Sidebar({
 }: SidebarProps) {
   const { tags } = useTags();
   const { hash } = useLocation();
+  const { request, response } = useApi(client.getPostsIndex);
+  const { scrollTo } = useScrollPersist('sidebar', []);
+  // const handleMonth = useCallback(
+  //   async (timestamp: number) => {
+  //     const stamp = 1526774400;
+  //     await request({
+  //       requestBody: {
+  //         timestamp: stamp,
+  //       },
+  //     });
+  //   },
+  //   [request],
+  // );
 
-  log('tags', tags);
+  // useEffect(() => {
+  //   if (response) {
+  //     scrollTo?.scrollToItem(response.index, 'center');
+  //   }
+  // }, [response, scrollTo]);
+  // const handleClick = useCallback(() => {}, []);
+
   return userState ? (
     <StyledSidebar isOpen={isOpen} onClick={toggleMenu}>
       {tags.map(tag => (

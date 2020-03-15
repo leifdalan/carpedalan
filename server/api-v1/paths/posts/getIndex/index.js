@@ -1,8 +1,8 @@
 import getIndex from './getIndex';
 
 // Arguments processed by swagger paths have to match dependencies BY NAME
-export default function(posts) {
+export default function(db) {
   return {
-    get: getIndex(posts),
+    get: getIndex(db),
   };
 }

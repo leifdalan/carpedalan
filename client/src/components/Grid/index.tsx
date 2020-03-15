@@ -54,7 +54,7 @@ const Grid = ({
   const { width } = useWindow();
   const {
     infiniteRef,
-    handleScroll,
+    handleItemRendered,
     hasPersisted,
     scrollIndex,
   } = useScrollPersist('grid', itemsWithTitle);
@@ -133,7 +133,10 @@ const Grid = ({
             }#grid`;
 
             return (
-              <StyledLink to={galleryLink} key={post.id}>
+              <StyledLink
+                to={galleryLink}
+                key={index * postsPerRow + arrayIndex}
+              >
                 <Picture
                   width="100%"
                   ratio={1}
@@ -211,7 +214,7 @@ const Grid = ({
                     height={height}
                     useIsScrolling
                     onItemsRendered={args => {
-                      handleScroll(args);
+                      handleItemRendered(args);
                       onItemsRendered(args);
                     }}
                     itemCount={
@@ -219,6 +222,7 @@ const Grid = ({
                     }
                     itemSize={getItemSize(width)}
                     width={width}
+                    estimatedItemSize={width / postsPerRow}
                   >
                     {Row}
                   </List>
@@ -232,7 +236,7 @@ const Grid = ({
     [
       Row,
       getItemSize,
-      handleScroll,
+      handleItemRendered,
       hasPersisted,
       infiniteRef,
       isItemLoaded,

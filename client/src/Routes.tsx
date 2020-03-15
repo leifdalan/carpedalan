@@ -40,7 +40,7 @@ const AppRoutes: React.FC = () => {
       <Routes>
         <Route exact path="/request" element={<Request />} />
         {globalUser ? (
-          <Route path="/tag/:tagName" element={<LazyTag />} />
+          <Route path="/tag/:tagName/*" element={<LazyTag />} />
         ) : null}
 
         {globalUser ? (

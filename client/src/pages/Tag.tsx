@@ -1,11 +1,13 @@
 import debug from 'debug';
 import * as React from 'react';
-import { useParams, useLocation, Link } from 'react-router-dom';
+import { useParams, useLocation, Link, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { client } from 'ApiClient';
 import Feed from 'components/Feed';
+import Gallery from 'components/Gallery';
 import Grid from 'components/Grid';
+import Menu from 'components/Menu';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import useApi from 'hooks/useApi';
 import { getBg } from 'hooks/usePosts';
@@ -96,9 +98,11 @@ const Tag = (): React.ReactElement => {
   return (
     <>
       <GridListSwitcher>
-        <Link to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
-          {hash.includes('grid') ? 'List' : 'Grid'}
-        </Link>
+        <Menu side="right">
+          <Link to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
+            {hash.includes('grid') ? 'List' : 'Grid'}
+          </Link>
+        </Menu>
       </GridListSwitcher>
       {loading ? (
         'loading'
@@ -111,6 +115,9 @@ const Tag = (): React.ReactElement => {
           )}
         </Wrapper>
       )}
+      <Routes>
+        <Route path="gallery/:postId" element={<Gallery />} />
+      </Routes>
     </>
   );
 };

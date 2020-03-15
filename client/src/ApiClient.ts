@@ -3,15 +3,15 @@
 import axios from 'axios';
 import { stringify } from 'qs';
 
-export interface BodyOnly<T> {
+interface BodyOnly<T> {
   requestBody: T;
 }
 
-export interface PathOnly<T> {
+interface PathOnly<T> {
   requestParams: T;
 }
 
-export interface BodyAndPath<T, U> {
+interface BodyAndPath<T, U> {
   requestBody: T;
   requestParams: U;
 }

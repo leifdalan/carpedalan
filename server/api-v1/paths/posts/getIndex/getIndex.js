@@ -12,15 +12,23 @@ import {
   KEY,
   ORIGINALURL,
   STATUS,
-  TIMESTAMP,
   UPDATEDAT,
+  PHOTOS,
+  ACTIVE,
+  TIMESTAMP,
+  IS_PENDING,
 } from '../../../../../shared/constants';
 
 const status = 200;
 
-export default function(posts) {
+export default function(db) {
   async function get(req, res) {
-    const { index } = await posts.getIndex(req.timestamp);
+    const { count: index } = await db(PHOTOS)
+      .where({ [STATUS]: ACTIVE })
+      .andWhere({ isPending: false })
+      .andWhere(TIMESTAMP, '>', req.query.timestamp)
+      .count()
+      .first();
     return res.status(status).json({ index });
   }
 

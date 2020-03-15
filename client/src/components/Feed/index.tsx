@@ -1,5 +1,12 @@
 import debug from 'debug';
-import React, { memo, useCallback, useEffect } from 'react';
+import React, {
+  memo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+} from 'react';
 import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -7,11 +14,13 @@ import styled from 'styled-components';
 
 import withErrorBoundary from 'components/ErrorBoundary';
 import Post from 'components/Post';
+import ScrollerHandle from 'components/ScrollerHandle';
 import { defaultPostsPerPage } from 'config';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePosts from 'hooks/usePosts';
 import usePrevious from 'hooks/usePrevious';
 import useScrollPersist from 'hooks/useScrollPersist';
+import useWindow from 'hooks/useWindow';
 import { propTrueFalse } from 'styles/utils';
 
 const log = debug('component:Feed');
@@ -42,6 +51,7 @@ interface RowRender {
   index: number;
   style: React.CSSProperties;
   data: PostsWithTagsWithFakes[];
+  isScrolling: boolean;
 }
 
 const Title = styled.h1`
@@ -52,18 +62,26 @@ const Title = styled.h1`
   letter-spacing: 3px;
 `;
 
-const Row = memo(({ index, style, data }: RowRender) => {
-  if (index === 0 && data[0]) {
-    return <Title style={{ ...style, height: '150px' }}>{data[0].key}</Title>;
-  }
-  return (
-    <RowWrapper style={style} data-testid={index}>
-      <PostWrapper>
-        <Post hasLink post={data[index]} />
-      </PostWrapper>
-    </RowWrapper>
-  );
-}, areEqual);
+const Row = memo(
+  ({
+    index,
+    style,
+    data,
+    isScrolling,
+  }: ReactWindow.ListChildComponentProps) => {
+    if (index === 0 && data[0]) {
+      return <Title style={{ ...style, height: '150px' }}>{data[0].key}</Title>;
+    }
+    return (
+      <RowWrapper style={style} data-testid={index}>
+        <PostWrapper>
+          <Post hasLink post={data[index]} isScrolling={isScrolling} />
+        </PostWrapper>
+      </RowWrapper>
+    );
+  },
+  areEqual,
+);
 
 const Feed = ({
   itemsWithTitle,
@@ -74,17 +92,24 @@ const Feed = ({
 
   const {
     infiniteRef,
-    handleScroll,
+    handleItemRendered,
     hasPersisted,
     scrollIndex,
+    handleScroll,
+    scrollPos,
   } = useScrollPersist('feed', itemsWithTitle);
+  const [isUsingScrollHandle, setIsUsingScrollHandle] = useState(false);
+  const previousScrollHandle = usePrevious(isUsingScrollHandle);
+  const indices = useRef<[number, number] | null>(null);
   const previousItemsWithTitle = usePrevious(itemsWithTitle);
+  const { width: windowWidth, height } = useWindow();
   /**
    * Triggered if isItemLoaded returns false
    *
    * @param {number} index
    * @returns Promise<void>
    */
+
   const loadMoreItems = useCallback(
     async (startIndex: number, stopIndex: number) => {
       log(
@@ -93,6 +118,10 @@ const Feed = ({
         startIndex,
         Math.floor(startIndex / defaultPostsPerPage) + 1,
       );
+      if (isUsingScrollHandle) {
+        indices.current = [startIndex, stopIndex];
+        return Promise.resolve();
+      }
       const average = Math.floor((stopIndex + startIndex) / 2);
 
       if ((itemsWithTitle.length > 1 && hasPersisted) || scrollIndex === 0) {
@@ -102,11 +131,29 @@ const Feed = ({
           },
         });
       }
-
+      indices.current = [startIndex, stopIndex];
       return Promise.resolve();
     },
-    [hasPersisted, itemsWithTitle.length, request, scrollIndex],
+    [
+      hasPersisted,
+      isUsingScrollHandle,
+      itemsWithTitle.length,
+      request,
+      scrollIndex,
+    ],
   );
+
+  useEffect(() => {
+    if (
+      previousScrollHandle &&
+      !isUsingScrollHandle &&
+      indices?.current?.[0] &&
+      indices?.current?.[1]
+    ) {
+      log('Calling load more');
+      loadMoreItems(indices.current[0], indices.current[1]);
+    }
+  }, [isUsingScrollHandle, loadMoreItems, previousScrollHandle]);
 
   useEffect(() => {
     if (itemsWithTitle !== previousItemsWithTitle) {
@@ -130,7 +177,7 @@ const Feed = ({
   );
 
   const calculateSize = useCallback(
-    containerWidth => (index: number): number => {
+    (index: number): number => {
       if (index === 0) return 150;
       const post = itemsWithTitle[index];
       let height = 1;
@@ -143,44 +190,56 @@ const Feed = ({
       }
 
       const ratio = post.orientation === '6' ? width / height : height / width;
-      let size = ratio * Math.min(containerWidth, 620);
+      let size = ratio * Math.min(windowWidth, 620);
       if (post.description) size += 34;
       if (post.tags && post.tags.length) size += 34;
       return size + 112;
     },
-    [itemsWithTitle],
+    [itemsWithTitle, windowWidth],
   );
 
+  const totalHeight = useMemo(() => {
+    return [...Array(itemsWithTitle.length).keys()]
+      .map(calculateSize)
+      .reduce((acc, number) => acc + number, 0);
+  }, [calculateSize, itemsWithTitle.length]);
+
   return (
-    <Autosizer>
-      {({ height, width }) => (
-        <InfiniteLoader
-          itemCount={itemsWithTitle.length}
-          isItemLoaded={isItemLoaded}
-          loadMoreItems={loadMoreItems}
-          ref={infiniteRef}
-        >
-          {({ onItemsRendered, ref }) => (
-            <InnerWrapper hasPersisted={hasPersisted}>
-              <List
-                ref={ref}
-                height={height}
-                itemData={itemsWithTitle}
-                onItemsRendered={args => {
-                  handleScroll(args);
-                  onItemsRendered(args);
-                }}
-                itemCount={itemsWithTitle.length}
-                itemSize={calculateSize(width)}
-                width={width}
-              >
-                {Row}
-              </List>
-            </InnerWrapper>
-          )}
-        </InfiniteLoader>
+    <InfiniteLoader
+      itemCount={itemsWithTitle.length}
+      isItemLoaded={isItemLoaded}
+      loadMoreItems={loadMoreItems}
+      ref={infiniteRef}
+    >
+      {({ onItemsRendered, ref }) => (
+        <InnerWrapper hasPersisted={hasPersisted}>
+          <ScrollerHandle
+            infiniteRef={infiniteRef}
+            scrollPos={scrollPos}
+            windowHeight={height}
+            containerHeight={totalHeight}
+            setIsUsingScrollHandle={setIsUsingScrollHandle}
+          />
+          <List
+            ref={ref}
+            height={height}
+            useIsScrolling
+            itemData={itemsWithTitle}
+            onItemsRendered={args => {
+              handleItemRendered(args);
+              onItemsRendered(args);
+            }}
+            itemCount={itemsWithTitle.length}
+            itemSize={calculateSize}
+            width={windowWidth}
+            estimatedItemSize={windowWidth + 150}
+            onScroll={handleScroll}
+          >
+            {Row}
+          </List>
+        </InnerWrapper>
       )}
-    </Autosizer>
+    </InfiniteLoader>
   );
 };
 

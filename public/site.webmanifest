@@ -3,13 +3,13 @@
     "short_name": "",
     "icons": [
         {
-            "src": "https://cdn.carpedalan.com/android-chrome-192x192.png",
+            "src": "https://cdn.carpe.dalan.dev/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         }
     ],
     "theme_color": "#ebacf9",
     "background_color": "#ffffff",
-    "start_url": "https://carpedalan.com",
+    "start_url": "https://carpe.dalan.dev",
     "display": "standalone"
 }

@@ -1,8 +1,15 @@
 import debug from 'debug';
-import React, { SyntheticEvent, useState, useCallback, useEffect } from 'react';
+import React, {
+  SyntheticEvent,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react';
 import styled, { css } from 'styled-components';
 
 import { PostsWithTagsWithFakes } from 'hooks/types';
+import usePosts from 'hooks/usePosts';
 import { propTrueFalse } from 'styles/utils';
 import { getFullImageSrcSet, getSquareImageSrcSet } from 'utils';
 
@@ -89,6 +96,7 @@ const Picture = ({
   const [transitionTime, setTransitionTime] = useState(400);
   const [showSvg, setShowSvg] = useState(false);
   const renderStart = performance.now();
+  const { posts } = usePosts();
 
   const handleLoad = useCallback(() => {
     const timeNow = performance.now();
@@ -100,6 +108,10 @@ const Picture = ({
     setTransitionTime(transitionTime);
     setLoading(true);
   }, [renderStart]);
+
+  const id = useMemo(() => {
+    return posts.findIndex(p => p.id === post.id);
+  }, [post.id, posts]);
 
   useEffect(() => {
     const visible = setTimeout(() => {
@@ -153,6 +165,8 @@ const Picture = ({
             shouldTransition={shouldTransition}
             transitionTime={transitionTime}
             data-test={post.key}
+            data-timestamp={post.timestamp}
+            data-index={id}
           >
             {type === 'original'
               ? getFullImageSrcSet({ post })
