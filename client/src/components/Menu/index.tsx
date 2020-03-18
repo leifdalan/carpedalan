@@ -11,13 +11,13 @@ const Menu = styled.button<IMenu>`
   cursor: pointer;
   outline: inherit;
   position: fixed;
-  z-index: 1;
+  z-index: 2;
   top: 0;
   ${prop('side')}: 25px;
   background: rgba(255, 255, 255, 0.6);
-  padding: 5px;
-  box-shadow: rgba(255, 255, 255, 0.6) 0px 0px 10px 10px;
-  border-radius: 40%;
+  padding: 15px;
+  box-shadow: rgba(255, 255, 255, 0.6) 0px 0px 10px 5px;
+  border-radius: 25%;
   margin-top: 1em;
   font-family: ${getThemeValue('titleFont')};
   text-transform: uppercase;

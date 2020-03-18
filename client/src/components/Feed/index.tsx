@@ -97,12 +97,14 @@ const Feed = ({
     scrollIndex,
     handleScroll,
     scrollPos,
+    velocity,
+    hasMoved,
   } = useScrollPersist('feed', itemsWithTitle);
   const [isUsingScrollHandle, setIsUsingScrollHandle] = useState(false);
   const previousScrollHandle = usePrevious(isUsingScrollHandle);
   const indices = useRef<[number, number] | null>(null);
   const previousItemsWithTitle = usePrevious(itemsWithTitle);
-  const { width: windowWidth, height } = useWindow();
+  const { width: windowWidth, height: windowHeight } = useWindow();
   /**
    * Triggered if isItemLoaded returns false
    *
@@ -205,41 +207,51 @@ const Feed = ({
   }, [calculateSize, itemsWithTitle.length]);
 
   return (
-    <InfiniteLoader
-      itemCount={itemsWithTitle.length}
-      isItemLoaded={isItemLoaded}
-      loadMoreItems={loadMoreItems}
-      ref={infiniteRef}
-    >
-      {({ onItemsRendered, ref }) => (
-        <InnerWrapper hasPersisted={hasPersisted}>
-          <ScrollerHandle
-            infiniteRef={infiniteRef}
-            scrollPos={scrollPos}
-            windowHeight={height}
-            containerHeight={totalHeight}
-            setIsUsingScrollHandle={setIsUsingScrollHandle}
-          />
-          <List
-            ref={ref}
-            height={height}
-            useIsScrolling
-            itemData={itemsWithTitle}
-            onItemsRendered={args => {
-              handleItemRendered(args);
-              onItemsRendered(args);
-            }}
+    <>
+      <ScrollerHandle
+        infiniteRef={infiniteRef}
+        scrollPos={scrollPos}
+        windowHeight={windowHeight}
+        containerHeight={totalHeight}
+        setIsUsingScrollHandle={setIsUsingScrollHandle}
+        isUsingScrollHandle={isUsingScrollHandle}
+        scrollVelocity={velocity}
+        hasMoved={hasMoved}
+      />
+
+      <Autosizer>
+        {({ width, height }) => (
+          <InfiniteLoader
             itemCount={itemsWithTitle.length}
-            itemSize={calculateSize}
-            width={windowWidth}
-            estimatedItemSize={windowWidth + 150}
-            onScroll={handleScroll}
+            isItemLoaded={isItemLoaded}
+            loadMoreItems={loadMoreItems}
+            ref={infiniteRef}
           >
-            {Row}
-          </List>
-        </InnerWrapper>
-      )}
-    </InfiniteLoader>
+            {({ onItemsRendered, ref }) => (
+              <InnerWrapper hasPersisted={hasPersisted}>
+                <List
+                  ref={ref}
+                  height={height}
+                  useIsScrolling
+                  itemData={itemsWithTitle}
+                  onItemsRendered={args => {
+                    handleItemRendered(args);
+                    onItemsRendered(args);
+                  }}
+                  itemCount={itemsWithTitle.length}
+                  itemSize={calculateSize}
+                  width={width}
+                  estimatedItemSize={width + 150}
+                  onScroll={handleScroll}
+                >
+                  {Row}
+                </List>
+              </InnerWrapper>
+            )}
+          </InfiniteLoader>
+        )}
+      </Autosizer>
+    </>
   );
 };
 

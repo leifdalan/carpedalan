@@ -6,6 +6,7 @@ services:
       file: docker-compose.base.yml
       service: alb
       
+      
     depends_on:
       api: 
         condition: service_healthy
@@ -83,9 +84,9 @@ services:
     extends:
       file: docker-compose.base.yml
       service: aws
-    ports:
-      - "4567-4595:4567-4595"
-      - "${PORT_WEB_UI-8081}:${PORT_WEB_UI-8081}"    
+    # ports:
+    #   - "4567-4595:4567-4595"
+    #   - "${PORT_WEB_UI-8081}:${PORT_WEB_UI-8081}"    
 
   redis:
     extends:

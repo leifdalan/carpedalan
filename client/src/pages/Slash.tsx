@@ -9,6 +9,7 @@ import Grid from 'components/Grid';
 import Menu from 'components/Menu';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePosts from 'hooks/usePosts';
+import { getThemeValue } from 'styles/utils';
 
 const log = debug('component:Slash');
 
@@ -23,6 +24,10 @@ const { useEffect } = React;
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
+`;
+
+const StyledLink = styled(Link)`
+  color: ${getThemeValue('text')};
 `;
 
 interface RowRender {
@@ -56,18 +61,19 @@ const Slash: React.FC = () => {
   return metaResponse && !metaLoading ? (
     <>
       <Menu side="right">
-        <Link to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
+        <StyledLink to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
           {hash.includes('grid') ? 'List' : 'Grid'}
-        </Link>
+        </StyledLink>
       </Menu>
-
-      <Wrapper data-testid="home">
-        {isGrid() ? (
-          <Grid itemsWithTitle={postsWithTitle} />
-        ) : (
-          <Feed itemsWithTitle={postsWithTitle} />
-        )}
-      </Wrapper>
+      {metaResponse ? (
+        <Wrapper data-testid="home">
+          {isGrid() ? (
+            <Grid itemsWithTitle={postsWithTitle} />
+          ) : (
+            <Feed itemsWithTitle={postsWithTitle} />
+          )}
+        </Wrapper>
+      ) : null}
       <Routes>
         <Route path="gallery/:postId" element={<Gallery />} />
       </Routes>

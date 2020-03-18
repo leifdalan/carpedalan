@@ -1206,9 +1206,23 @@ export interface GetPostMetaResponseBodyI {
    */
   count: number;
   /**
+   * timestamp of first post
+   */
+  firstTimestamp?: number;
+  /**
+   * timestamp of last post
+   */
+  lastTimestamp: number;
+  /**
    * Average aspect ratio of all posts
    */
   averageRatio: number;
+  /**
+   * Object with keys as timestamps, which are the beginning of the month and values as number of active posts in that month
+   */
+  frequencyByMonth: {
+    [k: string]: any;
+  };
   [k: string]: any;
 }
 

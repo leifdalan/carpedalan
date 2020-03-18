@@ -1,7 +1,7 @@
 import debug from 'debug';
 import { useContext, useEffect, useState, useCallback } from 'react';
 
-import { client, PostWithTagsI } from 'ApiClient';
+import { client, PostWithTagsI, GetPostMetaResponseBodyI } from 'ApiClient';
 import { defaultPostsPerPage } from 'config';
 import usePrevious from 'hooks/usePrevious';
 import { DataContext } from 'providers/Data';
@@ -72,6 +72,20 @@ function makePostsListWithFakes(
  */
 
 let postsByPage: PostsByPage = {};
+let globalMeta: GetPostMetaResponseBodyI = {
+  frequencyByMonth: {},
+  count: 0,
+  lastTimestamp: 0,
+  averageRatio: 0,
+};
+type SetMeta = (m: GetPostMetaResponseBodyI) => void;
+let metaSetters: SetMeta[] = [];
+const setGlobalMeta = (metaResponse: GetPostMetaResponseBodyI) => {
+  metaSetters.forEach(setter => {
+    globalMeta = metaResponse;
+    setter(globalMeta);
+  });
+};
 const pagesRequested = new Set<number>();
 function usePosts() {
   const { setPosts, data } = useContext(DataContext);
@@ -104,11 +118,19 @@ function usePosts() {
   } = useApi(client.getPostMeta);
 
   const [total, setTotal] = useState<number>(0);
+  const [meta, setMeta] = useState(globalMeta);
+  if (!metaSetters.includes(setMeta)) metaSetters.push(setMeta);
+  useEffect(() => {
+    return () => {
+      metaSetters = metaSetters.filter(setter => setter !== setMeta);
+    };
+  });
   const [allPosts, setAllPosts] = useState<PostsWithTagsWithFakes[]>([]);
   const previousResponse = usePrevious(response);
 
   useEffect(() => {
     if (metaResponse) {
+      setGlobalMeta(metaResponse);
       const allPostsWithTagsWithFakess = [
         ...Array(metaResponse.count).keys(),
       ].map(
@@ -181,6 +203,7 @@ function usePosts() {
     metaRequest,
     metaResponse,
     metaLoading,
+    meta,
   };
 }
 
