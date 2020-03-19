@@ -1,5 +1,6 @@
 import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
+import * as pulumi from '@pulumi/pulumi';
 
 import { getResourceName as n, getTags as t } from './utils';
 
@@ -9,13 +10,13 @@ interface MakeDBI {
 
 export function makeRedis() {
   const replicationGroup = new aws.elasticache.ReplicationGroup(
-    'replicationGroup',
+    n('replicationGroup'),
     {
       engine: 'redis',
       engineVersion: '5.0.6',
       nodeType: 'cache.t2.micro',
       replicationGroupDescription: 'hmmm?',
-      replicationGroupId: 'repgroupid',
+      replicationGroupId: `${pulumi.getStack()}rep`,
       clusterMode: {
         numNodeGroups: 1,
         replicasPerNodeGroup: 0,

@@ -14,7 +14,7 @@ import { makeDB } from './rds';
 import { makeRedis } from './redis';
 import { getSecrets } from './secrets';
 import { makeSns } from './sns';
-// import { makeSqs } from './sqs';
+import { makeSqs } from './sqs';
 import { getResourceName as n, createHashFromFile } from './utils';
 import { makeVpc } from './vpc';
 
@@ -139,6 +139,14 @@ async function main() {
     ...secrets,
   });
 
+  const { queue } = makeSqs({
+    depLayer,
+    lambdaRole,
+    repGroup: replicationGroup,
+    bucket: privateBucket,
+    vpc,
+  });
+
   const { alb, taskDefinition } = createECSResources({
     rds,
     config,
@@ -179,6 +187,7 @@ async function main() {
     cdnDomain: publicDistroDomain,
     replicationGroup: replicationGroup.primaryEndpointAddress,
     layerHash: sourceCodeHash,
+    queue,
   };
 }
 module.exports = main();

@@ -1,4 +1,7 @@
+import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
+
+import { getResourceName as n, getTags as t } from './utils';
 
 export function makeVpc() {
   // const vpc = new awsx.ec2.Vpc(n('vpc'), {
@@ -86,9 +89,15 @@ export function makeVpc() {
   //   subnetIds: [vpc.privateSubnetIds[1]],
   // });
 
+  /**
+   * @TOTO @IMPORTANT
+   * Remove this endpoint after the migration is complete.
+   */
+
   // new aws.ec2.VpcEndpoint(n('vpc-endpoint-s3'), {
   //   vpcEndpointType: 'Gateway',
   //   vpcId: vpc.vpc.id,
+  //   routeTableIds: [vpc.vpc.mainRouteTableId],
   //   serviceName: 'com.amazonaws.us-west-2.s3',
   //   tags: t(n('vpc-endpoint-s3')),
   // });
