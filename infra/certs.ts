@@ -67,9 +67,7 @@ export function makeCerts({
   );
   const config = new pulumi.Config();
   const configDomain = config.get('domain') as string;
-  const domainParts = getDomainAndSubdomain(configDomain);
-  const hostedZoneId = aws.route53.getZone({ name: domainParts.parentDomain })
-    .id;
+  const zoneId = config.get('hostedZoneId') as string;
 
   /**
    *  Create a DNS record to prove that we _own_ the domain we're requesting a certificate for.
@@ -79,7 +77,7 @@ export function makeCerts({
     n(`${domain}-validation1`),
     {
       name: certificate.domainValidationOptions[0].resourceRecordName,
-      zoneId: hostedZoneId,
+      zoneId,
       type: certificate.domainValidationOptions[0].resourceRecordType,
       records: [certificate.domainValidationOptions[0].resourceRecordValue],
       ttl: tenMinutes,
@@ -94,7 +92,7 @@ export function makeCerts({
     n(`${domain}-validation2`),
     {
       name: certificate.domainValidationOptions[1].resourceRecordName,
-      zoneId: hostedZoneId,
+      zoneId,
       type: certificate.domainValidationOptions[1].resourceRecordType,
       records: [certificate.domainValidationOptions[1].resourceRecordValue],
       ttl: tenMinutes,
@@ -104,7 +102,7 @@ export function makeCerts({
   const validations = subDomains.map((subDomain, i) => {
     return new aws.route53.Record(n(`${domain}-validation${i + 2}`), {
       name: certificate.domainValidationOptions[i + 2].resourceRecordName,
-      zoneId: hostedZoneId,
+      zoneId,
       type: certificate.domainValidationOptions[i + 2].resourceRecordType,
       records: [certificate.domainValidationOptions[i + 2].resourceRecordValue],
       ttl: tenMinutes,

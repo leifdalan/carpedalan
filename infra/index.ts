@@ -6,7 +6,7 @@ import * as pulumi from '@pulumi/pulumi';
 import * as mime from 'mime';
 
 import { createBucket } from './buckets';
-import { makeCerts, getDomainAndSubdomain } from './certs';
+import { makeCerts } from './certs';
 import { createECSResources } from './ecs';
 import { getLambdas } from './lambdas';
 import { getPolicies } from './policies';
@@ -165,11 +165,13 @@ async function main() {
     vpc,
   });
 
-  const domainParts = getDomainAndSubdomain(targetDomain);
-  const hostedZone = aws.route53.getZone({ name: domainParts.parentDomain });
+  // const configDomain = config.get('domain') as string;
+  const zoneId = config.get('hostedZoneId') as string;
+
+  // const hostedZone = aws.route53.getZone({ zoneId });
   new aws.route53.Record(targetDomain, {
     name: targetDomain,
-    zoneId: hostedZone.zoneId,
+    zoneId,
     type: 'A',
     aliases: [
       {

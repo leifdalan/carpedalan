@@ -15,6 +15,7 @@ const client = redis.createClient({
 
 // @TODO add to dead letter queue on outer try catch. LAME!
 const set = promisify(client.set).bind(client);
+// const get = promisify(client.get).bind(client);
 exports.sqs = async event => {
   const { Records } = event;
   console.log('Records', Records);

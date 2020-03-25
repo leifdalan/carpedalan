@@ -1,4 +1,5 @@
 /* eslint-disable import/no-duplicates */
+import addMonths from 'date-fns/fp/addMonths';
 import format from 'date-fns/fp/format';
 import fromUnixTime from 'date-fns/fp/fromUnixTime';
 import getMonth from 'date-fns/fp/getMonth';
@@ -190,6 +191,7 @@ export default function ScrollHandle({
     return flow(
       pos => pixelToMonthMap.find(({ top }) => top > pos)?.monthUnix ?? 0,
       fromUnixTime,
+      addMonths(-1),
       format('MMM yyyy'),
     );
   }, [pixelToMonthMap]);

@@ -47,7 +47,7 @@ export default (app, openApiDoc) => {
     });
   });
 
-  app.get('/', (req, res) => {
+  const regularAppHandler = (req, res) => {
     res.render('index', {
       layout: false,
       openApiDoc: JSON.stringify(openApiDoc),
@@ -63,7 +63,11 @@ export default (app, openApiDoc) => {
         nodeEnv,
       }),
     });
-  });
+  };
+
+  app.get('/', regularAppHandler);
+  app.get('/gallery/*', regularAppHandler);
+  app.get('/tag/**/', regularAppHandler);
 
   app.get('/baby', (req, res) => {
     setSignedCloudfrontCookie(res);

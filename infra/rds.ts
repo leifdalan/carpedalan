@@ -19,13 +19,12 @@ export function makeDB({ vpc, config }: MakeDBI) {
   // });
 
   const rds = new aws.rds.Instance(n('rds'), {
+    vpcSecurityGroupIds: [vpc.vpc.defaultSecurityGroupId],
     username,
     password,
     allowMajorVersionUpgrade: true,
     instanceClass: 'db.t2.micro',
     applyImmediately: true,
-    availabilityZone: vpc.publicSubnets[0].subnet.availabilityZone,
-    // dbSubnetGroupName: subnetGroup.name,
     engine: 'postgres',
     name: 'carpedalan',
     port: 5432,

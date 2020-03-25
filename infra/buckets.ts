@@ -187,11 +187,14 @@ export function createBucket({
     domain: string,
     distribution: aws.cloudfront.Distribution,
   ): aws.route53.Record {
-    const domainParts = getDomainAndSubdomain(mainDomain);
-    const hostedZone = aws.route53.getZone({ name: domainParts.parentDomain });
+    const config = new pulumi.Config();
+    const configDomain = config.get('domain') as string;
+
+    const zoneId = config.get('hostedZoneId') as string;
+
     return new aws.route53.Record(domain, {
       name: domain,
-      zoneId: hostedZone.zoneId,
+      zoneId,
       type: 'A',
       aliases: [
         {

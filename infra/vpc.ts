@@ -8,8 +8,14 @@ export function makeVpc() {
   //   tags: t(n('vpc')),
   //   numberOfNatGateways: 0, // these are $20 / month!
   // });
+  const providerRegion = new aws.Provider(n('provider'), {
+    region: 'us-west-2', // Per AWS, ACM certificate must be in the us-east-1 region.
+    profile: aws.config.profile,
+  });
 
-  const vpc = awsx.ec2.Vpc.getDefault();
+  const vpc = awsx.ec2.Vpc.getDefault({
+    provider: providerRegion,
+  });
 
   /**
    * Security group for http/https access only

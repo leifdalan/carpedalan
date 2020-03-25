@@ -53,13 +53,20 @@ CreateI) {
   const alb = new awsx.lb.ApplicationLoadBalancer(n('alb'), {
     external: true,
     tags: t(n('alb')),
+    vpc,
   });
 
   const targetGroup = alb.createTargetGroup(n('web'), {
+    vpc,
     port: 80, // This is the magic port that must match the container image's exposed port.
     healthCheck: {
       path: '/healthcheck',
-      timeout: 5,
+      timeout: 9,
+      interval: 10,
+      healthyThreshold: 3,
+      unhealthyThreshold: 3,
+      port: '80',
+      matcher: '200-299',
     },
     /**
      * Needs to be "instance" instead of default "ip" because our task definition
@@ -77,12 +84,14 @@ CreateI) {
   const listener = targetGroup.createListener(n('listener'), {
     port: 443,
     certificateArn: albCertificateArn,
+    vpc,
   });
 
   /**
    * Targetgroup-less listener that will redirect to https/443
    */
   alb.createListener(n('redirecthttp'), {
+    vpc,
     port: 80,
     protocol: 'HTTP',
     defaultAction: {
@@ -111,6 +120,7 @@ CreateI) {
    * instances properly.
    */
   cluster.createAutoScalingGroup(n('micro-scaling-group'), {
+    vpc,
     templateParameters: { minSize: 2 },
     launchConfigurationArgs: {
       instanceType: 't2.micro',
