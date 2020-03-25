@@ -56,6 +56,8 @@ async function main() {
     namespace: 'private-photos',
     isPrivate: true,
     vpc,
+    allowCors: true,
+    comment: 'Distro for private photos, uses trusted signers',
   });
 
   const publicDistroDomain = `cdn.${targetDomain}`;
@@ -66,18 +68,20 @@ async function main() {
     namespace: 'public-cdn',
     isPrivate: false,
     allowCors: true,
+    comment: 'Public CDN for static assets.',
   });
 
   // For each file in the directory, create an S3 object stored in `siteBucket`
   for (const item of fs.readdirSync(path.join(__dirname, '..', 'dist'))) {
     const filePath = path.join(__dirname, '..', 'dist', item);
-    new aws.s3.BucketObject(item, {
-      cacheControl: 'max-age=31536000',
-      bucket: publicBucket,
-      source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
-      contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
-      ...(item === 'report.html' ? {} : { contentEncoding: 'br' }),
-    });
+    if (item !== 'manifest.json')
+      new aws.s3.BucketObject(item, {
+        cacheControl: 'max-age=31536000',
+        bucket: publicBucket,
+        source: new pulumi.asset.FileAsset(filePath), // use FileAsset to point to a file
+        contentType: mime.getType(filePath) || undefined, // set the MIME type of the file
+        ...(item === 'report.html' ? {} : { contentEncoding: 'br' }),
+      });
   }
 
   // For each file in the directory, create an S3 object stored in `siteBucket`

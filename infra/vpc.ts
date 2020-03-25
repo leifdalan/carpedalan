@@ -1,7 +1,7 @@
 import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
 
-import { getResourceName as n, getTags as t } from './utils';
+import { getResourceName as n } from './utils';
 
 export function makeVpc() {
   // const vpc = new awsx.ec2.Vpc(n('vpc'), {

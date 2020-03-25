@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 const http = require('http');
 
+const arg = process.argv[2];
+console.log('arg', arg);
 http.get(
   {
     hostname: 'localhost',
-    port: 8001,
+    port: arg,
     path: '/healthcheck',
     agent: false, // Create a new agent just for this one request
   },

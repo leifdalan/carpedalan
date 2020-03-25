@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { PrecacheEntry } from 'workbox-precaching/_types';
 
 import { User } from './User';
 import hotEntry from './hotEntry';
@@ -19,12 +20,25 @@ declare global {
     __META__: {
       cdn: string;
     };
+    __WB_MANIFEST: PrecacheEntry[];
+    registration: any;
   }
 }
 // Doing this so that theres a trace on Chrome Debugger since
 // we are using the debug module (you lose line numbers)
 console.log = console.warn;
 const App = hotEntry;
+
+console.log('CLIENT: service worker registration in progress.');
+navigator.serviceWorker.register('/dist/sw.js', { scope: '/' }).then(
+  () => {
+    // registration.unregister();
+    console.log('CLIENT: service worker registration complete.');
+  },
+  () => {
+    console.log('CLIENT: service worker registration failure.');
+  },
+);
 ReactDOM.render(
   <App {...window.__SESSION__} />,
   document.getElementById('root'),

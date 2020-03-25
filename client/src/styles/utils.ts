@@ -181,7 +181,7 @@ export const GlobalStyleComponent = createGlobalStyle`
 
     min-height: 100vh;
     animation: ${animation} 60s ease infinite;
-  
+    animation-delay: -${Math.random() * 60}s;
   &:before {
     z-index: -1;
     content: "";

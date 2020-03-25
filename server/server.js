@@ -12,6 +12,7 @@ import pg from 'pg';
 import swaggerUi from 'swagger-ui-express';
 import winston from 'winston';
 
+import db from './db';
 import initialize from './api-v1/initialize';
 import {
   assetDomain,
@@ -80,7 +81,22 @@ export const setup = () => {
   });
   app.use('/dist', express.static('server/dist'));
   app.use('/public', express.static('public'));
-  app.use('/sw.js', express.static('server/sw.js'));
+  app.use(
+    '/sw.js',
+    (req, res, next) => {
+      res.set('Content-Encoding', 'br');
+      next();
+    },
+    express.static('server/dist/sw.js'),
+  );
+  app.use(
+    '/sw.js.map',
+    (req, res, next) => {
+      res.set('Content-Encoding', 'br');
+      next();
+    },
+    express.static('server/dist/sw.js.map'),
+  );
 
   // Setup app to parse cookies and POST requests
   app.use(cookieParser());
@@ -133,6 +149,14 @@ export const setup = () => {
   // }
 
   // express-winston logger BEFORE the router
+  app.get('/healthcheck', async (req, res) => {
+    if (isProd) await db.raw('select 1+1 as result');
+    res.status(200).json({
+      farts: 'for your health',
+      clownpenis: 'dot fartzz',
+    });
+  });
+
   if (isProd) {
     const { Loggly } = require('winston-loggly-bulk'); // eslint-disable-line global-require
     const loggly = new Loggly({

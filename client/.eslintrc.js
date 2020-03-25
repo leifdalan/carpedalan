@@ -75,7 +75,13 @@ module.exports = {
     "no-restricted-syntax": "off",
     "no-throw-literal": "off",
     "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "log|debug" }],
+    "@typescript-eslint/no-unused-vars": ["error", { 
+      "varsIgnorePattern": "log|debug", 
+      "ignoreRestSiblings": true, 
+      "argsIgnorePattern": 
+      "event|_", 
+      "caughtErrors": "none" 
+    }],
     "@typescript-eslint/interface-name-prefix": "off",
     "no-shadow": "off",
     "func-names": "off",

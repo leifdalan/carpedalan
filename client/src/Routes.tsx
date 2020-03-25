@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import withErrorBoundary from 'components/ErrorBoundary';
 import SidebarAndMenu from 'components/SidebarAndMenu';
 import Toaster from 'components/Toaster';
-import useGlobalSwipe from 'hooks/useGlobalSwipe';
 import useTags from 'hooks/useTags';
 import useUser from 'hooks/useUser';
 import Login from 'pages/Login';
@@ -33,7 +32,6 @@ const AppWrapper = styled.div`
 const AppRoutes: React.FC = () => {
   const { fetchTags } = useTags();
   const { user: globalUser } = useUser();
-  const { handlers } = useGlobalSwipe();
   useEffect(() => {
     log('route is mounting');
     if (globalUser) {
@@ -42,7 +40,7 @@ const AppRoutes: React.FC = () => {
   }, [fetchTags, globalUser]);
 
   return (
-    <AppWrapper {...handlers}>
+    <AppWrapper>
       <Suspense fallback={<Spinner />}>
         <Toaster />
         <SidebarAndMenu />

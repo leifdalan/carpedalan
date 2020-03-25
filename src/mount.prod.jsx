@@ -1,3 +1,4 @@
+/* eslint-disable */
 import 'babel-polyfill';
 import React from 'react';
 import DOM from 'react-dom';
@@ -33,21 +34,9 @@ if (!isCi) {
         registration.unregister();
       }
     });
-
-    //   console.log('CLIENT: service worker registration in progress.');
-    //   navigator.serviceWorker.register('/sw.js').then(
-    //     () => {
-    //       // registration.unregister();
-    //       console.log('CLIENT: service worker registration complete.');
-    //     },
-    //     () => {
-    //       console.log('CLIENT: service worker registration failure.');
-    //     },
-    //   );
-    // } else {
-    //   console.log('CLIENT: service worker is not supported.');
-    // }
   }
+
+  //   console.log('CLIENT: service worker registration in progress.');
 }
 
 /* eslint-disable no-underscore-dangle */

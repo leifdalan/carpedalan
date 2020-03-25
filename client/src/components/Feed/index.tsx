@@ -62,6 +62,14 @@ const Title = styled.h1`
   letter-spacing: 3px;
 `;
 
+const StyledList = styled(List)`
+  overflow: -moz-scrollbars-none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
 const Row = memo(
   ({
     index,
@@ -111,7 +119,6 @@ const Feed = ({
    * @param {number} index
    * @returns Promise<void>
    */
-
   const loadMoreItems = useCallback(
     async (startIndex: number, stopIndex: number) => {
       log(
@@ -229,7 +236,7 @@ const Feed = ({
           >
             {({ onItemsRendered, ref }) => (
               <InnerWrapper hasPersisted={hasPersisted}>
-                <List
+                <StyledList
                   ref={ref}
                   height={height}
                   useIsScrolling
@@ -245,7 +252,7 @@ const Feed = ({
                   onScroll={handleScroll}
                 >
                   {Row}
-                </List>
+                </StyledList>
               </InnerWrapper>
             )}
           </InfiniteLoader>

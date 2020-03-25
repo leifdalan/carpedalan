@@ -2,7 +2,6 @@ import * as aws from '@pulumi/aws';
 import * as awsx from '@pulumi/awsx';
 import * as pulumi from '@pulumi/pulumi';
 
-import { getDomainAndSubdomain } from './certs';
 import { getResourceName as name, getTags as t } from './utils';
 
 interface GetBucketsI {
@@ -14,12 +13,13 @@ interface GetBucketsI {
   allowCors?: boolean;
   vpc?: awsx.ec2.Vpc;
   s3Endpoint?: aws.ec2.VpcEndpoint;
+  comment: string;
 }
-const corsRules = (domain: string) => [
+const corsRules = () => [
   {
     allowedHeaders: ['*'],
     allowedMethods: ['PUT', 'POST', 'GET', 'HEAD', 'DELETE'],
-    allowedOrigins: [`https://${domain}`],
+    allowedOrigins: [`*`],
   },
 ];
 
@@ -28,10 +28,10 @@ export function createBucket({
   domain,
   namespace,
   certificateArn,
-  mainDomain,
   allowCors = false,
   vpc,
   s3Endpoint,
+  comment,
 }: GetBucketsI) {
   function n(resource: string) {
     return name(`${namespace}-${resource}`);
@@ -53,7 +53,7 @@ export function createBucket({
   const privateBucket = new aws.s3.Bucket(n('private-bucket'), {
     acl: 'private',
     forceDestroy: true,
-    ...(allowCors ? { corsRules: corsRules(mainDomain) } : {}),
+    ...(allowCors ? { corsRules: corsRules() } : {}),
     tags: t(n('private-bucket')),
   });
 
@@ -113,7 +113,7 @@ export function createBucket({
   const s3OriginId = 'S3PhotoOrigin';
   const s3Distribution = new aws.cloudfront.Distribution(n('private-distro'), {
     aliases: [domain], // Route 53 aliases
-    comment: 'Some comment',
+    comment,
     tags: t(n('private-distro')),
     defaultCacheBehavior: {
       allowedMethods: [
@@ -125,7 +125,7 @@ export function createBucket({
         'POST',
         'PUT',
       ],
-      cachedMethods: ['GET', 'HEAD'],
+      cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
       defaultTtl: 3600,
       forwardedValues: {
         cookies: {
@@ -136,6 +136,7 @@ export function createBucket({
       maxTtl: 86400,
       minTtl: 0,
       targetOriginId: s3OriginId,
+
       viewerProtocolPolicy: 'allow-all',
     },
     defaultRootObject: 'index.html',
@@ -144,7 +145,7 @@ export function createBucket({
     orderedCacheBehaviors: [
       {
         allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
-        cachedMethods: ['GET', 'HEAD'],
+        cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
         compress: true,
         defaultTtl: 3600,
         forwardedValues: {
@@ -152,6 +153,11 @@ export function createBucket({
             forward: 'none',
           },
           queryString: false,
+          headers: [
+            'Access-Control-Request-Headers',
+            'Access-Control-Request-Method',
+            'Origin',
+          ],
         },
         maxTtl: 86400,
         minTtl: 0,
@@ -188,7 +194,6 @@ export function createBucket({
     distribution: aws.cloudfront.Distribution,
   ): aws.route53.Record {
     const config = new pulumi.Config();
-    const configDomain = config.get('domain') as string;
 
     const zoneId = config.get('hostedZoneId') as string;
 

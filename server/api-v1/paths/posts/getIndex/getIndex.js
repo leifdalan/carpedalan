@@ -1,22 +1,11 @@
 // Showing that you don't need to have apiDoc defined on methodHandlers.
 
 import { commonErrors } from '../../../refs/error';
-import { BadRequestError } from '../../../../errors';
 import {
-  CREATEDAT,
-  DATE,
-  DESCRIPTION,
-  ETAG,
-  EXIFPROPS,
-  ID,
-  KEY,
-  ORIGINALURL,
   STATUS,
-  UPDATEDAT,
   PHOTOS,
   ACTIVE,
   TIMESTAMP,
-  IS_PENDING,
 } from '../../../../../shared/constants';
 
 const status = 200;

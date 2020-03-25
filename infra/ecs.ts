@@ -31,6 +31,9 @@ interface CreateI {
   vpc: awsx.ec2.Vpc;
 }
 
+const NODE_PORT = 8000;
+const NGINX_PORT = 80;
+
 export function createECSResources({
   albCertificateArn,
   rds,
@@ -44,6 +47,7 @@ export function createECSResources({
   bucketUserCreds,
   repGroup,
   vpc,
+  config,
 }: // redis,
 CreateI) {
   /**
@@ -58,14 +62,14 @@ CreateI) {
 
   const targetGroup = alb.createTargetGroup(n('web'), {
     vpc,
-    port: 80, // This is the magic port that must match the container image's exposed port.
+    port: NGINX_PORT, // This is the magic port that must match the container image's exposed port.
     healthCheck: {
       path: '/healthcheck',
       timeout: 9,
       interval: 10,
       healthyThreshold: 3,
       unhealthyThreshold: 3,
-      port: '80',
+      port: `${NGINX_PORT}`,
       matcher: '200-299',
     },
     /**
@@ -110,6 +114,12 @@ CreateI) {
     securityGroups: [vpc.vpc.defaultSecurityGroupId],
   });
 
+  const keyPair = new aws.ec2.KeyPair(n('access'), {
+    keyName: n('access'),
+    publicKey: config.get('publicKey') as string,
+    tags: t(n('access')),
+  });
+
   /**
    * Create a launch configuration, autoscaling group and instances specified
    * in `minSize`. Since this VPC does NOT have a NAT gateway associated with
@@ -119,14 +129,19 @@ CreateI) {
    * will never be reached because cloudformation can't communicate with the
    * instances properly.
    */
-  cluster.createAutoScalingGroup(n('micro-scaling-group'), {
+  const asg = cluster.createAutoScalingGroup(n('micro-scaling-group'), {
     vpc,
-    templateParameters: { minSize: 2 },
+    templateParameters: { minSize: 2, maxSize: 2 },
     launchConfigurationArgs: {
       instanceType: 't2.micro',
+      keyName: keyPair.keyName,
       securityGroups: [vpc.vpc.defaultSecurityGroupId],
     },
     subnetIds: [...vpc.publicSubnetIds, ...vpc.privateSubnetIds],
+  });
+
+  asg.scaleToTrackAverageCPUUtilization(n('cpu-scaler'), {
+    targetValue: 5,
   });
 
   /**
@@ -160,7 +175,7 @@ CreateI) {
     },
     {
       name: 'PORT',
-      value: '8000',
+      value: `${NODE_PORT}`,
     },
     {
       name: 'AWS_ACCESS_KEY_ID',
@@ -180,7 +195,7 @@ CreateI) {
     },
     {
       name: 'DEFAULT_POSTS_PER_PAGE',
-      value: '50',
+      value: '200',
     },
     {
       name: 'REDIS_URL',
@@ -198,6 +213,9 @@ CreateI) {
     tags: t(n('repository')),
   });
 
+  /**
+   * ECR lifecycle policy to clean up old/stale images. These add up quick!
+   */
   new aws.ecr.LifecyclePolicy(n('lifecycle'), {
     repository: repository.name,
     policy: {
@@ -237,26 +255,34 @@ CreateI) {
 
     containers: {
       nginx: {
+        cpu: 256,
+        memory: 256,
         image: awsx.ecs.Image.fromDockerBuild(repository, {
           context: '../nginx',
           dockerfile: '../nginx/Dockerfile',
         }),
 
-        memory: 128,
         links: ['web'],
         portMappings: [listener],
-        // healthCheck: {
-        //   command: [
-        //     'CMD-SHELL',
-        //     'wget http://localhost/healthcheck -q -O - > /dev/null 2>&1',
-        //   ],
-        //   interval: 5,
-        //   retries: 5,
-        //   startPeriod: 10,
-        // },
+        /**
+         * Adding healthcheck brings the container to a "RUNNING" status faster
+         * and more reliably. Having seperate healthchecks per container
+         * is helpful for debugging which container is failing to be healthy.
+         */
+        healthCheck: {
+          command: [
+            'CMD-SHELL',
+            'wget http://localhost/healthcheck -q -O - > /dev/null 2>&1',
+          ],
+          interval: 5,
+          retries: 5,
+          startPeriod: 10,
+        },
       },
       // @ts-ignore
       web: {
+        memory: 512,
+        cpu: 512,
         /**
          * This utility will actually run a docker build with the included args
          * and push to the ECR repository, tagged with the SHA of the docker
@@ -267,21 +293,26 @@ CreateI) {
           dockerfile: '../server/Dockerfile',
           extraOptions: ['--target', 'prod', '--cache-from', 'api:latest'],
         }),
-        // healthCheck: {
-        //   command: ['CMD-SHELL', 'node ./scripts/healthcheck'],
-        //   interval: 5,
-        //   retries: 5,
-        //   startPeriod: 10,
-        // },
-        memory: 256,
+        /**
+         * Adding healthcheck brings the container to a "RUNNING" status faster
+         * and more reliably. Having seperate healthchecks per container
+         * is helpful for debugging which container is failing to be healthy.
+         */
+        healthCheck: {
+          command: ['CMD-SHELL', `node ./scripts/healthcheck.js ${NODE_PORT}`],
+          interval: 5,
+          retries: 10,
+          startPeriod: 10,
+        },
+
         /**
          * When specifying the listener here, it automatically maps its port,
          * so in this case, analogous to "80:80"
          */
         portMappings: [
           {
-            hostPort: 8000,
-            containerPort: 8000,
+            hostPort: NODE_PORT,
+            containerPort: NODE_PORT,
             protocol: 'tcp',
           },
         ],
@@ -340,7 +371,7 @@ CreateI) {
   new awsx.ecs.EC2Service(n('service'), {
     cluster,
     taskDefinition,
-    desiredCount: 1,
+    desiredCount: 2,
     waitForSteadyState: false, // Will continue the pulumi build without verifying read state
     tags: t(n('service')),
   });

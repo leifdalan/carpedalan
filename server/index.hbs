@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=5,minimal-ui,viewport-fit=cover">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   {{#if isProd}}
   <title>Carpe Dalan</title>
@@ -10,54 +10,58 @@
   <title>Carpe DEV</title>
   {{/if}}
   <meta name="description" content="The Dalan family app" />
-  <link rel="apple-touch-icon-precomposed" sizes="57x57" href="//{{assetDomain}}/apple-touch-icon-57x57.png" />
-  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="//{{assetDomain}}/apple-touch-icon-114x114.png" />
-  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="//{{assetDomain}}/apple-touch-icon-72x72.png" />
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="//{{assetDomain}}/apple-touch-icon-144x144.png" />
-  <link rel="apple-touch-icon-precomposed" sizes="60x60" href="//{{assetDomain}}/apple-touch-icon-60x60.png" />
-  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="//{{assetDomain}}/apple-touch-icon-120x120.png" />
-  <link rel="apple-touch-icon-precomposed" sizes="76x76" href="//{{assetDomain}}/apple-touch-icon-76x76.png" />
-  <link rel="apple-touch-icon-precomposed" sizes="152x152" href="//{{assetDomain}}/apple-touch-icon-152x152.png" />
-  <link rel="icon" type="image/png" href="//{{assetDomain}}/favicon-196x196.png" sizes="196x196" />
-  <link rel="icon" type="image/png" href="//{{assetDomain}}/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/png" href="//{{assetDomain}}/favicon-32x32.png" sizes="32x32" />
-  <link rel="icon" type="image/png" href="//{{assetDomain}}/favicon-16x16.png" sizes="16x16" />
-  <link rel="icon" type="image/png" href="//{{assetDomain}}/favicon-128.png" sizes="128x128" />
-  <meta name="application-name" content="Carpe Dalan"/>
-  <meta name="msapplication-TileColor" content="#ffb0f5" />
-  <meta name="msapplication-TileImage" content="//{{assetDomain}}/mstile-144x144.png" />
-  <meta name="msapplication-square70x70logo" content="//{{assetDomain}}/mstile-70x70.png" />
-  <meta name="msapplication-square150x150logo" content="//{{assetDomain}}/mstile-150x150.png" />
-  <meta name="msapplication-wide310x150logo" content="//{{assetDomain}}/mstile-310x150.png" />
-  <meta name="msapplication-square310x310logo" content="//{{assetDomain}}/mstile-310x310.png" />
-  <link rel="mask-icon" href="//{{assetDomain}}/safari-pinned-tab.svg" color="#ffb0f5">
-  <meta name="msapplication-TileColor" content="#ffb0f5">
-  <meta name="theme-color" content="#ffb0f5">  
+  <link rel="preconnect" href="//{{assetDomain}}">
+  <link rel="preconnect" href="//{{cdnDomain}}">
+  <link rel="preload" href="//{{assetDomain}}/lobster.woff2" as="font" crossorigin="anonymous">
+  <link rel="preload" href="//{{assetDomain}}/montserrat-regular-webfont.woff2" as="font" crossorigin="anonymous">
   <link rel="apple-touch-icon" sizes="180x180" href="//{{assetDomain}}/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="//{{assetDomain}}/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="//{{assetDomain}}/favicon-16x16.png">
-  <link rel="manifest" href="//{{assetDomain}}/site.webmanifest">
-  <link rel="mask-icon" href="//{{assetDomain}}/safari-pinned-tab.svg" color="#ffb0f5">
-  <meta name="apple-mobile-web-app-title" content="Carpe Dalan">
-  <meta name="application-name" content="Carpe Dalan">
-  <meta name="msapplication-TileColor" content="#ffb0f5">
-  <meta name="theme-color" content="#ffb0f5">
-
+  <link rel="manifest" crossorigin="anonymous" href="//{{assetDomain}}/manifest.webmanifest">
+  <link rel="manifest" crossorigin="anonymous" href="//{{assetDomain}}/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="mask-icon" href="//{{assetDomain}}/safari-pinned-tab.svg" color="#d55ba6">
+  <meta name="msapplication-TileColor" content="#603cba">
+  <meta name="msapplication-TileImage" content="//{{assetDomain}}/mstile-144x144.png">
+  <meta name="theme-color" content="#fbbfff">
 </head>
 <body>
+  <noscript>
+    <style>
+        @font-face {
+          font-family: 'lobster';
+          src: url('//{{assetDomain}}/lobster.woff2') format('woff2'),
+              url('//{{assetDomain}}/lobster.woff') format('woff');
+          font-weight: normal;
+          font-style: normal;
+        }
+      html, body, .noscript {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+      }
+      .noscript {
+        font-family: lobster, Arial, Helvetica, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        display: flex;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        font-size: 36px;
+      }
+    </style>
+    <div class="noscript">To use Carpedalan.com, please enable JavaScript.</div>
+  </noscript>
   <section id="root"></section>
   <aside id="modal"></aside>
   <script>
     var __SESSION__ = {{{session}}};
     var __META__ = {{{meta}}};
-    var __API__ = {{{openApiDoc}}};
     var __PUBLIC_PATH__ = '//{{assetDomain}}/';
   </script>
   {{#if clientAssets}}
     {{#each clientAssets}}
-    <script>
-
-    </script>
     <script type="text/javascript" src="//{{../assetDomain}}/{{this}}"></script>
     {{/each}}
   {{else}}
@@ -66,7 +70,7 @@
   {{/if}}
   {{#if isProd}}
   {{#unless ci}}
-  <!-- Baller. -->
+  <!-- Baller.v2 -->
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <!-- Branch: {{branch}} - Job: {{buildNum}} - sha1 = {{sha1}}-->
   {{!-- <script async src="//www.googletagmanager.com/gtag/js?id=UA-133308117-1"></script> --}}

@@ -10,9 +10,10 @@ const webpackHotMiddleWare = require('webpack-hot-middleware');
 const port = process.env.PORT;
 const app = express();
 const webpackConfig = require('./webpack.config');
+// const swConfig = require('./webpack.config.sw');
 
 const compiler = webpack(webpackConfig);
-
+// const swCompiler = webpack(swConfig);
 const devMiddleware = webpackDevMiddleware(compiler, {
   noInfo: true,
   stats: 'none',
@@ -23,8 +24,22 @@ const devMiddleware = webpackDevMiddleware(compiler, {
     'Access-Control-Allow-Headers':
       'X-Requested-With, content-type, Authorization',
     'X-FARTS': 'stinky',
+    'Service-Worker-Allowed': '/',
   },
 });
+// const swDevMiddleware = webpackDevMiddleware(swCompiler, {
+//   noInfo: true,
+//   stats: 'none',
+//   publicPath: webpackConfig.output.publicPath,
+//   headers: {
+//     'Access-Control-Allow-Origin': '*',
+//     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+//     'Access-Control-Allow-Headers':
+//       'X-Requested-With, content-type, Authorization',
+//     'X-FARTS': 'stinky',
+//     'Service-Worker-Allowed': '/',
+//   },
+// });
 devMiddleware.waitUntilValid(() => {
   app.get('/healthcheck', (req, res) => {
     res.status(200).json({
@@ -37,6 +52,7 @@ devMiddleware.waitUntilValid(() => {
 app.use('/docs', express.static('docs'));
 app.use('/build', express.static('build'));
 app.use(devMiddleware);
+// app.use(swDevMiddleware);
 app.use(webpackHotMiddleWare(compiler));
 
 app.listen(port, () => {

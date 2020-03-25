@@ -83,7 +83,7 @@ export default function useApi<T, U>(action?: (args: T | never) => Promise<U>) {
           retryRequest: [requestFunc, arg],
         });
         addToast({
-          message: e.message || 'Oops, something went wrong.',
+          message: e?.message || 'Oops, something went wrong.',
           retryTuple: [requestFunc, arg],
         });
 

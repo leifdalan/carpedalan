@@ -66,7 +66,6 @@ export function makeCerts({
     { provider: providerRegion },
   );
   const config = new pulumi.Config();
-  const configDomain = config.get('domain') as string;
   const zoneId = config.get('hostedZoneId') as string;
 
   /**

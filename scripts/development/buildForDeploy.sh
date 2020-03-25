@@ -3,7 +3,7 @@ set -e
 echo 'Building client...'
 docker build -t client:latest -f client/Dockerfile --cache-from client:latest --cache-from node:12-slim .
 echo 'Running prod build for client...'
-docker run -v "$PWD/dist":/app/client/dist -e "ASSET_CDN_DOMAIN=cdn.$(pulumi config get domain)" -e "DEFAULT_POSTS_PER_PAGE=50" client:latest yarn build:prod
+docker run -v "$PWD/dist":/app/client/dist -e "ASSET_CDN_DOMAIN=cdn.$(pulumi config get domain)" -e "DOMAIN=$(pulumi config get domain)" -e "DEFAULT_POSTS_PER_PAGE=50" client:latest yarn build:prod
 echo 'Building API...'
 docker build -t api:latest -f server/Dockerfile --cache-from api:latest --cache-from node:12-alpine . --target=dev
 echo 'Building lambda layer...'

@@ -26,7 +26,7 @@ services:
       ASSET_CDN_DOMAIN: cdn.local.carpedalan.com
     command: yarn migrateAndStart
     healthcheck:
-      test: ["CMD-SHELL", "node ./scripts/healthcheck"]
+      test: ["CMD-SHELL", "node ./scripts/healthcheck.js 8001"]
       interval: 1s
       timeout: 1s
       retries: 120
@@ -41,6 +41,7 @@ services:
       PROD_BUILD: "${PROD_BUILD-false}"
       PORT: "${CLIENT_PORT-4000}"
       ASSET_CDN_DOMAIN: 'cdn.local.carpedalan.com'
+      DOMAIN: 'local.carpedalan.com'
     volumes: 
       - ./client/src:/app/client/src:delegated
       - ./client/docs:/app/client/docs:cached

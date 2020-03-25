@@ -9,6 +9,7 @@ const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const Manifest = require('webpack-manifest-plugin');
 const Stylish = require('webpack-stylish');
+const { InjectManifest } = require('workbox-webpack-plugin');
 // const S3Plugin = require('webpack-s3-plugin');
 
 const isProdBuildForLocal = process.env.PROD_BUILD === 'true';
@@ -62,16 +63,31 @@ module.exports = {
         NODE_ENV: JSON.stringify('production'),
         LOG_LEVEL: JSON.stringify(process.env.LOG_LEVEL),
         ASSET_CDN_DOMAIN: JSON.stringify(process.env.ASSET_CDN_DOMAIN),
+        DOMAIN: JSON.stringify(process.env.DOMAIN),
         DEFAULT_POSTS_PER_PAGE: JSON.stringify(
           process.env.DEFAULT_POSTS_PER_PAGE,
         ),
       },
     }),
     new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false }),
+    new InjectManifest({
+      swSrc: './src/sw',
+      swDest: 'sw.js',
+      // additionalManifestEntries: [
+      //   {
+      //     url: '/lobster.woff2',
+      //   },
+      //   {
+      //     url: '/montserrat-regular-webfont.woff2',
+      //   },
+      // ],
+    }),
+
     new BrotliPlugin({
-      test: /\.(js|map)$/,
+      test: /((?!sw).*.(js|map))$/,
       asset: '[path]',
     }),
+
     new Manifest({
       fileName: `manifest.json`,
     }),

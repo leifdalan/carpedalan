@@ -1,4 +1,5 @@
 /* eslint-disable import/no-duplicates */
+import { useThrottleCallback } from '@react-hook/throttle';
 import addMonths from 'date-fns/fp/addMonths';
 import format from 'date-fns/fp/format';
 import fromUnixTime from 'date-fns/fp/fromUnixTime';
@@ -19,16 +20,11 @@ import { useSwipeable, SwipeCallback } from 'react-swipeable';
 import { CSSTransition } from 'react-transition-group';
 import styled from 'styled-components';
 
-import useGlobalSwipe from 'hooks/useGlobalSwipe';
 import usePosts from 'hooks/usePosts';
 import { LoadedInfiniteLoaderType } from 'hooks/useScrollPersist';
+import { propTrueFalse } from 'styles/utils';
 
-const isJanuary = flow(
-  key => Number(key),
-  fromUnixTime,
-  getMonth,
-  number => number === 1,
-);
+const isJanuary = flow(Number, fromUnixTime, getMonth, number => number === 1);
 const formatDate = flow(fromUnixTime, format(`yyyy`));
 
 const log = debug('components:ScrollHandle');
@@ -49,7 +45,7 @@ const Thumbtab = styled.div`
   color: red;
   border-radius: 100%;
   margin-top: -25px;
-  position: absolute;
+  position: fixed;
   right: -10px;
   background: rgba(0, 0, 0, 0.6);
   z-index: 100001;
@@ -90,13 +86,19 @@ interface ScrollHandleI {
   isUsingScrollHandle: boolean;
   scrollVelocity: number;
   hasMoved: boolean;
+  disableClickAction?: boolean;
 }
 
 const WIDTH = '80px';
 const CLASS_PREFIX = 'handle';
 const TRANSITION_SPEED = 400;
 const TRANSITION_SPEED_MS = `${TRANSITION_SPEED}ms`;
-const HandleWrapper = styled.div`
+
+interface HandleWrapperI {
+  disableEvents?: boolean;
+}
+const HandleWrapper = styled.div<HandleWrapperI>`
+  pointer-events: ${propTrueFalse('disableEvents', 'none', 'inherit')};
   position: fixed;
   top: 0;
   right: 0px;
@@ -139,6 +141,12 @@ const HandleWrapper = styled.div`
   overscroll-behavior-y: contain;
 `;
 
+const ControlWrapper = styled.div`
+  position: fixed;
+  z-index: 1;
+  right: 0;
+`;
+
 interface FrequencyByMonthI {
   [timestamp: string]: number;
 }
@@ -159,12 +167,12 @@ export default function ScrollHandle({
   isUsingScrollHandle,
   scrollVelocity,
   hasMoved,
+  disableClickAction,
 }: ScrollHandleI) {
   const top = (scrollPos / containerHeight) * windowHeight;
   const { meta } = usePosts();
 
   const [shouldShow, setShouldShow] = useState(false);
-  const { swipe } = useGlobalSwipe();
   const { frequencyByMonth, count } = meta;
   const pixelScaleFactor = windowHeight / count;
   const ref = useRef(null);
@@ -173,7 +181,7 @@ export default function ScrollHandle({
     let sum = 0;
     return Object.keys(frequencyByMonth as FrequencyByMonthI)
       .reverse()
-      .reduce((acc: PixelToMonth[], key) => {
+      .reduce<PixelToMonth[]>((acc, key) => {
         sum += frequencyByMonth[key];
         return [
           ...acc,
@@ -206,13 +214,16 @@ export default function ScrollHandle({
     [containerHeight, infiniteRef, setIsUsingScrollHandle, windowHeight],
   );
 
+  const throttledHandleSwiping = useThrottleCallback(handleSwiping, 30);
+
   const handleClick = useCallback<MouseEventHandler>(
     e => {
+      if (disableClickAction) return;
       infiniteRef?.current?._listRef.scrollTo(
         (e.pageY * containerHeight) / windowHeight,
       );
     },
-    [containerHeight, infiniteRef, windowHeight],
+    [containerHeight, disableClickAction, infiniteRef, windowHeight],
   );
 
   const handleSwiped = useCallback<SwipeCallback>(
@@ -224,7 +235,7 @@ export default function ScrollHandle({
   );
 
   const handlers = useSwipeable({
-    onSwiping: handleSwiping,
+    onSwiping: throttledHandleSwiping,
     onSwiped: handleSwiped,
     trackMouse: true,
     preventDefaultTouchmoveEvent: true,
@@ -242,7 +253,7 @@ export default function ScrollHandle({
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [hasMoved, scrollVelocity, shouldShow, swipe]);
+  }, [hasMoved, scrollVelocity, shouldShow]);
 
   return (
     <CSSTransition
@@ -251,24 +262,27 @@ export default function ScrollHandle({
       timeout={TRANSITION_SPEED}
       unmountOnExit
     >
-      <HandleWrapper {...handlers} onClick={handleClick}>
-        <div ref={ref}>
-          {pixelToMonthMap.map((point, index) => (
-            <Fragment key={index}>
-              <Point style={{ top: `${point.top}px` }} />
-              {point.isJanuary ? (
-                <Label style={{ top: `${point.top}px` }}>{point.label}</Label>
-              ) : null}
-            </Fragment>
-          ))}
-          <Thumbtab style={{ top: `${top}px` }} />
-          {isUsingScrollHandle || scrollVelocity ? (
-            <Label style={{ top: `${top - 60}px`, right: '0px' }}>
-              {getDate(top)}
-            </Label>
-          ) : null}
-        </div>
-      </HandleWrapper>
+      <ControlWrapper>
+        <HandleWrapper onClick={handleClick} disableEvents={disableClickAction}>
+          <div ref={ref}>
+            {pixelToMonthMap.map((point, index) => (
+              <Fragment key={index}>
+                <Point style={{ top: `${point.top}px` }} />
+                {point.isJanuary ? (
+                  <Label style={{ top: `${point.top}px` }}>{point.label}</Label>
+                ) : null}
+              </Fragment>
+            ))}
+
+            {isUsingScrollHandle || scrollVelocity ? (
+              <Label style={{ top: `${top - 60}px`, right: '0px' }}>
+                {getDate(top)}
+              </Label>
+            ) : null}
+          </div>
+        </HandleWrapper>
+        <Thumbtab style={{ top: `${top}px` }} {...handlers} />
+      </ControlWrapper>
     </CSSTransition>
   );
 }

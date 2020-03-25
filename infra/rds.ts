@@ -32,6 +32,10 @@ export function makeDB({ vpc, config }: MakeDBI) {
     allocatedStorage: 20,
     skipFinalSnapshot: true,
     tags: t(n('rds')),
+    copyTagsToSnapshot: true,
+    deleteAutomatedBackups: false,
+    backupRetentionPeriod: 35,
+    backupWindow: '07:00-07:30',
   });
 
   return { rds };

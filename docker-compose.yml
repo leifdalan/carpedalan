@@ -56,6 +56,7 @@ services:
       - 4000:4000
     environment: 
       DEFAULT_POSTS_PER_PAGE: "${DEFAULT_POSTS_PER_PAGE-100}"
+      DOMAIN: 'local.carpedalan.com'
 
 
 

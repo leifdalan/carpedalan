@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
 } from 'react';
 import styled, { css } from 'styled-components';
 
@@ -39,13 +40,13 @@ const StyledPicture = styled.picture<LoadedPictureI>`
     left: 0;
     width: 100%;
     height: 100%;
-    ${({ shouldTransition, transitionTime }) =>
+    /* ${({ shouldTransition, transitionTime }) =>
       shouldTransition
         ? css`
             transition-property: opacity;
             transition-duration: ${transitionTime}ms;
           `
-        : null}
+        : null} */
     opacity: ${propTrueFalse('loaded', 1, 0)};
   }
 `;
@@ -75,7 +76,6 @@ interface PictureInterface {
   type: string;
   children?: React.ReactChildren;
 }
-log('hellzo');
 function handleContextMenu(e: SyntheticEvent<HTMLPictureElement>) {
   e.preventDefault();
 }
@@ -95,10 +95,12 @@ const Picture = ({
   const [hasBeenVisible, setHasBeenVisible] = useState(false);
   const [transitionTime, setTransitionTime] = useState(400);
   const [showSvg, setShowSvg] = useState(false);
+  const pictureRef = useRef(null);
   const renderStart = performance.now();
   const { posts } = usePosts();
 
   const handleLoad = useCallback(() => {
+    if (!pictureRef.current) return;
     const timeNow = performance.now();
     const timeElapsed = timeNow - renderStart;
     log('timeElapsssszzed for load: ', `${Math.floor(timeElapsed)}ms`);
@@ -148,16 +150,14 @@ const Picture = ({
         {post.svg && showSvg ? (
           <SVGWrapper
             dangerouslySetInnerHTML={{
-              __html: post.svg.replace(
-                '<svg',
-                '<svg preserveAspectRatio="xMidYMid slice"', // deal with it
-              ),
+              __html: post.svg,
             }}
           />
         ) : null}
 
         {(shouldShowImage || loaded || hasBeenVisible) && !post.fake ? (
           <StyledPicture
+            ref={pictureRef}
             onLoad={handleLoad}
             as="picture"
             loaded={loaded}

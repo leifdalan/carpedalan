@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
-import { client } from 'ApiClient';
+import { client as api } from 'ApiClient';
 import useApi from 'hooks/useApi';
 import useForm from 'hooks/useForm';
 import useUser from 'hooks/useUser';
@@ -37,7 +37,7 @@ const Login: React.FC<{}> = (): React.ReactElement => {
 
   const passwordInput = useField({ handleChange, field: 'password' });
 
-  const { request, response } = useApi(client.login);
+  const { request, response } = useApi(api.login);
 
   useEffect(() => {
     if (response) {

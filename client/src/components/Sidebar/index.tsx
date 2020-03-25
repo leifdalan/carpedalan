@@ -1,19 +1,27 @@
-import getUnixTime from 'date-fns/getUnixTime';
 import debug from 'debug';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { MouseEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { client } from 'ApiClient';
 import { User } from 'User';
-import useApi from 'hooks/useApi';
-import usePosts from 'hooks/usePosts';
-import useScrollPersist from 'hooks/useScrollPersist';
 import useTags from 'hooks/useTags';
 import Title from 'styles/Title';
 import { getThemeValue, SIDEBAR_COLOR, TEXT } from 'styles/utils';
 
 const log = debug('components:Sidebar');
+export let deferredPrompt: BeforeInstallPromptEvent | null; // eslint-disable-line import/no-mutable-exports
+
+/* eslint-disable no-console */
+window.addEventListener('beforeinstallprompt', (e: Event) => {
+  // Prevent the mini-infobar from appearing on mobile
+  console.log('beforeInstallPrompt....');
+  e.preventDefault();
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e as BeforeInstallPromptEvent;
+  console.log('userchoice');
+  // Update UI notify the user they can install the PWA
+});
+/* eslint-enable no-console */
 
 interface StyledSidebarProps {
   isOpen?: boolean;
@@ -83,8 +91,8 @@ export default function Sidebar({
 }: SidebarProps) {
   const { tags } = useTags();
   const { hash } = useLocation();
-  const { request, response } = useApi(client.getPostsIndex);
-  const { scrollTo } = useScrollPersist('sidebar', []);
+  // const { request, response } = useApi(client.getPostsIndex);
+  // const { scrollTo } = useScrollPersist('sidebar', []);
   // const handleMonth = useCallback(
   //   async (timestamp: number) => {
   //     const stamp = 1526774400;
@@ -104,6 +112,29 @@ export default function Sidebar({
   // }, [response, scrollTo]);
   // const handleClick = useCallback(() => {}, []);
 
+  const handleInstall = (event: MouseEvent<HTMLButtonElement>) => {
+    log('Handling install', deferredPrompt);
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(choiceResult => {
+        if (choiceResult.outcome === 'accepted') {
+          log(
+            'user accepted A2HS prompt',
+            choiceResult.platform,
+            choiceResult.outcome,
+          );
+        } else {
+          log(
+            'user dismissed A2HS prompt',
+            choiceResult.platform,
+            choiceResult.outcome,
+          );
+        }
+        deferredPrompt = null;
+      });
+    }
+  };
+
   return userState ? (
     <StyledSidebar isOpen={isOpen} onClick={toggleMenu}>
       {tags.map(tag => (
@@ -112,7 +143,7 @@ export default function Sidebar({
         </li>
       ))}
       <div>
-        <Close type="button" onClick={toggleMenu}>
+        <Close type="button" onClick={handleInstall}>
           Close ✖
         </Close>
         <List>

@@ -1,3 +1,4 @@
+import useThrottle from '@react-hook/throttle';
 import debug from 'debug';
 import { useRef, useEffect, useCallback, useState, RefObject } from 'react';
 import {
@@ -22,18 +23,12 @@ type SetScrollTo = (scrollTo: VariableSizeList) => void;
 
 const setters = new Set<SetScrollTo>();
 
-const setScrollTo = (scrollTo: VariableSizeList) => {
-  for (const setter of setters) {
-    setter(scrollTo);
-  }
-};
-
 export default function useScrollPersist(
   key: string,
   dep: PostsWithTagsWithFakes[],
 ) {
   const [scrollIndex, setScrollIndex] = useLocalStorage<number>(key, 0);
-  const [scrollPos, setScrollPos] = useLocalStorage<number>(key, 0);
+  const [scrollPos, setScrollPos] = useThrottle<number>(0, 30);
   const [scrollTo, set] = useState<VariableSizeList | null>(null);
   if (!setters.has(set)) setters.add(set);
   const originalScroll = useRef(scrollIndex);
@@ -45,7 +40,6 @@ export default function useScrollPersist(
   const refCallback = useCallback((ref: LoadedInfiniteLoaderType | null) => {
     if (ref) {
       /* eslint-disable-next-line no-underscore-dangle */
-      setScrollTo(ref._listRef);
       setIsMounted(true);
     }
   }, []);
@@ -102,10 +96,10 @@ export default function useScrollPersist(
     const old = scrollPos;
     setTimeout(() => {
       const speed = Math.abs((currentScrollPos.current - old) / 10);
-      setVelocity(speed);
+      if (infiniteRef) setVelocity(speed);
     }, 100);
     // return () => clearTimeout(timeout);
-  }, [scrollPos]);
+  }, [infiniteRef, scrollPos]);
 
   return {
     infiniteRef: infiniteRef as RefObject<LoadedInfiniteLoaderType>,

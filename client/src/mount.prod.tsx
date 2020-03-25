@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { PrecacheEntry } from 'workbox-precaching/_types';
 
 import App from './App';
 import { User } from './User';
@@ -20,6 +21,9 @@ declare global {
       cdn: string;
     };
     __PUBLIC_PATH__: string;
+    __WB_MANIFEST: PrecacheEntry[];
+    registration: any;
+
   }
 }
 
@@ -27,6 +31,20 @@ declare global {
 __webpack_public_path__ = window.__PUBLIC_PATH__;
 // Doing this so that theres a trace on Chrome Debugger since
 // we are using the debug module (you lose line numbers)
+
+console.log('CLIENT: service worker registrat ion in progress.');
+navigator.serviceWorker.register('/sw.js').then(
+  () => {
+    // registration.unregister();
+    console.log('CLIENT: service worker registration complete.');
+  },
+  () => {
+    console.log('CLIENT: service worker registration failure.');
+  },
+);
+
+
+
 ReactDOM.render(
   <App {...window.__SESSION__} />,
   document.getElementById('root'),

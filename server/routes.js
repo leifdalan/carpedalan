@@ -11,7 +11,6 @@ import {
   useProdAssets,
 } from './config';
 import setSignedCloudfrontCookie from './api-v1/middlewares/setCloudfrontCookie';
-import db from './db';
 
 let clientAssets = false;
 
@@ -36,7 +35,7 @@ export default (app, openApiDoc) => {
       clientAssets,
       isProd,
       useProdAssets,
-
+      cdnDomain,
       assetDomain,
       ...buildInfo,
       meta: JSON.stringify({
@@ -56,6 +55,7 @@ export default (app, openApiDoc) => {
       useProdAssets,
       clientAssets,
       assetDomain,
+      cdnDomain,
       ...buildInfo,
       meta: JSON.stringify({
         cdn: cdnDomain,
@@ -79,6 +79,7 @@ export default (app, openApiDoc) => {
       useProdAssets,
       clientAssets,
       assetDomain,
+      cdnDomain,
       meta: JSON.stringify({
         cdn: cdnDomain,
         ci,
@@ -100,18 +101,11 @@ export default (app, openApiDoc) => {
         session: JSON.stringify(req.session),
         clientAssets,
         assetDomain,
+        cdnDomain,
         ...buildInfo,
         meta: JSON.stringify({ cdn: cdnDomain, ci, nodeEnv }),
       });
     }
-  });
-
-  app.get('/healthcheck', async (req, res) => {
-    if (isProd) await db.raw('select 1+1 as result');
-    res.status(200).json({
-      farts: 'for your health',
-      clownpenis: 'dot fartzz',
-    });
   });
 
   app.use('*', (req, res) => {
@@ -121,6 +115,7 @@ export default (app, openApiDoc) => {
       useProdAssets,
       openApiDoc: JSON.stringify(openApiDoc),
       assetDomain,
+      cdnDomain,
       ...buildInfo,
       session: JSON.stringify(req.session),
       meta: JSON.stringify({
