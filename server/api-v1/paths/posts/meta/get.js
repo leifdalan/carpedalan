@@ -19,6 +19,7 @@ const status = 200;
 
 export default function(db) {
   async function get(req, res) {
+    res.startTime('db', 'Database');
     const { count } = await db(PHOTOS)
       .where({ [STATUS]: ACTIVE })
       .count()
@@ -74,6 +75,7 @@ export default function(db) {
       months[lastTimestamp] = query;
     }
     console.time('All the meta requests'); // eslint-disable-line no-console
+    res.startTime('month', 'Month Queries');
     const mappedPromises = await Promise.all(
       Object.keys(months).map(async month => {
         const { count: monthCount } = await months[month];
@@ -82,6 +84,8 @@ export default function(db) {
         };
       }),
     );
+    res.endTime('month');
+    res.endTime('db');
     console.timeEnd('All the meta requests'); // eslint-disable-line no-console
     const frequencyByMonth = mappedPromises.reduce(
       (acc, obj) => ({

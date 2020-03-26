@@ -114,7 +114,7 @@ const Feed = ({
   const previousItemsWithTitle = usePrevious(itemsWithTitle);
   const { width: windowWidth, height: windowHeight } = useWindow();
   /**
-   * Triggered if isItemLoaded returns false
+   * Triggered if isItemLoaded returns falsez
    *
    * @param {number} index
    * @returns Promise<void>
@@ -122,7 +122,7 @@ const Feed = ({
   const loadMoreItems = useCallback(
     async (startIndex: number, stopIndex: number) => {
       log(
-        '%c loading from feed',
+        '%c loading from feedz',
         'background: red; font-size: 32px',
         startIndex,
         Math.floor(startIndex / defaultPostsPerPage) + 1,

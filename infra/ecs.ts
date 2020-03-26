@@ -131,7 +131,7 @@ CreateI) {
    */
   const asg = cluster.createAutoScalingGroup(n('micro-scaling-group'), {
     vpc,
-    templateParameters: { minSize: 2, maxSize: 2 },
+    templateParameters: { minSize: 2, maxSize: 3 },
     launchConfigurationArgs: {
       instanceType: 't2.micro',
       keyName: keyPair.keyName,
@@ -252,9 +252,96 @@ CreateI) {
      */
     networkMode: 'bridge',
     tags: t(n('task')),
-
+    volumes: [
+      {
+        hostPath: '/var/run/docker.sock',
+        name: 'docker_sock',
+      },
+      {
+        hostPath: '/proc/',
+        name: 'proc',
+      },
+      {
+        hostPath: '/sys/fs/cgroup/',
+        name: 'cgroup',
+      },
+      {
+        hostPath: '/opt/datadog-agent/run',
+        name: 'pointdir',
+      },
+      {
+        hostPath: '/etc/passwd',
+        name: 'passwd',
+      },
+    ],
     containers: {
+      datadog: {
+        healthCheck: {
+          retries: 3,
+          command: ['CMD-SHELL', 'agent health'],
+          timeout: 5,
+          interval: 30,
+          startPeriod: 15,
+        },
+        logConfiguration: {
+          logDriver: 'json-file',
+          options: {},
+        },
+        image: 'datadog/agent:latest',
+        cpu: 10,
+        memory: 256,
+        essential: true,
+        mountPoints: [
+          {
+            containerPath: '/var/run/docker.sock',
+            sourceVolume: 'docker_sock',
+            readOnly: true,
+          },
+          {
+            containerPath: '/host/sys/fs/cgroup',
+            sourceVolume: 'cgroup',
+            readOnly: true,
+          },
+          {
+            containerPath: '/host/proc',
+            sourceVolume: 'proc',
+            readOnly: true,
+          },
+          {
+            containerPath: '/opt/datadog-agent/run',
+            sourceVolume: 'pointdir',
+            readOnly: false,
+          },
+          {
+            containerPath: '/etc/passwd',
+            sourceVolume: 'passwd',
+            readOnly: true,
+          },
+        ],
+        environment: [
+          {
+            name: 'DD_API_KEY',
+            value: '97c81ab134520c1a5ba8325ebf2ec477',
+          },
+          {
+            name: 'DD_SITE',
+            value: 'datadoghq.com',
+          },
+          {
+            name: 'DD_LOGS_ENABLED',
+            value: 'true',
+          },
+          {
+            name: 'DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL',
+            value: 'true',
+          },
+        ],
+      },
       nginx: {
+        logConfiguration: {
+          logDriver: 'syslog',
+          options: {},
+        },
         cpu: 256,
         memory: 256,
         image: awsx.ecs.Image.fromDockerBuild(repository, {
@@ -279,9 +366,13 @@ CreateI) {
           startPeriod: 10,
         },
       },
-      // @ts-ignore
       web: {
-        memory: 512,
+        logConfiguration: {
+          logDriver: 'syslog',
+          options: {},
+        },
+
+        memory: 256,
         cpu: 512,
         /**
          * This utility will actually run a docker build with the included args
@@ -322,7 +413,7 @@ CreateI) {
           {
             name: 'AWS_SECRET_ACCESS_KEY',
             // @ts-ignore
-            valueFrom: pulumi.interpolate`${bucketUserCredSecret.arn}`,
+            valueFrom: pulumi.interpolate`${bucketUserCredSecret.arn}` as string,
           },
           {
             name: 'PRIVATE_KEY',
@@ -371,7 +462,7 @@ CreateI) {
   new awsx.ecs.EC2Service(n('service'), {
     cluster,
     taskDefinition,
-    desiredCount: 2,
+    desiredCount: 1,
     waitForSteadyState: false, // Will continue the pulumi build without verifying read state
     tags: t(n('service')),
   });

@@ -52,7 +52,7 @@ function fetchEventHandler(event: FetchEvent) {
 
 self.addEventListener('fetch', fetchEventHandler as (d: Event) => void);
 
-console.log('WHASzzzzzzSUPzzzzv4', caches);
+console.log('WHASzzzzzzSUPzzzzv420', caches);
 caches.keys().then(keys => {
   console.log('keyseeee', keys);
   if (!keys.includes('document')) {

@@ -125,13 +125,18 @@ export function createBucket({
         'POST',
         'PUT',
       ],
-      cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+      cachedMethods: ['GET', 'HEAD'],
       defaultTtl: 3600,
       forwardedValues: {
         cookies: {
           forward: 'none',
         },
         queryString: false,
+        headers: [
+          'Access-Control-Request-Headers',
+          'Access-Control-Request-Method',
+          'Origin',
+        ],
       },
       maxTtl: 86400,
       minTtl: 0,
@@ -145,7 +150,7 @@ export function createBucket({
     orderedCacheBehaviors: [
       {
         allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
-        cachedMethods: ['GET', 'HEAD', 'OPTIONS'],
+        cachedMethods: ['GET', 'HEAD'],
         compress: true,
         defaultTtl: 3600,
         forwardedValues: {

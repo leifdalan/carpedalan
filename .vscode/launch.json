@@ -55,6 +55,22 @@
   
       ]
   
+    },
+    {
+      "name": "Prod Client",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "url": "https://*carpe*",
+      "webRoot": "${workspaceFolder}/client",
+      "sourceMaps": true,
+      "skipFiles": [
+        "${workspaceFolder}/node_modules/**/*.js",
+        "${workspaceFolder}/client/node_modules/**/*.js",
+        "app/node_modules/**/*.js"
+  
+      ]
+  
     }
   ],
   "compounds": [

@@ -11,6 +11,7 @@ import expressWinston from 'express-winston';
 import pg from 'pg';
 import swaggerUi from 'swagger-ui-express';
 import winston from 'winston';
+import serverTiming from 'server-timing';
 
 import db from './db';
 import initialize from './api-v1/initialize';
@@ -33,6 +34,11 @@ import {
 import router from './routes';
 
 const app = express();
+app.use(serverTiming());
+app.use((req, res, next) => {
+  res.startTime('Express', 'total express');
+  next();
+});
 let clientAssets = false;
 if (isProd) {
   const manifest = require('./dist/manifest.json'); // eslint-disable-line global-require,import/no-unresolved
