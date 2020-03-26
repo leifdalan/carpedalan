@@ -18,6 +18,9 @@ import { makeSqs } from './sqs';
 import { getResourceName as n, createHashFromFile } from './utils';
 import { makeVpc } from './vpc';
 
+// const templateBody = fs
+//   .readFileSync(path.join(__dirname, 'lambda-forward.yml'), 'utf8')
+//   .toString();
 async function main() {
   const config = new pulumi.Config();
 
@@ -42,6 +45,14 @@ async function main() {
     domain: targetDomain,
     namespace: 'main-domain',
   });
+
+  // new aws.cloudformation.Stack(n('datadog'), {
+  //   templateBody,
+  //   capabilities: ['CAPABILITY_AUTO_EXPAND', 'CAPABILITY_IAM'],
+  //   parameters: {
+  //     DdApiKey: '97c81ab134520c1a5ba8325ebf2ec477',
+  //   },
+  // });
 
   const { vpc } = makeVpc();
 
