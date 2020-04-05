@@ -7,12 +7,12 @@ import getMonth from 'date-fns/fp/getMonth';
 import debug from 'debug';
 import flow from 'lodash/fp/flow';
 import React, {
-  useCallback,
-  useMemo,
-  RefObject,
-  MouseEventHandler,
   Fragment,
+  MouseEventHandler,
+  RefObject,
+  useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { useRef } from 'react';

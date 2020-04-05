@@ -16,9 +16,8 @@ interface PolicyI {
   };
   rds: aws.rds.Instance;
   privateBucket: aws.s3.Bucket;
-  redis: aws.elasticache.Cluster;
 }
-export function getPolicies({ secrets, privateBucket, rds, redis }: PolicyI) {
+export function getPolicies({ secrets, privateBucket, rds }: PolicyI) {
   /**
    * User created that will be used for the webserver to create signed
    * policies on behalf of the end-user for direct uploads to the private
@@ -235,7 +234,7 @@ export function getPolicies({ secrets, privateBucket, rds, redis }: PolicyI) {
           secrets.cfKeySecret.arn,
           rds.arn,
           bucketUserCredSecret.arn,
-          redis.arn,
+          // redis.arn,
         ])
         .apply(
           ([
@@ -248,7 +247,7 @@ export function getPolicies({ secrets, privateBucket, rds, redis }: PolicyI) {
             cfKey,
             rdsArn,
             bucketUserCredSecretArn,
-            redisArn,
+            // redisArn,
           ]) =>
             JSON.stringify({
               Version: '2012-10-17',
@@ -292,7 +291,7 @@ export function getPolicies({ secrets, privateBucket, rds, redis }: PolicyI) {
                 {
                   Effect: 'Allow',
                   Action: ['elasticache:*'],
-                  Resource: [redisArn],
+                  Resource: ['*'],
                 },
               ],
             }),
@@ -328,9 +327,9 @@ export function getPolicies({ secrets, privateBucket, rds, redis }: PolicyI) {
         secrets.pgUserSecret.arn,
         secrets.pgPasswordSecret.arn,
         rds.arn,
-        redis.arn,
+        // redis.arn,
       ])
-      .apply(([bucketArn, pgUserArn, pgPasswordArn, rdsArn, redisArn]) =>
+      .apply(([bucketArn, pgUserArn, pgPasswordArn, rdsArn]) =>
         JSON.stringify({
           Version: '2012-10-17',
           Statement: [
@@ -387,7 +386,7 @@ export function getPolicies({ secrets, privateBucket, rds, redis }: PolicyI) {
             {
               Effect: 'Allow',
               Action: ['elasticache:*'],
-              Resource: [redisArn],
+              Resource: ['*'],
             },
           ],
         }),

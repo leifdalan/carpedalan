@@ -1,6 +1,6 @@
 import debug from 'debug';
 import React, { useCallback, useState, useMemo } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSwipeable, SwipeCallback } from 'react-swipeable';
 import styled from 'styled-components';
@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import Picture from 'components/Picture';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePostLink from 'hooks/usePostLink';
-import usePosts from 'hooks/usePosts';
 import useWindow from 'hooks/useWindow';
 import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
 import {
@@ -37,7 +36,6 @@ const NextPrev = styled.article`
 `;
 
 const Description = styled.div`
-  padding: 1em 1em 0;
   li {
     list-style: none;
     padding: 0;
@@ -47,6 +45,9 @@ const Description = styled.div`
   ul {
     margin: 0;
     padding: 0;
+  }
+  a {
+    color: ${getThemeValue('brandColor')};
   }
 `;
 
@@ -63,7 +64,8 @@ const Download = styled.a`
 `;
 
 const Header = styled(FlexContainer)<{ width?: string }>`
-  background-color: ${getThemeValue('main')};
+  background-color: rgba(255, 235, 250, 0.5);
+  align-items: center;
   padding: 1em;
   width: ${prop('width')};
   align-self: center;
@@ -85,6 +87,7 @@ interface PostI {
   width?: string;
   safeRef?: React.MutableRefObject<HTMLElement | null>;
   hasLink: boolean;
+  posts: PostsWithTagsWithFakes[];
 }
 
 const PostBody = ({
@@ -93,7 +96,7 @@ const PostBody = ({
   width = '100%',
   safeRef,
   hasLink,
-}: PostI) => {
+}: Omit<PostI, 'posts'>) => {
   const { Element, props } = usePostLink({ post, hasLink });
   return (
     <>
@@ -121,20 +124,30 @@ const PostBody = ({
           type={isSquare ? 'square' : 'original'}
         />
       </Element>
-      <Description>
-        {post.description ? (
-          <figcaption data-test="description">{post.description}</figcaption>
-        ) : null}
-        {post.tags && post.tags.length ? (
-          <ul>
-            {post.tags.map(({ name }) => (
-              <li data-test="tags" key={name}>
-                <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </Description>
+      {post.description || post.tags?.length ? (
+        <Header
+          width={width}
+          as="header"
+          justifyContent={FlexEnums.spaceBetween}
+        >
+          <Description>
+            {post.description ? (
+              <figcaption data-test="description">
+                {post.description}
+              </figcaption>
+            ) : null}
+            {post.tags?.length ? (
+              <ul>
+                {post.tags.map(({ name }) => (
+                  <li data-test="tags" key={name}>
+                    <StyledLink to={`/tag/${name}`}>{`#${name}`}</StyledLink>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </Description>
+        </Header>
+      ) : null}
     </>
   );
 };
@@ -145,10 +158,14 @@ const Post = ({
   width = '100%',
   safeRef,
   hasLink,
+  posts,
 }: PostI) => {
   const { width: windowWidth } = useWindow();
   const navigate = useNavigate();
-  const { posts } = usePosts();
+  /**
+   * @TODO get this any after react router updates
+   */
+  const params = useParams() as any;
   const [swipe, setSwipe] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const location = useLocation();
@@ -184,11 +201,12 @@ const Post = ({
         (eventData.deltaX > 100 || eventData.velocity > 0.5)
       ) {
         setSwipe(windowWidth);
-        const galleryLink = `/gallery/${
-          nextPost.id ? nextPost.id.split('-')[0] : ''
-        }${location.hash}`;
+        const galleryLink = location.pathname.replace(
+          `${params?.postId.split('-')[0]}`,
+          nextPost?.id?.split('-')[0] ?? '',
+        );
         setTimeout(() => {
-          navigate(galleryLink);
+          navigate(`${galleryLink}${location.hash}`);
           setIsSwiping(true);
           setSwipe(0);
         }, TRANSITION_TIME);
@@ -198,11 +216,12 @@ const Post = ({
         (eventData.deltaX < -100 || eventData.velocity > 0.5)
       ) {
         setSwipe(-windowWidth);
-        const galleryLink = `/gallery/${
-          previousPost.id ? previousPost.id.split('-')[0] : ''
-        }${location.hash}`;
+        const galleryLink = location.pathname.replace(
+          `${params?.postId.split('-')[0]}`,
+          previousPost?.id?.split('-')[0] ?? '',
+        );
         setTimeout(() => {
-          navigate(galleryLink);
+          navigate(`${galleryLink}${location.hash}`);
           setIsSwiping(true);
           setSwipe(0);
         }, TRANSITION_TIME);
@@ -212,7 +231,15 @@ const Post = ({
 
       log('done swiping');
     },
-    [location.hash, navigate, nextPost, previousPost, windowWidth],
+    [
+      location.hash,
+      location.pathname,
+      navigate,
+      nextPost,
+      params,
+      previousPost,
+      windowWidth,
+    ],
   );
 
   const handlers = useSwipeable({

@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import Menu from 'components/Menu';
 import Sidebar from 'components/Sidebar';
+import Hamburger from 'components/Sidebar/Hamburger';
 
 import useUser from '../../hooks/useUser';
 
@@ -22,9 +23,12 @@ const SidebarAndMenu: React.FC = (): React.ReactElement => {
 
   return (
     <>
-      <Menu data-test="menu" onClick={toggleMenu} type="button" side="left">
-        Menu
-      </Menu>
+      {userState ? (
+        <Menu data-test="menu" onClick={toggleMenu} as="div" side="left">
+          <Hamburger isActive={shouldShowSidebar} />
+          <span>{shouldShowSidebar ? 'Close' : 'Menu'}</span>
+        </Menu>
+      ) : null}
       <Sidebar
         isOpen={shouldShowSidebar}
         userState={userState}

@@ -19,6 +19,7 @@ export const BODY_FONT = 'bodyFont';
 export const TITLE_FONT = 'titleFont';
 export const DANGER_COLOR = 'dangerColor';
 export const NEUTRAL_COLOR = 'neutralColor';
+export const GLASS_COLOR = 'glassColor';
 export const cdn = process.env.ASSET_CDN_DOMAIN;
 
 export interface DefaultTheme {
@@ -37,6 +38,7 @@ export interface DefaultTheme {
   [TITLE_FONT]: string;
   [DANGER_COLOR]: string;
   [NEUTRAL_COLOR]: string;
+  // [GLASS_COLOR]: string;
 }
 
 /**
@@ -216,6 +218,7 @@ const lite = {
   [DANGER_COLOR]: 'rgb(222, 50, 82)',
   [NEUTRAL_COLOR]: 'rgb(100, 100, 100)',
   [TITLE_FONT]: 'montserratregular, Helvetica, sans-serif',
+  // [GLASS_COLOR]: 'rgba(255, 84, 240, 0.15)',
 };
 
 export const themes = {

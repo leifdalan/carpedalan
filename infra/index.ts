@@ -31,18 +31,21 @@ async function main() {
   const privateBucketCert = makeCerts({
     region: 'us-east-1',
     domain: `photos.${targetDomain}`,
+    subDomains: [`photos.local.${targetDomain}`],
     namespace: 'photos',
   });
 
   const publicBucketCert = makeCerts({
     region: 'us-east-1',
     domain: `cdn.${targetDomain}`,
+    subDomains: [`cdn.local.${targetDomain}`],
     namespace: 'assets',
   });
 
   const albCert = makeCerts({
     region: 'us-west-2',
     domain: targetDomain,
+    subDomains: [`local.${targetDomain}`],
     namespace: 'main-domain',
   });
 
@@ -57,13 +60,13 @@ async function main() {
   const { vpc } = makeVpc();
 
   const { rds } = makeDB({ config, vpc });
-  const { redis, replicationGroup } = makeRedis();
+  const { replicationGroup } = makeRedis();
 
   const privateDistroDomain = `photos.${targetDomain}`;
   const { bucket: privateBucket, aRecord } = createBucket({
     mainDomain: targetDomain,
     certificateArn: privateBucketCert,
-    domain: privateDistroDomain,
+    aliases: [privateDistroDomain, `photos.local.${targetDomain}`],
     namespace: 'private-photos',
     isPrivate: true,
     vpc,
@@ -75,7 +78,7 @@ async function main() {
   const { bucket: publicBucket } = createBucket({
     mainDomain: targetDomain,
     certificateArn: publicBucketCert,
-    domain: publicDistroDomain,
+    aliases: [publicDistroDomain, `cdn.local.${targetDomain}`],
     namespace: 'public-cdn',
     isPrivate: false,
     allowCors: true,
@@ -116,7 +119,6 @@ async function main() {
     secrets,
     privateBucket,
     rds,
-    redis,
   });
 
   const runtime = 'nodejs12.x';
@@ -199,7 +201,6 @@ async function main() {
   return {
     revisionNumber: taskDefinition.taskDefinition.revision,
     layerArn: layer.arn,
-    containers: taskDefinition.containers.web.image.imageResult,
     assetBucket: publicBucket.bucket,
     cdnDomain: publicDistroDomain,
     replicationGroup: replicationGroup.primaryEndpointAddress,

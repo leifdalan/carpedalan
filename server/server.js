@@ -36,6 +36,7 @@ import router from './routes';
 const app = express();
 app.use(serverTiming());
 app.use((req, res, next) => {
+  // console.log('headers', req.headers);
   res.startTime('Express', 'total express');
   next();
 });

@@ -5,7 +5,7 @@ import * as pulumi from '@pulumi/pulumi';
 import { getResourceName as name, getTags as t } from './utils';
 
 interface GetBucketsI {
-  domain: string;
+  aliases: string[];
   mainDomain: string;
   namespace: string;
   certificateArn: pulumi.OutputInstance<string>;
@@ -25,7 +25,7 @@ const corsRules = () => [
 
 export function createBucket({
   isPrivate = false,
-  domain,
+  aliases = [],
   namespace,
   certificateArn,
   allowCors = false,
@@ -112,7 +112,7 @@ export function createBucket({
 
   const s3OriginId = 'S3PhotoOrigin';
   const s3Distribution = new aws.cloudfront.Distribution(n('private-distro'), {
-    aliases: [domain], // Route 53 aliases
+    aliases,
     comment,
     tags: t(n('private-distro')),
     defaultCacheBehavior: {
@@ -215,10 +215,12 @@ export function createBucket({
       ],
     });
   }
+  const records = aliases.map(domain =>
+    createAliasRecord(domain, s3Distribution),
+  );
 
-  const aRecord = createAliasRecord(domain, s3Distribution);
   return {
-    aRecord,
+    aRecord: records[0],
     bucket: privateBucket,
   };
 }

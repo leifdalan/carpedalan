@@ -2,11 +2,25 @@ import { commonErrors } from '../../../../refs/error';
 
 const status = 200;
 
-export default function(posts) {
+export default function(posts, redis) {
   const get = async (req, res) => {
     const { tagId } = req.params;
-    const postsWithCount = await posts.getAll({ tag: tagId });
-    res.status(status).json(postsWithCount);
+    const response = await posts.getAll({ tag: tagId });
+    const ids = response.data.map(({ id }) => id);
+    let responseWithPlaceholders = response;
+    if (ids.length) {
+      const svgs = await redis.mget(ids);
+
+      responseWithPlaceholders = {
+        ...response,
+        data: response.data.map((d, i) => ({
+          ...d,
+          svg: svgs[i],
+        })),
+      };
+    }
+
+    res.status(status).json(responseWithPlaceholders);
   };
 
   get.apiDoc = {

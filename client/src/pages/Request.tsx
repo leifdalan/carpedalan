@@ -61,24 +61,12 @@ const Invitation: React.FC = () => {
         {user}
         <Input>
           <label htmlFor="name">Name</label>
-          <input
-            data-test="name"
-            type="text"
-            name="name"
-            id="name"
-            {...nameInput}
-          />
+          <input data-test="name" type="text" id="name" {...nameInput} />
           {nameInput.error}
         </Input>
         <Input>
           <label htmlFor="name">Email</label>
-          <input
-            data-test="email"
-            type="text"
-            name="email"
-            id="email"
-            {...emailInput}
-          />
+          <input data-test="email" type="text" id="email" {...emailInput} />
         </Input>
         <Button
           data-test="submit-button"

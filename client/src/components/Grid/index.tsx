@@ -1,6 +1,6 @@
 import debug from 'debug';
 import React, { useRef, useEffect, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -46,11 +46,36 @@ const StyledLink = styled(Link)`
   width: 100%;
 `;
 
+const Title = styled.h1`
+  font-family: lobster, sans-serif;
+  margin-top: 70px;
+  text-align: center;
+  font-size: 48px;
+  letter-spacing: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(35, 0, 36);
+  background: linear-gradient(
+    130deg,
+    rgba(35, 0, 36, 1) 0%,
+    rgba(42, 0, 76, 1) 35%,
+    rgba(122, 0, 102, 1) 100%
+  );
+
+  /* clip hackery */
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`;
+
 const Grid = ({
   itemsWithTitle,
 }: {
   itemsWithTitle: PostsWithTagsWithFakes[];
 }): React.ReactElement => {
+  const { tagName } = useParams();
+  const isTag = useMemo(() => !!tagName, [tagName]);
   const { request } = usePosts();
   const [refWidth, setRefWidth] = useState<number>(0);
   const { width } = useWindow();
@@ -63,7 +88,7 @@ const Grid = ({
     scrollPos,
     velocity,
     hasMoved,
-  } = useScrollPersist('feed', itemsWithTitle);
+  } = useScrollPersist(`grid-${tagName}`, itemsWithTitle);
   const { width: windowWidth, height: windowHeight } = useWindow();
   const indices = useRef<[number, number] | null>(null);
 
@@ -159,7 +184,11 @@ const Grid = ({
       const postsPerRow = Math.floor(refWidth / THUMB_SIZE);
 
       if (index === 0 && itemsWithTitle[0]) {
-        return <div style={style}>{itemsWithTitle[0].key}</div>;
+        return (
+          <Title style={{ ...style, height: '150px' }}>
+            {`${isTag ? '#' : ''}${itemsWithTitle[0].key}`}
+          </Title>
+        );
       }
 
       return (
@@ -191,7 +220,7 @@ const Grid = ({
         </RowWrapper>
       );
     },
-    [itemsWithTitle, refWidth],
+    [isTag, itemsWithTitle, refWidth],
   );
 
   /**
@@ -240,17 +269,19 @@ const Grid = ({
   return useMemo(
     () => (
       <>
-        <ScrollerHandle
-          infiniteRef={infiniteRef}
-          scrollPos={scrollPos}
-          windowHeight={windowHeight}
-          containerHeight={totalHeight}
-          setIsUsingScrollHandle={setIsUsingScrollHandle}
-          isUsingScrollHandle={isUsingScrollHandle}
-          scrollVelocity={velocity}
-          hasMoved={hasMoved}
-          disableClickAction
-        />
+        {!isTag ? (
+          <ScrollerHandle
+            infiniteRef={infiniteRef}
+            scrollPos={scrollPos}
+            windowHeight={windowHeight}
+            containerHeight={totalHeight}
+            setIsUsingScrollHandle={setIsUsingScrollHandle}
+            isUsingScrollHandle={isUsingScrollHandle}
+            scrollVelocity={velocity}
+            hasMoved={hasMoved}
+            disableClickAction
+          />
+        ) : null}
 
         <Wrapper ref={wrapperRef}>
           <Autosizer>
@@ -296,6 +327,7 @@ const Grid = ({
       hasPersisted,
       infiniteRef,
       isItemLoaded,
+      isTag,
       isUsingScrollHandle,
       itemCount,
       itemsWithTitle.length,

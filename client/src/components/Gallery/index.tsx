@@ -1,12 +1,12 @@
 import debug from 'debug';
-import React, { useRef, useContext } from 'react';
+import React, { useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import GalleryPost from 'components/GalleryPost';
 import Modal from 'components/Modal';
+import { PostsWithTagsWithFakes } from 'hooks/types';
 import useWindow from 'hooks/useWindow';
-import { DataContext } from 'providers/Data';
 import FlexContainer, { FlexEnums } from 'styles/FlexContainer';
 import { getImageRatio } from 'utils';
 
@@ -19,27 +19,26 @@ const Container = styled(FlexContainer)`
   height: 100%;
 `;
 
-const Gallery: React.FC = () => {
+const Gallery = ({ posts }: { posts: PostsWithTagsWithFakes[] }) => {
   const { width, height } = useWindow();
   const safeRef = useRef(null);
   const params = useParams();
+
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    data: { postsById },
-  } = useContext(DataContext);
 
-  const postId = Object.keys(postsById).find(id => {
-    if (id) {
-      return id.split('-')[0] === params.postId;
-    }
-    return false;
-  });
+  const post = posts.find(({ id }) => params.postId === id?.split('-')[0]);
+  const onClose = () => {
+    const routeWithoutGallery =
+      location.pathname.replace(`/${params['*']}`, '') || '/';
+    log('route', routeWithoutGallery);
+    navigate(`${routeWithoutGallery}${location.hash}`);
+  };
 
-  if (!postId) return null;
-
-  const post = postsById[postId];
-
+  if (!post) {
+    onClose();
+    return null;
+  }
   const viewPortAspectRatio = height / width;
 
   const photoAspectRatio = getImageRatio(post);
@@ -49,14 +48,6 @@ const Gallery: React.FC = () => {
       ? `${height / photoAspectRatio - 100}px`
       : '100%';
 
-  const onClose = () => {
-    const routeWithoutGallery = location.pathname
-      .replace(`/${params.postId}`, '')
-      .replace('/gallery', '');
-    log('route', routeWithoutGallery);
-    navigate(`${routeWithoutGallery || '/'}${location.hash}`);
-  };
-
   return (
     <Modal onClose={onClose} safeRef={safeRef}>
       <Container alignItems={center} justifyContent={center}>
@@ -65,6 +56,7 @@ const Gallery: React.FC = () => {
           safeRef={safeRef}
           post={post}
           width={photoWidth}
+          posts={posts}
         />
       </Container>
     </Modal>

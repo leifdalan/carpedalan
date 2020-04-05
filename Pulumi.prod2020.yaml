@@ -7,9 +7,9 @@ config:
   carpedalan:cfKey:
     secure: v1:/48zHqrZaYYYW58M:++oEPdtwCM3N5UYJS0PIOFdv5Q190xhEMQjBhLkVJHodNAcx
   carpedalan:dbArn: arn:aws:rds:us-west-2:292627732001:db:carpedalan-copy
-  carpedalan:domain: prod.carpedalan.com
-  carpedalan:hostedZoneId: Z08896282QPP7BRPJTER7
-  carpedalan:isDbPublic: "false"
+  carpedalan:domain: carpedalan.com
+  carpedalan:hostedZoneId: Z0480281MLFGCOA698HM
+  carpedalan:isDbPublic: "true"
   carpedalan:pg_password:
     secure: v1:tXG11vbK4LskPVbe:jMiQ6hUO0ABJqhcqeDsHJ99FghX7GmtXoSoiyimnR2q78itN3Us3ujOo166f0PAsfeSGELEFtFrO8Eohjiq25yHBr/C8
   carpedalan:pg_user:

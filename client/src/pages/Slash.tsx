@@ -9,7 +9,8 @@ import Grid from 'components/Grid';
 import Menu from 'components/Menu';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePosts from 'hooks/usePosts';
-import { getThemeValue } from 'styles/utils';
+import GridIcon from 'styles/GridIcon';
+import PhotoIcon from 'styles/PhotoIcon';
 
 const log = debug('component:Slash');
 
@@ -27,7 +28,13 @@ const Wrapper = styled.div`
 `;
 
 const StyledLink = styled(Link)`
-  color: ${getThemeValue('text')};
+  color: black;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  span {
+    padding-right: 8px;
+  }
 `;
 
 interface RowRender {
@@ -62,7 +69,8 @@ const Slash: React.FC = () => {
     <>
       <Menu side="right">
         <StyledLink to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
-          {hash.includes('grid') ? 'List' : 'Grid'}
+          <span>{hash.includes('grid') ? 'List' : 'Grid'}</span>
+          {!hash.includes('grid') ? <GridIcon /> : <PhotoIcon />}
         </StyledLink>
       </Menu>
       {metaResponse ? (
@@ -75,7 +83,10 @@ const Slash: React.FC = () => {
         </Wrapper>
       ) : null}
       <Routes>
-        <Route path="gallery/:postId" element={<Gallery />} />
+        <Route
+          path="gallery/:postId"
+          element={<Gallery posts={postsWithTitle} />}
+        />
       </Routes>
     </>
   ) : null;

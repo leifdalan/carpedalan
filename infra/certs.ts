@@ -59,7 +59,7 @@ export function makeCerts({
     {
       domainName: domain,
       validationMethod: 'DNS',
-      subjectAlternativeNames: [`local.${domain}`, ...subDomains],
+      subjectAlternativeNames: subDomains,
       tags: t(n('certificate')),
     },
 
@@ -73,7 +73,7 @@ export function makeCerts({
    *  See https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html for more info.
    */
   const certificateValidationDomain = new aws.route53.Record(
-    n(`${domain}-validation1`),
+    n(`${domain}-validation0`),
     {
       name: certificate.domainValidationOptions[0].resourceRecordName,
       zoneId,
@@ -83,27 +83,27 @@ export function makeCerts({
     },
   );
 
-  /**
-   *  Create a DNS record to prove that we _own_ the domain we're requesting a certificate for.
-   *  See https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html for more info.
-   */
-  const certificateValidationDomain2 = new aws.route53.Record(
-    n(`${domain}-validation2`),
-    {
-      name: certificate.domainValidationOptions[1].resourceRecordName,
-      zoneId,
-      type: certificate.domainValidationOptions[1].resourceRecordType,
-      records: [certificate.domainValidationOptions[1].resourceRecordValue],
-      ttl: tenMinutes,
-    },
-  );
+  // /**
+  //  *  Create a DNS record to prove that we _own_ the domain we're requesting a certificate for.
+  //  *  See https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html for more info.
+  //  */
+  // const certificateValidationDomain2 = new aws.route53.Record(
+  //   n(`${domain}-validation2`),
+  //   {
+  //     name: certificate.domainValidationOptions[1].resourceRecordName,
+  //     zoneId,
+  //     type: certificate.domainValidationOptions[1].resourceRecordType,
+  //     records: [certificate.domainValidationOptions[1].resourceRecordValue],
+  //     ttl: tenMinutes,
+  //   },
+  // );
 
   const validations = subDomains.map((subDomain, i) => {
-    return new aws.route53.Record(n(`${domain}-validation${i + 2}`), {
-      name: certificate.domainValidationOptions[i + 2].resourceRecordName,
+    return new aws.route53.Record(n(`${domain}-validation${i + 1}`), {
+      name: certificate.domainValidationOptions[i + 1].resourceRecordName,
       zoneId,
-      type: certificate.domainValidationOptions[i + 2].resourceRecordType,
-      records: [certificate.domainValidationOptions[i + 2].resourceRecordValue],
+      type: certificate.domainValidationOptions[i + 1].resourceRecordType,
+      records: [certificate.domainValidationOptions[i + 1].resourceRecordValue],
       ttl: tenMinutes,
     });
   });
@@ -123,7 +123,6 @@ export function makeCerts({
       certificateArn: certificate.arn,
       validationRecordFqdns: [
         certificateValidationDomain.fqdn,
-        certificateValidationDomain2.fqdn,
         ...validations.map(validation => validation.fqdn),
         // add validations here
       ],

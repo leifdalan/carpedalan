@@ -131,25 +131,28 @@ function usePosts() {
   useEffect(() => {
     if (metaResponse) {
       setGlobalMeta(metaResponse);
-      const allPostsWithTagsWithFakess = [
-        ...Array(metaResponse.count).keys(),
-      ].map(
-        (num): PostsWithTagsWithFakes => ({
-          key: `${num}`,
-          fake: true,
-          imageHeight: `${metaResponse.averageRatio * 100}`,
-          imageWidth: '100',
-          placeholder: getBg(),
-        }),
-      );
-      setAllPosts(allPostsWithTagsWithFakess);
-      log('setAllPosts');
-      setPosts(allPostsWithTagsWithFakess);
+      if (data.posts.length < 1) {
+        const allPostsWithTagsWithFakess = [
+          ...Array(metaResponse.count).keys(),
+        ].map(
+          (num): PostsWithTagsWithFakes => ({
+            key: `${num}`,
+            fake: true,
+            imageHeight: `${metaResponse.averageRatio * 100}`,
+            imageWidth: '100',
+            placeholder: getBg(),
+          }),
+        );
+
+        setAllPosts(allPostsWithTagsWithFakess);
+        log('setAllPosts');
+        setPosts(allPostsWithTagsWithFakess);
+      }
       if (metaResponse?.count) {
         setTotal(metaResponse.count);
       }
     }
-  }, [metaRequest, metaResponse, setPosts]);
+  }, [data.posts.length, metaRequest, metaResponse, setPosts]);
 
   useEffect(() => {
     log('response', response, allPosts.length);

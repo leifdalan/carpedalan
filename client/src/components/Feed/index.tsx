@@ -1,12 +1,12 @@
 import debug from 'debug';
 import React, {
-  memo,
   useState,
   useCallback,
   useEffect,
   useRef,
   useMemo,
 } from 'react';
+import { useParams } from 'react-router-dom';
 import Autosizer from 'react-virtualized-auto-sizer';
 import * as ReactWindow from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
@@ -23,7 +23,7 @@ import useScrollPersist from 'hooks/useScrollPersist';
 import useWindow from 'hooks/useWindow';
 import { propTrueFalse } from 'styles/utils';
 
-const log = debug('component:Feed');
+const log = debug('components:Feed');
 
 interface InnerWrapperI {
   hasPersisted: boolean;
@@ -35,7 +35,7 @@ const InnerWrapper = styled.main<InnerWrapperI>`
   opacity: ${propTrueFalse('hasPersisted', 1, 0)};
 `;
 
-const { VariableSizeList: List, areEqual } = ReactWindow;
+const { VariableSizeList: List } = ReactWindow;
 
 const PostWrapper = styled.article`
   max-width: 620px;
@@ -60,6 +60,17 @@ const Title = styled.h1`
   text-align: center;
   font-size: 48px;
   letter-spacing: 3px;
+  background: rgb(35, 0, 36);
+  background: linear-gradient(
+    130deg,
+    rgba(35, 0, 36, 1) 0%,
+    rgba(42, 0, 76, 1) 35%,
+    rgba(122, 0, 102, 1) 100%
+  );
+
+  /* clip hackery */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 const StyledList = styled(List)`
@@ -70,33 +81,15 @@ const StyledList = styled(List)`
   }
 `;
 
-const Row = memo(
-  ({
-    index,
-    style,
-    data,
-    isScrolling,
-  }: ReactWindow.ListChildComponentProps) => {
-    if (index === 0 && data[0]) {
-      return <Title style={{ ...style, height: '150px' }}>{data[0].key}</Title>;
-    }
-    return (
-      <RowWrapper style={style} data-testid={index}>
-        <PostWrapper>
-          <Post hasLink post={data[index]} isScrolling={isScrolling} />
-        </PostWrapper>
-      </RowWrapper>
-    );
-  },
-  areEqual,
-);
-
 const Feed = ({
   itemsWithTitle,
 }: {
   itemsWithTitle: PostsWithTagsWithFakes[];
 }): React.ReactElement => {
   const { request } = usePosts();
+  const { tagName } = useParams();
+  const previousTagname = usePrevious(tagName);
+  const isTag = useMemo(() => !!tagName, [tagName]);
 
   const {
     infiniteRef,
@@ -107,7 +100,7 @@ const Feed = ({
     scrollPos,
     velocity,
     hasMoved,
-  } = useScrollPersist('feed', itemsWithTitle);
+  } = useScrollPersist(`feed-${tagName}`, itemsWithTitle);
   const [isUsingScrollHandle, setIsUsingScrollHandle] = useState(false);
   const previousScrollHandle = usePrevious(isUsingScrollHandle);
   const indices = useRef<[number, number] | null>(null);
@@ -133,7 +126,7 @@ const Feed = ({
       }
       const average = Math.floor((stopIndex + startIndex) / 2);
 
-      if ((itemsWithTitle.length > 1 && hasPersisted) || scrollIndex === 0) {
+      if (itemsWithTitle.length > 1) {
         await request({
           requestBody: {
             page: Math.floor(average / defaultPostsPerPage) + 1,
@@ -143,13 +136,32 @@ const Feed = ({
       indices.current = [startIndex, stopIndex];
       return Promise.resolve();
     },
-    [
-      hasPersisted,
-      isUsingScrollHandle,
-      itemsWithTitle.length,
-      request,
-      scrollIndex,
-    ],
+    [isUsingScrollHandle, itemsWithTitle.length, request],
+  );
+
+  const Row = useMemo(
+    () => ({
+      index,
+      style,
+      data,
+      isScrolling,
+    }: ReactWindow.ListChildComponentProps) => {
+      if (index === 0 && data[0]) {
+        return (
+          <Title style={{ ...style, height: '150px' }}>
+            {`${isTag ? '#' : ''}${data[0].key}`}
+          </Title>
+        );
+      }
+      return (
+        <RowWrapper style={style} data-testid={index}>
+          <PostWrapper>
+            <Post hasLink post={data[index]} isScrolling={isScrolling} />
+          </PostWrapper>
+        </RowWrapper>
+      );
+    },
+    [isTag],
   );
 
   useEffect(() => {
@@ -165,11 +177,22 @@ const Feed = ({
   }, [isUsingScrollHandle, loadMoreItems, previousScrollHandle]);
 
   useEffect(() => {
-    if (itemsWithTitle !== previousItemsWithTitle) {
+    if (
+      itemsWithTitle !== previousItemsWithTitle ||
+      tagName !== previousTagname
+    ) {
       infiniteRef?.current?._listRef?.resetAfterIndex?.(0, true);
       infiniteRef?.current?._listRef?.scrollToItem?.(scrollIndex, 'center');
     }
-  }, [infiniteRef, itemsWithTitle, previousItemsWithTitle, scrollIndex]);
+  }, [
+    infiniteRef,
+    itemsWithTitle,
+    previousItemsWithTitle,
+    scrollIndex,
+    tagName,
+    isTag,
+    previousTagname,
+  ]);
 
   /**
    * Function for determining if item is "loaded", causes loadMoreItems
@@ -198,7 +221,10 @@ const Feed = ({
         width = Number(post.imageWidth);
       }
 
-      const ratio = post.orientation === '6' ? width / height : height / width;
+      const ratio =
+        post.orientation === '6' || post.orientation === '8'
+          ? width / height
+          : height / width;
       let size = ratio * Math.min(windowWidth, 620);
       if (post.description) size += 34;
       if (post.tags && post.tags.length) size += 34;
@@ -215,16 +241,18 @@ const Feed = ({
 
   return (
     <>
-      <ScrollerHandle
-        infiniteRef={infiniteRef}
-        scrollPos={scrollPos}
-        windowHeight={windowHeight}
-        containerHeight={totalHeight}
-        setIsUsingScrollHandle={setIsUsingScrollHandle}
-        isUsingScrollHandle={isUsingScrollHandle}
-        scrollVelocity={velocity}
-        hasMoved={hasMoved}
-      />
+      {!isTag ? (
+        <ScrollerHandle
+          infiniteRef={infiniteRef}
+          scrollPos={scrollPos}
+          windowHeight={windowHeight}
+          containerHeight={totalHeight}
+          setIsUsingScrollHandle={setIsUsingScrollHandle}
+          isUsingScrollHandle={isUsingScrollHandle}
+          scrollVelocity={velocity}
+          hasMoved={hasMoved}
+        />
+      ) : null}
 
       <Autosizer>
         {({ width, height }) => (

@@ -62,7 +62,7 @@
     "prettier-eslint": "^9.0.1",
     "superagent": "^5.2.1",
     "supertest": "^4.0.2",
-    "typescript": "^3.8.2"
+    "typescript": "3.9.0-beta"
   },
   "dependencies": {
     "@pulumi/aws": "1.23.0",

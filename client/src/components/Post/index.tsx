@@ -56,7 +56,8 @@ const Download = styled.a`
 
 const Header = styled(FlexContainer)`
   padding: 1em;
-  background-color: ${getThemeValue('main')};
+  /* background-color: ${getThemeValue('main')}; */
+  background-color: rgba(255, 235, 250, 0.3);
 `;
 
 const Post = ({

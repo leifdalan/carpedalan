@@ -130,6 +130,7 @@ export const getImageRatio = (post: PostsWithTagsWithFakes) => {
   if (post.fake) return 1;
   if (!post.imageHeight || !post.imageWidth) return 1;
   let ratio = Number(post.imageHeight) / Number(post.imageWidth);
-  if (Number(post.orientation) === 6) ratio = 1 / ratio;
+  if (Number(post.orientation) === 6 || Number(post.orientation) === 8)
+    ratio = 1 / ratio;
   return ratio;
 };

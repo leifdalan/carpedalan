@@ -12,11 +12,12 @@ import { PostsWithTagsWithFakes } from 'hooks/types';
 import useApi from 'hooks/useApi';
 import { getBg } from 'hooks/usePosts';
 import useTags from 'hooks/useTags';
-import { DataContext } from 'providers/Data';
+import GridIcon from 'styles/GridIcon';
+import PhotoIcon from 'styles/PhotoIcon';
 
 const log = debug('component:Tag');
 
-const { useState, useContext } = React;
+const { useState } = React;
 
 const { useEffect, useRef } = React;
 
@@ -32,6 +33,16 @@ const GridListSwitcher = styled.div`
   right: 0;
 `;
 
+const StyledLink = styled(Link)`
+  color: black;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  span {
+    padding-right: 8px;
+  }
+`;
+
 /**
  * Tag view. Gets posts by tag based on the route param. Will
  * update view when the route param changes, and make another request
@@ -41,7 +52,7 @@ const GridListSwitcher = styled.div`
 const Tag = (): React.ReactElement => {
   const { tagName } = useParams();
   const { request, response, loading } = useApi(client.getPostsByTag);
-  const { addPosts } = useContext(DataContext);
+  // const { addPosts } = useContext(DataContext);
   const { tags } = useTags();
   const [postsWithTitle, setPostsWithTitle] = useState<
     PostsWithTagsWithFakes[]
@@ -71,9 +82,9 @@ const Tag = (): React.ReactElement => {
       }));
 
       setPostsWithTitle(newPostsWithFake);
-      addPosts(newPostsWithFake);
+      // addPosts(newPostsWithFake);
     }
-  }, [addPosts, tagName, response]);
+  }, [tagName, response]);
 
   /**
    * Fetch posts by tag when the tags change, or the tagName (route)
@@ -99,9 +110,10 @@ const Tag = (): React.ReactElement => {
     <>
       <GridListSwitcher>
         <Menu side="right">
-          <Link to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
-            {hash.includes('grid') ? 'List' : 'Grid'}
-          </Link>
+          <StyledLink to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
+            <span>{hash.includes('grid') ? 'List' : 'Grid'}</span>
+            {!hash.includes('grid') ? <GridIcon /> : <PhotoIcon />}
+          </StyledLink>
         </Menu>
       </GridListSwitcher>
       {loading ? (
@@ -116,7 +128,10 @@ const Tag = (): React.ReactElement => {
         </Wrapper>
       )}
       <Routes>
-        <Route path="gallery/:postId" element={<Gallery />} />
+        <Route
+          path="gallery/:postId"
+          element={<Gallery posts={postsWithTitle} />}
+        />
       </Routes>
     </>
   );

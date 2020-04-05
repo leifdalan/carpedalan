@@ -17,8 +17,22 @@ import {
 
 const status = 200;
 
-export default function(db) {
+export default function(db, redis) {
   async function get(req, res) {
+    let returnedCache = false;
+    /**
+     * "Stale until revalidate" cache method
+     */
+    try {
+      const stringMeta = await redis.get('meta');
+      if (stringMeta) {
+        const meta = JSON.parse(stringMeta);
+        if (meta) res.status(status).json(meta);
+        returnedCache = true;
+      }
+    } catch (e) {
+      console.error('Caught Redis Error', e); // eslint-disable-line
+    }
     res.startTime('db', 'Database');
     const { count } = await db(PHOTOS)
       .where({ [STATUS]: ACTIVE })
@@ -94,14 +108,16 @@ export default function(db) {
       }),
       {},
     );
-
-    return res.status(status).json({
+    const response = {
       count: Number(count),
       averageRatio,
       frequencyByMonth,
       firstTimestamp,
       lastTimestamp: secondTimestamp,
-    });
+    };
+    await redis.set('meta', JSON.stringify(response));
+    if (!returnedCache) return res.status(status).json(response);
+    return null;
   }
 
   get.apiDoc = {

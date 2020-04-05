@@ -8,8 +8,8 @@ import { propTrueFalse } from 'styles/utils';
 
 const log = debug('components:Modal');
 
-const ENTER_SPEED = 200;
-const EXIT_SPEED = 100;
+const ENTER_SPEED = 300;
+const EXIT_SPEED = 300;
 const ENTER_SPEED_MS = `${ENTER_SPEED}ms`;
 const EXIT_SPEED_MS = `${EXIT_SPEED}ms`;
 interface TransitionPropsI {
@@ -26,20 +26,31 @@ const Background = styled(FlexContainer)<TransitionPropsI>`
   z-index: 3;
   top: 0;
   left: 0;
+
   &:before {
     position: fixed;
     width: 100%;
     height: 100%;
+    top: 0;
+    left: 0;
     transition: opacity
-      ${propTrueFalse('isClosing', EXIT_SPEED_MS, ENTER_SPEED_MS)} ease-out;
+        ${propTrueFalse('isClosing', EXIT_SPEED_MS, ENTER_SPEED_MS)} ease-out,
+      backdrop-filter
+        ${propTrueFalse('isClosing', EXIT_SPEED_MS, ENTER_SPEED_MS)} ease-out;
     opacity: ${propTrueFalse('isMounted', 1, 0)};
+    backdrop-filter: ${propTrueFalse(
+      'isMounted',
+      'blur(6px) grayscale(0.8)',
+      'blur(0px) grayscale(0)',
+    )};
+    /* backdrop-filter: blur(7px) grayscale(0.8); */
     content: '';
     background: radial-gradient(
       ellipse at center,
-      rgba(100, 100, 100, 0.97) 0%,
-      rgba(50, 50, 50, 0.97) 25%,
-      rgba(0, 0, 0, 0.97) 100%
-    ); /* w3c */
+      rgba(237, 187, 243, 0.5) 0%,
+      rgba(249, 196, 247, 0.5) 25%,
+      rgba(47, 33, 49, 0.5) 100%
+    );
   }
 `;
 
@@ -71,9 +82,10 @@ const Wrapper = styled.div<TransitionPropsI>`
   opacity: ${propTrueFalse('isMounted', 1, 0)};
   transform: scale(${propTrueFalse('isMounted', 1, 0)});
   transition: transform
-      ${propTrueFalse('isClosing', EXIT_SPEED_MS, ENTER_SPEED_MS)} ease-out,
+      ${propTrueFalse('isClosing', EXIT_SPEED_MS, ENTER_SPEED_MS)}
+      cubic-bezier(0, 0.34, 0.16, 1.1),
     opacity ${propTrueFalse('isClosing', EXIT_SPEED_MS, ENTER_SPEED_MS)}
-      ease-out;
+      cubic-bezier(0, 0.34, 0.16, 1.1);
 `;
 
 export type onClose = (e: React.MouseEvent<HTMLElement>) => void;

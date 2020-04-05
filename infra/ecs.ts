@@ -131,11 +131,12 @@ CreateI) {
    */
   const asg = cluster.createAutoScalingGroup(n('micro-scaling-group'), {
     vpc,
-    templateParameters: { minSize: 2, maxSize: 3 },
+    templateParameters: { minSize: 1, maxSize: 2, desiredCapacity: 2 },
     launchConfigurationArgs: {
       instanceType: 't2.micro',
       keyName: keyPair.keyName,
       securityGroups: [vpc.vpc.defaultSecurityGroupId],
+      ebsBlockDevices: [],
     },
     subnetIds: [...vpc.publicSubnetIds, ...vpc.privateSubnetIds],
   });
@@ -199,9 +200,6 @@ CreateI) {
     },
     {
       name: 'REDIS_URL',
-      /**
-       * @TODO Figure out how to get this dynamically from aws.elasticache.Cluster/ReplicaGroup
-       */
       value: pulumi.interpolate`redis://${repGroup.primaryEndpointAddress}/0`,
     },
   ];
@@ -275,75 +273,75 @@ CreateI) {
       },
     ],
     containers: {
-      datadog: {
-        healthCheck: {
-          retries: 3,
-          command: ['CMD-SHELL', 'agent health'],
-          timeout: 5,
-          interval: 30,
-          startPeriod: 15,
-        },
-        logConfiguration: {
-          logDriver: 'json-file',
-          options: {},
-        },
-        image: 'datadog/agent:latest',
-        cpu: 10,
-        memory: 256,
-        essential: true,
-        mountPoints: [
-          {
-            containerPath: '/var/run/docker.sock',
-            sourceVolume: 'docker_sock',
-            readOnly: true,
-          },
-          {
-            containerPath: '/host/sys/fs/cgroup',
-            sourceVolume: 'cgroup',
-            readOnly: true,
-          },
-          {
-            containerPath: '/host/proc',
-            sourceVolume: 'proc',
-            readOnly: true,
-          },
-          {
-            containerPath: '/opt/datadog-agent/run',
-            sourceVolume: 'pointdir',
-            readOnly: false,
-          },
-          {
-            containerPath: '/etc/passwd',
-            sourceVolume: 'passwd',
-            readOnly: true,
-          },
-        ],
-        environment: [
-          {
-            name: 'DD_API_KEY',
-            value: '97c81ab134520c1a5ba8325ebf2ec477',
-          },
-          {
-            name: 'DD_SITE',
-            value: 'datadoghq.com',
-          },
-          {
-            name: 'DD_LOGS_ENABLED',
-            value: 'true',
-          },
-          {
-            name: 'DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL',
-            value: 'true',
-          },
-        ],
-      },
+      // datadog: {
+      //   healthCheck: {
+      //     retries: 3,
+      //     command: ['CMD-SHELL', 'agent health'],
+      //     timeout: 5,
+      //     interval: 30,
+      //     startPeriod: 15,
+      //   },
+      //   logConfiguration: {
+      //     logDriver: 'json-file',
+      //     options: {},
+      //   },
+      //   image: 'datadog/agent:latest',
+      //   cpu: 10,
+      //   memory: 256,
+      //   essential: true,
+      //   mountPoints: [
+      //     {
+      //       containerPath: '/var/run/docker.sock',
+      //       sourceVolume: 'docker_sock',
+      //       readOnly: true,
+      //     },
+      //     {
+      //       containerPath: '/host/sys/fs/cgroup',
+      //       sourceVolume: 'cgroup',
+      //       readOnly: true,
+      //     },
+      //     {
+      //       containerPath: '/host/proc',
+      //       sourceVolume: 'proc',
+      //       readOnly: true,
+      //     },
+      //     {
+      //       containerPath: '/opt/datadog-agent/run',
+      //       sourceVolume: 'pointdir',
+      //       readOnly: false,
+      //     },
+      //     {
+      //       containerPath: '/etc/passwd',
+      //       sourceVolume: 'passwd',
+      //       readOnly: true,
+      //     },
+      //   ],
+      //   environment: [
+      //     {
+      //       name: 'DD_API_KEY',
+      //       value: '97c81ab134520c1a5ba8325ebf2ec477',
+      //     },
+      //     {
+      //       name: 'DD_SITE',
+      //       value: 'datadoghq.com',
+      //     },
+      //     {
+      //       name: 'DD_LOGS_ENABLED',
+      //       value: 'true',
+      //     },
+      //     {
+      //       name: 'DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL',
+      //       value: 'true',
+      //     },
+      //   ],
+      // },
       nginx: {
         logConfiguration: {
           logDriver: 'syslog',
           options: {},
         },
-        cpu: 256,
-        memory: 256,
+        cpu: 200,
+        memory: 128,
         image: awsx.ecs.Image.fromDockerBuild(repository, {
           context: '../nginx',
           dockerfile: '../nginx/Dockerfile',
@@ -373,7 +371,7 @@ CreateI) {
         },
 
         memory: 256,
-        cpu: 512,
+        cpu: 256,
         /**
          * This utility will actually run a docker build with the included args
          * and push to the ECR repository, tagged with the SHA of the docker
@@ -413,7 +411,7 @@ CreateI) {
           {
             name: 'AWS_SECRET_ACCESS_KEY',
             // @ts-ignore
-            valueFrom: pulumi.interpolate`${bucketUserCredSecret.arn}` as string,
+            valueFrom: pulumi.interpolate`${bucketUserCredSecret.arn}`,
           },
           {
             name: 'PRIVATE_KEY',

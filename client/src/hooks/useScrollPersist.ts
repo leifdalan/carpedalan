@@ -1,6 +1,13 @@
 import useThrottle from '@react-hook/throttle';
 import debug from 'debug';
-import { useRef, useEffect, useCallback, useState, RefObject } from 'react';
+import {
+  RefObject,
+  useCallback,
+  useDebugValue,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   ListOnItemsRenderedProps,
   VariableSizeList,
@@ -43,6 +50,7 @@ export default function useScrollPersist(
       setIsMounted(true);
     }
   }, []);
+  useDebugValue(scrollPos);
   const [hasPersisted, setHasPersisted] = useState(false);
   const infiniteRef = useCallbackRef<LoadedInfiniteLoaderType>(
     null,
@@ -69,17 +77,20 @@ export default function useScrollPersist(
 
   const handleItemRendered = useCallback(
     (rendered: ListOnItemsRenderedProps) => {
-      if (rendered.visibleStartIndex > 1) {
-        localScroll.current = Math.floor(
-          (rendered.visibleStartIndex + rendered.visibleStopIndex) / 2,
-        );
+      // if (rendered.visibleStartIndex > 1) {
+      localScroll.current = Math.floor(
+        (rendered.visibleStartIndex + rendered.visibleStopIndex) / 2,
+      );
 
-        if (localScroll.current !== originalScroll.current && !hasMoved) {
-          setHasMoved(true);
-        }
-
-        setScrollIndex(localScroll.current);
+      if (
+        localScroll.current !== originalScroll.current &&
+        !hasMoved &&
+        rendered.visibleStartIndex > 1
+      ) {
+        setHasMoved(true);
       }
+      if (hasMoved) setScrollIndex(localScroll.current);
+      // }
     },
     [hasMoved, setScrollIndex],
   );

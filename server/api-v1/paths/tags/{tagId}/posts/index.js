@@ -1,7 +1,7 @@
 import get from './get';
 
-export default function(posts) {
+export default function(posts, redis) {
   return {
-    get: get(posts),
+    get: get(posts, redis),
   };
 }

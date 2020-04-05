@@ -27,11 +27,11 @@ export function makeRedis() {
     { ignoreChanges: ['clusterMode'] },
   );
 
-  const redis = new aws.elasticache.Cluster(n('svg'), {
-    replicationGroupId: replicationGroup.id,
-    clusterId: 'svg',
-    tags: t(n('svg')),
-  });
+  // const redis = new aws.elasticache.Cluster(n('svg'), {
+  //   replicationGroupId: replicationGroup.id,
+  //   clusterId: 'svg',
+  //   tags: t(n('svg')),
+  // });
 
-  return { redis, replicationGroup };
+  return { replicationGroup };
 }
