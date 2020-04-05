@@ -1,19 +1,16 @@
 import debug from 'debug';
 import * as React from 'react';
-import { useParams, useLocation, Link, Routes, Route } from 'react-router-dom';
+import { useParams, useLocation, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { client } from 'ApiClient';
 import Feed from 'components/Feed';
 import Gallery from 'components/Gallery';
 import Grid from 'components/Grid';
-import Menu from 'components/Menu';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import useApi from 'hooks/useApi';
 import { getBg } from 'hooks/usePosts';
 import useTags from 'hooks/useTags';
-import GridIcon from 'styles/GridIcon';
-import PhotoIcon from 'styles/PhotoIcon';
 
 const log = debug('component:Tag');
 
@@ -26,23 +23,6 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
-const GridListSwitcher = styled.div`
-  position: fixed;
-  z-index: 2;
-  top: 0;
-  right: 0;
-`;
-
-const StyledLink = styled(Link)`
-  color: black;
-  display: flex;
-  align-items: center;
-  padding: 4px;
-  span {
-    padding-right: 8px;
-  }
-`;
-
 /**
  * Tag view. Gets posts by tag based on the route param. Will
  * update view when the route param changes, and make another request
@@ -52,7 +32,6 @@ const StyledLink = styled(Link)`
 const Tag = (): React.ReactElement => {
   const { tagName } = useParams();
   const { request, response, loading } = useApi(client.getPostsByTag);
-  // const { addPosts } = useContext(DataContext);
   const { tags } = useTags();
   const [postsWithTitle, setPostsWithTitle] = useState<
     PostsWithTagsWithFakes[]
@@ -60,7 +39,7 @@ const Tag = (): React.ReactElement => {
   const wrapperRef = useRef<HTMLInputElement>(null);
   const gridRef = useRef(0);
 
-  const { hash, pathname } = useLocation();
+  const { hash } = useLocation();
 
   function isGrid() {
     return hash.includes('grid');
@@ -108,14 +87,6 @@ const Tag = (): React.ReactElement => {
 
   return (
     <>
-      <GridListSwitcher>
-        <Menu side="right">
-          <StyledLink to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
-            <span>{hash.includes('grid') ? 'List' : 'Grid'}</span>
-            {!hash.includes('grid') ? <GridIcon /> : <PhotoIcon />}
-          </StyledLink>
-        </Menu>
-      </GridListSwitcher>
       {loading ? (
         'loading'
       ) : (

@@ -20,7 +20,7 @@ const precache =
         // { url: '/' },
       ]
     : [...(self.__WB_MANIFEST ?? [])];
-console.log('SW manifestz: ', precache);
+
 precacheAndRoute(precache);
 setCacheNameDetails({
   prefix: 'carpe',
@@ -52,9 +52,7 @@ function fetchEventHandler(event: FetchEvent) {
 
 self.addEventListener('fetch', fetchEventHandler as (d: Event) => void);
 
-console.log('WHASzzzzzzSUPzzzzv420', caches);
 caches.keys().then(keys => {
-  console.log('keyseeee', keys);
   if (!keys.includes('document')) {
     caches.open('document').then(cache => cache.add('/'));
   }

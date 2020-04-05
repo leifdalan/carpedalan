@@ -1,8 +1,8 @@
 module.exports = {
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./client/tsconfig.json",
-    "tsconfigRootDir": "."
+    "project": "tsconfig.json",
+    "tsconfigRootDir": "./client"
   },
   "ignorePatterns": ["swaggerSchema.d.ts"],
   "env": {

@@ -1,16 +1,13 @@
 import debug from 'debug';
 import * as React from 'react';
-import { Link, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Feed from 'components/Feed';
 import Gallery from 'components/Gallery';
 import Grid from 'components/Grid';
-import Menu from 'components/Menu';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import usePosts from 'hooks/usePosts';
-import GridIcon from 'styles/GridIcon';
-import PhotoIcon from 'styles/PhotoIcon';
 
 const log = debug('component:Slash');
 
@@ -27,16 +24,6 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
-const StyledLink = styled(Link)`
-  color: black;
-  display: flex;
-  align-items: center;
-  padding: 4px;
-  span {
-    padding-right: 8px;
-  }
-`;
-
 interface RowRender {
   index: number;
   style: React.CSSProperties;
@@ -48,7 +35,7 @@ const Slash: React.FC = () => {
     PostsWithTagsWithFakes[]
   >(posts);
 
-  const { hash, pathname } = useLocation();
+  const { hash } = useLocation();
 
   function isGrid() {
     return hash.includes('grid');
@@ -67,12 +54,6 @@ const Slash: React.FC = () => {
 
   return metaResponse && !metaLoading ? (
     <>
-      <Menu side="right">
-        <StyledLink to={`${pathname}${hash.includes('grid') ? '' : '#grid'}`}>
-          <span>{hash.includes('grid') ? 'List' : 'Grid'}</span>
-          {!hash.includes('grid') ? <GridIcon /> : <PhotoIcon />}
-        </StyledLink>
-      </Menu>
       {metaResponse ? (
         <Wrapper data-testid="home">
           {isGrid() ? (
