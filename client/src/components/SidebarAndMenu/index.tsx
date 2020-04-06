@@ -40,7 +40,7 @@ const SidebarAndMenu: React.FC = (): React.ReactElement => {
       {userState ? (
         <>
           <Menu data-test="menu" onClick={toggleMenu} as="div" side="left">
-            <Hamburger isActive={shouldShowSidebar} />
+            <Hamburger isActive={shouldShowSidebar} aria-label="Menu" />
             <span>{shouldShowSidebar ? 'Close' : 'Menu'}</span>
           </Menu>
           <Menu side="right">

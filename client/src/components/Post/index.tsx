@@ -52,10 +52,10 @@ const Download = styled.a`
   font-family: ${getThemeValue(TITLE_FONT)};
   text-transform: uppercase;
   text-decoration: none;
+  padding: 1em;
 `;
 
 const Header = styled(FlexContainer)`
-  padding: 1em;
   /* background-color: ${getThemeValue('main')}; */
   background-color: rgba(255, 235, 250, 0.3);
 `;

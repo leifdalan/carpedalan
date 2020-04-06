@@ -54,11 +54,10 @@ const Title = styled.h1`
   letter-spacing: 3px;
   span {
     background: rgb(35, 0, 36);
-    background: linear-gradient(
-      130deg,
-      rgba(35, 0, 36, 1) 0%,
-      rgba(42, 0, 76, 1) 35%,
-      rgba(122, 0, 102, 1) 100%
+    background: radial-gradient(
+      rgba(122, 0, 102, 1) 0%,
+      rgba(42, 0, 76, 1) 65%,
+      rgba(35, 0, 36, 1) 100%
     );
 
     /* clip hackery */
@@ -102,7 +101,8 @@ const Grid = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const postsPerRow = useMemo(() => {
-    return Math.floor(refWidth / THUMB_SIZE);
+    // let's have at least 2 for you cheapskates
+    return Math.max(Math.floor(refWidth / THUMB_SIZE), 2);
   }, [refWidth]);
   log('postsPerRow', postsPerRow);
   useEffect(() => {
@@ -185,8 +185,6 @@ const Grid = ({
 
   const Row = useCallback(
     ({ index, style, isScrolling }: ReactWindow.ListChildComponentProps) => {
-      const postsPerRow = Math.floor(refWidth / THUMB_SIZE);
-
       if (index === 0 && itemsWithTitle[0]) {
         return (
           <Title style={{ ...style, height: '150px' }}>
@@ -227,7 +225,7 @@ const Grid = ({
         </RowWrapper>
       );
     },
-    [isTag, itemsWithTitle, refWidth],
+    [isTag, itemsWithTitle, postsPerRow],
   );
 
   /**

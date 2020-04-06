@@ -62,7 +62,6 @@ const Tag = (): React.ReactElement => {
       const newPostsWithFake = response.data.map((post, i) => ({
         ...rest[i],
         ...post,
-
         fake: false,
       }));
 

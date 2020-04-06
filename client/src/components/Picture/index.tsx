@@ -14,6 +14,12 @@ import usePosts from 'hooks/usePosts';
 import { propTrueFalse } from 'styles/utils';
 import { getFullImageSrcSet, getSquareImageSrcSet } from 'utils';
 
+let shouldBeLazy = true;
+
+setTimeout(() => {
+  shouldBeLazy = false;
+}, 4000);
+
 const Wrapper = styled.div`
   display: inline-block;
   margin-bottom: -4px;
@@ -103,10 +109,8 @@ const Picture = ({
     if (!pictureRef.current) return;
     const timeNow = performance.now();
     const timeElapsed = timeNow - renderStart;
-    log('timeElapsssszzed for load: ', `${Math.floor(timeElapsed)}ms`);
     if (timeElapsed < 300) setShouldTransition(false);
     const transitionTime = Math.max(200, 600 - timeElapsed);
-    log('TransitionTime', transitionTime);
     setTransitionTime(transitionTime);
     setLoading(true);
   }, [renderStart]);
@@ -169,8 +173,8 @@ const Picture = ({
             data-index={id}
           >
             {type === 'original'
-              ? getFullImageSrcSet({ post })
-              : getSquareImageSrcSet({ post })}
+              ? getFullImageSrcSet({ post, shouldBeLazy })
+              : getSquareImageSrcSet({ post, shouldBeLazy })}
           </StyledPicture>
         ) : null}
         {children}

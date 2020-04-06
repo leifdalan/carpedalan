@@ -62,11 +62,10 @@ const Title = styled.h1`
   letter-spacing: 3px;
   span {
     background: rgb(35, 0, 36);
-    background: linear-gradient(
-      130deg,
-      rgba(35, 0, 36, 1) 0%,
-      rgba(42, 0, 76, 1) 35%,
-      rgba(122, 0, 102, 1) 100%
+    background: radial-gradient(
+      rgba(122, 0, 102, 1) 0%,
+      rgba(42, 0, 76, 1) 65%,
+      rgba(35, 0, 36, 1) 100%
     );
 
     /* clip hackery */

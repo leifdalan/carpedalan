@@ -10,15 +10,9 @@ import {
   SIZE_MAP,
   Sizes,
   SMALL,
-  // LARGE_THUMB,
   SMALL_THUMB,
   TINY,
 } from './constants';
-
-// export const formatDate = timestamp =>
-//   format(fromUnixTime(timestamp), 'MMM d YYYY', {
-//     awareOfUnicodeTokens: true,
-//   });
 
 const { cdn } = window.__META__; // eslint-disable-line no-underscore-dangle
 
@@ -49,11 +43,12 @@ export const getOriginalImagePath = ({
   post: PostsWithTagsWithFakes;
 }) => (post.fake ? '' : `https://${cdn}/${post.key}`);
 
-/* eslint-disable react/prop-types */
 export const getFullImageSrcSet = ({
   post,
+  shouldBeLazy,
 }: {
   post: PostsWithTagsWithFakes;
+  shouldBeLazy: boolean;
 }): React.ReactElement => (
   <>
     <source
@@ -101,14 +96,17 @@ export const getFullImageSrcSet = ({
     <img
       src={getImagePath({ post, size: MEDIUM, type: 'jpg' })}
       alt={post.description || post.key}
+      {...(shouldBeLazy ? { loading: 'lazy' } : {})}
     />
   </>
 );
 
 export const getSquareImageSrcSet = ({
   post,
+  shouldBeLazy,
 }: {
   post: PostsWithTagsWithFakes;
+  shouldBeLazy: boolean;
 }) => (
   <>
     <source
@@ -122,6 +120,7 @@ export const getSquareImageSrcSet = ({
     <img
       src={getImagePath({ post, size: SMALL_THUMB, type: 'jpg' })}
       alt={post.description || post.key}
+      {...(shouldBeLazy ? { loading: 'lazy' } : {})}
     />
   </>
 );
