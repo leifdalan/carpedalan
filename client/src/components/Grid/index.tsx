@@ -30,7 +30,7 @@ const InnerWrapper = styled.main<InnerWrapperI>`
   opacity: ${propTrueFalse('hasPersisted', 1, 0)};
 `;
 
-const { VariableSizeList: List } = ReactWindow;
+const { FixedSizeList: List } = ReactWindow;
 
 const Wrapper = styled.div`
   width: 100%;
@@ -52,21 +52,25 @@ const Title = styled.h1`
   text-align: center;
   font-size: 48px;
   letter-spacing: 3px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgb(35, 0, 36);
-  background: linear-gradient(
-    130deg,
-    rgba(35, 0, 36, 1) 0%,
-    rgba(42, 0, 76, 1) 35%,
-    rgba(122, 0, 102, 1) 100%
-  );
+  span {
+    background: rgb(35, 0, 36);
+    background: linear-gradient(
+      130deg,
+      rgba(35, 0, 36, 1) 0%,
+      rgba(42, 0, 76, 1) 35%,
+      rgba(122, 0, 102, 1) 100%
+    );
 
-  /* clip hackery */
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+    /* clip hackery */
+    background-clip: text;
+    /* stylelint-disable */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+`;
+
+const Empty = styled.div`
+  width: 100%;
 `;
 
 const Grid = ({
@@ -100,7 +104,7 @@ const Grid = ({
   const postsPerRow = useMemo(() => {
     return Math.floor(refWidth / THUMB_SIZE);
   }, [refWidth]);
-
+  log('postsPerRow', postsPerRow);
   useEffect(() => {
     if (wrapperRef.current !== null) {
       const { width } = wrapperRef.current.getBoundingClientRect();
@@ -186,7 +190,7 @@ const Grid = ({
       if (index === 0 && itemsWithTitle[0]) {
         return (
           <Title style={{ ...style, height: '150px' }}>
-            {`${isTag ? '#' : ''}${itemsWithTitle[0].key}`}
+            <span>{`${isTag ? '#' : ''}${itemsWithTitle[0].key}`}</span>
           </Title>
         );
       }
@@ -194,8 +198,11 @@ const Grid = ({
       return (
         <RowWrapper key={index} style={style} data-testid={index}>
           {[...Array(postsPerRow).fill(0)].map((num, arrayIndex) => {
-            const post = itemsWithTitle[index * postsPerRow + arrayIndex];
-            if (!post) return null;
+            const post =
+              itemsWithTitle[
+                index * postsPerRow + arrayIndex - postsPerRow + 1
+              ];
+            if (!post) return <Empty />;
             const galleryLink = `gallery/${
               post.id ? post.id.split('-')[0] : ''
             }#grid`;
@@ -246,20 +253,19 @@ const Grid = ({
     [itemsWithTitle, postsPerRow],
   );
 
-  /**
-   * Curried function that takes the container width and calculates
-   * the item width based on the image height/width ratio. If there is no height,
-   * assume the ratio is 1.
-   *
-   * @param {number} containerWidth
-   * @returns {(index: number) => number}
-   */
   const getItemSize = useCallback(() => {
     return windowWidth / postsPerRow;
   }, [postsPerRow, windowWidth]);
 
   const itemCount = useMemo(() => {
-    return Math.floor(itemsWithTitle.length / postsPerRow) || 1;
+    /**
+     * The first row is the title, and the rest are skipped for that row.
+     * So we need to account for basically a row that counts as a row but only
+     * has one item in it.
+     */
+    return (
+      Math.ceil((itemsWithTitle.length + (postsPerRow - 1)) / postsPerRow) || 1
+    );
   }, [itemsWithTitle.length, postsPerRow]);
 
   const totalHeight = useMemo(() => {
@@ -303,9 +309,8 @@ const Grid = ({
                         onItemsRendered(args);
                       }}
                       itemCount={itemCount}
-                      itemSize={getItemSize}
+                      itemSize={getItemSize()}
                       width={width}
-                      estimatedItemSize={width / postsPerRow}
                       onScroll={handleScroll}
                     >
                       {Row}
@@ -332,7 +337,6 @@ const Grid = ({
       itemCount,
       itemsWithTitle.length,
       loadMoreItems,
-      postsPerRow,
       scrollPos,
       totalHeight,
       velocity,

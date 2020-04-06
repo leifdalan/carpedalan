@@ -60,17 +60,21 @@ const Title = styled.h1`
   text-align: center;
   font-size: 48px;
   letter-spacing: 3px;
-  background: rgb(35, 0, 36);
-  background: linear-gradient(
-    130deg,
-    rgba(35, 0, 36, 1) 0%,
-    rgba(42, 0, 76, 1) 35%,
-    rgba(122, 0, 102, 1) 100%
-  );
+  span {
+    background: rgb(35, 0, 36);
+    background: linear-gradient(
+      130deg,
+      rgba(35, 0, 36, 1) 0%,
+      rgba(42, 0, 76, 1) 35%,
+      rgba(122, 0, 102, 1) 100%
+    );
 
-  /* clip hackery */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+    /* clip hackery */
+    background-clip: text;
+    /* stylelint-disable */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 `;
 
 const StyledList = styled(List)`
@@ -149,7 +153,7 @@ const Feed = ({
       if (index === 0 && data[0]) {
         return (
           <Title style={{ ...style, height: '150px' }}>
-            {`${isTag ? '#' : ''}${data[0].key}`}
+            <span>{`${isTag ? '#' : ''}${data[0].key}`}</span>
           </Title>
         );
       }

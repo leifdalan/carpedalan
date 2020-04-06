@@ -13,10 +13,6 @@ const log = debug('component:Slash');
 
 const { useState } = React;
 
-// const LazyGallery = lazy(() =>
-//   import(/* webpackChunkName: "gallery" */ 'components/Gallery'),
-// );
-
 const { useEffect } = React;
 
 const Wrapper = styled.div`
@@ -30,7 +26,7 @@ interface RowRender {
 }
 
 const Slash: React.FC = () => {
-  const { posts, metaRequest, metaResponse, metaLoading } = usePosts();
+  const { posts } = usePosts();
   const [postsWithTitle, setPostsWithTitle] = useState<
     PostsWithTagsWithFakes[]
   >(posts);
@@ -42,27 +38,22 @@ const Slash: React.FC = () => {
   }
 
   useEffect(() => {
-    metaRequest(undefined);
-  }, [metaRequest]);
-
-  useEffect(() => {
     log('%c post dep changed', 'background: blue;');
     const newPosts = [...posts];
     newPosts.unshift({ fake: false, placeholder: '', key: 'Carpe Dalan' });
     setPostsWithTitle(newPosts);
   }, [posts]);
 
-  return metaResponse && !metaLoading ? (
+  return (
     <>
-      {metaResponse ? (
-        <Wrapper data-testid="home">
-          {isGrid() ? (
-            <Grid itemsWithTitle={postsWithTitle} />
-          ) : (
-            <Feed itemsWithTitle={postsWithTitle} />
-          )}
-        </Wrapper>
-      ) : null}
+      <Wrapper data-testid="home">
+        {isGrid() ? (
+          <Grid itemsWithTitle={postsWithTitle} />
+        ) : (
+          <Feed itemsWithTitle={postsWithTitle} />
+        )}
+      </Wrapper>
+
       <Routes>
         <Route
           path="gallery/:postId"
@@ -70,7 +61,7 @@ const Slash: React.FC = () => {
         />
       </Routes>
     </>
-  ) : null;
+  );
 };
 
 export default Slash;

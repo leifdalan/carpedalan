@@ -8,7 +8,6 @@ import Routes from 'Routes';
 import { User } from 'User';
 import withErrorBoundary from 'components/ErrorBoundary';
 import useUser from 'hooks/useUser';
-import { DataProvider } from 'providers/Data';
 import { GlobalStyleComponent, themes } from 'styles/utils';
 
 const log = debug('App');
@@ -38,16 +37,14 @@ const App: React.FC<{ user: User }> = () => {
   }, [userState]);
 
   return (
-    <DataProvider>
-      <BrowserRouter>
-        <ThemeProvider theme={themes.lite}>
-          <>
-            <Routes />
-            <GlobalStyleComponent />
-          </>
-        </ThemeProvider>
-      </BrowserRouter>
-    </DataProvider>
+    <BrowserRouter>
+      <ThemeProvider theme={themes.lite}>
+        <>
+          <Routes />
+          <GlobalStyleComponent />
+        </>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 };
 

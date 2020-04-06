@@ -1,5 +1,5 @@
 import debug from 'debug';
-import * as React from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useLocation, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -9,14 +9,12 @@ import Gallery from 'components/Gallery';
 import Grid from 'components/Grid';
 import { PostsWithTagsWithFakes } from 'hooks/types';
 import useApi from 'hooks/useApi';
-import { getBg } from 'hooks/usePosts';
+import usePosts, { getBg, getFakePosts } from 'hooks/usePosts';
 import useTags from 'hooks/useTags';
 
+``;
+
 const log = debug('component:Tag');
-
-const { useState } = React;
-
-const { useEffect, useRef } = React;
 
 const Wrapper = styled.div`
   width: 100%;
@@ -31,19 +29,27 @@ const Wrapper = styled.div`
  */
 const Tag = (): React.ReactElement => {
   const { tagName } = useParams();
-  const { request, response, loading } = useApi(client.getPostsByTag);
+  const { request, response } = useApi(client.getPostsByTag);
+  const { allFakes } = usePosts();
   const { tags } = useTags();
+  const tag = useMemo(() => {
+    return tags.find(tag => tag.name === tagName);
+  }, [tagName, tags]);
+
+  const makeItFake = useCallback(() => {
+    return [
+      { key: tagName, fake: true, placeholder: getBg() },
+      ...getFakePosts(tag?.count || 0),
+    ];
+  }, [tag, tagName]);
+  // Just use the master post list as a placeholder
   const [postsWithTitle, setPostsWithTitle] = useState<
     PostsWithTagsWithFakes[]
-  >([]);
-  const wrapperRef = useRef<HTMLInputElement>(null);
-  const gridRef = useRef(0);
+  >(makeItFake());
 
   const { hash } = useLocation();
 
-  function isGrid() {
-    return hash.includes('grid');
-  }
+  const isGrid = useMemo(() => hash.includes('grid'), [hash]);
 
   /**
    * Add Title to posts list
@@ -52,18 +58,18 @@ const Tag = (): React.ReactElement => {
     log('%c post dep changed', 'background: blue;');
 
     if (response) {
-      const newPosts = [...response.data];
-      newPosts.unshift({ key: tagName });
-      const newPostsWithFake = newPosts.map(post => ({
+      const [first, ...rest] = postsWithTitle;
+      const newPostsWithFake = response.data.map((post, i) => ({
+        ...rest[i],
         ...post,
+
         fake: false,
-        placeholder: getBg(),
       }));
 
-      setPostsWithTitle(newPostsWithFake);
+      setPostsWithTitle([first, ...newPostsWithFake]);
       // addPosts(newPostsWithFake);
     }
-  }, [tagName, response]);
+  }, [tagName, response]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Fetch posts by tag when the tags change, or the tagName (route)
@@ -71,6 +77,7 @@ const Tag = (): React.ReactElement => {
    */
   useEffect(() => {
     if (tags.length) {
+      setPostsWithTitle(makeItFake());
       const tag = tags.find(tag => tag.name === tagName);
       if (tag?.id) {
         request({
@@ -78,26 +85,20 @@ const Tag = (): React.ReactElement => {
             tagId: tag.id,
           },
         });
-        gridRef.current += 1;
       }
     }
-  }, [tags, tagName, request]);
-
-  log('loading', loading);
-
+  }, [tags, tagName, request, allFakes, makeItFake]);
+  log('postsWithTitle', postsWithTitle);
   return (
     <>
-      {loading ? (
-        'loading'
-      ) : (
-        <Wrapper data-testid="home" ref={wrapperRef}>
-          {isGrid() ? (
-            <Grid key={tagName} itemsWithTitle={postsWithTitle} />
-          ) : (
-            <Feed key={tagName} itemsWithTitle={postsWithTitle} />
-          )}
-        </Wrapper>
-      )}
+      <Wrapper data-testid="home">
+        {isGrid ? (
+          <Grid key={tagName} itemsWithTitle={postsWithTitle} />
+        ) : (
+          <Feed key={tagName} itemsWithTitle={postsWithTitle} />
+        )}
+      </Wrapper>
+
       <Routes>
         <Route
           path="gallery/:postId"

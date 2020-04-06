@@ -1,3 +1,4 @@
+import db from './db';
 import {
   assetDomain,
   assets,
@@ -11,6 +12,10 @@ import {
   useProdAssets,
 } from './config';
 import setSignedCloudfrontCookie from './api-v1/middlewares/setCloudfrontCookie';
+import redis from './api-v1/services/redis';
+import tags from './api-v1/services/tags';
+import { getMeta } from './api-v1/paths/posts/meta/get';
+import { getTags } from './api-v1/paths/tags/get';
 
 let clientAssets = false;
 
@@ -46,7 +51,28 @@ export default (app, openApiDoc) => {
     });
   });
 
-  const regularAppHandler = (req, res) => {
+  const regularAppHandler = async (req, res) => {
+    let meta = {
+      count: Number(10000),
+      averageRatio: 1,
+      frequencyByMonth: {},
+      firstTimestamp: 14637024,
+      lastTimestamp: new Date(),
+    };
+    try {
+      meta = await getMeta(db, redis);
+    } catch (e) {
+      console.error('Failed to get meta!', e); // eslint-disable-line no-console
+    }
+
+    let tagResponse = [];
+
+    try {
+      tagResponse = await getTags(tags, redis);
+    } catch (e) {
+      console.error('Failed to get tags!', e); // eslint-disable-line no-console
+    }
+
     res.render('index', {
       layout: false,
       openApiDoc: JSON.stringify(openApiDoc),
@@ -61,6 +87,8 @@ export default (app, openApiDoc) => {
         cdn: cdnDomain,
         ci,
         nodeEnv,
+        posts: meta,
+        tags: tagResponse,
       }),
     });
   };

@@ -1,43 +1,24 @@
 import debug from 'debug';
-import { useContext, useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 
 import { client } from 'ApiClient';
-import { DataContext, Data } from 'providers/Data';
 
 import useApi from './useApi';
 
 const log = debug('hooks:useTags');
 
-/**
- * Return values for useTag hook
- *
- * @interface UseTags
- */
-export interface UseTags {
-  /**
-   * Actual tags returned from global data store
-   *
-   * @type {Data['tags']}
-   * @memberof UseTags
-   */
-  tags: Data['tags'];
-  /**
-   * Argumentless action to execute fetch tags
-   *
-   * @memberof UseTags
-   */
-  fetchTags: (arg?: unknown) => Promise<void>;
-}
+/* eslint-disable no-underscore-dangle */
+const { tags } = window.__META__;
 
-export default function useTags(): UseTags {
+export default function useTags() {
   const { response, request } = useApi(client.getTags);
+  const [tagsState, setTags] = useState(tags);
   const fetchTags = useCallback(
     arg => {
       return request(arg);
     },
     [request],
   );
-  const { setTags, data } = useContext(DataContext);
   useEffect(() => {
     if (response) {
       setTags(response);
@@ -45,7 +26,7 @@ export default function useTags(): UseTags {
   }, [response, setTags]);
 
   return {
-    tags: data.tags,
+    tags: tagsState,
     fetchTags,
   };
 }

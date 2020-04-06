@@ -6,21 +6,17 @@ import styled from 'styled-components';
 import withErrorBoundary from 'components/ErrorBoundary';
 import SidebarAndMenu from 'components/SidebarAndMenu';
 import Toaster from 'components/Toaster';
-import useTags from 'hooks/useTags';
 import useUser from 'hooks/useUser';
 import Login from 'pages/Login';
 import Request from 'pages/Request';
+import Slash from 'pages/Slash';
+import Tag from 'pages/Tag';
 
 const log = debug('components:Routes');
 
 const RedirectToLogin = () => <Redirect to="/" />;
 
-const { lazy, Suspense, useEffect } = React;
-
-const LazySlash = lazy(() =>
-  import(/* webpackChunkName: "loggedin" */ 'pages/Slash'),
-);
-const LazyTag = lazy(() => import(/* webpackChunkName: "tag" */ 'pages/Tag'));
+const { Suspense } = React;
 
 const Spinner = () => <div>12341234i1234124oij</div>;
 
@@ -30,15 +26,7 @@ const AppWrapper = styled.div`
 `;
 
 const AppRoutes: React.FC = () => {
-  const { fetchTags } = useTags();
   const { user: globalUser } = useUser();
-  useEffect(() => {
-    log('route is mounting');
-    if (globalUser) {
-      fetchTags();
-    }
-  }, [fetchTags, globalUser]);
-
   return (
     <AppWrapper>
       <Suspense fallback={<Spinner />}>
@@ -47,11 +35,11 @@ const AppRoutes: React.FC = () => {
         <Routes>
           <Route exact path="/request" element={<Request />} />
           {globalUser ? (
-            <Route path="/tag/:tagName/*" element={<LazyTag />} />
+            <Route path="/tag/:tagName/*" element={<Tag />} />
           ) : null}
 
           {globalUser ? (
-            <Route path="/*" element={<LazySlash />} />
+            <Route path="/*" element={<Slash />} />
           ) : (
             <Route path="/*" element={<Login />} />
           )}

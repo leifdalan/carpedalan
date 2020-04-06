@@ -2,6 +2,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { PrecacheEntry } from 'workbox-precaching/_types';
 
+import { GetTagsResponseBodyI } from 'ApiClient';
+
 import { User } from './User';
 import hotEntry from './hotEntry';
 
@@ -19,6 +21,16 @@ declare global {
     };
     __META__: {
       cdn: string;
+      posts: {
+        count: number;
+        averageRatio: number;
+        frequencyByMonth: {
+          [index: number]: number
+        };
+        firstTimestamp: number;
+        lastTimestamp: number;
+      }
+      tags: GetTagsResponseBodyI;
     };
     __WB_MANIFEST: PrecacheEntry[];
     registration: any;
