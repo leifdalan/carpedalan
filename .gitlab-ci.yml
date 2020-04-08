@@ -16,8 +16,6 @@ default:
     - pulumi stack select dev
 
 build client:
-  tags: 
-    - leif
   image: docker:18.06.3
   before_script:
     - echo 'Skipping login'
@@ -42,8 +40,6 @@ build client:
     - docker save client:latest > client.tar
 
 build api:
-  tags: 
-    - leif
 
   image: docker:18.06.3
   before_script:
@@ -66,8 +62,6 @@ build api:
     - docker save api:latest > api.tar
 
 dependencies:
-  tags: 
-    - leif
 
   before_script:
     - echo 'Skipping login'
@@ -94,8 +88,6 @@ dependencies:
 #       - app.tar
 
 build layer deps:
-  tags: 
-    - leif
 
   stage: build
   services:
@@ -109,8 +101,6 @@ build layer deps:
       - imageResizer/layer/
   
 e2e:
-  tags: 
-    - leif
 
   stage: test
   before_script:
@@ -127,8 +117,6 @@ e2e:
     - COMPOSE_PROJECT_NAME=cd_e2e docker-compose -f docker-compose.e2e.yml up
 
 integration:
-  tags: 
-    - leif
 
   stage: test
   before_script:
@@ -154,8 +142,6 @@ unit:
     - yarn unit
 
 lint:
-  tags: 
-    - leif
 
   stage: test
   image: node:12-slim
@@ -171,8 +157,6 @@ lint:
     - yarn lint
 
 deploy:
-  tags: 
-    - leif
 
   stage: deploy
   services:
