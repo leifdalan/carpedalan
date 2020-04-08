@@ -129,9 +129,15 @@ CreateI) {
    * will never be reached because cloudformation can't communicate with the
    * instances properly.
    */
+
+  const numberOfInstances = process.env.NUM_INSTANCES || '1';
   const asg = cluster.createAutoScalingGroup(n('micro-scaling-group'), {
     vpc,
-    templateParameters: { minSize: 1, maxSize: 2, desiredCapacity: 2 },
+    templateParameters: {
+      minSize: 1,
+      maxSize: Number(numberOfInstances),
+      desiredCapacity: Number(numberOfInstances),
+    },
     launchConfigurationArgs: {
       instanceType: 't2.micro',
       keyName: keyPair.keyName,
@@ -340,8 +346,8 @@ CreateI) {
           logDriver: 'syslog',
           options: {},
         },
-        cpu: 200,
-        memory: 128,
+        cpu: 256,
+        memory: 256,
         image: awsx.ecs.Image.fromDockerBuild(repository, {
           context: '../nginx',
           dockerfile: '../nginx/Dockerfile',
@@ -370,8 +376,8 @@ CreateI) {
           options: {},
         },
 
-        memory: 256,
-        cpu: 256,
+        memory: 512,
+        cpu: 512,
         /**
          * This utility will actually run a docker build with the included args
          * and push to the ECR repository, tagged with the SHA of the docker
@@ -460,7 +466,7 @@ CreateI) {
   new awsx.ecs.EC2Service(n('service'), {
     cluster,
     taskDefinition,
-    desiredCount: 1,
+    desiredCount: Number(numberOfInstances),
     waitForSteadyState: false, // Will continue the pulumi build without verifying read state
     tags: t(n('service')),
   });
