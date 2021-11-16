@@ -100,7 +100,7 @@
     "@sentry/browser": "^4.5.3",
     "@sentry/node": "^4.5.3",
     "aws-cloudfront-sign": "^2.2.0",
-    "aws-sdk": "^2.383.0",
+    "aws-sdk": "^2.814.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-styled-components": "^1.10.0",
     "babel-plugin-transform-imports": "^1.5.1",
