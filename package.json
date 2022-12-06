@@ -131,7 +131,7 @@
     "nodemon": "^1.18.9",
     "pg": "^7.7.1",
     "prop-types": "^15.6.2",
-    "qs": "^6.6.0",
+    "qs": "^6.6.1",
     "react": "16.8.0-alpha.0",
     "react-dom": "16.8.0-alpha.0",
     "react-hot-loader": "^4.6.3",
